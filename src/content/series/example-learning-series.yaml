@@ -1,0 +1,21 @@
+slug: example-learning-series
+title: 範例：後續學習系列
+description: 尚未正式建立新系列前，用來驗證 Editorial Series Manifest 的結構。
+status: planned
+featured: false
+editorial:
+  currentPost:
+  nextPost:
+source:
+  type: local
+canonical:
+  mode: local
+sections:
+  - id: foundations
+    title: 第一章
+    description: 章節與篇目可在發表前依討論結果調整。
+    status: planned
+    posts:
+      - slug: example-planned-post
+        status: planned
+        workingTitle: 範例規劃文章
