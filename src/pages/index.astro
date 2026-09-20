@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { loadSeriesManifests } from '@/lib/content/series';
+import { localCanonical } from '@/lib/seo/canonical';
+
+const posts = (await getCollection('posts'))
+  .filter((post) => post.data.status === 'published')
+  .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
+
+const series = (await loadSeriesManifests())
+  .filter((item) => item.status !== 'planned')
+  .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+---
+<BaseLayout canonical={localCanonical('/')}>
+  <h1>gcake.dev</h1>
+  <p>AI、軟體開發與工程學習紀錄。</p>
+
+  <section>
+    <h2>系列</h2>
+    {series.length === 0 ? (
+      <p>系列規劃尚未建立。</p>
+    ) : (
+      <ul>
+        {series.map((item) => (
+          <li>
+            <a href={`/gcake-dev/series/${item.slug}/`}>{item.title}</a>
+            <span> · {item.status}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <section>
+    <h2>最新文章</h2>
+    {posts.length === 0 ? (
+      <p>尚未發布新文章。</p>
+    ) : (
+      <ul>
+        {posts.slice(0, 10).map((post) => (
+          <li><a href={`/gcake-dev/posts/${post.id}/`}>{post.data.title}</a></li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseLayout>
