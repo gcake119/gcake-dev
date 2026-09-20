@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadSeriesManifests } from '@/lib/content/series';
+import { localCanonical } from '@/lib/seo/canonical';
+
+export async function getStaticPaths() {
+  const series = await loadSeriesManifests();
+  return series.map((item) => ({
+    params: { slug: item.slug },
+    props: { series: item },
+  }));
+}
+
+const { series } = Astro.props;
+---
+<BaseLayout
+  title={series.title}
+  description={series.description}
+  canonical={localCanonical(`/series/${series.slug}/`)}
+>
+  <article>
+    <header>
+      <h1>{series.title}</h1>
+      {series.description && <p>{series.description}</p>}
+      <p>狀態：{series.status}</p>
+    </header>
+
+    {series.sections.map((section) => (
+      <section>
+        <h2>{section.title}</h2>
+        {section.description && <p>{section.description}</p>}
+        {section.posts.length === 0 ? (
+          <p>尚未規劃文章。</p>
+        ) : (
+          <ol>
+            {section.posts.map((post) => (
+              <li>
+                <span>{post.workingTitle ?? post.slug}</span>
+                <span> · {post.status}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+    ))}
+  </article>
+</BaseLayout>
