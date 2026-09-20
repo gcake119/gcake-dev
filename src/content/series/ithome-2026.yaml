@@ -1,0 +1,94 @@
+slug: ithome-2026
+title: AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天
+description: 2026 iThome 鐵人賽 30 天系列；正文由 gcake119/ithome-2026 提供。
+status: archived
+featured: true
+source:
+  type: external
+  provider: github
+  repository: gcake119/ithome-2026
+canonical:
+  mode: external
+sections:
+  - id: chapter-1
+    title: 實作跑在理解前面
+    status: completed
+    posts:
+      - slug: day-01
+        status: published
+        workingTitle: 做得出來，卻完全改不動
+      - slug: day-02
+        status: published
+        workingTitle: 當實作跑得比理解更快
+  - id: chapter-2
+    title: 第一個產品：從做功能，到開始理解工作
+    status: completed
+    posts:
+      - slug: day-03
+        status: published
+      - slug: day-04
+        status: published
+      - slug: day-05
+        status: published
+      - slug: day-06
+        status: published
+      - slug: day-07
+        status: published
+      - slug: day-08
+        status: published
+      - slug: day-09
+        status: published
+      - slug: day-10
+        status: published
+      - slug: day-11
+        status: published
+      - slug: day-12
+        status: published
+  - id: chapter-3
+    title: 第二個專案：理解工作的能力開始變成工程判斷
+    status: completed
+    posts:
+      - slug: day-13
+        status: published
+      - slug: day-14
+        status: published
+      - slug: day-15
+        status: published
+      - slug: day-16
+        status: published
+      - slug: day-17
+        status: published
+      - slug: day-18
+        status: published
+      - slug: day-19
+        status: published
+      - slug: day-20
+        status: published
+  - id: chapter-4
+    title: AI 寫大量程式後，我怎麼理解、判斷與相信實作？
+    status: completed
+    posts:
+      - slug: day-21
+        status: published
+      - slug: day-22
+        status: published
+      - slug: day-23
+        status: published
+      - slug: day-24
+        status: published
+      - slug: day-25
+        status: published
+      - slug: day-26
+        status: published
+      - slug: day-27
+        status: published
+  - id: chapter-5
+    title: 回到最開始的問題：我現在知道自己還在學什麼
+    status: completed
+    posts:
+      - slug: day-28
+        status: published
+      - slug: day-29
+        status: published
+      - slug: day-30
+        status: published
