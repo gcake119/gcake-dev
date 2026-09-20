@@ -1,0 +1,42 @@
+---
+import '@/styles/global.css';
+import { site } from '@/data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  canonical,
+} = Astro.props;
+
+const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
+---
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href={site.basePath}><strong>{site.title}</strong></a>
+        <nav>
+          <a href={`${site.basePath}/posts/`}>文章</a>
+          <a href={`${site.basePath}/series/`}>系列</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
