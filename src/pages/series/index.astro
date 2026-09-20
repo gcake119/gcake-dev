@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadSeriesManifests } from '@/lib/content/series';
+import { localCanonical } from '@/lib/seo/canonical';
+
+const series = await loadSeriesManifests();
+---
+<BaseLayout title="系列" canonical={localCanonical('/series/')}>
+  <h1>系列</h1>
+  <ul>
+    {series.map((item) => (
+      <li>
+        <a href={`/gcake-dev/series/${item.slug}/`}>{item.title}</a>
+        <span> · {item.status}</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
