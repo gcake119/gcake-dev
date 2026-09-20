@@ -1,0 +1,37 @@
+name: Prepare Paragraph sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: Published gcake-dev post slug
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --no-frozen-lockfile
+
+      - name: Prepare publication payload
+        run: pnpm paragraph:prepare "${{ inputs.slug }}"
+
+      - name: Notice
+        run: |
+          echo "This workflow currently prepares/validates the payload only."
+          echo "Paragraph publishing and Arweave persistence will be connected after credentials and publication behavior are verified."
