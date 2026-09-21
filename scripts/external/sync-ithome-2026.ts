@@ -18,7 +18,7 @@ const posts: ExternalPost[] = [];
 
 for (let day = 1; day <= 30; day++) {
   const dayString = String(day).padStart(2, '0');
-  const sourceUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/src/content/posts/day-${dayString}.md`;
+  const sourceUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/src/content/ironman/day-${dayString}.md`;
   const response = await fetch(sourceUrl);
 
   if (!response.ok) {
