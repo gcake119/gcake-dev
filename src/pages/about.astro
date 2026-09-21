@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { localCanonical } from '@/lib/seo/canonical';
+---
+
+<BaseLayout title="關於" canonical={localCanonical('/about/')}>
+  <article class="simple-page">
+    <p class="page-kicker">About</p>
+    <h1 class="page-title">關於 gcake.dev</h1>
+    <p>這是一個長期個人技術內容站，記錄 AI 協作開發、軟體工程、產品工作與學習過程。</p>
+    <p>文章保留問題如何被看見、理解與處理的順序，也區分當時知道、後來才知道，以及現在仍沒有答案的部分。</p>
+  </article>
+</BaseLayout>

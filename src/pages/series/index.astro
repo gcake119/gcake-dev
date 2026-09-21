@@ -2,17 +2,41 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { loadSeriesManifests } from '@/lib/content/series';
 import { localCanonical } from '@/lib/seo/canonical';
+import { site } from '@/data/site';
 
-const series = await loadSeriesManifests();
+const allSeries = await loadSeriesManifests();
+const groups = [
+  { title: '進行中的系列', items: allSeries.filter((item) => item.status === 'active') },
+  { title: '已完成的系列', items: allSeries.filter((item) => item.status === 'completed') },
+  { title: '典藏系列', items: allSeries.filter((item) => item.status === 'archived') },
+];
 ---
+
 <BaseLayout title="系列" canonical={localCanonical('/series/')}>
-  <h1>系列</h1>
-  <ul>
-    {series.map((item) => (
-      <li>
-        <a href={`/gcake-dev/series/${item.slug}/`}>{item.title}</a>
-        <span> · {item.status}</span>
-      </li>
-    ))}
-  </ul>
+  <header class="index-header">
+    <p class="page-kicker">Series</p>
+    <h1 class="page-title">系列</h1>
+    <p class="lede">依照章節與閱讀順序整理的完整主題。每個系列記錄一段問題如何被理解、實作與重新判斷的過程。</p>
+  </header>
+
+  {groups.map((group) => group.items.length > 0 && (
+    <section class="index-group">
+      <h2>{group.title}</h2>
+      {group.items.map((item, index) => {
+        const published = item.sections.flatMap((section) => section.posts).filter((post) => post.status === 'published').length;
+        return (
+          <article class="index-series-row">
+            <span class="editorial-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <h3><a href={`${site.basePath}/series/${item.slug}/`}>{item.title}</a></h3>
+              {item.description && <p>{item.description}</p>}
+            </div>
+            <p class="index-series-row__meta">{item.sections.length} 個章節 · {published} 篇 · {item.status === 'archived' ? '典藏' : item.status === 'completed' ? '已完結' : '持續更新'}</p>
+          </article>
+        );
+      })}
+    </section>
+  ))}
+
+  {groups.every((group) => group.items.length === 0) && <p class="empty-state">系列規劃尚未公開。</p>}
 </BaseLayout>

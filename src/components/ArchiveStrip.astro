@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  meta: string;
+  href: string;
+  linkLabel?: string;
+}
+
+const {
+  title,
+  meta,
+  href,
+  linkLabel = '閱讀典藏系列',
+} = Astro.props;
+---
+
+<aside class="archive-strip" aria-label="典藏系列">
+  <div class="archive-strip__label">
+    <span aria-hidden="true">典藏</span>
+    <strong>典藏系列</strong>
+  </div>
+  <div class="archive-strip__content">
+    <strong>{title}</strong>
+    <span>{meta}</span>
+  </div>
+  <a href={href}>{linkLabel} <span aria-hidden="true">↗</span></a>
+</aside>

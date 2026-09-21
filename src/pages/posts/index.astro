@@ -2,18 +2,28 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
+import { site } from '@/data/site';
+import { formatDate } from '@/lib/content/format';
 
 const posts = (await getCollection('posts'))
   .filter((post) => post.data.status === 'published')
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
 ---
+
 <BaseLayout title="文章" canonical={localCanonical('/posts/')}>
-  <h1>文章</h1>
-  {posts.length === 0 ? <p>尚未發布文章。</p> : (
-    <ul>
+  <header class="index-header">
+    <p class="page-kicker">Posts</p><h1 class="page-title">文章</h1>
+    <p class="lede">技術實作、系統理解、產品工作，以及我仍在學習的工程問題。</p>
+  </header>
+  {posts.length === 0 ? (
+    <p class="empty-state">新的文章正在整理中。已完成的系列可以先從「系列」頁閱讀。</p>
+  ) : (
+    <ul class="post-list">
       {posts.map((post) => (
-        <li>
-          <a href={`/gcake-dev/posts/${post.id}/`}>{post.data.title}</a>
+        <li class="post-row">
+          {post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}
+          <div><h3><a href={`${site.basePath}/posts/${post.id}/`}>{post.data.title}</a></h3>{post.data.description && <p>{post.data.description}</p>}</div>
+          <div class="post-row__topics">{post.data.topics.slice(0, 2).map((topic) => <span>{topic}</span>)}</div>
         </li>
       ))}
     </ul>

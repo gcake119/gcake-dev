@@ -19,3 +19,5 @@
 - GitHub Pages
 
 完整架構請見 `docs/architecture.md`。
+
+網站視覺與響應式規則請見 `docs/design-system.md`。

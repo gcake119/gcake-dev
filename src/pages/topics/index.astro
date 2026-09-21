@@ -1,0 +1,14 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { localCanonical } from '@/lib/seo/canonical';
+import { site } from '@/data/site';
+
+const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
+const topics = [...new Set(posts.flatMap((post) => post.data.topics))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+---
+
+<BaseLayout title="主題" canonical={localCanonical('/topics/')}>
+  <header class="index-header"><p class="page-kicker">Topics</p><h1 class="page-title">主題</h1><p class="lede">跨文章與系列探索相同的工程問題。</p></header>
+  {topics.length > 0 ? <ul class="topic-list">{topics.map((topic) => <li><a href={`${site.basePath}/topics/${encodeURIComponent(topic)}/`}>{topic}</a></li>)}</ul> : <p class="empty-state">文章發布後，相關主題會整理在這裡。</p>}
+</BaseLayout>

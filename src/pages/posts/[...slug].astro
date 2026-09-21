@@ -1,32 +1,80 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import { loadSeriesManifests } from '@/lib/content/series';
 import { localCanonical } from '@/lib/seo/canonical';
+import { site } from '@/data/site';
+import { formatDate } from '@/lib/content/format';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
-const canonical = localCanonical(`/posts/${post.id}/`);
+const { Content, headings } = await render(post);
+const allPosts = (await getCollection('posts')).filter((item) => item.data.status === 'published');
+const manifests = await loadSeriesManifests();
+const series = post.data.series ? manifests.find((item) => item.slug === post.data.series) : undefined;
+const section = series?.sections.find((item) => item.posts.some((entry) => entry.slug === post.id));
+const orderedRefs = series?.sections.flatMap((item) => item.posts).filter((item) => item.status === 'published') ?? [];
+const position = orderedRefs.findIndex((item) => item.slug === post.id);
+const previousRef = position > 0 ? orderedRefs[position - 1] : undefined;
+const nextRef = position >= 0 ? orderedRefs[position + 1] : undefined;
+const previousPost = previousRef ? allPosts.find((item) => item.id === previousRef.slug) : undefined;
+const nextPost = nextRef ? allPosts.find((item) => item.id === nextRef.slug) : undefined;
+const sectionIndex = series && section ? series.sections.indexOf(section) : -1;
+const sectionPostIndex = section ? section.posts.filter((item) => item.status === 'published').findIndex((item) => item.slug === post.id) : -1;
+const articleNumber = sectionIndex >= 0 && sectionPostIndex >= 0 ? `${sectionIndex + 1}-${sectionPostIndex + 1}` : undefined;
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const readingMinutes = Math.max(1, Math.ceil((post.body?.length ?? 0) / 700));
 ---
-<BaseLayout
-  title={post.data.title}
-  description={post.data.description}
-  canonical={canonical}
->
+
+<BaseLayout title={post.data.title} description={post.data.description} canonical={localCanonical(`/posts/${post.id}/`)} mainClass="article-page">
   <article>
-    <header>
-      <h1>{post.data.title}</h1>
-      {post.data.publishedAt && (
-        <p><time datetime={post.data.publishedAt.toISOString()}>{post.data.publishedAt.toLocaleDateString('zh-TW')}</time></p>
-      )}
+    <header class="article-header">
+      {series && <p class="article-breadcrumb">系列／{series.title}{section ? `／${section.title}` : ''}</p>}
+      <div class="article-heading-row">
+        {articleNumber && <span class="article-number" aria-label={`系列第 ${articleNumber} 篇`}>{articleNumber}</span>}
+        <div class="article-heading">
+          <h1>{post.data.title}</h1>
+          {post.data.description && <p>{post.data.description}</p>}
+          <div class="article-meta">
+            {post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}
+            <span>· 約 {readingMinutes} 分鐘</span>
+            {post.data.topics.map((topic) => <><span>·</span><a href={`${site.basePath}/topics/${encodeURIComponent(topic)}/`}>{topic}</a></>)}
+          </div>
+        </div>
+        {series && (
+          <aside class="article-series-context">
+            <p>本系列第 {position + 1} 篇，共 {orderedRefs.length} 篇</p>
+            <a class="text-link" href={`${site.basePath}/series/${series.slug}/`}>查看系列目錄 →</a>
+          </aside>
+        )}
+      </div>
     </header>
-    <Content />
+
+    <div class="article-layout">
+      {toc.length > 0 && (
+        <aside class="article-toc" aria-label="本文目錄">
+          <h2>本文目錄</h2>
+          <ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol>
+        </aside>
+      )}
+      {toc.length > 0 && (
+        <details class="article-toc-mobile">
+          <summary>本文目錄（{toc.length}）</summary>
+          <ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol>
+        </details>
+      )}
+      <div class="prose"><Content /></div>
+
+      {(previousPost || nextPost) && (
+        <nav class="article-pagination" aria-label="系列文章導覽">
+          {previousPost ? <a href={`${site.basePath}/posts/${previousPost.id}/`}><small>上一篇</small><strong>{previousPost.data.title}</strong></a> : <span />}
+          {nextPost && <a href={`${site.basePath}/posts/${nextPost.id}/`}><small>下一篇</small><strong>{nextPost.data.title}</strong></a>}
+        </nav>
+      )}
+    </div>
   </article>
 </BaseLayout>

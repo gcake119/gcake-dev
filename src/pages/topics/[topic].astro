@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { localCanonical } from '@/lib/seo/canonical';
+import { site } from '@/data/site';
+import { formatDate } from '@/lib/content/format';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
+  const topics = [...new Set(posts.flatMap((post) => post.data.topics))];
+  return topics.map((topic) => ({ params: { topic }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const posts = (await getCollection('posts'))
+  .filter((post) => post.data.status === 'published' && post.data.topics.includes(topic))
+  .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
+---
+
+<BaseLayout title={topic} canonical={localCanonical(`/topics/${encodeURIComponent(topic)}/`)}>
+  <header class="index-header"><p class="page-kicker">Topic</p><h1 class="page-title">{topic}</h1><p class="lede">共 {posts.length} 篇相關文章。</p></header>
+  <ul class="post-list">{posts.map((post) => <li class="post-row">{post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}<div><h3><a href={`${site.basePath}/posts/${post.id}/`}>{post.data.title}</a></h3>{post.data.description && <p>{post.data.description}</p>}</div></li>)}</ul>
+</BaseLayout>

@@ -1,0 +1,41 @@
+---
+import { site } from '@/data/site';
+
+const pathname = Astro.url.pathname;
+const navItems = [
+  { label: '文章', href: `${site.basePath}/posts/`, segment: '/posts/' },
+  { label: '系列', href: `${site.basePath}/series/`, segment: '/series/' },
+  { label: '主題', href: `${site.basePath}/topics/`, segment: '/topics/' },
+  { label: '關於', href: `${site.basePath}/about/`, segment: '/about/' },
+];
+
+const isActive = (segment: string) => pathname.includes(segment);
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-brand" href={site.basePath} aria-label="回到 gcake.dev 首頁">
+      <span class="site-brand__name">{site.title}</span>
+      <span class="site-brand__tagline">{site.tagline}</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="主要導覽">
+      {navItems.map((item) => (
+        <a class:list={{ active: isActive(item.segment) }} href={item.href} aria-current={isActive(item.segment) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <details class="mobile-nav">
+      <summary>選單</summary>
+      <nav aria-label="手機版主要導覽">
+        {navItems.map((item) => (
+          <a class:list={{ active: isActive(item.segment) }} href={item.href} aria-current={isActive(item.segment) ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </details>
+  </div>
+</header>

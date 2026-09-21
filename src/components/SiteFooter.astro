@@ -1,0 +1,17 @@
+---
+import { site } from '@/data/site';
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <strong>{site.title}</strong>
+      <span>{site.tagline}</span>
+    </div>
+    <nav aria-label="頁尾導覽">
+      <a href={`${site.basePath}/rss.xml`}>RSS</a>
+      <a href={`https://github.com/${site.repository}`}>GitHub</a>
+    </nav>
+    <p>一個持續學習的開發者，在實作中理解世界。</p>
+  </div>
+</footer>

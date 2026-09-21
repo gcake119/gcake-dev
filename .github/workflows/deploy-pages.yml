@@ -37,6 +37,9 @@ jobs:
       - name: Validate editorial series
         run: pnpm content:validate
 
+      - name: Sync archived iThome series
+        run: pnpm content:sync:ithome
+
       - name: Build
         run: pnpm build
 

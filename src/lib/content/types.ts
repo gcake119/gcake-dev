@@ -43,10 +43,11 @@ export interface SeriesManifest {
 
 export interface ExternalPost {
   slug: string;
+  day: number;
+  sourceUrl: string;
+  markdown: string;
   title: string;
   description?: string;
   publishedAt?: string;
   canonicalUrl: string;
-  body: string;
-  source: string;
 }
