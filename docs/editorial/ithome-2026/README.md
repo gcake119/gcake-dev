@@ -9,7 +9,7 @@ Day 1–30 正文不在此處重複保存。
 正式來源：
 
 - Repository: `gcake119/ithome-2026`
-- Path: `src/content/posts/day-01.md` ～ `day-30.md`
+- Path: `src/content/ironman/day-01.md` ～ `day-30.md`
 
 `gcake-dev` 只保存長期仍有價值的 editorial context，並在網站端以 external series 方式讀取舊文。
 
@@ -86,6 +86,6 @@ Day 1–30 正文不在此處重複保存。
 
 本目錄已接手原 Project 上傳空間中，除 Day 1–30 正文以外的 7 份 iThome 寫作／交接／專案歷史文件。
 
-Day 1–30 正文已由 `gcake119/ithome-2026` 保存，因此不在本 repo 再複製一份。
+Day 1–30 正文已由 `gcake119/ithome-2026/src/content/ironman/` 保存，因此不在本 repo 再複製一份。
 
 完成此遷移後，鐵人賽相關 Project 上傳檔不再是唯一資料來源。
