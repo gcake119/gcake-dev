@@ -34,7 +34,7 @@ const readingMinutes = Math.max(1, Math.ceil((post.body?.length ?? 0) / 700));
   <article>
     <header class="article-header">
       {series && <p class="article-breadcrumb">系列／{series.title}{section ? `／${section.title}` : ''}</p>}
-      <div class="article-heading-row">
+      <div class:list={{ 'article-heading-row': true, 'article-heading-row--standalone': !series }}>
         {articleNumber && <span class="article-number" aria-label={`系列第 ${articleNumber} 篇`}>{articleNumber}</span>}
         <div class="article-heading">
           <h1>{post.data.title}</h1>

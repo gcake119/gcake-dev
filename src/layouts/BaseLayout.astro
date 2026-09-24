@@ -30,8 +30,9 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
     {canonical && <link rel="canonical" href={canonical} />}
   </head>
   <body>
+    <a class="skip-link" href="#main-content">跳至主要內容</a>
     <SiteHeader />
-    <main class={mainClass}>
+    <main id="main-content" class={mainClass}>
       <slot />
     </main>
     <SiteFooter />
