@@ -26,6 +26,8 @@ const pathname = Astro.url.pathname;
   const storedTheme = () => { try { return localStorage.getItem('gcake-theme'); } catch { return null; } };
   const update = () => {
     const dark = document.documentElement.dataset.theme === 'dark';
+    const favicon = document.querySelector<HTMLLinkElement>('#site-favicon');
+    if (favicon) favicon.href = favicon.href.replace(/favicon-(?:light|dark)\.svg$/, `favicon-${dark ? 'dark' : 'light'}.svg`);
     if (!button) return;
     button.setAttribute('aria-label', dark ? '切換至明亮主題' : '切換至暗色主題');
     button.title = dark ? '切換至明亮主題' : '切換至暗色主題';
