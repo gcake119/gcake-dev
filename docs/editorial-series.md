@@ -35,3 +35,19 @@ Post answers:
 - What is the article?
 - When was it published?
 - What topics does it discuss?
+
+## Public publication state
+
+The existing `status` field describes editorial/archive management. Optional `publication` describes reader-facing lifecycle independently:
+
+```yaml
+publication:
+  status: active # active | completed | paused
+  endsAt: '2026-10-08' # optional, explicit final release day
+```
+
+When an explicit final release date exists, the series stays ongoing until that Taipei calendar day, then becomes completed. `paused` overrides this transition. Without an end date, an active series remains active regardless of inactivity. Do not infer completion from archive status when a publication schedule is present.
+
+Only posts marked published and whose date has arrived appear in the reading catalog, series navigation or generated public routes. Series without readable posts are hidden. The period starts at the earliest readable installment; ongoing series show 至今, completed series end at the final readable installment, and paused series show the latest published date without an implication of completion.
+
+This static site evaluates dates during build. A new build/deploy must run for scheduled articles to appear. The deployed source-sync workflow includes an hourly deployment schedule and durable completion snapshot. This design iteration preserves the latest main implementation; scheduler-event acceptance is separate. Search uses the same public catalog, so future and draft local content is excluded from its index.
