@@ -4,8 +4,8 @@ description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動
 status: active
 featured: true
 editorial:
-  currentPost: ithome-2026-chatgpt-writing-workflow
-  nextPost: ithome-2026-publishing-toolchain
+  currentPost: ithome-2026-publishing-toolchain
+  nextPost: ithome-2026-astro-choice
 source:
   type: local
 canonical:
@@ -20,8 +20,8 @@ sections:
         status: ready
         workingTitle: 我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的
       - slug: ithome-2026-publishing-toolchain
-        status: planned
-        workingTitle: 這套「架站＋自動發文＋通知」工具是怎麼做出來的
+        status: ready
+        workingTitle: 原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？
       - slug: ithome-2026-astro-choice
         status: planned
         workingTitle: AI 建議 Astro，我怎麼判斷技術選型合不合理
