@@ -26,7 +26,7 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <link id="site-favicon" rel="icon" type="image/svg+xml" href={`${site.basePath}/favicon-light.svg`} />
+    <link id="site-favicon" rel="icon" type="image/svg+xml" href={`${site.basePath}/favicon-light.svg`} data-base-path={site.basePath} />
     <title>{pageTitle}</title>
     <script is:inline>
       (() => {
@@ -35,7 +35,8 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
         document.documentElement.dataset.theme = saved === 'light' || saved === 'dark'
           ? saved : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const favicon = document.getElementById('site-favicon');
-        if (favicon) favicon.setAttribute('href', `${site.basePath}/favicon-${document.documentElement.dataset.theme}.svg`);
+        const basePath = favicon?.dataset.basePath ?? '';
+        if (favicon) favicon.setAttribute('href', `${basePath}/favicon-${document.documentElement.dataset.theme}.svg`);
       })();
     </script>
     {canonical && <link rel="canonical" href={canonical} />}
