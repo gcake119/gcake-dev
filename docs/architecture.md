@@ -28,9 +28,9 @@ Defines why posts belong together, section planning, post order and editorial pr
 
 ### Content
 
-`src/content/posts/*.{md,mdx}`
+`src/content/posts/**/*.{md,mdx}`
 
-The only editable source for new article bodies.
+The only editable source for new article bodies. Subdirectories organize files in the repository only. The Markdown/MDX filename basename is the local post slug and must remain globally unique; parent folders do not affect the public `/posts/<slug>/` URL. Series membership and reading order remain defined by frontmatter plus the Series manifest.
 
 ### External content
 

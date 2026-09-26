@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
+import { listLocalPostFiles } from '../../src/lib/content/local-posts';
 
 type PostStatus = 'planned' | 'draft' | 'ready' | 'published';
 
@@ -30,12 +31,24 @@ const seriesDir = path.resolve('src/content/series');
 const postsDir = path.resolve('src/content/posts');
 
 const seriesFiles = (await fs.readdir(seriesDir)).filter((name) => /\.ya?ml$/.test(name));
-const markdownFiles = (await fs.readdir(postsDir).catch(() => []))
-  .filter((name) => /\.mdx?$/.test(name))
-  .map((name) => name.replace(/\.mdx?$/, ''));
+const localPosts = await listLocalPostFiles(postsDir);
+const markdownFiles = new Set(localPosts.map((post) => post.slug));
 
 let errors = 0;
 let warnings = 0;
+
+const pathsBySlug = new Map<string, string[]>();
+for (const post of localPosts) {
+  const paths = pathsBySlug.get(post.slug) ?? [];
+  paths.push(post.path);
+  pathsBySlug.set(post.slug, paths);
+}
+for (const [slug, paths] of pathsBySlug) {
+  if (paths.length > 1) {
+    console.error(`ERROR duplicate local post slug "${slug}": ${paths.join(', ')}`);
+    errors++;
+  }
+}
 
 for (const filename of seriesFiles) {
   const raw = await fs.readFile(path.join(seriesDir, filename), 'utf8');
@@ -79,7 +92,7 @@ for (const filename of seriesFiles) {
       }
       seenPosts.add(post.slug);
 
-      if (manifest.source?.type !== 'external' && post.status !== 'planned' && !markdownFiles.includes(post.slug)) {
+      if (manifest.source?.type !== 'external' && post.status !== 'planned' && !markdownFiles.has(post.slug)) {
         console.error(`ERROR ${filename}: ${post.status} post "${post.slug}" has no Markdown file`);
         errors++;
       }
