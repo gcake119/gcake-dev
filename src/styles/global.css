@@ -146,3 +146,15 @@ summary { cursor: pointer; padding: 12px 16px; color: var(--accent); }
 
 .social-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
 .site-footer nav { flex-wrap: wrap; gap: 8px; align-items: center; }
+.search-result-title { font-size: 1.2rem; margin-bottom: 8px; }
+@media(max-width:400px) { .site-nav { gap: 6px; } .site-nav a { gap: 3px; } .site-nav .icon { width: 16px; } .site-brand, .theme-toggle { width: 32px; } }
+
+.nav-search { display: flex; align-items: center; width: 200px; border: 1px solid var(--rule); border-radius: 5px; background: var(--paper); }
+.nav-search input { width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .85rem; }
+.nav-search input::placeholder { color: var(--muted); opacity: 1; }
+.nav-search button { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border: 0; background: transparent; color: var(--accent); }
+@media(max-width:700px) {
+  .site-header__inner { align-items: flex-start; }
+  .site-nav { flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+  .nav-search { order: 4; width: 100%; }
+}

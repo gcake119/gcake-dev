@@ -1,0 +1,52 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+import { localCanonical } from '@/lib/seo/canonical';
+---
+<BaseLayout title="搜尋" canonical={localCanonical('/search/')}>
+  <section class="simple-page">
+    <h1>搜尋結果</h1>
+    <p id="search-status" role="status" aria-live="polite">在導覽列輸入關鍵字，搜尋已公開的文章。</p>
+    <ul id="search-results" class="post-list" data-index={`${site.basePath}/search-index.json`}></ul>
+    <a class="text-link" href={`${site.basePath}/series/`}>查看系列總覽 →</a>
+    <noscript><p>全文搜尋需要啟用 JavaScript，也可以從系列總覽找到文章。</p></noscript>
+  </section>
+</BaseLayout>
+<script>
+  type Entry = { title: string; href: string; series: string; description: string; text: string };
+  const status = document.querySelector<HTMLElement>('#search-status')!;
+  const results = document.querySelector<HTMLElement>('#search-results')!;
+  let index: Entry[] | undefined;
+  let request = 0;
+  const normalize = (value: string) => value.normalize('NFKC').toLocaleLowerCase();
+  async function search() {
+    const current = ++request;
+    const query = (new URLSearchParams(location.search).get('q') ?? '').trim();
+    results.replaceChildren();
+    if (!query) { status.textContent = '在導覽列輸入關鍵字，搜尋已公開的文章。'; return; }
+    status.textContent = '搜尋中…';
+    try {
+      if (!index) {
+        const response = await fetch(results.dataset.index!);
+        if (!response.ok) throw new Error('Index unavailable');
+        index = await response.json();
+      }
+      if (current !== request) return;
+      const terms = normalize(query).split(/\s+/);
+      const matches = index!.filter(entry => terms.every(term => normalize(`${entry.title} ${entry.series} ${entry.description} ${entry.text}`).includes(term)));
+      status.textContent = matches.length ? `找到 ${matches.length} 篇文章` : '找不到相關文章，試試其他關鍵字';
+      for (const entry of matches) {
+        const item = document.createElement('li'); item.className = 'post-row';
+        const heading = document.createElement('h2'); heading.className = 'search-result-title';
+        const link = document.createElement('a'); link.href = entry.href; link.textContent = entry.title;
+        heading.append(link);
+        const series = document.createElement('p'); series.className = 'series-label'; series.textContent = entry.series;
+        const excerpt = document.createElement('p'); excerpt.textContent = entry.description;
+        item.append(heading, series, excerpt); results.append(item);
+      }
+    } catch {
+      if (current === request) status.textContent = '搜尋暫時無法載入，請再按一次搜尋，或前往系列總覽。';
+    }
+  }
+  void search();
+</script>

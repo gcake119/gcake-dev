@@ -1,7 +1,8 @@
 ---
-interface Props { name: 'home' | 'book' | 'user' | 'sun' | 'moon' | 'microphone' | 'threads' | 'instagram' | 'substack'; }
+interface Props { name: 'home' | 'book' | 'user' | 'sun' | 'moon' | 'search' | 'microphone' | 'threads' | 'instagram' | 'substack'; }
 const { name } = Astro.props;
 const paths = {
+  search: 'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
   microphone: 'M9 5a3 3 0 0 1 6 0v7a3 3 0 0 1-6 0ZM5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8',
   threads: 'M19 7c-2-6-14-6-14 5 0 12 16 11 16 3 0-6-12-6-12-1 0 5 9 3 8-3 0-4-5-5-7-2',
   instagram: 'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4ZM16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm2-6h.01',
