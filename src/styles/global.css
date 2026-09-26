@@ -30,6 +30,9 @@ img, svg { max-width: 100%; }
 .site-header__inner { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; border-bottom: 1px solid var(--rule); gap: 12px; }
 .site-brand { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; color: var(--ink); }
 .site-brand .icon { width: 27px; height: 27px; }
+.brand-mark { width: 29px; height: 29px; overflow: visible; flex-shrink: 0; }
+.brand-mark__g { fill: none; stroke: var(--ink); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.brand-mark__dot { fill: var(--accent); }
 .site-nav { display: flex; align-items: center; gap: 24px; }
 .site-nav a { display: inline-flex; align-items: center; min-height: 44px; gap: 8px; text-decoration: none; }
 .site-nav a[aria-current] { font-weight: 700; text-decoration: underline; }
