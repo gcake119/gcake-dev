@@ -21,7 +21,20 @@ export async function collectSnapshot(input: unknown, fetchText: (url: string) =
     if (createHash('sha256').update(markdown).digest('hex') !== entry.sha256) throw new Error(`Source hash mismatch: ${entry.slug}`);
     const parsed = matter(markdown);
     if (parsed.data.day !== entry.day || parsed.data.draft !== false || !parsed.content.trim() || typeof parsed.data.title !== 'string' || !Number.isFinite(new Date(parsed.data.publishDate).getTime())) throw new Error(`Invalid public article: ${entry.slug}`);
-    posts.push({ slug: entry.slug, day: entry.day, sourceUrl, markdown, canonicalUrl: `https://gcake119.github.io/ithome-2026/day/${String(entry.day).padStart(2, '0')}/` });
+    posts.push({ sha256: entry.sha256, slug: entry.slug, day: entry.day, sourceUrl, markdown, canonicalUrl: `https://gcake119.github.io/ithome-2026/day/${String(entry.day).padStart(2, '0')}/` });
   }
   return { generated: true, generatedAt: new Date().toISOString(), source: manifest.source, revision: manifest.revision, sourceBuiltAt: manifest.builtAt, publicationState: manifest.publicationState, posts };
+}
+
+/** After completion validate entirely offline; never contact the retired source. */
+export async function resumeOrSync(previous: unknown, fetchText: (url: string) => Promise<string>) {
+  const prior = z.object({ source: z.literal('gcake119/ithome-2026'), publicationState: z.enum(['active', 'completed']), revision: z.string().regex(/^[a-f0-9]{40}$/), sourceBuiltAt: z.iso.datetime(), posts: z.array(z.object({ day: z.number(), slug: z.string(), markdown: z.string(), sha256: z.string().optional() })) }).parse(previous);
+  if (prior.publicationState === 'completed') {
+    const manifest = manifestSchema.parse({ schemaVersion: 1, source: prior.source, revision: prior.revision, builtAt: prior.sourceBuiltAt, publicationState: 'completed', posts: prior.posts });
+    const bodies = new Map(prior.posts.map(p => [p.slug, p.markdown]));
+    const verified = await collectSnapshot(manifest, async url => bodies.get(url.split('/').at(-1)!.replace(/\.md$/, ''))!);
+    return { ...verified, frozen: true };
+  }
+  const manifest = JSON.parse(await fetchText('https://gcake119.github.io/ithome-2026/blog-sync.json'));
+  return collectSnapshot(manifest, fetchText);
 }

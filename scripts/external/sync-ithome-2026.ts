@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { collectSnapshot } from './ithome-sync';
+import { resumeOrSync } from './ithome-sync';
 
 const output = path.resolve('src/data/external/ithome-2026.generated.json');
 async function fetchText(url: string) {
@@ -8,8 +8,8 @@ async function fetchText(url: string) {
   if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
   return response.text();
 }
-const manifest = JSON.parse(await fetchText('https://gcake119.github.io/ithome-2026/blog-sync.json'));
-const snapshot = await collectSnapshot(manifest, fetchText);
+const previous = JSON.parse(await fetchText('https://gcake119.github.io/gcake-dev/ithome-snapshot.json'));
+const snapshot = await resumeOrSync(previous, fetchText);
 await fs.mkdir(path.dirname(output), { recursive: true });
 const temporary = `${output}.tmp`;
 try {
@@ -18,4 +18,4 @@ try {
 } finally {
   await fs.rm(temporary, { force: true });
 }
-console.log(`Synced ${snapshot.posts.length} public posts from ${snapshot.revision}`);
+console.log(`Prepared ${snapshot.posts.length} public posts from ${snapshot.revision}`);

@@ -39,7 +39,7 @@ jobs:
       - name: Validate editorial series
         run: pnpm content:validate
 
-      - name: Sync deployed iThome series
+      - name: Restore final snapshot or sync ongoing iThome series
         run: pnpm content:sync:ithome
 
       - name: Build
