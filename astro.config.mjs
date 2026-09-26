@@ -6,4 +6,5 @@ export default defineConfig({
   base: '/gcake-dev',
   output: 'static',
   integrations: [vue()],
+  markdown: { shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } } },
 });

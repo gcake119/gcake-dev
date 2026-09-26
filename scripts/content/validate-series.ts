@@ -20,6 +20,7 @@ interface Manifest {
   slug: string;
   title: string;
   status: string;
+  publication?: { status: string; endsAt?: string };
   source?: { type?: 'local' | 'external' };
   sections?: ManifestSection[];
   editorial?: { currentPost?: string; nextPost?: string };
@@ -46,6 +47,22 @@ for (const filename of seriesFiles) {
     console.error(`ERROR ${filename}: slug/title/status are required`);
     errors++;
     continue;
+  }
+
+  if (manifest.publication) {
+    const { status, endsAt } = manifest.publication;
+    if (!['active', 'completed', 'paused'].includes(status)) {
+      console.error(`ERROR ${filename}: invalid publication.status`);
+      errors++;
+    }
+    if (endsAt && (!/^\d{4}-\d{2}-\d{2}$/.test(endsAt) || !Number.isFinite(Date.parse(endsAt)) || new Date(endsAt).toISOString().slice(0, 10) !== endsAt)) {
+      console.error(`ERROR ${filename}: publication.endsAt must be a valid YYYY-MM-DD date`);
+      errors++;
+    }
+    if (endsAt && (manifest.sections ?? []).some(s => (s.posts ?? []).some(p => p.status !== 'published'))) {
+      console.error(`ERROR ${filename}: a scheduled series end requires all installments to be ready for publication`);
+      errors++;
+    }
   }
 
   for (const section of manifest.sections ?? []) {

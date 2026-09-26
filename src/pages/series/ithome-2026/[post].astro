@@ -1,58 +1,35 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import SeriesNavigation from '@/components/SeriesNavigation.astro';
 import { loadIthomeArticles } from '@/lib/content/external';
-import { getSeriesManifest } from '@/lib/content/series';
-import { site } from '@/data/site';
+import { loadReadingCatalog } from '@/lib/content/catalog';
 import { formatDate } from '@/lib/content/format';
-
+import { site } from '@/data/site';
 export async function getStaticPaths() {
-  return loadIthomeArticles().map((article) => ({ params: { post: article.slug }, props: { article } }));
+  return loadIthomeArticles().map(article => ({ params: { post: article.slug }, props: { article } }));
 }
-
 const { article } = Astro.props;
-const articles = loadIthomeArticles();
-const series = await getSeriesManifest('ithome-2026');
-const index = articles.findIndex((item) => item.slug === article.slug);
-const previous = index > 0 ? articles[index - 1] : undefined;
-const next = articles[index + 1];
-const section = series?.sections.find((item) => item.posts.some((post) => post.slug === article.slug));
-const sectionIndex = series && section ? series.sections.indexOf(section) : -1;
-const sectionPostIndex = section ? section.posts.findIndex((item) => item.slug === article.slug) : -1;
-const articleNumber = sectionIndex >= 0 && sectionPostIndex >= 0 ? `${sectionIndex + 1}-${sectionPostIndex + 1}` : `Day ${article.day}`;
-const toc = article.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
-const readingMinutes = Math.max(1, Math.ceil(article.body.length / 700));
+const { series: allSeries } = await loadReadingCatalog();
+const series = allSeries.find(s => s.slug === 'ithome-2026')!;
+const index = series.articles.findIndex(p => p.slug === article.slug);
+const previous = series.articles[index - 1];
+const next = series.articles[index + 1];
+const toc = article.headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
-
 <BaseLayout title={article.title} description={article.description} canonical={article.canonicalUrl} mainClass="article-page">
   <article>
     <header class="article-header">
-      <p class="article-breadcrumb">典藏系列／2026 iThome 鐵人賽{section ? `／${section.title}` : ''}</p>
-      <div class="article-heading-row">
-        <span class="article-number" aria-label={`系列第 ${articleNumber} 篇`}>{articleNumber}</span>
-        <div class="article-heading">
-          <h1>{article.title}</h1>
-          {article.description && <p>{article.description}</p>}
-          <div class="article-meta">
-            {article.publishedAt && <time datetime={article.publishedAt.toISOString()}>{formatDate(article.publishedAt)}</time>}
-            <span>· 約 {readingMinutes} 分鐘</span><span>· 2026 iThome 鐵人賽</span>
-          </div>
-        </div>
-        <aside class="article-series-context">
-          <p>本系列第 {article.day} 篇，共 {articles.length} 篇</p>
-          <a class="text-link" href={`${site.basePath}/series/ithome-2026/`}>查看系列目錄 →</a>
-          <a class="external-source-link" href={article.canonicalUrl}>前往原始版本 ↗</a>
-        </aside>
-      </div>
+      <p class="article-breadcrumb"><a href={`${site.basePath}/series/${series.slug}/`}>{series.title}</a></p>
+      <SeriesNavigation series={series} current={article.slug} />
+      <h1>{article.title}</h1>
+      <div class="article-meta">{article.publishedAt && <time datetime={article.publishedAt.toISOString()}>{formatDate(article.publishedAt)}</time>}<a href={article.canonicalUrl}>原始版本 ↗</a></div>
     </header>
-
-    <div class="article-layout">
-      {toc.length > 0 && <aside class="article-toc" aria-label="本文目錄"><h2>本文目錄</h2><ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></aside>}
-      {toc.length > 0 && <details class="article-toc-mobile"><summary>本文目錄（{toc.length}）</summary><ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></details>}
-      <div class="prose" set:html={article.html} />
-      <nav class="article-pagination" aria-label="典藏系列文章導覽">
-        {previous ? <a href={`${site.basePath}/series/ithome-2026/${previous.slug}/`}><small>上一篇</small><strong>{previous.title}</strong></a> : <span />}
-        {next && <a href={`${site.basePath}/series/ithome-2026/${next.slug}/`}><small>下一篇</small><strong>{next.title}</strong></a>}
-      </nav>
-    </div>
+    {toc.length > 0 && <details class="reading-toc"><summary>本篇目錄</summary><ol>{toc.map(h => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></details>}
+    <div class="prose" set:html={article.html} />
+    <nav class="article-pagination" aria-label="系列文章導覽">
+      {previous ? <a href={previous.href}><small>上一篇</small><strong>{previous.title}</strong></a> : <span />}
+      {next && <a href={next.href}><small>下一篇</small><strong>{next.title}</strong></a>}
+    </nav>
+    <a class="text-link" href={`${site.basePath}/series/${series.slug}/`}>返回系列總覽 →</a>
   </article>
 </BaseLayout>

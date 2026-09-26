@@ -1,0 +1,15 @@
+---
+import type { ReadingSeries } from '@/lib/content/catalog';
+interface Props { series: ReadingSeries; current: string; }
+const { series, current } = Astro.props;
+const position = series.articles.findIndex(p => p.slug === current);
+---
+<details class="series-navigation">
+  <summary>本系列文章・{position + 1}／{series.articles.length}</summary>
+  <div class="series-navigation__list">
+    {series.sections.filter(s => s.articles.length).map((section, i) => <section>
+      <h2>第 {i + 1} 章｜{section.title}</h2>
+      <ol>{section.articles.map(p => <li><a href={p.href} aria-current={p.slug === current ? 'page' : undefined}>{p.title}{p.slug === current && <small>目前閱讀</small>}</a></li>)}</ol>
+    </section>)}
+  </div>
+</details>

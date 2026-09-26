@@ -26,6 +26,11 @@ export interface SeriesManifest {
   title: string;
   description?: string;
   status: SeriesStatus;
+  publication?: {
+    status: 'active' | 'completed' | 'paused';
+    /** Date of final public installment; distinct from manuscript completion. */
+    endsAt?: string;
+  };
   startedAt?: string;
   endedAt?: string;
   featured?: boolean;

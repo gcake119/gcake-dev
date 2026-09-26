@@ -1,41 +1,39 @@
 ---
 import { site } from '@/data/site';
-
+import Icon from './Icon.astro';
 const pathname = Astro.url.pathname;
-const navItems = [
-  { label: '文章', href: `${site.basePath}/posts/`, segment: '/posts/' },
-  { label: '系列', href: `${site.basePath}/series/`, segment: '/series/' },
-  { label: '主題', href: `${site.basePath}/topics/`, segment: '/topics/' },
-  { label: '關於', href: `${site.basePath}/about/`, segment: '/about/' },
-];
-
-const isActive = (segment: string) => pathname.includes(segment);
 ---
-
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="site-brand" href={site.basePath} aria-label="回到 gcake.dev 首頁">
-      <span class="site-brand__name">{site.title}</span>
-      <span class="site-brand__tagline">{site.tagline}</span>
-    </a>
-
-    <nav class="desktop-nav" aria-label="主要導覽">
-      {navItems.map((item) => (
-        <a class:list={{ active: isActive(item.segment) }} href={item.href} aria-current={isActive(item.segment) ? 'page' : undefined}>
-          {item.label}
-        </a>
-      ))}
+    <a class="site-brand" href={`${site.basePath}/`} aria-label="首頁" title="返回首頁"><Icon name="home" /></a>
+    <nav class="site-nav" aria-label="主要導覽">
+      <a href={`${site.basePath}/series/`} aria-current={pathname.includes('/series/') ? 'page' : undefined}><Icon name="book" /><span>系列文章</span></a>
+      <a href={`${site.basePath}/about/`} aria-current={pathname.includes('/about/') ? 'page' : undefined}><Icon name="user" /><span>關於</span></a>
+      <button class="theme-toggle" type="button" aria-label="切換明暗主題" title="切換明暗主題"><Icon name="sun" /><Icon name="moon" /></button>
     </nav>
-
-    <details class="mobile-nav">
-      <summary>選單</summary>
-      <nav aria-label="手機版主要導覽">
-        {navItems.map((item) => (
-          <a class:list={{ active: isActive(item.segment) }} href={item.href} aria-current={isActive(item.segment) ? 'page' : undefined}>
-            {item.label}
-          </a>
-        ))}
-      </nav>
-    </details>
   </div>
 </header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const storedTheme = () => { try { return localStorage.getItem('gcake-theme'); } catch { return null; } };
+  const update = () => {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    if (!button) return;
+    button.setAttribute('aria-label', dark ? '切換至明亮主題' : '切換至暗色主題');
+    button.title = dark ? '切換至明亮主題' : '切換至暗色主題';
+  };
+  update();
+  button?.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem('gcake-theme', theme); } catch { /* Theme still works without storage. */ }
+    update();
+  });
+  media.addEventListener('change', e => {
+    if (!['light', 'dark'].includes(storedTheme() ?? '')) {
+      document.documentElement.dataset.theme = e.matches ? 'dark' : 'light';
+      update();
+    }
+  });
+</script>

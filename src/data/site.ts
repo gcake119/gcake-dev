@@ -1,7 +1,7 @@
 export const site = {
-  title: 'gcake.dev',
-  tagline: '寫下技術，也記下思考',
-  description: 'AI、軟體開發與工程學習紀錄',
+  title: '雞蛋糕的開發筆記',
+  tagline: '在 AI 協作開發中，邊做、邊學、邊想。',
+  description: '從真實專案出發，記錄 AI 協作開發中的學習與思考。',
   author: 'gcake',
   repository: 'gcake119/gcake-dev',
   basePath: '/gcake-dev',

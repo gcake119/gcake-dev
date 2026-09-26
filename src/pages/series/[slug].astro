@@ -1,75 +1,26 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ArchiveStrip from '@/components/ArchiveStrip.astro';
-import { isPublishedDate } from '@/lib/content/publication';
-import { getCollection } from 'astro:content';
-import { loadSeriesManifests } from '@/lib/content/series';
+import { loadReadingCatalog } from '@/lib/content/catalog';
 import { localCanonical } from '@/lib/seo/canonical';
-import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
-import { loadIthomeArticles } from '@/lib/content/external';
-
+import { site } from '@/data/site';
 export async function getStaticPaths() {
-  const series = await loadSeriesManifests();
-  return series.filter((item) => item.status !== 'planned').map((item) => ({ params: { slug: item.slug }, props: { series: item } }));
+  const { series } = await loadReadingCatalog();
+  return series.map(s => ({ params: { slug: s.slug }, props: { series: s } }));
 }
-
 const { series } = Astro.props;
-const localPosts = await getCollection('posts');
-const localPostMap = new Map(localPosts.filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt)).map((post) => [post.id, post]));
-const externalTitleMap = new Map(loadIthomeArticles().map((post) => [post.slug, post.title]));
-const publishedCount = series.sections.flatMap((section) => section.posts).filter((post) => post.status === 'published').length;
-const currentSectionIndex = Math.max(0, series.sections.findIndex((section) => section.posts.some((post) => post.slug === series.editorial?.currentPost)));
-const locatorIndex = series.status === 'active' ? currentSectionIndex + 1 : series.sections.length;
-
-const statusLabel = series.status === 'active' ? '進行中' : series.status === 'completed' ? '已完結' : '典藏';
-const postHref = (slug: string) => series.source?.type === 'external' ? `${site.basePath}/series/${series.slug}/${slug}/` : `${site.basePath}/posts/${slug}/`;
-const continueSlug = series.editorial?.currentPost
-  ?? series.sections.flatMap((section) => section.posts).filter((post) => post.status === 'published').at(-1)?.slug;
+const statusLabel = { active: '連載中', completed: '已完結', paused: '暫停連載' }[series.publicationState];
 ---
-
 <BaseLayout title={series.title} description={series.description} canonical={localCanonical(`/series/${series.slug}/`)}>
   <header class="series-hero">
-    <p class="page-kicker">系列 · {statusLabel}</p>
-    <h1 class="page-title">{series.title}</h1>
+    <p class="series-label">{statusLabel}</p><h1 class="page-title">{series.title}</h1>
     {series.description && <p class="lede">{series.description}</p>}
-    <p class="series-hero__meta">{series.sections.length} 個章節 · 已發布 {publishedCount} 篇 · {series.status === 'active' ? '持續更新' : '已完結'}</p>
-    {continueSlug && <a class="text-link" href={postHref(continueSlug)}>繼續閱讀 →</a>}
-    <aside class="series-locator" aria-label="系列閱讀進度">
-      <span>{series.status === 'active' ? '目前章節' : '完整系列'}</span>
-      <strong>{String(locatorIndex).padStart(2, '0')} / {String(series.sections.length).padStart(2, '0')}</strong>
-    </aside>
+    {series.firstDate && <p class="series-period">連載期間：{formatDate(series.firstDate)}{series.publicationState === 'active' ? ' 至今' : series.latestDate ? `～${formatDate(series.latestDate)}` : ''}</p>}
+    <a class="primary-link" href={series.articles[0].href}>從第一篇開始 →</a>
   </header>
-
-  <div class="chapter-list">
-    {series.sections.map((section, sectionIndex) => {
-      const publishedPosts = section.posts.filter((post) => post.status === 'published');
-      if (publishedPosts.length === 0) return null;
-      return (
-        <section class="series-chapter" id={section.id}>
-          <div class="chapter-number"><small>CHAPTER</small><strong>{String(sectionIndex + 1).padStart(2, '0')}</strong></div>
-          <div class="chapter-summary"><h2>{section.title}</h2>{section.description && <p>{section.description}</p>}</div>
-          <ol class="chapter-posts">
-            {publishedPosts.map((post, postIndex) => {
-              const localPost = localPostMap.get(post.slug);
-              const isCurrent = post.slug === series.editorial?.currentPost;
-              return (
-                <li class:list={{ current: isCurrent }}>
-                  <span>{sectionIndex + 1}-{postIndex + 1}</span>
-                  <a href={postHref(post.slug)}>{localPost?.data.title ?? externalTitleMap.get(post.slug) ?? post.workingTitle ?? `Day ${post.slug.replace('day-', '')}`}</a>
-                  {isCurrent ? <span class="post-status">目前閱讀</span> : localPost?.data.publishedAt ? <time datetime={localPost.data.publishedAt.toISOString()}>{formatDate(localPost.data.publishedAt)}</time> : null}
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      );
-    })}
-  </div>
-
-  {series.source?.type === 'external' && (
-    <div class="series-archive">
-      <ArchiveStrip title="2026 iThome 鐵人賽" meta={`${publishedCount} 篇 · 五章 · ${statusLabel} · 原始網站為 canonical`} href={site.legacySeries.ithome2026.siteUrl} linkLabel="前往原始系列" />
-    </div>
-  )}
+  <div class="chapter-list">{series.sections.filter(s => s.articles.length).map((section,i) => <section class="series-chapter" id={section.id}>
+    <h2>第 {i+1} 章｜{section.title}</h2>{section.description && <p>{section.description}</p>}
+    <ol class="chapter-posts">{section.articles.map(p => <li><a href={p.href}>{p.title}</a>{p.date && <time datetime={p.date.toISOString()}>{formatDate(p.date)}</time>}</li>)}</ol>
+  </section>)}</div>
+  {series.source?.type === 'external' && <p class="series-source"><a href={site.legacySeries.ithome2026.siteUrl}>前往原始系列 ↗</a></p>}
 </BaseLayout>

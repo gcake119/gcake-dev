@@ -1,0 +1,18 @@
+---
+import type { ReadingSeries } from '@/lib/content/catalog';
+import { formatDate } from '@/lib/content/format';
+import { site } from '@/data/site';
+interface Props { series: ReadingSeries; }
+const { series } = Astro.props;
+const label = { active: '連載中', completed: '已完結', paused: '暫停連載' }[series.publicationState];
+---
+<article class="reading-series">
+  <p class="series-label">{label}{series.source?.type === 'external' && '・2026 iThome 鐵人賽'}</p>
+  {series.firstDate && <p class="series-period">連載期間：<time datetime={series.firstDate.toISOString()}>{formatDate(series.firstDate)}</time>{series.publicationState === 'active' ? ' 至今' : series.latestDate && <>～<time datetime={series.latestDate.toISOString()}>{formatDate(series.latestDate)}</time></>}</p>}
+  <h3><a href={`${site.basePath}/series/${series.slug}/`}>{series.title}</a></h3>
+  {series.description && <p>{series.description}</p>}
+  <div class="series-actions">
+    <a class:list={{ 'primary-link': series.publicationState === 'active' }} href={`${site.basePath}/series/${series.slug}/`}>查看系列 →</a>
+    <a href={series.articles[0].href}>從第一篇開始 →</a>
+  </div>
+</article>

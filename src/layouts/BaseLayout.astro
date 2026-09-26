@@ -27,6 +27,14 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <title>{pageTitle}</title>
+    <script is:inline>
+      (() => {
+        let saved;
+        try { saved = localStorage.getItem('gcake-theme'); } catch {}
+        document.documentElement.dataset.theme = saved === 'light' || saved === 'dark'
+          ? saved : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      })();
+    </script>
     {canonical && <link rel="canonical" href={canonical} />}
   </head>
   <body>

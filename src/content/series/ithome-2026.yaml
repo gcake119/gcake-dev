@@ -1,6 +1,6 @@
 slug: ithome-2026
 title: AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天
-description: 2026 iThome 鐵人賽 30 天系列；正文由 gcake119/ithome-2026 提供。
+description: 從做出網站卻改不動的經驗出發，逐漸看見產品、系統與程式理解之間的差別。
 status: archived
 featured: true
 source:
@@ -42,12 +42,12 @@ sections:
         status: published
       - slug: day-11
         status: published
-      - slug: day-12
-        status: published
   - id: chapter-3
     title: 第二個專案：理解工作的能力開始變成工程判斷
     status: completed
     posts:
+      - slug: day-12
+        status: published
       - slug: day-13
         status: published
       - slug: day-14

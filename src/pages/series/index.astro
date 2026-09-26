@@ -1,42 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { loadSeriesManifests } from '@/lib/content/series';
+import SeriesEntry from '@/components/SeriesEntry.astro';
+import { loadReadingCatalog } from '@/lib/content/catalog';
 import { localCanonical } from '@/lib/seo/canonical';
-import { site } from '@/data/site';
-
-const allSeries = await loadSeriesManifests();
-const groups = [
-  { title: '進行中的系列', items: allSeries.filter((item) => item.status === 'active') },
-  { title: '已完成的系列', items: allSeries.filter((item) => item.status === 'completed') },
-  { title: '典藏系列', items: allSeries.filter((item) => item.status === 'archived') },
-];
+const { series } = await loadReadingCatalog();
+const groups = [{ title: '連載中', items: series.filter(s => s.publicationState === 'active') }, { title: '其他系列', items: series.filter(s => s.publicationState !== 'active') }];
 ---
-
-<BaseLayout title="系列" canonical={localCanonical('/series/')}>
-  <header class="index-header">
-    <p class="page-kicker">Series</p>
-    <h1 class="page-title">系列</h1>
-    <p class="lede">依照章節與閱讀順序整理的完整主題。每個系列記錄一段問題如何被理解、實作與重新判斷的過程。</p>
-  </header>
-
-  {groups.map((group) => group.items.length > 0 && (
-    <section class="index-group">
-      <h2>{group.title}</h2>
-      {group.items.map((item, index) => {
-        const published = item.sections.flatMap((section) => section.posts).filter((post) => post.status === 'published').length;
-        return (
-          <article class="index-series-row">
-            <span class="editorial-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-            <div>
-              <h3><a href={`${site.basePath}/series/${item.slug}/`}>{item.title}</a></h3>
-              {item.description && <p>{item.description}</p>}
-            </div>
-            <p class="index-series-row__meta">{item.sections.length} 個章節 · {published} 篇 · {item.status === 'archived' ? '典藏' : item.status === 'completed' ? '已完結' : '持續更新'}</p>
-          </article>
-        );
-      })}
-    </section>
-  ))}
-
-  {groups.every((group) => group.items.length === 0) && <p class="empty-state">系列規劃尚未公開。</p>}
+<BaseLayout title="全部系列" canonical={localCanonical('/series/')}>
+  <header class="index-header"><h1 class="page-title">全部系列</h1><p class="lede">沿著一個問題，讀完整段思考。</p></header>
+  {groups.map(g => g.items.length > 0 && <section class="index-group"><h2>{g.title}</h2>{g.items.map(s => <SeriesEntry series={s} />)}</section>)}
+  {!series.length && <p class="empty-state">系列規劃尚未公開。</p>}
 </BaseLayout>
