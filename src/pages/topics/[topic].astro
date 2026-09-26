@@ -1,19 +1,20 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { isPublishedDate } from '@/lib/content/publication';
 import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
+  const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt));
   const topics = [...new Set(posts.flatMap((post) => post.data.topics))];
   return topics.map((topic) => ({ params: { topic }, props: { topic } }));
 }
 
 const { topic } = Astro.props;
 const posts = (await getCollection('posts'))
-  .filter((post) => post.data.status === 'published' && post.data.topics.includes(topic))
+  .filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt) && post.data.topics.includes(topic))
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
 ---
 

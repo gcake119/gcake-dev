@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { isPublishedDate } from '@/lib/content/publication';
 import { getCollection, render } from 'astro:content';
 import { loadSeriesManifests } from '@/lib/content/series';
 import { localCanonical } from '@/lib/seo/canonical';
@@ -7,13 +8,13 @@ import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
+  const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt));
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
-const allPosts = (await getCollection('posts')).filter((item) => item.data.status === 'published');
+const allPosts = (await getCollection('posts')).filter((item) => item.data.status === 'published' && isPublishedDate(item.data.publishedAt));
 const manifests = await loadSeriesManifests();
 const series = post.data.series ? manifests.find((item) => item.slug === post.data.series) : undefined;
 const section = series?.sections.find((item) => item.posts.some((entry) => entry.slug === post.id));

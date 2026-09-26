@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ArchiveStrip from '@/components/ArchiveStrip.astro';
+import { isPublishedDate } from '@/lib/content/publication';
 import { getCollection } from 'astro:content';
 import { loadSeriesManifests } from '@/lib/content/series';
 import { localCanonical } from '@/lib/seo/canonical';
@@ -15,7 +16,7 @@ export async function getStaticPaths() {
 
 const { series } = Astro.props;
 const localPosts = await getCollection('posts');
-const localPostMap = new Map(localPosts.filter((post) => post.data.status === 'published').map((post) => [post.id, post]));
+const localPostMap = new Map(localPosts.filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt)).map((post) => [post.id, post]));
 const externalTitleMap = new Map(loadIthomeArticles().map((post) => [post.slug, post.title]));
 const publishedCount = series.sections.flatMap((section) => section.posts).filter((post) => post.status === 'published').length;
 const currentSectionIndex = Math.max(0, series.sections.findIndex((section) => section.posts.some((post) => post.slug === series.editorial?.currentPost)));
@@ -68,7 +69,7 @@ const continueSlug = series.editorial?.currentPost
 
   {series.source?.type === 'external' && (
     <div class="series-archive">
-      <ArchiveStrip title="2026 iThome 鐵人賽" meta="30 篇 · 五章 · 已完結 · 原始網站為 canonical" href={site.legacySeries.ithome2026.siteUrl} linkLabel="前往原始系列" />
+      <ArchiveStrip title="2026 iThome 鐵人賽" meta={`${publishedCount} 篇 · 五章 · ${statusLabel} · 原始網站為 canonical`} href={site.legacySeries.ithome2026.siteUrl} linkLabel="前往原始系列" />
     </div>
   )}
 </BaseLayout>

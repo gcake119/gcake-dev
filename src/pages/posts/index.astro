@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { isPublishedDate } from '@/lib/content/publication';
 import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
 
 const posts = (await getCollection('posts'))
-  .filter((post) => post.data.status === 'published')
+  .filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt))
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
 ---
 

@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { isPublishedDate } from '@/lib/content/publication';
 import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 
-const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published');
+const posts = (await getCollection('posts')).filter((post) => post.data.status === 'published' && isPublishedDate(post.data.publishedAt));
 const topics = [...new Set(posts.flatMap((post) => post.data.topics))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
 ---
 

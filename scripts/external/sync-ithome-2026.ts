@@ -1,52 +1,21 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { collectSnapshot } from './ithome-sync';
 
-const OWNER = 'gcake119';
-const REPO = 'ithome-2026';
-const BRANCH = 'main';
-const OUTPUT = path.resolve('src/data/external/ithome-2026.generated.json');
-
-interface ExternalPost {
-  slug: string;
-  day: number;
-  canonicalUrl: string;
-  sourceUrl: string;
-  markdown: string;
+const output = path.resolve('src/data/external/ithome-2026.generated.json');
+async function fetchText(url: string) {
+  const response = await fetch(url, { signal: AbortSignal.timeout(30_000), cache: 'no-store' });
+  if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
+  return response.text();
 }
-
-const posts: ExternalPost[] = [];
-
-for (let day = 1; day <= 30; day++) {
-  const dayString = String(day).padStart(2, '0');
-  const sourceUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/src/content/ironman/day-${dayString}.md`;
-  const response = await fetch(sourceUrl);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch Day ${dayString}: HTTP ${response.status}`);
-  }
-
-  posts.push({
-    slug: `day-${dayString}`,
-    day,
-    canonicalUrl: `https://gcake119.github.io/ithome-2026/day/${dayString}/`,
-    sourceUrl,
-    markdown: await response.text(),
-  });
+const manifest = JSON.parse(await fetchText('https://gcake119.github.io/ithome-2026/blog-sync.json'));
+const snapshot = await collectSnapshot(manifest, fetchText);
+await fs.mkdir(path.dirname(output), { recursive: true });
+const temporary = `${output}.tmp`;
+try {
+  await fs.writeFile(temporary, JSON.stringify(snapshot, null, 2) + '\n');
+  await fs.rename(temporary, output);
+} finally {
+  await fs.rm(temporary, { force: true });
 }
-
-await fs.mkdir(path.dirname(OUTPUT), { recursive: true });
-await fs.writeFile(
-  OUTPUT,
-  JSON.stringify(
-    {
-      generated: true,
-      generatedAt: new Date().toISOString(),
-      source: `${OWNER}/${REPO}`,
-      posts,
-    },
-    null,
-    2,
-  ) + '\n',
-);
-
-console.log(`Synced ${posts.length} iThome posts to ${OUTPUT}`);
+console.log(`Synced ${snapshot.posts.length} public posts from ${snapshot.revision}`);

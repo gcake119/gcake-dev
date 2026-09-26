@@ -25,6 +25,11 @@ function slugify(value: string, index: number) {
   return normalized || `section-${index}`;
 }
 
+export function ithomePublicationState(): 'active' | 'completed' {
+  if (!('publicationState' in snapshot)) throw new Error('Sync source manifest first');
+  return snapshot.publicationState as 'active' | 'completed';
+}
+
 export function loadIthomeArticles(): ExternalArticle[] {
   return snapshot.posts.map((post) => {
     const parsed = matter(post.markdown);

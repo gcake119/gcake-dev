@@ -11,7 +11,8 @@
     "check": "astro check",
     "content:validate": "node --import tsx scripts/content/validate-series.ts",
     "content:sync:ithome": "node --import tsx scripts/external/sync-ithome-2026.ts",
-    "paragraph:prepare": "node --import tsx scripts/publishing/prepare-paragraph.ts"
+    "paragraph:prepare": "node --import tsx scripts/publishing/prepare-paragraph.ts",
+    "test": "node --import tsx --test src/lib/content/publication.test.ts scripts/external/ithome-sync.test.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
