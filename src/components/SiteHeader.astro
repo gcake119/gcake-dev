@@ -1,11 +1,12 @@
 ---
 import { site } from '@/data/site';
 import Icon from './Icon.astro';
+import BrandMark from './BrandMark.astro';
 const pathname = Astro.url.pathname;
 ---
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="site-brand" href={`${site.basePath}/`} aria-label="首頁" title="返回首頁"><Icon name="home" /></a>
+    <a class="site-brand" href={`${site.basePath}/`} aria-label="首頁" title="返回首頁"><BrandMark /></a>
     <nav class="site-nav" aria-label="主要導覽">
       <a href={`${site.basePath}/series/`} aria-current={pathname.includes('/series/') ? 'page' : undefined}><Icon name="book" /><span>系列文章</span></a>
       <a href={`${site.basePath}/about/`} aria-current={pathname.includes('/about/') ? 'page' : undefined}><Icon name="user" /><span>關於</span></a>
