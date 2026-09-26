@@ -1,13 +1,25 @@
 ---
+import { socialLinks } from '@/data/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { localCanonical } from '@/lib/seo/canonical';
 ---
 
 <BaseLayout title="關於" canonical={localCanonical('/about/')}>
-  <article class="simple-page">
-    <p class="page-kicker">About</p>
-    <h1 class="page-title">關於 gcake.dev</h1>
-    <p>這是一個長期個人技術內容站，記錄 AI 協作開發、軟體工程、產品工作與學習過程。</p>
-    <p>文章保留問題如何被看見、理解與處理的順序，也區分當時知道、後來才知道，以及現在仍沒有答案的部分。</p>
+  <article class="simple-page prose">
+    <h1 class="page-title">關於雞蛋糕</h1>
+    <h2>為什麼寫</h2>
+    <p>在 AI 協作開發的過程中，我常常是一邊做，一邊才發現自己還不懂什麼。功能做出來了，不代表我已經理解它；遇到問題，也不一定知道該從哪裡開始找答案。</p>
+    <p>這個部落格是我整理這些經驗的地方。我想記下的不只是做出了什麼，也包括當時怎麼想、為什麼這樣選，以及哪些地方後來才發現需要修正。</p>
+    <p>把過程寫下來，是為了讓自己想得更清楚。也希望正在學習開發、嘗試與 AI 協作的人，能從這些具體的經驗裡，找到一點可以接著往前走的線索。</p>
+    <h2>如何與 AI 協作</h2>
+    <p>我正在學習透過 AI 參與真實專案的開發。從釐清問題、拆解流程，到實作與驗證，AI 幫助我把想法變成可以試用、可以檢查的成果。</p>
+    <p>但我也在練習，不只問「要怎麼做」，還要追問「為什麼這樣做」和「怎麼知道它真的有效」。遇到不懂的地方，就請 AI 解釋，再回到程式、畫面或實際操作裡確認。</p>
+    <p>這裡會記錄協作順利的時候，也會寫下誤解、卡關與修正的過程。我希望自己逐漸能說清楚每個選擇的理由，並判斷做出來的東西是否真的解決了問題。</p>
+    <h2>目前正在學什麼</h2>
+    <p>我目前在 AI Camp 受訓，透過 AI 協作與真實專案學習軟體開發。</p>
+    <p>現在最想練習的是：把問題問清楚、把流程拆開，並判斷做出的功能是否有用。我也在探索工作流程自動化與 AI Agent，學習讓 AI 在明確的目標與流程中執行任務。</p>
+    <p>我想進一步理解，當一個功能進入真實使用情境後，會遇到哪些問題，又該怎麼驗證與調整。這些正在摸索的事情，都會成為開發筆記的一部分。</p>
+    <h2>其他地方也可以找到我</h2>
+    <ul>{socialLinks.map(link => <li><a href={link.href}>{link.name}</a></li>)}</ul>
   </article>
 </BaseLayout>

@@ -1,5 +1,6 @@
 ---
-import { site } from '@/data/site';
+import { site, socialLinks } from '@/data/site';
+import Icon from './Icon.astro';
 ---
 
 <footer class="site-footer">
@@ -9,6 +10,7 @@ import { site } from '@/data/site';
       <span>{site.tagline}</span>
     </div>
     <nav aria-label="頁尾導覽">
+      {socialLinks.map(link => <a class="social-link" href={link.href} aria-label={link.name} title={link.name}><Icon name={link.icon} /></a>)}
       <a href={`${site.basePath}/rss.xml`}>RSS</a>
       <a href={`https://github.com/${site.repository}`}>GitHub</a>
     </nav>
