@@ -1,0 +1,36 @@
+slug: ithome-2026-extensions
+title: 2026 iThome 鐵人賽延伸閱讀
+description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動發布工具怎麼形成，以及正式使用後如何繼續調整。
+status: active
+featured: true
+editorial:
+  currentPost: ithome-2026-chatgpt-writing-workflow
+  nextPost: ithome-2026-publishing-toolchain
+source:
+  type: local
+canonical:
+  mode: local
+sections:
+  - id: extensions
+    title: 鐵人賽之後，我怎麼把寫作與發布流程繼續做下去
+    description: 從 30 篇文章的協作寫作、發布工具、技術選型、正式運行、模板化到長期技術部落格。
+    status: active
+    posts:
+      - slug: ithome-2026-chatgpt-writing-workflow
+        status: ready
+        workingTitle: 我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的
+      - slug: ithome-2026-publishing-toolchain
+        status: planned
+        workingTitle: 這套「架站＋自動發文＋通知」工具是怎麼做出來的
+      - slug: ithome-2026-astro-choice
+        status: planned
+        workingTitle: AI 建議 Astro，我怎麼判斷技術選型合不合理
+      - slug: ithome-2026-publishing-in-production
+        status: planned
+        workingTitle: 開賽後，自動發文到底有沒有成功
+      - slug: ithome-2026-template-hardening
+        status: planned
+        workingTitle: 一開始就做成模板，正式使用後為什麼還要一直補
+      - slug: ithome-2026-tech-blog-boundary
+        status: planned
+        workingTitle: 鐵人賽網站已有延伸閱讀，為什麼還要另外做技術部落格
