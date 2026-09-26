@@ -203,7 +203,9 @@ Do not commit API keys, session cookies, browser profiles, newsletter credential
 
 ## First production cohort
 
-Use the six-post iThome 2026 behind-the-scenes extension series as the first production cohort.
+There is no external publishing planned yet. The publishing system may be implemented and tested locally before the series begins, but no Paragraph/Substack production write or newsletter send should occur during the current iThome competition.
+
+After the iThome competition ends and the six-post 2026 behind-the-scenes extension series begins serial publication, use that series as the first production cohort.
 
 Validate:
 
@@ -253,6 +255,8 @@ If none of the six posts naturally requires interaction, test interactive-summar
 - report per-platform results clearly
 
 Do not automatically publish externally merely because Markdown reaches main until production behavior is intentionally approved. Git deployment and external publication remain separate actions.
+
+Until the iThome competition has ended and the behind-the-scenes series is ready to begin, implementation work must stop at local tests, dry runs, interface verification, and non-writing validation.
 
 ## Out of scope for first implementation
 
