@@ -1,4 +1,4 @@
-name: Prepare Paragraph sync
+name: Prepare Paragraph sync (dry run only)
 
 on:
   workflow_dispatch:
@@ -32,5 +32,5 @@ jobs:
 
       - name: Notice
         run: |
-          echo "This workflow currently prepares/validates the payload only."
-          echo "Paragraph publishing and Arweave persistence will be connected after credentials and publication behavior are verified."
+          echo "This workflow validates the shared portable publication and Paragraph dry-run plan only."
+          echo "External writes, publication, Arweave verification, and newsletter delivery are disabled."

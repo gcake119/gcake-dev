@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved product direction. Ready for Codex implementation planning.
+Approved product direction. Phase 1 is implemented locally with provider writes disabled.
 
 ## Goals
 
@@ -44,6 +44,8 @@ Interactive mode: interactive-summary.
 ~~~yaml
 distribution:
   mode: interactive-summary
+  fallback: |
+    這段內容由作者維護，保留核心結論與必要的靜態替代資訊。
 ~~~
 
 In interactive-summary mode, gcake-dev keeps the complete interactive experience. External platforms receive a shorter version that preserves the core meaning and includes a representative static fallback when useful, a concise explanation of what the interaction demonstrates, and a direct link to the canonical interactive version.
@@ -81,6 +83,8 @@ For full mode, preserve the complete portable article while removing source-only
 
 For interactive-summary mode, do not serialize Vue components to external platforms. The source article must provide or reference a source-controlled fallback version. Adapters must not invent fallback prose.
 
+The current transform rejects `interactive-summary` without `distribution.fallback`. It also rejects source-only MDX constructs in `full` mode instead of delegating unsupported content decisions to an adapter.
+
 ## Paragraph adapter
 
 Paragraph is the reliable automated publication target.
@@ -101,7 +105,7 @@ Existing implementation starting points:
 
 - scripts/publishing/prepare-paragraph.ts
 - .github/workflows/sync-paragraph.yml
-- src/data/publishing/paragraph-state.json
+- src/data/publishing/publication-state.json
 
 Evolve the current prepare-only workflow instead of creating an unrelated path.
 
@@ -123,7 +127,7 @@ Requirements:
 
 ## Publication state
 
-The existing paragraph-state.json confirms that publication state belongs outside article bodies.
+Publication state belongs outside article bodies and has one target-independent owner in `src/data/publishing/publication-state.json`.
 
 Move toward target-independent state that can record, per article:
 
@@ -200,6 +204,54 @@ The existing rss.xml.ts is a reader subscription feed, not the publication trans
 ## Secrets and runtime data
 
 Do not commit API keys, session cookies, browser profiles, newsletter credentials, or runtime tokens.
+
+## Adapter contract and current disabled behavior
+
+Adapters expose separate `prepare`, `publish` and `verify` operations. Newsletter intent is independent from create/update intent.
+
+Current adapters are dry-run only:
+
+- `paragraphDryRunAdapter` validates a provider plan, always sets provider newsletter delivery to false and rejects publish/verify calls.
+- `substackDryRunAdapter` keeps the portable publication at its boundary, does not encode reverse-engineered Substack requests and rejects publish/verify calls.
+
+`prepare-paragraph.ts` and the existing manual workflow remain the only Paragraph path. The workflow does not call a remote provider.
+
+## Paragraph interface research（verified 2026-09-27）
+
+Official surfaces exist: REST API, `@paragraph-com/sdk`, `@paragraph-com/cli`, MCP server and agent skills. The developer documentation labels the API alpha and rate-limited. API keys are created in the Paragraph app; REST uses a Bearer token. The CLI can use `PARAGRAPH_API_KEY` or a local `~/.paragraph/config.json` login.
+
+The CLI documents draft create/update, separate publish, publish dry-run, public get/list and draft-only test email. Publishing with `--newsletter` emails subscribers, so ordinary article updates and newsletter delivery must remain separate operations and state transitions.
+
+Remaining production gates:
+
+- Older create documentation says publish-by-default while the current CLI says draft-by-default. Pin and verify one SDK/CLI version against a non-production publication.
+- The editor supports canonical URL, but the reviewed long-form create fields did not expose it. The portable body therefore retains a visible canonical link until the pinned interface is verified.
+- Confirm original publication-date and update-date behavior.
+- No explicit idempotency key was confirmed. Persist remote ID plus source revision and never retry create blindly.
+- Paragraph documents public reads and optional Arweave lookup through GraphQL and the Arweave SDK. Define an exact post-to-transaction confirmation rule before claiming persistence.
+- Newsletter send is irreversible fan-out. Never couple it to ordinary update retries.
+
+## Substack interface research（verified 2026-09-27）
+
+Substack has official Developer API terms and an official MCP server, but the documented API scope is public creator/publication data. The official MCP is read-only for publication analytics and explicitly cannot publish posts, send Notes or modify an account. No stable official article publishing API, SDK or CLI was found.
+
+Native web/mobile publishing can create, update, schedule and optionally notify subscribers, but that UI is not a supported automation contract. RSS import is an ingestion/migration feature, not a reliable per-post publishing API.
+
+Therefore publishing remains unavailable in the production adapter. Any future browser or internal-endpoint implementation must stay behind the replaceable Substack adapter, keep credentials/session state outside the repository, and never become a prerequisite for GitHub Pages or Paragraph.
+
+## Phase 1 implementation status
+
+Completed locally:
+
+- distribution metadata in the post schema, defaulting to `full`
+- provider-neutral portable publication transform
+- explicit source-controlled `interactive-summary` fallback
+- Markdown and MDX fixtures and tests
+- disabled Paragraph and Substack adapter contracts
+- Paragraph prepare workflow routed through the shared transform
+- target-independent publication state
+
+No production credential, remote write, public publish, test email or newsletter send is present.
 
 ## First production cohort
 

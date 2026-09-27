@@ -1,6 +1,5 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
-import { resolveLocalPostFile } from '../../src/lib/content/local-posts';
+import { prepareParagraphDryRun } from './paragraph-prepare';
 
 const slug = process.argv[2];
 
@@ -9,24 +8,13 @@ if (!slug) {
   process.exit(1);
 }
 
-const postsDir = path.resolve('src/content/posts');
-const sourcePath = await resolveLocalPostFile(postsDir, slug);
-
-if (!sourcePath) {
-  throw new Error(`Post not found: ${slug}`);
-}
-
-const source = await fs.readFile(sourcePath, 'utf8');
-const canonicalUrl = `https://gcake119.github.io/gcake-dev/posts/${slug}/`;
+const prepared = await prepareParagraphDryRun(slug, path.resolve('src/content/posts'));
 
 console.log(
   JSON.stringify(
     {
-      slug,
-      sourcePath,
-      canonicalUrl,
-      markdown: source,
-      note: 'Paragraph is a publication target only. Do not write changes back from Paragraph.',
+      ...prepared,
+      note: 'Dry run only. Paragraph writes and newsletter delivery are disabled.',
     },
     null,
     2,

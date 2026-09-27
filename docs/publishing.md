@@ -8,8 +8,9 @@ Markdown / MDX in gcake-dev
 → GitHub Pages
 → canonical = gcake-dev Pages
 → publication transform
-→ Paragraph / Substack
-→ independent verification and publication state
+→ portable publication
+→ Paragraph / Substack adapters
+→ independent publish, verification and publication state
 ~~~
 
 GitHub Pages is the canonical reading surface for new posts.
@@ -34,3 +35,5 @@ Markdown in ithome-2026
 The original 30-day series keeps its existing ownership and canonical history. Multi-platform publishing begins with new gcake-dev content, starting with the iThome 2026 behind-the-scenes extension series.
 
 Changes are always made in the owning Git repository and synchronized outward.
+
+External writes remain disabled until the post-iThome production-enable gate. RSS is a reader feed, not a publication transport.

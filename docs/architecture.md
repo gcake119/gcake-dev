@@ -17,7 +17,7 @@ Local Markdown ───── External immutable sources
                                       ↓
                                 GitHub Pages
                                       ↓
-                              Paragraph / Arweave
+                         Paragraph / Substack adapters
 ```
 
 ### Editorial
@@ -42,4 +42,4 @@ Astro renders static HTML. Vue is reserved for interactive islands.
 
 ### Publication
 
-GitHub Pages is the current canonical reading surface for new posts. Paragraph is a publication/preservation target and must not become a second editing source.
+GitHub Pages is the canonical reading surface for new posts. A shared transform produces a provider-neutral portable publication before Paragraph or Substack sees the content. Both are independent distribution targets and never editing sources.

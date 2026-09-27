@@ -1,0 +1,15 @@
+---
+title: Interactive MDX
+description: An interactive-summary fixture.
+status: ready
+distribution:
+  mode: interactive-summary
+  fallback: |
+    This source-controlled fallback explains the core result.
+
+    ![Static result](https://example.com/static-result.png)
+---
+
+import Demo from '../../../src/components/Demo.vue';
+
+<Demo client:visible />
