@@ -4,8 +4,8 @@ description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動
 status: active
 featured: true
 editorial:
-  currentPost: ithome-2026-publishing-toolchain
-  nextPost: ithome-2026-astro-choice
+  currentPost: ithome-2026-astro-choice
+  nextPost: ithome-2026-publishing-in-production
 source:
   type: local
 canonical:
@@ -23,8 +23,8 @@ sections:
         status: ready
         workingTitle: 原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？
       - slug: ithome-2026-astro-choice
-        status: planned
-        workingTitle: AI 建議 Astro，我怎麼判斷技術選型合不合理
+        status: ready
+        workingTitle: 當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？
       - slug: ithome-2026-publishing-in-production
         status: planned
         workingTitle: 開賽後，自動發文到底有沒有成功
