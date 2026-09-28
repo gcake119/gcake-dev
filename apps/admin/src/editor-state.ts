@@ -84,6 +84,16 @@ function renderInline(value: string): string {
     .replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 
+function extractArticleBody(source: string): string {
+  const normalized = source.replace(/\r\n?/g, '\n');
+  if (!normalized.startsWith('---\n')) return normalized;
+
+  const closingDelimiter = normalized.indexOf('\n---\n', 4);
+  if (closingDelimiter === -1) return normalized;
+
+  return normalized.slice(closingDelimiter + '\n---\n'.length);
+}
+
 function renderPortableMarkdown(source: string): string {
   const lines = source.split('\n');
   const output: string[] = [];
@@ -125,10 +135,11 @@ export function renderImmediatePreview(source: string): {
   readonly html: string;
   readonly limitations: readonly PreviewLimitation[];
 } {
-  const hasMdx = /<[A-Z][A-Za-z0-9]*(?:\s|\/?>)|\{[^}\n]+\}/.test(source);
+  const articleBody = extractArticleBody(source);
+  const hasMdx = /<[A-Z][A-Za-z0-9]*(?:\s|\/?>)|\{[^}\n]+\}/.test(articleBody);
   return {
     source,
-    html: renderPortableMarkdown(source),
+    html: renderPortableMarkdown(articleBody),
     limitations: hasMdx ? [{
       code: 'UNSUPPORTED_MDX',
       message: '即時預覽不支援互動式 MDX，請使用正式 Astro 預覽確認結果。',

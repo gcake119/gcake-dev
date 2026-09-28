@@ -44,3 +44,21 @@ test('immediate preview renders portable Markdown fixtures and reports unsupport
   assert.match(mdx.limitations[0]?.message ?? '', /正式 Astro 預覽/);
   assert.equal(mdx.source, '# Demo\n\n<InteractiveChart client:load />');
 });
+
+test('given a post with frontmatter, when immediate preview renders, then only the article body is visible', () => {
+  const source = `---
+title: 不應顯示的標題欄位
+status: draft
+publishedAt: 2026-09-28T09:00:00+08:00
+---
+# 文章標題
+
+文章內容。`;
+
+  const preview = renderImmediatePreview(source);
+
+  assert.equal(preview.source, source);
+  assert.doesNotMatch(preview.html, /title:|status:|publishedAt:|<p>---<\/p>/);
+  assert.match(preview.html, /<h1>文章標題<\/h1>/);
+  assert.match(preview.html, /<p>文章內容。<\/p>/);
+});
