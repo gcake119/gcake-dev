@@ -5,5 +5,10 @@
     "paths": {
       "@/*": ["src/*"]
     }
-  }
+  },
+  "exclude": [
+    "dist",
+    "apps/*/dist",
+    "packages/*/dist"
+  ]
 }

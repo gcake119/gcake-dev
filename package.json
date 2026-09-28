@@ -7,14 +7,24 @@
   "scripts": {
     "dev": "astro dev",
     "build": "pnpm content:validate && astro build",
+    "build:astro": "pnpm content:validate && astro build",
+    "build:admin": "pnpm --filter @gcake/admin build",
+    "build:worker": "pnpm --filter @gcake/admin-worker build",
+    "build:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" build",
+    "build:all": "pnpm build:astro && pnpm build:workspaces",
     "preview": "astro preview",
     "check": "astro check",
     "content:validate": "node --import tsx scripts/content/validate-series.ts",
     "content:sync:ithome": "node --import tsx scripts/external/sync-ithome-2026.ts",
     "paragraph:prepare": "node --import tsx scripts/publishing/prepare-paragraph.ts",
-    "test": "node --import tsx --test src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/paragraph-prepare.test.ts scripts/external/ithome-sync.test.ts"
+    "paragraph:production-gate": "node --import tsx scripts/publishing/paragraph-production-gate.ts",
+    "preview:spike": "node --import tsx scripts/preview/feasibility-spike.ts",
+    "test:public": "node --import tsx --test src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/paragraph-prepare.test.ts scripts/external/ithome-sync.test.ts",
+    "test:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
+    "test": "pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces"
   },
   "dependencies": {
+    "@astrojs/mdx": "^8.0.2",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/vue": "^7.0.3",
     "astro": "^7.2.9",
