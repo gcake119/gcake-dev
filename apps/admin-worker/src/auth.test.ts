@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  D1SessionStore,
   InMemorySessionStore,
   authorizeOwner,
   consumeOAuthState,
@@ -66,6 +67,42 @@ test('authorized login stores only a session-token hash and returns a secure coo
   const stored = await store.findByRawToken('raw-session-token');
   assert.equal(stored?.user.githubUserId, '119');
   assert.equal(stored?.csrfToken, 'csrf-token');
+});
+
+test('D1 sessions persist only a hash and resolve the owner from the raw cookie', async () => {
+  const calls: { sql: string; values: unknown[] }[] = [];
+  let current: { sql: string; values: unknown[] };
+  const database = {
+    prepare(sql: string) {
+      current = { sql, values: [] };
+      return {
+        bind(...values: unknown[]) { current.values = values; return this; },
+        async run() { calls.push({ ...current, values: [...current.values] }); return {}; },
+        async first<T>() {
+          calls.push({ ...current, values: [...current.values] });
+          return {
+            id: 'session-1', github_user_id: '119', github_login: 'gcake119',
+            github_avatar_url: null, token_hash: current.values[0], csrf_token: 'csrf-token',
+            expires_at: 20_000,
+          } as T;
+        },
+      };
+    },
+  };
+  const store = new D1SessionStore(database);
+
+  const created = await createCmsSession(owner, store, {
+    now: () => 10_000,
+    randomToken: () => 'raw-session-token',
+    randomCsrfToken: () => 'csrf-token',
+  });
+  const found = await store.findByRawToken('raw-session-token');
+
+  assert.match(calls[0]!.sql, /INSERT INTO cms_sessions/);
+  assert.equal(JSON.stringify(calls).includes('raw-session-token'), false);
+  assert.equal(found?.user.githubUserId, '119');
+  assert.equal(found?.csrfToken, 'csrf-token');
+  assert.match(created.cookie, /gcake_session=raw-session-token/);
 });
 
 test('state-changing requests require the session CSRF token', () => {

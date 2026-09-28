@@ -18,6 +18,16 @@ export interface SessionStore {
   deleteByRawToken(rawToken: string): Promise<void>;
 }
 
+interface D1StatementLike {
+  bind(...values: unknown[]): D1StatementLike;
+  run(): Promise<unknown>;
+  first<T>(): Promise<T | null>;
+}
+
+export interface SessionDatabase {
+  prepare(sql: string): D1StatementLike;
+}
+
 export interface TokenOptions {
   readonly now?: () => number;
   readonly randomToken?: () => string;
@@ -146,5 +156,56 @@ export class InMemorySessionStore implements SessionStore {
 
   containsRawToken(rawToken: string): boolean {
     return this.#sessions.has(rawToken);
+  }
+}
+
+type SessionRow = {
+  id: string;
+  github_user_id: string;
+  github_login: string;
+  github_avatar_url: string | null;
+  token_hash: string;
+  csrf_token: string;
+  expires_at: number;
+};
+
+export class D1SessionStore implements SessionStore {
+  constructor(private readonly database: SessionDatabase) {}
+
+  async save(session: CmsSession): Promise<void> {
+    await this.database.prepare(`INSERT INTO cms_sessions (
+      id, github_user_id, github_login, github_avatar_url, token_hash, csrf_token, expires_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(
+      session.id,
+      session.user.githubUserId,
+      session.user.login,
+      session.user.avatarUrl ?? null,
+      session.tokenHash,
+      session.csrfToken,
+      session.expiresAt,
+    ).run();
+  }
+
+  async findByRawToken(rawToken: string): Promise<CmsSession | undefined> {
+    const row = await this.database.prepare(`SELECT
+      id, github_user_id, github_login, github_avatar_url, token_hash, csrf_token, expires_at
+      FROM cms_sessions WHERE token_hash = ?`).bind(await sha256(rawToken)).first<SessionRow>();
+    if (!row) return undefined;
+    return {
+      id: row.id,
+      user: {
+        githubUserId: row.github_user_id,
+        login: row.github_login,
+        avatarUrl: row.github_avatar_url ?? undefined,
+      },
+      tokenHash: row.token_hash,
+      csrfToken: row.csrf_token,
+      expiresAt: row.expires_at,
+    };
+  }
+
+  async deleteByRawToken(rawToken: string): Promise<void> {
+    await this.database.prepare('DELETE FROM cms_sessions WHERE token_hash = ?')
+      .bind(await sha256(rawToken)).run();
   }
 }

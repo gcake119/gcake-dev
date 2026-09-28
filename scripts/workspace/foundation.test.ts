@@ -6,6 +6,10 @@ const rootPackage = JSON.parse(await readFile(new URL('../../package.json', impo
 const rootTypeScriptConfig = JSON.parse(
   await readFile(new URL('../../tsconfig.json', import.meta.url), 'utf8'),
 );
+const workerConfig = await readFile(
+  new URL('../../apps/admin-worker/wrangler.toml', import.meta.url),
+  'utf8',
+);
 
 test('Phase 0 exposes independent workspace build and test entry points', async () => {
   assert.equal(rootPackage.scripts['build:astro'], 'pnpm content:validate && astro build');
@@ -31,4 +35,11 @@ test('Astro checks exclude generated workspace build output', () => {
     'apps/*/dist',
     'packages/*/dist',
   ]);
+});
+
+test('preview Worker serves the built Admin as a same-origin SPA while runtime routes reach the Worker', () => {
+  assert.match(workerConfig, /\[assets\]/);
+  assert.match(workerConfig, /directory\s*=\s*"\.\.\/admin\/dist"/);
+  assert.match(workerConfig, /not_found_handling\s*=\s*"single-page-application"/);
+  assert.match(workerConfig, /run_worker_first\s*=\s*\[\s*"\/api\/\*"\s*,\s*"\/health"\s*\]/);
 });
