@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
 import { getCollection } from 'astro:content';
-import { isPublishedDate } from './publication';
+import { isPublicPost } from './publication';
 import { loadIthomeArticles, ithomePublicationState } from './external';
 import type { SeriesManifest } from './types';
 
@@ -12,7 +12,7 @@ export async function loadSeriesManifests(): Promise<SeriesManifest[]> {
   const names = await fs.readdir(SERIES_DIR).catch(() => []);
   const files = names.filter((name) => name.endsWith('.yaml') || name.endsWith('.yml'));
 
-  const publicLocal = new Set((await getCollection('posts')).filter(p => p.data.status === 'published' && isPublishedDate(p.data.publishedAt)).map(p => p.id));
+  const publicLocal = new Set((await getCollection('posts')).filter(p => isPublicPost(p.data)).map(p => p.id));
   const publicExternal = new Set(loadIthomeArticles().map(p => p.slug));
   return Promise.all(
     files.map(async (name) => {

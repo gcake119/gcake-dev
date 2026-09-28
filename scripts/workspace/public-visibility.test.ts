@@ -1,0 +1,39 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
+
+const root = new URL('../../', import.meta.url);
+
+async function source(path: string): Promise<string> {
+  return readFile(new URL(path, root), 'utf8');
+}
+
+test('every direct local-post surface uses the shared publication-time predicate', async () => {
+  const directConsumers = [
+    'src/lib/content/catalog.ts',
+    'src/lib/content/series.ts',
+    'src/pages/posts/index.astro',
+    'src/pages/posts/[...slug].astro',
+    'src/pages/topics/index.astro',
+    'src/pages/topics/[topic].astro',
+  ];
+  for (const path of directConsumers) {
+    const value = await source(path);
+    assert.match(value, /isPublicPost\(/, `${path} must use isPublicPost`);
+    assert.doesNotMatch(value, /status\s*===\s*['"]published['"].*isPublishedDate/s, `${path} must not rebuild the rule`);
+  }
+});
+
+test('catalog-derived RSS, search, navigation, and series outputs cannot bypass visibility filtering', async () => {
+  const catalogConsumers = [
+    'src/pages/index.astro',
+    'src/pages/rss.xml.ts',
+    'src/pages/search-index.json.ts',
+    'src/pages/series/index.astro',
+    'src/pages/series/[slug].astro',
+    'src/pages/posts/[...slug].astro',
+  ];
+  for (const path of catalogConsumers) {
+    assert.match(await source(path), /loadReadingCatalog\(/, `${path} must derive output from the filtered catalog`);
+  }
+});

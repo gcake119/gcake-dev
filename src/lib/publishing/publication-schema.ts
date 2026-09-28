@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { parsePublicationTime } from '../content/publication';
 
 export const distributionSchema = z.object({
   mode: z.enum(['full', 'interactive-summary']).default('full'),
@@ -16,7 +17,10 @@ export const distributionSchema = z.object({
 export const postFrontmatterSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  publishedAt: z.coerce.date().optional(),
+  publishedAt: z.preprocess(
+    (value) => typeof value === 'string' ? parsePublicationTime(value).instant : value,
+    z.date(),
+  ).optional(),
   updatedAt: z.coerce.date().optional(),
   status: z.enum(['draft', 'ready', 'published']).default('draft'),
   series: z.string().optional(),

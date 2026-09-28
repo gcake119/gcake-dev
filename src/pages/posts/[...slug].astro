@@ -3,12 +3,12 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SeriesNavigation from '@/components/SeriesNavigation.astro';
 import { getCollection, render } from 'astro:content';
 import { loadReadingCatalog } from '@/lib/content/catalog';
-import { isPublishedDate } from '@/lib/content/publication';
+import { isPublicPost } from '@/lib/content/publication';
 import { localCanonical } from '@/lib/seo/canonical';
 import { formatDate } from '@/lib/content/format';
 import { site } from '@/data/site';
 export async function getStaticPaths() {
-  return (await getCollection('posts')).filter(p => p.data.status === 'published' && isPublishedDate(p.data.publishedAt)).map(post => ({ params: { slug: post.id }, props: { post } }));
+  return (await getCollection('posts')).filter(p => isPublicPost(p.data)).map(post => ({ params: { slug: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
 const { Content, headings } = await render(post);

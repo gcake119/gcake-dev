@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content';
 import { loadSeriesManifests } from './series';
 import { loadIthomeArticles, ithomePublicationState } from './external';
-import { isPublishedDate, publicationStatus } from './publication';
+import { isPublicPost, publicationStatus } from './publication';
 import { site } from '../../data/site';
 
 export interface ReadingPost {
@@ -15,7 +15,7 @@ export interface ReadingPost {
 
 export async function loadReadingCatalog() {
   const manifests = await loadSeriesManifests();
-  const local = (await getCollection('posts')).filter(p => p.data.status === 'published' && isPublishedDate(p.data.publishedAt));
+  const local = (await getCollection('posts')).filter(p => isPublicPost(p.data));
   const posts: ReadingPost[] = local.map(p => ({ slug: p.id, title: p.data.title, description: p.data.description, date: p.data.publishedAt, href: `${site.basePath}/posts/${p.id}/`, series: p.data.series }));
   const external = loadIthomeArticles();
   for (const manifest of manifests.filter(s => s.source?.type === 'external' && s.slug === 'ithome-2026')) {
