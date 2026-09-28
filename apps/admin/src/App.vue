@@ -15,6 +15,7 @@ import type {
 } from '@gcake/admin-contract';
 import { deploymentPresentation } from './deployment';
 import { renderImmediatePreview, type EditorView } from './editor-state';
+import { removedImageUrls, removedMediaRecords } from './media-cleanup';
 import { applyTaipeiSchedule, readScheduleFields, schedulePresentation } from './scheduling';
 import {
   addSeriesSection,
@@ -228,17 +229,31 @@ async function inspectUsage(record: MediaRecord): Promise<void> {
   mediaMessage.value = result.usages.length ? `使用位置：${result.usages.join('、')}` : '目前未在文章中找到使用位置。';
 }
 
+async function requestMediaDeletion(record: MediaRecord): Promise<{ deleted: boolean; usages: readonly string[]; message?: string }> {
+  if (!session.value.authenticated) return { deleted: false, usages: [], message: '請先登入。' };
+  try {
+    const response = await fetch(`/api/v1/media/${record.id}`, {
+      method: 'DELETE', credentials: 'same-origin',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
+      body: JSON.stringify({ confirmed: true }),
+    });
+    const result = await response.json() as { error?: { message?: string; details?: { usages?: string[] } } };
+    return {
+      deleted: response.ok,
+      usages: result.error?.details?.usages ?? [],
+      message: result.error?.message,
+    };
+  } catch (error) {
+    return { deleted: false, usages: [], message: error instanceof Error ? error.message : '媒體清理失敗。' };
+  }
+}
+
 async function deleteSelectedMedia(record: MediaRecord): Promise<void> {
   if (!session.value.authenticated || !window.confirm(`確定刪除 ${record.key}？`)) return;
-  const response = await fetch(`/api/v1/media/${record.id}`, {
-    method: 'DELETE', credentials: 'same-origin',
-    headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
-    body: JSON.stringify({ confirmed: true }),
-  });
-  const result = await response.json() as { error?: { message?: string; details?: { usages?: string[] } } };
-  mediaMessage.value = response.ok
+  const result = await requestMediaDeletion(record);
+  mediaMessage.value = result.deleted
     ? '未使用媒體已刪除。'
-    : `${result.error?.message ?? '無法刪除媒體。'}${result.error?.details?.usages?.length ? ` 使用位置：${result.error.details.usages.join('、')}` : ''}`;
+    : `${result.message ?? '無法刪除媒體。'}${result.usages.length ? ` 使用位置：${result.usages.join('、')}` : ''}`;
   await loadMedia();
 }
 
@@ -476,6 +491,19 @@ async function copyOldDraft(): Promise<void> {
 async function saveToGit(): Promise<void> {
   if (!selectedPost.value || !session.value.authenticated) return;
   try {
+    const removedUrls = removedImageUrls(selectedPost.value.source, editorSource.value);
+    let cleanupCandidates: readonly MediaRecord[] = [];
+    if (removedUrls.length) {
+      const mediaResult = await readJson<{ media: readonly MediaRecord[] }>('/api/v1/media');
+      cleanupCandidates = removedMediaRecords(selectedPost.value.source, editorSource.value, mediaResult.media);
+      if (cleanupCandidates.length) {
+        const names = cleanupCandidates.map((record) => record.key.split('/').pop() ?? record.key).join('、');
+        if (!window.confirm(`這次移除了 ${cleanupCandidates.length} 張圖片：${names}。儲存文章後，系統會刪除未被其他內容引用的媒體檔案；仍有引用的檔案會保留。是否繼續？`)) {
+          editorMessage.value = '已取消儲存，文章與媒體庫都沒有變更。';
+          return;
+        }
+      }
+    }
     const response = await fetch(`/api/v1/posts/${selectedPost.value.slug}`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -507,7 +535,18 @@ async function saveToGit(): Promise<void> {
     }
     if (!response.ok) throw new Error(result.error?.message ?? '無法儲存至 Git。');
     seriesDirty.value = false;
-    editorMessage.value = `已儲存至 Git（${result.commitSha ?? '新修訂版'}）；公開部署仍需另外確認。`;
+    const cleanupResults = await Promise.all(cleanupCandidates.map(async (record) => ({
+      record,
+      result: await requestMediaDeletion(record),
+    })));
+    const deleted = cleanupResults.filter((item) => item.result.deleted);
+    const retained = cleanupResults.filter((item) => !item.result.deleted && item.result.usages.length);
+    const failed = cleanupResults.filter((item) => !item.result.deleted && !item.result.usages.length);
+    const cleanupMessage = cleanupCandidates.length
+      ? ` 已刪除 ${deleted.length} 個未使用媒體；${retained.length ? `${retained.length} 個仍被其他內容引用而保留；` : ''}${failed.length ? `${failed.length} 個清理失敗，請到媒體庫重試；` : ''}`
+      : '';
+    editorMessage.value = `已儲存至 Git（${result.commitSha ?? '新修訂版'}）；${cleanupMessage}公開部署仍需另外確認。`;
+    if (mediaOpen.value) await loadMedia();
   } catch (error) {
     editorMessage.value = error instanceof Error ? error.message : '無法儲存至 Git。';
   }
