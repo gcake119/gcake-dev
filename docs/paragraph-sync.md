@@ -8,7 +8,7 @@ Current skeleton behavior:
 - GitHub Actions exposes a manual Prepare Paragraph sync workflow.
 - The plan always has `externalWriteEnabled: false` and `sendNewsletter: false`.
 - The workflow intentionally does not publish, verify remotely, persist credentials, or send email.
-- Target-independent state lives in `src/data/publishing/publication-state.json`.
+- Target-independent runtime state lives in D1; Git frontmatter remains the editorial source of truth.
 
 Phase 1 evolves this skeleton through the shared transform and disabled adapter defined in docs/multi-platform-publishing.md. The former Paragraph-only empty state file was removed so publication state has one owner.
 

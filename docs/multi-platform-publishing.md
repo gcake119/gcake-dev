@@ -105,7 +105,7 @@ Existing implementation starting points:
 
 - scripts/publishing/prepare-paragraph.ts
 - .github/workflows/sync-paragraph.yml
-- src/data/publishing/publication-state.json
+- D1 `publication_target_states`、`publication_runs` 與 `publication_attempts`
 
 Evolve the current prepare-only workflow instead of creating an unrelated path.
 
@@ -127,7 +127,7 @@ Requirements:
 
 ## Publication state
 
-Publication state belongs outside article bodies and has one target-independent owner in `src/data/publishing/publication-state.json`.
+Publication runtime state belongs outside article bodies and has one operational owner in D1. Git frontmatter remains authoritative for editorial status and `publishedAt`.
 
 Move toward target-independent state that can record, per article:
 
