@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>gcake Publishing Admin</title>
+    <script>
+      try {
+        const stored = localStorage.getItem('gcake-theme');
+        document.documentElement.dataset.theme = stored === 'dark'
+          || (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+          ? 'dark' : 'light';
+      } catch { /* Theme falls back to light. */ }
+    </script>
   </head>
   <body>
     <div id="app"></div>

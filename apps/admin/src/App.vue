@@ -238,6 +238,14 @@ async function deleteSelectedMedia(record: MediaRecord): Promise<void> {
 function toggleTheme(): void {
   dark.value = !dark.value;
   document.documentElement.dataset.theme = dark.value ? 'dark' : 'light';
+  localStorage.setItem('gcake-theme', dark.value ? 'dark' : 'light');
+}
+
+function initializeTheme(): void {
+  const stored = localStorage.getItem('gcake-theme');
+  dark.value = stored === 'dark'
+    || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark.value ? 'dark' : 'light';
 }
 
 function cycleEditorView(): void {
@@ -526,18 +534,30 @@ function startDividerDrag(event: PointerEvent): void {
   window.addEventListener('pointerup', up, { once: true });
 }
 
-onMounted(loadAdmin);
+onMounted(() => {
+  initializeTheme();
+  void loadAdmin();
+});
 </script>
 
 <template>
   <div class="app-shell">
     <header class="topbar">
       <a class="brand" href="/" aria-label="Publishing Admin 首頁">
-        <span class="brand-mark">G</span>
-        <span>Publishing Admin</span>
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect class="brand-mark__tile" x="2" y="2" width="28" height="28" rx="7" />
+          <g class="brand-mark__glyph">
+            <path fill-rule="evenodd" d="M14 6.4a6.7 6.7 0 1 0 0 13.4 6.7 6.7 0 0 0 0-13.4Zm0 3.65a3.05 3.05 0 1 0 0 6.1 3.05 3.05 0 0 0 0-6.1Z" />
+            <rect x="18.2" y="7.45" width="4.7" height="3.35" rx="1.675" />
+          </g>
+          <path class="brand-mark__tail" d="M8.5 20.7c1.45 2.55 3.75 3.9 6.65 3.9 3.05 0 5.35-1.45 6.35-4.1" />
+          <circle class="brand-mark__dot" cx="23.4" cy="7.05" r="2.35" />
+        </svg>
+        <span><strong>雞蛋糕的開發筆記</strong><small>Publishing Admin</small></span>
       </a>
-      <button class="theme-button" type="button" @click="toggleTheme">
-        {{ dark ? '切換淺色' : '切換深色' }}
+      <button class="theme-button" type="button" :aria-label="dark ? '切換至明亮主題' : '切換至暗色主題'" @click="toggleTheme">
+        <svg v-if="dark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" /></svg>
+        <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z" /></svg>
       </button>
     </header>
 
