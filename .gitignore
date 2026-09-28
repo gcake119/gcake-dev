@@ -5,3 +5,9 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Spectra app data
+.spectra/
+
+# Local browser QA artifacts
+.playwright-cli/
