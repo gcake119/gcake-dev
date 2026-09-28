@@ -11,8 +11,8 @@ import Icon from './Icon.astro';
     </div>
     <nav aria-label="頁尾導覽">
       {socialLinks.map(link => <a class="social-link" href={link.href} aria-label={link.name} title={link.name}><Icon name={link.icon} /></a>)}
-      <a href={`${site.basePath}/rss.xml`}>RSS</a>
-      <a href={`https://github.com/${site.repository}`}>GitHub</a>
+      <a class="social-link" href={`${site.basePath}/rss.xml`} aria-label="RSS" title="RSS"><Icon name="rss" /></a>
+      <a class="social-link" href={`https://github.com/${site.repository}`} aria-label="GitHub" title="GitHub"><Icon name="github" /></a>
     </nav>
     <p>一個持續學習的開發者，在實作中理解世界。</p>
   </div>
