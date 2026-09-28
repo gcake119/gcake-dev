@@ -113,7 +113,13 @@ h2 { font-size: 1.35rem; }
 }
 .primary-action { border: 1px solid var(--accent); color: var(--button-ink); background: var(--accent); }
 .secondary-action { border: 1px solid var(--rule); color: var(--ink); background: var(--paper); }
+.primary-action:hover { filter: brightness(.94); }
 .secondary-action:hover { border-color: var(--accent); }
+.primary-action:disabled, .secondary-action:disabled {
+  cursor: not-allowed;
+  filter: none;
+  opacity: .48;
+}
 .primary-action.compact { margin-top: 0; }
 
 .hero { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 34px; }
@@ -135,6 +141,37 @@ h2 { font-size: 1.35rem; }
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(260px, .8fr); gap: 32px; }
 .panel, .editor-panel { min-width: 0; border-top: 1px solid var(--rule); padding: 24px 0; }
 .editor-panel { margin-top: 28px; }
+.workspace-panel { margin-top: 0; padding-top: 0; border-top: 0; }
+.workspace-navigation {
+  min-height: 44px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .82rem;
+}
+.back-action {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  color: var(--accent);
+  background: transparent;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: .25em;
+}
+.back-action::before { content: '←'; margin-right: 8px; text-decoration: none; }
+.workspace-path {
+  margin: -10px 0 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .75rem;
+  overflow-wrap: anywhere;
+}
 .panel-heading, .editor-toolbar, .publishing-heading, .media-header, .media-tools {
   display: flex;
   align-items: end;
@@ -187,11 +224,13 @@ h2 { font-size: 1.35rem; }
 .editor-message, .formal-preview-panel, .limitation, .conflict-panel {
   margin: 16px 0;
   padding: 12px 14px;
-  border-left: 3px solid var(--accent);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
   background: var(--accent-soft);
 }
 .series-section { margin-top: 16px; border-top: 1px solid var(--rule); }
 .series-section-heading { padding: 12px 0; display: flex; justify-content: space-between; gap: 12px; }
+.series-order-hint { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
 .series-order li {
   min-height: 58px;
   padding: 10px 0;
@@ -200,7 +239,20 @@ h2 { font-size: 1.35rem; }
   justify-content: space-between;
   gap: 16px;
   border-top: 1px solid var(--rule-soft);
+  cursor: grab;
 }
+.series-order li:active { cursor: grabbing; }
+.series-order li.is-dragging { opacity: .55; background: var(--paper-deep); }
+.drag-handle {
+  width: 24px;
+  flex: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+.series-post-copy { min-width: 0; flex: 1; }
 .series-order small { display: block; color: var(--muted); }
 .order-actions { display: flex; gap: 6px; }
 .order-actions button {
@@ -242,8 +294,8 @@ h2 { font-size: 1.35rem; }
 .target-grid article { min-width: 0; padding: 16px; display: grid; align-content: start; gap: 9px; }
 .target-grid article + article { border-left: 1px solid var(--rule); }
 .target-grid small { min-height: 3.2em; line-height: 1.55; }
-.limitation { border-left-color: var(--warning); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.conflict-panel { border-left-color: var(--danger); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.limitation { border-color: var(--warning); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.conflict-panel { border-color: var(--danger); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .conflict-panel p { margin: 5px 0 0; color: var(--muted); }
 .conflict-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 8px; }
 .formal-preview-panel { display: flex; align-items: center; justify-content: space-between; gap: 16px; }

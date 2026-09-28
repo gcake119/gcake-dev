@@ -24,6 +24,7 @@ import {
 } from './series-editor';
 
 type ViewState = 'loading' | 'signed-out' | 'ready' | 'error';
+type WorkspaceMode = 'overview' | 'post' | 'series';
 
 const state = ref<ViewState>('loading');
 const session = ref<SessionResponse>({ authenticated: false });
@@ -32,6 +33,7 @@ const series = ref<readonly SeriesSource[]>([]);
 const deployment = ref<DeploymentObservation>();
 const message = ref('');
 const dark = ref(false);
+const workspaceMode = ref<WorkspaceMode>('overview');
 const selectedPost = ref<PostSource>();
 const selectedSeries = ref<SeriesSource>();
 const seriesManifest = ref<AdminSeriesManifest>();
@@ -276,6 +278,7 @@ async function openPost(slug: string): Promise<void> {
       ? 'GitHub 內容已有更新；未自動套用舊草稿。請選擇復原方式。'
       : draft ? '已復原這個修訂版的瀏覽器草稿；尚未儲存至 Git。' : '';
     await loadPublicationStates(post);
+    workspaceMode.value = 'post';
   } catch (error) {
     editorMessage.value = error instanceof Error ? error.message : '無法開啟文章。';
   }
@@ -321,9 +324,14 @@ async function openSeries(slug: string): Promise<void> {
     seriesManifest.value = parseSeriesManifest(source.source);
     seriesDirty.value = false;
     seriesMessage.value = '排序只存在目前畫面；按下儲存後才會寫入 Git 的系列 YAML。';
+    workspaceMode.value = 'series';
   } catch (error) {
     seriesMessage.value = error instanceof Error ? error.message : '無法開啟系列。';
   }
+}
+
+function closeWorkspace(): void {
+  workspaceMode.value = 'overview';
 }
 
 function movePost(sectionId: string, index: number, delta: -1 | 1): void {
@@ -583,23 +591,24 @@ onMounted(() => {
       </section>
 
       <template v-else>
-        <section class="hero">
-          <div>
-            <p class="eyebrow">內容工作台</p>
-            <h1>嗨，{{ session.authenticated ? session.user.login : '' }}</h1>
-            <p class="lead">這裡直接顯示 GitHub 儲存庫的內容，不在資料庫複製文章。</p>
-          </div>
-          <div v-if="deploymentStatus" class="status-card" :data-state="deployment?.state">
-            <span class="status-dot" aria-hidden="true"></span>
+        <section v-if="workspaceMode === 'overview'" class="content-overview">
+          <div class="hero">
             <div>
-              <strong>{{ deploymentStatus.git }}</strong>
-              <span>{{ deploymentStatus.deployment }}</span>
+              <p class="eyebrow">內容工作台</p>
+              <h1>嗨，{{ session.authenticated ? session.user.login : '' }}</h1>
+              <p class="lead">選擇一篇文章或一個系列開始工作。</p>
+            </div>
+            <div v-if="deploymentStatus" class="status-card" :data-state="deployment?.state">
+              <span class="status-dot" aria-hidden="true"></span>
+              <div>
+                <strong>{{ deploymentStatus.git }}</strong>
+                <span>{{ deploymentStatus.deployment }}</span>
+              </div>
             </div>
           </div>
-        </section>
 
-        <section class="content-grid">
-          <article class="panel posts-panel">
+          <div class="content-grid">
+            <article class="panel posts-panel">
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">文章</p>
@@ -619,9 +628,9 @@ onMounted(() => {
               </li>
             </ul>
             <p v-else class="empty">目前沒有文章。</p>
-          </article>
+            </article>
 
-          <aside class="panel">
+            <aside class="panel">
             <div class="panel-heading">
               <div>
                 <p class="eyebrow">系列</p>
@@ -638,10 +647,15 @@ onMounted(() => {
               </li>
             </ul>
             <p v-else class="empty">目前沒有系列。</p>
-          </aside>
+            </aside>
+          </div>
         </section>
 
-        <section v-if="selectedSeries && seriesManifest" class="editor-panel series-editor" aria-labelledby="series-editor-title">
+        <section v-if="workspaceMode === 'series' && selectedSeries && seriesManifest" class="editor-panel workspace-panel series-editor" aria-labelledby="series-editor-title">
+          <div class="workspace-navigation">
+            <button type="button" class="back-action" @click="closeWorkspace">返回內容清單</button>
+            <span>系列編輯</span>
+          </div>
           <div class="editor-toolbar">
             <div>
               <p class="eyebrow">系列編輯器</p>
@@ -652,6 +666,7 @@ onMounted(() => {
             </button>
           </div>
           <p class="editor-message" aria-live="polite">{{ seriesMessage }}</p>
+          <p class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
           <section v-for="section in seriesManifest.sections" :key="section.id" class="series-section">
             <div class="series-section-heading">
               <strong>{{ section.title }}</strong><span class="badge">{{ section.status }}</span>
@@ -660,12 +675,16 @@ onMounted(() => {
               <li
                 v-for="(post, index) in section.posts"
                 :key="post.slug"
+                :class="{ 'is-dragging': draggedSeriesPost?.sectionId === section.id && draggedSeriesPost?.index === index }"
                 draggable="true"
+                title="拖曳調整順序"
                 @dragstart="draggedSeriesPost = { sectionId: section.id, index }"
+                @dragend="draggedSeriesPost = undefined"
                 @dragover.prevent
                 @drop.prevent="dropPost(section.id, index)"
               >
-                <span><strong>{{ post.workingTitle || post.slug }}</strong><small>{{ post.slug }} · {{ post.status }}</small></span>
+                <span class="drag-handle" aria-hidden="true">⠿</span>
+                <span class="series-post-copy"><strong>{{ post.workingTitle || post.slug }}</strong><small>{{ post.slug }} · {{ post.status }}</small></span>
                 <span class="order-actions">
                   <button type="button" :aria-label="`將 ${post.slug} 往上移`" :disabled="index === 0" @click="movePost(section.id, index, -1)">↑</button>
                   <button type="button" :aria-label="`將 ${post.slug} 往下移`" :disabled="index === section.posts.length - 1" @click="movePost(section.id, index, 1)">↓</button>
@@ -675,11 +694,16 @@ onMounted(() => {
           </section>
         </section>
 
-        <section v-if="selectedPost" class="editor-panel" aria-labelledby="editor-title">
+        <section v-if="workspaceMode === 'post' && selectedPost" class="editor-panel workspace-panel" aria-labelledby="editor-title">
+          <div class="workspace-navigation">
+            <button type="button" class="back-action" @click="closeWorkspace">返回內容清單</button>
+            <span>{{ selectedPost.status }}</span>
+          </div>
           <div class="editor-toolbar">
             <div>
               <p class="eyebrow">文章編輯器</p>
-              <h2 id="editor-title">{{ selectedPost.slug }}</h2>
+              <h1 id="editor-title">{{ selectedPost.title }}</h1>
+              <p class="workspace-path">{{ selectedPost.path }}</p>
             </div>
             <div class="editor-actions">
               <label class="sync-control">
@@ -706,30 +730,6 @@ onMounted(() => {
               <strong>{{ activeSchedule.label }}</strong><span>{{ activeSchedule.detail }}</span>
             </div>
             <p v-else class="muted">公開文章需先到達排程時間，且之後有一次成功的靜態部署；Git 儲存本身不等於公開。</p>
-          </section>
-          <section class="publishing-center" aria-labelledby="publishing-title">
-            <div class="publishing-heading">
-              <div><p class="eyebrow">獨立操作</p><h3 id="publishing-title">發佈中心</h3></div>
-              <p>儲存 Git 不會自動觸發外部平台。</p>
-            </div>
-            <div class="target-grid">
-              <article>
-                <strong>GitHub Pages</strong><span class="badge">{{ targetState('github_pages')?.status || 'not_configured' }}</span>
-                <small>僅觀察部署與公開驗證。</small>
-              </article>
-              <article>
-                <strong>Paragraph</strong><span class="badge">{{ targetState('paragraph')?.status || 'not_configured' }}</span>
-                <small>Phase 7 受控 cohort 已完成建立、更新、公開與 canonical 驗證；其他文章仍預設只允許準備。電子報未獲核准。</small>
-                <button type="button" class="secondary-action" @click="publicationOperation('paragraph', 'prepare')">準備 Paragraph 資料</button>
-                <a class="secondary-action" href="https://paragraph.com/@gcake/gcake-cms-production-gate-20260928" target="_blank" rel="noreferrer">查看受控驗證文章</a>
-              </article>
-              <article>
-                <strong>Substack</strong><span class="badge">{{ targetState('substack')?.status || 'manual_required' }}</span>
-                <small>未設定穩定寫入介面，維持人工處理。</small>
-                <button type="button" class="secondary-action" @click="publicationOperation('substack', 'publish')">查看人工處理狀態</button>
-              </article>
-            </div>
-            <p v-if="publicationMessage" class="editor-message" aria-live="polite">{{ publicationMessage }}</p>
           </section>
           <div v-if="recoveryConflict" class="conflict-panel" role="alert">
             <div>
@@ -789,6 +789,30 @@ onMounted(() => {
               @scroll="onPreviewScroll"
             ></article>
           </div>
+          <section class="publishing-center" aria-labelledby="publishing-title">
+            <div class="publishing-heading">
+              <div><p class="eyebrow">完稿後設定</p><h3 id="publishing-title">發佈中心</h3></div>
+              <p>儲存 Git 不會自動觸發外部平台。</p>
+            </div>
+            <div class="target-grid">
+              <article>
+                <strong>GitHub Pages</strong><span class="badge">{{ targetState('github_pages')?.status || 'not_configured' }}</span>
+                <small>僅觀察部署與公開驗證。</small>
+              </article>
+              <article>
+                <strong>Paragraph</strong><span class="badge">{{ targetState('paragraph')?.status || 'not_configured' }}</span>
+                <small>Phase 7 受控 cohort 已完成建立、更新、公開與 canonical 驗證；其他文章仍預設只允許準備。電子報未獲核准。</small>
+                <button type="button" class="secondary-action" @click="publicationOperation('paragraph', 'prepare')">準備 Paragraph 資料</button>
+                <a class="secondary-action" href="https://paragraph.com/@gcake/gcake-cms-production-gate-20260928" target="_blank" rel="noreferrer">查看受控驗證文章</a>
+              </article>
+              <article>
+                <strong>Substack</strong><span class="badge">{{ targetState('substack')?.status || 'manual_required' }}</span>
+                <small>未設定穩定寫入介面，維持人工處理。</small>
+                <button type="button" class="secondary-action" @click="publicationOperation('substack', 'publish')">查看人工處理狀態</button>
+              </article>
+            </div>
+            <p v-if="publicationMessage" class="editor-message" aria-live="polite">{{ publicationMessage }}</p>
+          </section>
         </section>
 
         <div v-if="mediaOpen" class="dialog-backdrop" @click.self="mediaOpen = false">

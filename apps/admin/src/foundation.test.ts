@@ -20,3 +20,31 @@ test('Admin headings and article preview inherit the project system sans typogra
   assert.doesNotMatch(css, /Georgia|Noto Serif TC/);
   assert.match(css, /\.public-content\s*\{[^}]*font:\s*1rem\/1\.8\s*inherit/);
 });
+
+test('opening an article or series replaces the content overview with a focused workspace', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, /<section v-if="workspaceMode === 'overview'" class="content-overview"/);
+  assert.match(source, /workspaceMode\.value = 'post'/);
+  assert.match(source, /workspaceMode\.value = 'series'/);
+  assert.match(source, /@click="closeWorkspace">返回內容清單<\/button>/);
+  assert.match(source, /<section v-if="workspaceMode === 'post' && selectedPost" class="editor-panel workspace-panel"/);
+  assert.match(source, /<section v-if="workspaceMode === 'series' && selectedSeries && seriesManifest" class="editor-panel workspace-panel series-editor"/);
+});
+
+test('the publication center follows content editing and preview', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.ok(source.indexOf('class="editor-workspace"') < source.indexOf('class="publishing-center"'));
+});
+
+test('series ordering exposes a visible drag affordance and dragging state', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+  const css = await readFile(new URL('./admin.css', import.meta.url), 'utf8');
+
+  assert.match(source, /class="drag-handle"/);
+  assert.match(source, /@dragend="draggedSeriesPost = undefined"/);
+  assert.match(source, /'is-dragging': draggedSeriesPost\?\.sectionId === section\.id && draggedSeriesPost\?\.index === index/);
+  assert.match(css, /\.drag-handle/);
+  assert.match(css, /\.series-order li\.is-dragging/);
+});
