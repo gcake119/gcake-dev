@@ -17,10 +17,15 @@ import { deploymentPresentation } from './deployment';
 import { renderImmediatePreview, type EditorView } from './editor-state';
 import { applyTaipeiSchedule, readScheduleFields, schedulePresentation } from './scheduling';
 import {
+  addSeriesSection,
   moveSeriesPost,
+  moveSeriesSection,
   parseSeriesManifest,
+  removeEmptySeriesSection,
   serializeSeriesManifest,
   type AdminSeriesManifest,
+  type AdminSeriesSection,
+  updateSeriesSection,
 } from './series-editor';
 
 type ViewState = 'loading' | 'signed-out' | 'ready' | 'error';
@@ -339,6 +344,43 @@ function movePost(sectionId: string, index: number, delta: -1 | 1): void {
   seriesManifest.value = moveSeriesPost(seriesManifest.value, sectionId, index, delta);
   seriesDirty.value = true;
   seriesMessage.value = '排序尚未儲存，只是這個畫面的暫存狀態。';
+}
+
+function eventValue(event: Event): string {
+  return (event.target as HTMLInputElement | HTMLSelectElement).value;
+}
+
+function addSection(): void {
+  if (!seriesManifest.value) return;
+  seriesManifest.value = addSeriesSection(seriesManifest.value);
+  seriesDirty.value = true;
+  seriesMessage.value = '已新增空白章節；請確認章節 ID、標題與狀態後儲存。';
+}
+
+function editSection(sectionId: string, patch: Partial<Pick<AdminSeriesSection, 'id' | 'title' | 'status'>>): void {
+  if (!seriesManifest.value) return;
+  seriesManifest.value = updateSeriesSection(seriesManifest.value, sectionId, patch);
+  seriesDirty.value = true;
+  seriesMessage.value = '章節設定尚未儲存，只是這個畫面的暫存狀態。';
+}
+
+function moveSection(index: number, delta: -1 | 1): void {
+  if (!seriesManifest.value) return;
+  seriesManifest.value = moveSeriesSection(seriesManifest.value, index, delta);
+  seriesDirty.value = true;
+  seriesMessage.value = '章節順序尚未儲存，只是這個畫面的暫存狀態。';
+}
+
+function removeSection(sectionId: string): void {
+  if (!seriesManifest.value) return;
+  const next = removeEmptySeriesSection(seriesManifest.value, sectionId);
+  if (next === seriesManifest.value) {
+    seriesMessage.value = '章節仍有文章，請先移出文章後再刪除章節。';
+    return;
+  }
+  seriesManifest.value = next;
+  seriesDirty.value = true;
+  seriesMessage.value = '空白章節已移除；變更尚未儲存。';
 }
 
 function dropPost(sectionId: string, targetIndex: number): void {
@@ -661,15 +703,38 @@ onMounted(() => {
               <p class="eyebrow">系列編輯器</p>
               <h2 id="series-editor-title">{{ seriesManifest.title }}</h2>
             </div>
-            <button type="button" class="primary-action compact" :disabled="!seriesDirty" @click="saveSeries">
-              儲存系列 YAML
-            </button>
+            <div class="editor-actions">
+              <button type="button" class="secondary-action" @click="addSection">新增章節</button>
+              <button type="button" class="primary-action compact" :disabled="!seriesDirty" @click="saveSeries">儲存系列 YAML</button>
+            </div>
           </div>
           <p class="editor-message" aria-live="polite">{{ seriesMessage }}</p>
           <p class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
-          <section v-for="section in seriesManifest.sections" :key="section.id" class="series-section">
+          <section v-for="(section, sectionIndex) in seriesManifest.sections" :key="section.id" class="series-section">
             <div class="series-section-heading">
-              <strong>{{ section.title }}</strong><span class="badge">{{ section.status }}</span>
+              <div class="series-section-fields">
+                <label>
+                  <span>章節 ID</span>
+                  <input :value="section.id" type="text" autocomplete="off" @input="editSection(section.id, { id: eventValue($event) })">
+                </label>
+                <label class="section-title-field">
+                  <span>章節標題</span>
+                  <input :value="section.title" type="text" @input="editSection(section.id, { title: eventValue($event) })">
+                </label>
+                <label>
+                  <span>章節狀態</span>
+                  <select :value="section.status" @change="editSection(section.id, { status: eventValue($event) })">
+                    <option value="planned">規劃中</option>
+                    <option value="active">進行中</option>
+                    <option value="completed">已完成</option>
+                  </select>
+                </label>
+              </div>
+              <div class="section-actions" aria-label="章節操作">
+                <button type="button" :aria-label="`將 ${section.title} 往上移`" :disabled="sectionIndex === 0" @click="moveSection(sectionIndex, -1)">↑</button>
+                <button type="button" :aria-label="`將 ${section.title} 往下移`" :disabled="sectionIndex === seriesManifest.sections.length - 1" @click="moveSection(sectionIndex, 1)">↓</button>
+                <button type="button" class="danger-action" :aria-label="`刪除 ${section.title}`" :disabled="section.posts.length > 0" :title="section.posts.length > 0 ? '請先移出章節內的文章' : '刪除空白章節'" @click="removeSection(section.id)">刪除</button>
+              </div>
             </div>
             <ol class="series-order">
               <li

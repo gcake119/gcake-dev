@@ -48,3 +48,17 @@ test('series ordering exposes a visible drag affordance and dragging state', asy
   assert.match(css, /\.drag-handle/);
   assert.match(css, /\.series-order li\.is-dragging/);
 });
+
+test('series sections expose editable fields and guarded structure actions', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, />新增章節<\/button>/);
+  assert.match(source, /<span>章節 ID<\/span>/);
+  assert.match(source, /<span>章節標題<\/span>/);
+  assert.match(source, /<span>章節狀態<\/span>/);
+  assert.match(source, /<option value="planned">規劃中<\/option>/);
+  assert.match(source, /<option value="active">進行中<\/option>/);
+  assert.match(source, /<option value="completed">已完成<\/option>/);
+  assert.match(source, /:disabled="section\.posts\.length > 0"/);
+  assert.match(source, /@click="removeSection\(section\.id\)"/);
+});

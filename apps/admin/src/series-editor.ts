@@ -14,6 +14,45 @@ export function serializeSeriesManifest(manifest: AdminSeriesManifest): string {
   return YAML.stringify(manifest, { lineWidth: 0 });
 }
 
+export function addSeriesSection(manifest: AdminSeriesManifest): AdminSeriesManifest {
+  const existingIds = new Set(manifest.sections.map((section) => section.id));
+  let chapterNumber = 1;
+  while (existingIds.has(`chapter-${chapterNumber}`)) chapterNumber += 1;
+  return {
+    ...manifest,
+    sections: [
+      ...manifest.sections,
+      { id: `chapter-${chapterNumber}`, title: '新章節', status: 'planned', posts: [] },
+    ],
+  };
+}
+
+export function updateSeriesSection(
+  manifest: AdminSeriesManifest,
+  sectionId: string,
+  patch: Partial<Pick<AdminSeriesSection, 'id' | 'title' | 'status'>>,
+): AdminSeriesManifest {
+  return {
+    ...manifest,
+    sections: manifest.sections.map((section) => section.id === sectionId ? { ...section, ...patch } : section),
+  };
+}
+
+export function moveSeriesSection(manifest: AdminSeriesManifest, index: number, delta: -1 | 1): AdminSeriesManifest {
+  const target = index + delta;
+  if (target < 0 || target >= manifest.sections.length) return manifest;
+  const sections = manifest.sections.map((section) => ({ ...section, posts: section.posts.map((post) => ({ ...post })) }));
+  const [section] = sections.splice(index, 1);
+  if (section) sections.splice(target, 0, section);
+  return { ...manifest, sections };
+}
+
+export function removeEmptySeriesSection(manifest: AdminSeriesManifest, sectionId: string): AdminSeriesManifest {
+  const section = manifest.sections.find((item) => item.id === sectionId);
+  if (!section || section.posts.length > 0) return manifest;
+  return { ...manifest, sections: manifest.sections.filter((item) => item.id !== sectionId) };
+}
+
 export function moveSeriesPost(manifest: AdminSeriesManifest, sectionId: string, index: number, delta: -1 | 1): AdminSeriesManifest {
   return {
     ...manifest,
