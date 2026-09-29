@@ -159,6 +159,75 @@ test('standalone article creation writes one post file without a series manifest
   assert.doesNotMatch(requests[0]?.files[0]?.source ?? '', /series:|section:|order:|standalone:/);
 });
 
+test('post save route rejects paths outside the addressed post and validated series directory', async () => {
+  let calls = 0;
+  const handle = await handler({
+    save: async () => { calls += 1; return { commitSha: 'commit', paths: [] }; },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const request = (path: string) => new Request('https://admin.test/api/v1/posts/safe-post', {
+    method: 'POST',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      expectedBaseCommitSha: 'commit-old', message: 'Update safe-post',
+      files: [{ path, expectedBlobSha: 'post-old', source: 'updated' }],
+    }),
+  });
+
+  assert.equal((await handle(request('src/content/posts/other-post.md'))).status, 400);
+  assert.equal((await handle(request('src/config.ts'))).status, 400);
+  assert.equal(calls, 0);
+});
+
+test('post rename route delegates a bounded rename request instead of generic file deletion', async () => {
+  const requests: Array<{
+    slug: string; newSlug: string; source: string;
+    expectedBlobSha: string; expectedBaseCommitSha: string;
+  }> = [];
+  const handle = await handler({
+    save: async () => ({ commitSha: 'commit', paths: [] }),
+    renamePost: async (request) => {
+      requests.push(request);
+      return { commitSha: 'commit-new', paths: ['src/content/posts/new-slug.md', 'src/content/posts/old-slug.md'] };
+    },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const response = await handle(new Request('https://admin.test/api/v1/posts/old-slug', {
+    method: 'POST',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      expectedBlobSha: 'post-old', expectedBaseCommitSha: 'commit-old',
+      newSlug: 'new-slug', source: 'updated source',
+    }),
+  }));
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(requests, [{
+    slug: 'old-slug', newSlug: 'new-slug', source: 'updated source',
+    expectedBlobSha: 'post-old', expectedBaseCommitSha: 'commit-old',
+  }]);
+});
+
+test('post rename route rejects an invalid target slug before repository writes', async () => {
+  let calls = 0;
+  const handle = await handler({
+    save: async () => ({ commitSha: 'commit', paths: [] }),
+    renamePost: async () => { calls += 1; return { commitSha: 'commit', paths: [] }; },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const response = await handle(new Request('https://admin.test/api/v1/posts/old-slug', {
+    method: 'POST',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      expectedBlobSha: 'post-old', expectedBaseCommitSha: 'commit-old',
+      newSlug: '../escape', source: 'updated source',
+    }),
+  }));
+
+  assert.equal(response.status, 400);
+  assert.equal(calls, 0);
+});
+
 test('save route returns 409 revision details and never hides an optimistic conflict', async () => {
   let calls = 0;
   const handle = await handler({

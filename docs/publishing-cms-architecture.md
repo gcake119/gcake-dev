@@ -191,6 +191,25 @@ GitHub Login
 GitHub App
 ```
 
+### Local AI slug helper
+
+Slug suggestions are deliberately outside the hosted Cloudflare topology:
+
+```text
+Publishing Admin in the owner's browser
+  → loopback slug generator (`127.0.0.1`)
+  → local Ollama
+  → installed Gemma model
+```
+
+The Cloudflare Worker and public Astro site never call Ollama. A Worker cannot reach the owner's `localhost`, so the helper is a separately started, loopback-only Node service. The Admin learns only the helper URL through `VITE_SLUG_GENERATOR_URL`; the Ollama endpoint and model stay in the helper's server-side environment.
+
+The helper only converts an article title into a suggestion. Slug format checks, duplicate detection, repository writes, and Git commits remain CMS responsibilities. Failure to start Ollama or the helper never blocks manual editing. Existing-post slug changes use a dedicated Worker save contract: the Worker derives the two post paths and the Git writer creates the new path plus removes the old path in one optimistic transaction. The browser is never given a generic delete-file contract.
+
+When GitHub App credentials are configured, the Worker constructs read and write clients from the same short-lived installation-token provider. Content writes use GitHub's Git database API: validate the base commit and affected blob SHAs, create the required blobs and tree, create one commit, then advance the default-branch ref exactly once with `force: false`. The installation token and private key remain server-side and are never stored in D1.
+
+An existing-post slug rename also reads every local series manifest on the server. Matching `sections[].posts[].slug`, `editorial.currentPost`, and `editorial.nextPost` values are changed to the new slug and included in the same tree as the post rename. A stale series blob, occupied target post path, stale post blob, or concurrent branch update rejects the whole operation before any partial change becomes visible.
+
 Login flow:
 
 ```text

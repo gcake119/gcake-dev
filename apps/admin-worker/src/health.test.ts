@@ -115,6 +115,61 @@ test('Worker entrypoint wires GitHub App installation credentials into repositor
   assert.deepEqual(await response.json(), { posts: [] });
 });
 
+test('Worker entrypoint wires GitHub App installation credentials into repository writes', async () => {
+  const privateKey = await createTestPrivateKey();
+  const methods: string[] = [];
+  const response = await handleRequest(
+    new Request('http://local.test/api/v1/posts/new-post', {
+      method: 'POST',
+      headers: {
+        cookie: 'gcake_session=owner-session',
+        'content-type': 'application/json',
+        'x-csrf-token': 'csrf-token',
+      },
+      body: JSON.stringify({
+        expectedBaseCommitSha: 'commit-main', message: 'Create new-post',
+        files: [{ path: 'src/content/posts/new-post.md', source: '---\ntitle: New\n---\n' }],
+      }),
+    }),
+    {
+      CMS_DB: {
+        prepare: () => ({
+          bind() { return this; },
+          async run() { return {}; },
+          async first<T>() {
+            return {
+              id: 'session-1', github_user_id: '119', github_login: 'gcake119',
+              github_avatar_url: null, token_hash: 'stored-hash', csrf_token: 'csrf-token',
+              expires_at: Date.now() + 60_000,
+            } as T;
+          },
+        }),
+      },
+      GITHUB_APP_ID: '12345', GITHUB_APP_INSTALLATION_ID: '67890', GITHUB_APP_PRIVATE_KEY: privateKey,
+      PARAGRAPH_WRITE_ENABLED: 'false', SUBSTACK_WRITE_ENABLED: 'false',
+    },
+    async (input, init) => {
+      const url = new URL(String(input));
+      const method = init?.method ?? 'GET';
+      methods.push(`${method} ${url.pathname}`);
+      if (url.pathname === '/app/installations/67890/access_tokens') return Response.json({ token: 'installation-token' });
+      if (url.pathname === '/repos/gcake119/gcake-dev') return Response.json({ full_name: 'gcake119/gcake-dev', default_branch: 'main', private: false });
+      if (url.pathname === '/repos/gcake119/gcake-dev/branches/main') return Response.json({ commit: { sha: 'commit-main', commit: { tree: { sha: 'tree-main' } } } });
+      if (url.pathname === '/repos/gcake119/gcake-dev/contents/src/content/posts/new-post.md') return Response.json({}, { status: 404 });
+      if (url.pathname === '/repos/gcake119/gcake-dev/git/commits/commit-main') return Response.json({ tree: { sha: 'tree-main' } });
+      if (url.pathname.endsWith('/git/blobs') && method === 'POST') return Response.json({ sha: 'blob-new' }, { status: 201 });
+      if (url.pathname.endsWith('/git/trees') && method === 'POST') return Response.json({ sha: 'tree-new' }, { status: 201 });
+      if (url.pathname.endsWith('/git/commits') && method === 'POST') return Response.json({ sha: 'commit-new' }, { status: 201 });
+      if (url.pathname.endsWith('/git/refs/heads/main') && method === 'PATCH') return Response.json({ object: { sha: 'commit-new' } });
+      return Response.json({}, { status: 404 });
+    },
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { commitSha: 'commit-new', paths: ['src/content/posts/new-post.md'] });
+  assert.equal(methods.filter((value) => value === 'PATCH /repos/gcake119/gcake-dev/git/refs/heads/main').length, 1);
+});
+
 test('Cloudflare execution context is not mistaken for the outbound fetch function', async () => {
   const privateKey = await createTestPrivateKey();
   const originalFetch = globalThis.fetch;

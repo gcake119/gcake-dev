@@ -1,5 +1,15 @@
-import type { DeploymentObservation, PostSource, PostSummary, SeriesSource } from '@gcake/admin-contract';
+import type { DeploymentObservation, PostSource, PostSummary, SaveContentRequest, SeriesSource } from '@gcake/admin-contract';
 import YAML from 'yaml';
+import {
+  RepositoryConflictError,
+  deletePost as deleteRepositoryPost,
+  renamePost as renameRepositoryPost,
+  saveRepositoryTransaction,
+  type GitWriteRepository,
+  type RepositoryCommit,
+  type RepositoryFile,
+  type RepositoryTransaction,
+} from './git-writes.js';
 
 const repositoryPath = '/repos/gcake119/gcake-dev';
 
@@ -19,6 +29,7 @@ export interface GitHubAppInstallationTokenProviderOptions {
 export interface GitHubAppReadClientOptions {
   readonly installationTokens: InstallationTokenProvider; readonly fetch?: typeof fetch;
 }
+export type GitHubAppWriteClientOptions = GitHubAppReadClientOptions;
 type GitTreeEntry = { readonly path: string; readonly type: string; readonly sha: string };
 type RepositorySnapshot = {
   readonly commitSha: string; readonly tree: readonly GitTreeEntry[];
@@ -287,5 +298,192 @@ export class GitHubAppReadClient {
         ? { completedAt: run.updated_at } : {}),
       ...(typeof run.html_url === 'string' ? { url: run.html_url } : {}),
     };
+  }
+}
+
+class GitHubGitRepository implements GitWriteRepository {
+  readonly #installationTokens: InstallationTokenProvider;
+  readonly #fetch: typeof fetch;
+  #defaultBranch?: string;
+
+  constructor(options: GitHubAppWriteClientOptions) {
+    this.#installationTokens = options.installationTokens;
+    this.#fetch = options.fetch ?? fetch;
+  }
+
+  async #request(path: string, init: RequestInit = {}): Promise<Response> {
+    const installationToken = await this.#installationTokens.create();
+    return this.#fetch(`https://api.github.com${path}`, {
+      ...init,
+      headers: {
+        accept: 'application/vnd.github+json',
+        authorization: `Bearer ${installationToken}`,
+        'content-type': 'application/json',
+        'user-agent': 'gcake-admin-worker',
+        'x-github-api-version': '2022-11-28',
+        ...init.headers,
+      },
+    });
+  }
+
+  async #branch(): Promise<string> {
+    if (this.#defaultBranch) return this.#defaultBranch;
+    const response = await this.#request(repositoryPath, { method: 'GET' });
+    const value = await response.json() as { full_name?: unknown; default_branch?: unknown };
+    if (!response.ok || value.full_name !== 'gcake119/gcake-dev' || typeof value.default_branch !== 'string') {
+      throw new Error(`GITHUB_API_FAILED: repository HTTP ${response.status}`);
+    }
+    this.#defaultBranch = value.default_branch;
+    return value.default_branch;
+  }
+
+  async currentCommitSha(): Promise<string> {
+    const branch = await this.#branch();
+    const response = await this.#request(`${repositoryPath}/branches/${encodeURIComponent(branch)}`, { method: 'GET' });
+    const value = await response.json() as { commit?: { sha?: unknown } };
+    if (!response.ok || typeof value.commit?.sha !== 'string') {
+      throw new Error(`GITHUB_API_FAILED: branch HTTP ${response.status}`);
+    }
+    return value.commit.sha;
+  }
+
+  async getFile(path: string): Promise<RepositoryFile | undefined> {
+    const branch = await this.#branch();
+    const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+    const response = await this.#request(
+      `${repositoryPath}/contents/${encodedPath}?ref=${encodeURIComponent(branch)}`,
+      { method: 'GET' },
+    );
+    if (response.status === 404) return undefined;
+    const value = await response.json() as { sha?: unknown; content?: unknown; encoding?: unknown };
+    if (!response.ok || typeof value.sha !== 'string' || value.encoding !== 'base64' || typeof value.content !== 'string') {
+      throw new Error(`GITHUB_API_FAILED: content HTTP ${response.status}`);
+    }
+    return { sha: value.sha, content: decodeBase64(value.content) };
+  }
+
+  async commit(transaction: RepositoryTransaction): Promise<RepositoryCommit> {
+    const branch = await this.#branch();
+    const baseResponse = await this.#request(`${repositoryPath}/git/commits/${transaction.expectedBaseCommitSha}`, { method: 'GET' });
+    const base = await baseResponse.json() as { tree?: { sha?: unknown } };
+    if (!baseResponse.ok || typeof base.tree?.sha !== 'string') {
+      throw new Error(`GITHUB_API_FAILED: base commit HTTP ${baseResponse.status}`);
+    }
+    const treeEntries = await Promise.all(transaction.changes.map(async (change) => {
+      if (change.content === undefined) {
+        return { path: change.path, mode: '100644', type: 'blob', sha: null };
+      }
+      const blobResponse = await this.#request(`${repositoryPath}/git/blobs`, {
+        method: 'POST', body: JSON.stringify({ content: change.content, encoding: 'utf-8' }),
+      });
+      const blob = await blobResponse.json() as { sha?: unknown };
+      if (!blobResponse.ok || typeof blob.sha !== 'string') {
+        throw new Error(`GITHUB_API_FAILED: blob HTTP ${blobResponse.status}`);
+      }
+      return { path: change.path, mode: '100644', type: 'blob', sha: blob.sha };
+    }));
+    const treeResponse = await this.#request(`${repositoryPath}/git/trees`, {
+      method: 'POST', body: JSON.stringify({ base_tree: base.tree.sha, tree: treeEntries }),
+    });
+    const tree = await treeResponse.json() as { sha?: unknown };
+    if (!treeResponse.ok || typeof tree.sha !== 'string') throw new Error(`GITHUB_API_FAILED: tree HTTP ${treeResponse.status}`);
+    const commitResponse = await this.#request(`${repositoryPath}/git/commits`, {
+      method: 'POST',
+      body: JSON.stringify({ message: transaction.message, tree: tree.sha, parents: [transaction.expectedBaseCommitSha] }),
+    });
+    const commit = await commitResponse.json() as { sha?: unknown };
+    if (!commitResponse.ok || typeof commit.sha !== 'string') throw new Error(`GITHUB_API_FAILED: commit HTTP ${commitResponse.status}`);
+    const refResponse = await this.#request(`${repositoryPath}/git/refs/heads/${encodeURIComponent(branch)}`, {
+      method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }),
+    });
+    if (!refResponse.ok) {
+      if (refResponse.status === 409 || refResponse.status === 422) {
+        const currentCommitSha = await this.currentCommitSha();
+        const first = transaction.changes[0];
+        throw new RepositoryConflictError(
+          first?.path.includes('/series/') ? 'SERIES_CONFLICT' : 'ARTICLE_CONFLICT',
+          first?.path ?? '', first?.expectedBlobSha,
+          first ? (await this.getFile(first.path))?.sha : undefined,
+          currentCommitSha,
+        );
+      }
+      throw new Error(`GITHUB_API_FAILED: ref HTTP ${refResponse.status}`);
+    }
+    return { sha: commit.sha, message: transaction.message, paths: transaction.changes.map((change) => change.path) };
+  }
+}
+
+function seriesReferencesSlug(source: string, slug: string): boolean {
+  const manifest = YAML.parse(source) as {
+    sections?: Array<{ posts?: Array<{ slug?: unknown }> }>;
+    editorial?: { currentPost?: unknown; nextPost?: unknown };
+  };
+  return (manifest.sections ?? []).some((section) => (section.posts ?? []).some((post) => post.slug === slug))
+    || manifest.editorial?.currentPost === slug || manifest.editorial?.nextPost === slug;
+}
+
+export class GitHubAppWriteClient {
+  readonly #repository: GitWriteRepository;
+  readonly #reader: GitHubAppReadClient;
+
+  constructor(options: GitHubAppWriteClientOptions) {
+    this.#repository = new GitHubGitRepository(options);
+    this.#reader = new GitHubAppReadClient(options);
+  }
+
+  async save(request: SaveContentRequest): Promise<{ readonly commitSha: string; readonly paths: readonly string[] }> {
+    const commit = await saveRepositoryTransaction(this.#repository, {
+      expectedBaseCommitSha: request.expectedBaseCommitSha,
+      message: request.message,
+      changes: request.files.map((file) => ({
+        path: file.path, expectedBlobSha: file.expectedBlobSha, content: file.source,
+      })),
+    });
+    return { commitSha: commit.sha, paths: commit.paths };
+  }
+
+  async renamePost(input: {
+    readonly slug: string; readonly newSlug: string; readonly source: string;
+    readonly expectedBlobSha: string; readonly expectedBaseCommitSha: string;
+  }): Promise<{ readonly commitSha: string; readonly paths: readonly string[] }> {
+    const [series, post] = await Promise.all([
+      this.#reader.listSeries(),
+      this.#reader.getPost(input.slug),
+    ]);
+    const commit = await renameRepositoryPost(this.#repository, {
+      oldSlug: input.slug, newSlug: input.newSlug, source: input.source,
+      expectedBlobSha: input.expectedBlobSha, expectedBaseCommitSha: input.expectedBaseCommitSha,
+      oldPath: post?.path,
+      seriesFiles: series.map((item) => ({
+        path: item.path, expectedBlobSha: item.baseBlobSha, source: item.source,
+      })),
+    });
+    return { commitSha: commit.sha, paths: commit.paths };
+  }
+
+  async deletePost(input: {
+    readonly slug: string; readonly expectedBlobSha: string;
+    readonly expectedBaseCommitSha: string; readonly confirmed: boolean;
+  }): Promise<
+    | { readonly kind: 'deleted'; readonly commitSha: string }
+    | { readonly kind: 'confirmation-required' }
+    | { readonly kind: 'blocked'; readonly seriesReferences: readonly string[] }
+  > {
+    if (!input.confirmed) return { kind: 'confirmation-required' };
+    const [series, post] = await Promise.all([
+      this.#reader.listSeries(),
+      this.#reader.getPost(input.slug),
+    ]);
+    const references = series.filter((item) => seriesReferencesSlug(item.source, input.slug)).map((item) => item.slug);
+    const result = await deleteRepositoryPost(this.#repository, {
+      path: post?.path ?? `src/content/posts/${input.slug}.md`,
+      expectedBlobSha: input.expectedBlobSha,
+      expectedBaseCommitSha: input.expectedBaseCommitSha,
+      confirmed: true,
+      seriesReferences: references,
+    });
+    return result.kind === 'deleted'
+      ? { kind: 'deleted', commitSha: result.commit.sha }
+      : result;
   }
 }

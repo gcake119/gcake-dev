@@ -19,6 +19,7 @@
     "paragraph:prepare": "node --import tsx scripts/publishing/prepare-paragraph.ts",
     "paragraph:production-gate": "node --import tsx scripts/publishing/paragraph-production-gate.ts",
     "preview:spike": "node --import tsx scripts/preview/feasibility-spike.ts",
+    "slug:dev": "pnpm --filter @gcake/slug-generator dev",
     "test:public": "node --import tsx --test src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/paragraph-prepare.test.ts scripts/external/ithome-sync.test.ts",
     "test:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
     "test": "pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces"

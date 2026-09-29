@@ -272,6 +272,25 @@ Frontend routes:
   → GitHub auth completion
 ```
 
+### Local slug generator runtime
+
+Run `pnpm slug:dev` separately when local AI slug suggestions are needed. The service binds to `127.0.0.1:4319` by default and exposes only `POST /api/slug-suggestions` to the configured Admin origin.
+
+Configuration:
+
+- Admin build/dev: `VITE_SLUG_GENERATOR_URL`
+- Local helper: `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `SLUG_GENERATOR_HOST`, `SLUG_GENERATOR_PORT`, `SLUG_GENERATOR_ALLOWED_ORIGIN`, `SLUG_GENERATOR_TIMEOUT_MS`
+
+Defaults target the existing local Ollama endpoint and `gemma4:12b`. Operators can select another already-installed Gemma model, such as `gemma4:12b-mlx`; the service never downloads a model and has no cloud fallback.
+
+The Admin sends a request only when the owner presses `產生 slug`. A valid response fills the editable slug field for a new or existing article without saving. Empty titles send no request, and changing a title never regenerates or overwrites the slug automatically. Any connection, timeout, missing-model, or output-validation error leaves the current slug unchanged and shows `目前無法產生 slug，可以手動輸入。`.
+
+For an existing article, a changed slug is persisted only during the ordinary save action. The Admin sends the old slug, new slug, source, old blob SHA, and base commit SHA to a dedicated rename branch. The Worker validates both slugs, derives `src/content/posts/<slug>.md` paths itself, and the Git writer creates the new path plus removes the old path in one transaction. An existing target path or stale revision returns a conflict and creates no partial commit.
+
+The production writer reuses the configured GitHub App installation-token provider. It creates content blobs, one tree based on the expected commit, one commit, and one non-force default-branch ref update. Ordinary post saves are limited to the post path addressed by the route plus validated `src/content/series/<slug>.yaml` files; arbitrary repository paths are rejected before the writer runs.
+
+Before a slug rename, the writer discovers all series manifests from the same repository snapshot. It replaces the old slug in series post entries and editorial pointers, then submits the new post path, affected series files, and old post deletion in one transaction. Every affected blob SHA is checked. A stale manifest or concurrent ref update returns the existing conflict response and leaves the branch head unchanged.
+
 Unauthorized users are redirected to login.
 
 ---

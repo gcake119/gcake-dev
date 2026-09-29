@@ -48,3 +48,16 @@ test('public post pages derive series membership from manifests and hide sequenc
   assert.match(page, /\{series && <><p class="article-breadcrumb"/);
   assert.match(page, /\{\(previous \|\| next\) && <nav class="article-pagination"/);
 });
+
+test('public Astro and Cloudflare Worker runtimes do not depend on Ollama', async () => {
+  const publicFiles = [
+    'src/lib/content/catalog.ts',
+    'src/pages/index.astro',
+    'apps/admin-worker/src/index.ts',
+    'apps/admin-worker/src/router.ts',
+  ];
+  for (const path of publicFiles) {
+    const value = await source(path);
+    assert.doesNotMatch(value, /ollama|11434|gemma4/i, `${path} must not depend on local AI`);
+  }
+});
