@@ -25,7 +25,9 @@ const {
 } = Astro.props;
 
 const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
-const imageUrl = image ? new URL(image, `${site.url}/`).toString() : undefined;
+const imageUrl = image
+  ? (/^https?:\/\//.test(image) ? image : new URL(image.replace(/^\/+/, ''), `${site.url}/`).toString())
+  : undefined;
 const structuredItems = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 ---
 <!doctype html>
