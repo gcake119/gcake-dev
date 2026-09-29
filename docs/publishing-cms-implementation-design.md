@@ -360,9 +360,48 @@ GET  /api/v1/series
 GET  /api/v1/series/:slug
 PUT  /api/v1/series/:slug
 POST /api/v1/series
+DELETE /api/v1/series/:slug
 ```
 
-Update request includes expected current SHA for optimistic concurrency.
+List responses include each manifest's parsed display title and referenced-post count in addition to raw YAML and revision data.
+
+Create request:
+
+```ts
+{
+  title: string
+  slug: string
+  expectedBaseCommitSha: string
+}
+```
+
+Creation writes one `src/content/series/<slug>.yaml` manifest with local defaults and an empty `sections` collection. The target path must be absent when the Git transaction commits.
+
+Update or rename request:
+
+```ts
+{
+  manifest: SeriesManifest
+  expectedBlobSha: string
+  expectedBaseCommitSha: string
+}
+```
+
+When the manifest slug differs from the route slug, the operation is an atomic rename: one Git transaction deletes the old expected blob and creates the new absent path with the new internal slug. A duplicate or concurrently-created target returns `409 SERIES_CONFLICT` and changes neither manifest.
+
+Delete request:
+
+```ts
+{
+  expectedBlobSha: string
+  expectedBaseCommitSha: string
+  confirmed: true
+}
+```
+
+Deletion removes only the series manifest. It never deletes post Markdown or changes article bodies. Local posts formerly referenced by the deleted manifest remain in the general post collection and become standalone posts because series membership and navigation are derived from manifests.
+
+All mutations retain optimistic concurrency. Updates, renames, and deletes include the current blob SHA; every mutation includes the expected base commit. A mismatch returns `409 SERIES_CONFLICT` with current revision details and creates no commit.
 
 ### 8.4 Media
 
@@ -834,6 +873,8 @@ For first complete version:
 
 Series writes operate directly on YAML source.
 
+The Series list provides create, display-name edit, slug rename, delete, and current article counts. Delete confirmation must state that deleting a series does not delete its articles.
+
 Required validations before commit:
 
 - unique series slug
@@ -845,6 +886,10 @@ Required validations before commit:
 - no duplicate post slug inside one manifest unless explicitly supported
 
 Drag-and-drop changes are only UI operations until committed.
+
+Series slug is one identity across the internal manifest field, manifest filename, Admin route, public route, derived membership, and static route generation. Rename must update the filename and internal field together; the old slug is not retained as a valid route. No series membership field is added to post frontmatter.
+
+Deleting a populated series is a manifest-only operation. The website must continue to build, post Markdown must remain unchanged, former members must appear as standalone posts, and no series navigation or broken series reference may remain.
 
 ---
 
