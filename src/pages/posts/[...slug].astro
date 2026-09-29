@@ -58,7 +58,7 @@ const structuredData = [
       <div class="article-meta">
         {post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}
         {post.data.updatedAt && <time datetime={post.data.updatedAt.toISOString()}>更新：{formatDate(post.data.updatedAt)}</time>}
-        {topicDefinitions.map((topic) => <a href={`${site.basePath}/topics/${topic.id}/`} title={topic.labelEn}>{topic.label}</a>)}
+        {topicDefinitions.map((topic) => <a class="topic-pill" href={`${site.basePath}/topics/${topic.id}/`} title={topic.labelEn} aria-label={`${topic.label}（${topic.labelEn}）`}>{topic.label}</a>)}
       </div>
     </header>
     {toc.length > 0 && <details class="reading-toc"><summary>本篇目錄</summary><ol>{toc.map(h => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></details>}
