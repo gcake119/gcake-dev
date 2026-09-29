@@ -1,6 +1,7 @@
 import matter from 'gray-matter';
 import { Marked, Renderer } from 'marked';
 import snapshot from '@/data/external/ithome-2026.generated.json';
+import { ithome2026Topics } from '@/data/external/ithome-2026-topics';
 
 export interface ExternalArticle {
   slug: string;
@@ -8,6 +9,7 @@ export interface ExternalArticle {
   title: string;
   description?: string;
   publishedAt?: Date;
+  topics: string[];
   canonicalUrl: string;
   sourceUrl: string;
   body: string;
@@ -52,6 +54,7 @@ export function loadIthomeArticles(): ExternalArticle[] {
       title: parsed.data.title ?? `Day ${post.day}`,
       description: parsed.data.description,
       publishedAt: publishDate,
+      topics: ithome2026Topics[post.slug] ?? [],
       canonicalUrl: post.canonicalUrl,
       sourceUrl: post.sourceUrl,
       body: parsed.content,
