@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { loadReadingCatalog } from '@/lib/content/catalog';
 import { localCanonical } from '@/lib/seo/canonical';
+import { seriesStructuredData } from '@/lib/seo/structured-data';
 import { formatDate } from '@/lib/content/format';
 import { site } from '@/data/site';
 export async function getStaticPaths() {
@@ -10,8 +11,18 @@ export async function getStaticPaths() {
 }
 const { series } = Astro.props;
 const statusLabel = { active: '連載中', completed: '已完結', paused: '暫停連載' }[series.publicationState];
+const canonical = localCanonical(`/series/${series.slug}/`);
+const structuredData = seriesStructuredData({
+  title: series.title,
+  description: series.description,
+  canonical,
+  articles: series.articles.map((article) => ({
+    title: article.title,
+    url: new URL(article.href, `${site.url}/`).toString(),
+  })),
+});
 ---
-<BaseLayout title={series.title} description={series.description} canonical={localCanonical(`/series/${series.slug}/`)}>
+<BaseLayout title={series.title} description={series.description} canonical={canonical} structuredData={structuredData}>
   <header class="series-hero">
     <p class="series-label">{statusLabel}</p><h1 class="page-title">{series.title}</h1>
     {series.description && <p class="lede">{series.description}</p>}
