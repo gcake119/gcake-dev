@@ -5,9 +5,14 @@ import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 import { loadTopicTaxonomy } from '@/lib/content/topics';
+import { loadIthomeArticles } from '@/lib/content/external';
 
-const posts = (await getCollection('posts')).filter((post) => isPublicPost(post.data));
-const used = new Set(posts.flatMap((post) => post.data.topics));
+const local = (await getCollection('posts')).filter((post) => isPublicPost(post.data));
+const external = loadIthomeArticles();
+const used = new Set([
+  ...local.flatMap((post) => post.data.topics),
+  ...external.flatMap((post) => post.topics),
+]);
 const topics = (await loadTopicTaxonomy()).filter((topic) => used.has(topic.id));
 ---
 
