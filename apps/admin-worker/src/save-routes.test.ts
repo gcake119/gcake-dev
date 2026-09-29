@@ -134,6 +134,31 @@ test('coherent article-plus-series save validates YAML before one Git transactio
   ]);
 });
 
+test('standalone article creation writes one post file without a series manifest or relationship fields', async () => {
+  const requests: Parameters<GitHubContentWriter['save']>[0][] = [];
+  const handle = await handler({
+    save: async (request) => {
+      requests.push(request);
+      return { commitSha: 'commit-new', paths: request.files.map((file) => file.path) };
+    },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const source = '---\ntitle: 單篇文章\nstatus: draft\ntopics: []\ndistribution:\n  mode: full\n---\n\n正文\n';
+  const response = await handle(new Request('https://admin.test/api/v1/posts/standalone', {
+    method: 'POST',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      expectedBaseCommitSha: 'commit-old', message: 'Create standalone',
+      files: [{ path: 'src/content/posts/standalone.md', source }],
+    }),
+  }));
+
+  assert.equal(response.status, 200);
+  assert.equal(requests.length, 1);
+  assert.deepEqual(requests[0]?.files, [{ path: 'src/content/posts/standalone.md', source }]);
+  assert.doesNotMatch(requests[0]?.files[0]?.source ?? '', /series:|section:|order:|standalone:/);
+});
+
 test('save route returns 409 revision details and never hides an optimistic conflict', async () => {
   let calls = 0;
   const handle = await handler({

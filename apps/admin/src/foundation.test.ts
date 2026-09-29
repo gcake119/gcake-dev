@@ -62,3 +62,21 @@ test('series sections expose editable fields and guarded structure actions', asy
   assert.match(source, /:disabled="section\.posts\.length > 0"/);
   assert.match(source, /@click="removeSection\(section\.id\)"/);
 });
+
+test('content workbench creates, labels, and filters standalone posts without a series selector', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, />新增無系列文章<\/button>/);
+  assert.match(source, /<option value="standalone">無系列<\/option>/);
+  assert.match(source, /post\.series\.length .* '無系列'/);
+  assert.match(source, /selectedPost\.series\.length .* '無系列'/);
+  assert.doesNotMatch(source, /文章類型/);
+});
+
+test('series editor adds standalone posts by changing only its manifest state', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, />加入無系列文章<\/span>/);
+  assert.match(source, /addSeriesPost\(seriesManifest\.value, sectionId/);
+  assert.match(source, /只有系列 YAML 會在儲存時更新/);
+});

@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   addSeriesSection,
+  addSeriesPost,
   moveSeriesPost,
   moveSeriesSection,
   parseSeriesManifest,
   removeEmptySeriesSection,
+  serializeSeriesManifest,
   updateSeriesSection,
 } from './series-editor';
 
@@ -43,4 +45,14 @@ test('section details, order, and empty-section removal are editable without los
   assert.equal(protectedManifest.sections.length, 2);
   assert.deepEqual(removed.sections.map((section) => section.id), ['chapter-1']);
   assert.equal(original.sections[0]?.id, 'one');
+});
+
+test('a standalone post can be added through the manifest without article frontmatter fields', () => {
+  const original = parseSeriesManifest('slug: demo\ntitle: Demo\nstatus: active\nsections:\n  - id: one\n    title: One\n    status: active\n    posts: []\n');
+  const updated = addSeriesPost(original, 'one', { slug: 'standalone', status: 'draft' });
+  const yaml = serializeSeriesManifest(updated);
+
+  assert.deepEqual(updated.sections[0]?.posts, [{ slug: 'standalone', status: 'draft' }]);
+  assert.match(yaml, /slug: standalone/);
+  assert.doesNotMatch(yaml, /frontmatter|section:|order:/);
 });

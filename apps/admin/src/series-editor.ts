@@ -67,3 +67,17 @@ export function moveSeriesPost(manifest: AdminSeriesManifest, sectionId: string,
     }),
   };
 }
+
+export function addSeriesPost(
+  manifest: AdminSeriesManifest,
+  sectionId: string,
+  post: AdminSeriesPost,
+): AdminSeriesManifest {
+  if (manifest.sections.some((section) => section.posts.some((item) => item.slug === post.slug))) return manifest;
+  return {
+    ...manifest,
+    sections: manifest.sections.map((section) => section.id === sectionId
+      ? { ...section, posts: [...section.posts, { ...post }] }
+      : section),
+  };
+}

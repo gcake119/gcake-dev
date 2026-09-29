@@ -13,10 +13,21 @@ export interface ReadingPost {
   series?: string;
 }
 
+export function seriesMembership(manifests: readonly { slug: string; sections: readonly { posts: readonly { slug: string }[] }[] }[]) {
+  const membership = new Map<string, string>();
+  for (const manifest of manifests) {
+    for (const post of manifest.sections.flatMap((section) => section.posts)) {
+      if (!membership.has(post.slug)) membership.set(post.slug, manifest.slug);
+    }
+  }
+  return membership;
+}
+
 export async function loadReadingCatalog() {
   const manifests = await loadSeriesManifests();
+  const membership = seriesMembership(manifests);
   const local = (await getCollection('posts')).filter(p => isPublicPost(p.data));
-  const posts: ReadingPost[] = local.map(p => ({ slug: p.id, title: p.data.title, description: p.data.description, date: p.data.publishedAt, href: `${site.basePath}/posts/${p.id}/`, series: p.data.series }));
+  const posts: ReadingPost[] = local.map(p => ({ slug: p.id, title: p.data.title, description: p.data.description, date: p.data.publishedAt, href: `${site.basePath}/posts/${p.id}/`, series: membership.get(p.id) }));
   const external = loadIthomeArticles();
   for (const manifest of manifests.filter(s => s.source?.type === 'external' && s.slug === 'ithome-2026')) {
     const refs = new Set(manifest.sections.flatMap(s => s.posts).filter(p => p.status === 'published').map(p => p.slug));

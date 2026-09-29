@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const { series: allSeries } = await loadReadingCatalog();
-const series = allSeries.find(s => s.slug === post.data.series);
+const series = allSeries.find(s => s.articles.some(article => article.slug === post.id));
 const position = series?.articles.findIndex(p => p.slug === post.id) ?? -1;
 const previous = position > 0 ? series?.articles[position - 1] : undefined;
 const next = position >= 0 ? series?.articles[position + 1] : undefined;

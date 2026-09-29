@@ -94,6 +94,7 @@ export interface PostSummary {
   readonly path: string;
   readonly title: string;
   readonly status: string;
+  readonly series: readonly PostSeriesMembership[];
   readonly blobSha: string;
   readonly commitSha: string;
 }
@@ -101,11 +102,21 @@ export interface PostSummary {
 export interface PostSource {
   readonly slug: string;
   readonly path: string;
+  readonly title: string;
+  readonly status: string;
   readonly source: string;
   readonly frontmatter: Readonly<Record<string, unknown>>;
   readonly body: string;
-  readonly baseBlobSha: string;
+  readonly series: readonly PostSeriesMembership[];
+  readonly baseBlobSha?: string;
   readonly baseCommitSha: string;
+}
+
+export interface PostSeriesMembership {
+  readonly slug: string;
+  readonly title: string;
+  readonly sectionId: string;
+  readonly position: number;
 }
 
 export interface SeriesSource {

@@ -96,6 +96,7 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
     ['/repos/gcake119/gcake-dev/git/trees/tree-main?recursive=1', {
       tree: [
         { path: 'src/content/posts/hello.md', type: 'blob', sha: 'post-blob' },
+        { path: 'src/content/posts/standalone.md', type: 'blob', sha: 'standalone-blob' },
         { path: 'src/content/series/notes.yaml', type: 'blob', sha: 'series-blob' },
       ],
     }],
@@ -103,9 +104,13 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
       encoding: 'base64',
       content: Buffer.from('---\ntitle: Hello\nstatus: draft\n---\nBody').toString('base64'),
     }],
+    ['/repos/gcake119/gcake-dev/git/blobs/standalone-blob', {
+      encoding: 'base64',
+      content: Buffer.from('---\ntitle: Standalone\nstatus: draft\n---\nBody').toString('base64'),
+    }],
     ['/repos/gcake119/gcake-dev/git/blobs/series-blob', {
       encoding: 'base64',
-      content: Buffer.from('slug: notes\ntitle: Notes').toString('base64'),
+      content: Buffer.from('slug: notes\ntitle: Notes\nsections:\n  - id: start\n    title: Start\n    status: active\n    posts:\n      - slug: hello\n        status: draft\n').toString('base64'),
     }],
     ['/repos/gcake119/gcake-dev/actions/runs?branch=main&per_page=1', {
       workflow_runs: [{
@@ -126,10 +131,14 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
 
   assert.deepEqual(await client.listPosts(), [{
     slug: 'hello', path: 'src/content/posts/hello.md', title: 'Hello', status: 'draft',
-    blobSha: 'post-blob', commitSha: 'commit-main',
+    series: [{ slug: 'notes', title: 'Notes', sectionId: 'start', position: 0 }], blobSha: 'post-blob', commitSha: 'commit-main',
+  }, {
+    slug: 'standalone', path: 'src/content/posts/standalone.md', title: 'Standalone', status: 'draft',
+    series: [], blobSha: 'standalone-blob', commitSha: 'commit-main',
   }]);
-  assert.equal((await client.getPost('hello'))?.body, 'Body');
-  assert.equal((await client.listSeries())[0]?.source, 'slug: notes\ntitle: Notes');
+  assert.deepEqual((await client.getPost('hello'))?.series, [{ slug: 'notes', title: 'Notes', sectionId: 'start', position: 0 }]);
+  assert.deepEqual((await client.getPost('standalone'))?.series, []);
+  assert.match((await client.listSeries())[0]?.source ?? '', /slug: notes[\s\S]*slug: hello/);
   assert.equal((await client.getSeries('notes'))?.baseCommitSha, 'commit-main');
   assert.deepEqual(await client.getLatestDeployment(), {
     state: 'deployed', commitSha: 'commit-main', startedAt: '2026-09-28T01:00:00Z',

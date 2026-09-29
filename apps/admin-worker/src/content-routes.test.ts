@@ -48,6 +48,7 @@ test('authorized owner browses repository-derived posts with blob and commit SHA
         path: 'src/content/posts/phase-one.md',
         title: 'Phase one',
         status: 'draft',
+        series: [],
         blobSha: 'blob-list',
         commitSha: 'commit-list',
       }];
@@ -57,9 +58,12 @@ test('authorized owner browses repository-derived posts with blob and commit SHA
       return {
         slug,
         path: `src/content/posts/${slug}.md`,
+        title: 'Phase one',
+        status: 'draft',
         source: '---\ntitle: Phase one\n---\nBody',
         frontmatter: { title: 'Phase one', status: 'draft' },
         body: 'Body',
+        series: [],
         baseBlobSha: 'blob-detail',
         baseCommitSha: 'commit-detail',
       };
@@ -79,6 +83,7 @@ test('authorized owner browses repository-derived posts with blob and commit SHA
       path: 'src/content/posts/phase-one.md',
       title: 'Phase one',
       status: 'draft',
+      series: [],
       blobSha: 'blob-list',
       commitSha: 'commit-list',
     }],

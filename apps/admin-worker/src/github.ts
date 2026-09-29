@@ -24,6 +24,8 @@ type RepositorySnapshot = {
   readonly commitSha: string; readonly tree: readonly GitTreeEntry[];
 };
 
+type SeriesMembership = PostSummary['series'][number];
+
 function base64Url(value: Uint8Array | string): string {
   const bytes = typeof value === 'string' ? new TextEncoder().encode(value) : value;
   let binary = '';
@@ -190,8 +192,31 @@ export class GitHubAppReadClient {
     }
     return decodeBase64(blob.content);
   }
+  async #seriesMemberships(snapshot: RepositorySnapshot): Promise<Map<string, SeriesMembership[]>> {
+    const memberships = new Map<string, SeriesMembership[]>();
+    const entries = snapshot.tree.filter((entry) => entry.type === 'blob'
+      && /^src\/content\/series\/[^/]+\.ya?ml$/.test(entry.path));
+    await Promise.all(entries.map(async (entry) => {
+      const manifest = YAML.parse(await this.#readBlob(entry.sha)) as {
+        slug?: unknown; title?: unknown;
+        sections?: Array<{ id?: unknown; posts?: Array<{ slug?: unknown }> }>;
+      };
+      if (typeof manifest.slug !== 'string' || typeof manifest.title !== 'string') return;
+      for (const section of manifest.sections ?? []) {
+        if (typeof section.id !== 'string') continue;
+        for (const [position, post] of (section.posts ?? []).entries()) {
+          if (typeof post.slug !== 'string') continue;
+          const current = memberships.get(post.slug) ?? [];
+          current.push({ slug: manifest.slug, title: manifest.title, sectionId: section.id, position });
+          memberships.set(post.slug, current);
+        }
+      }
+    }));
+    return memberships;
+  }
   async listPosts(): Promise<readonly PostSummary[]> {
     const snapshot = await this.#snapshot();
+    const memberships = await this.#seriesMemberships(snapshot);
     const entries = snapshot.tree.filter((entry) => entry.type === 'blob'
       && /^src\/content\/posts\/.+\.mdx?$/.test(entry.path));
     return Promise.all(entries.map(async (entry) => {
@@ -200,12 +225,14 @@ export class GitHubAppReadClient {
         slug: slugFromPath(entry.path), path: entry.path,
         title: typeof frontmatter.title === 'string' ? frontmatter.title : slugFromPath(entry.path),
         status: typeof frontmatter.status === 'string' ? frontmatter.status : 'draft',
+        series: memberships.get(slugFromPath(entry.path)) ?? [],
         blobSha: entry.sha, commitSha: snapshot.commitSha,
       };
     }));
   }
   async getPost(slug: string): Promise<PostSource | undefined> {
     const snapshot = await this.#snapshot();
+    const memberships = await this.#seriesMemberships(snapshot);
     const entry = snapshot.tree.find((candidate) => candidate.type === 'blob'
       && candidate.path.startsWith('src/content/posts/') && /\.mdx?$/.test(candidate.path)
       && slugFromPath(candidate.path) === slug);
@@ -214,6 +241,9 @@ export class GitHubAppReadClient {
     const { frontmatter, body } = splitFrontmatter(source);
     return {
       slug, path: entry.path, source, frontmatter, body,
+      title: typeof frontmatter.title === 'string' ? frontmatter.title : slug,
+      status: typeof frontmatter.status === 'string' ? frontmatter.status : 'draft',
+      series: memberships.get(slug) ?? [],
       baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
     };
   }

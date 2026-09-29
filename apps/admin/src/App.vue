@@ -19,6 +19,7 @@ import { removedImageUrls, removedMediaRecords } from './media-cleanup';
 import { applyTaipeiSchedule, readScheduleFields, schedulePresentation } from './scheduling';
 import {
   addSeriesSection,
+  addSeriesPost,
   moveSeriesPost,
   moveSeriesSection,
   parseSeriesManifest,
@@ -28,6 +29,7 @@ import {
   type AdminSeriesSection,
   updateSeriesSection,
 } from './series-editor';
+import { createStandaloneSource, filterPostsBySeries, standalonePosts } from './post-series';
 
 type ViewState = 'loading' | 'signed-out' | 'ready' | 'error';
 type WorkspaceMode = 'overview' | 'post' | 'series';
@@ -45,6 +47,9 @@ const selectedSeries = ref<SeriesSource>();
 const seriesManifest = ref<AdminSeriesManifest>();
 const seriesDirty = ref(false);
 const seriesMessage = ref('');
+const seriesFilter = ref('all');
+const newPostTitle = ref('');
+const newPostSlug = ref('');
 const draggedSeriesPost = ref<{ sectionId: string; index: number }>();
 const editorSource = ref('');
 const scheduleDate = ref('');
@@ -85,6 +90,12 @@ const activeSchedule = computed(() => {
 const nextViewLabel = computed(() => editorView.value === 'markdown'
   ? '切換至預覽'
   : editorView.value === 'rendered' ? '切換至分割' : '切換至 Markdown');
+const filteredPosts = computed(() => filterPostsBySeries(posts.value, seriesFilter.value));
+const availableStandalonePosts = computed(() => {
+  const candidates = standalonePosts(posts.value, series.value);
+  const pending = new Set(seriesManifest.value?.sections.flatMap((section) => section.posts.map((post) => post.slug)) ?? []);
+  return candidates.filter((post) => !pending.has(post.slug));
+});
 
 async function readJson<T>(path: string): Promise<T> {
   const response = await fetch(path, { credentials: 'same-origin' });
@@ -304,6 +315,42 @@ async function openPost(slug: string): Promise<void> {
   }
 }
 
+function createPost(): void {
+  const slug = newPostSlug.value.trim();
+  const title = newPostTitle.value.trim();
+  const baseCommitSha = posts.value[0]?.commitSha ?? series.value[0]?.baseCommitSha;
+  if (!title || !/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
+    message.value = '請輸入標題與小寫英文、數字或連字號組成的 slug。';
+    return;
+  }
+  if (posts.value.some((post) => post.slug === slug)) {
+    message.value = '這個 slug 已經存在。';
+    return;
+  }
+  if (!baseCommitSha) {
+    message.value = '目前無法確認 Git 基礎修訂版，請重新載入。';
+    return;
+  }
+  const source = createStandaloneSource(title);
+  selectedPost.value = {
+    slug,
+    path: `src/content/posts/${slug}.md`,
+    title,
+    status: 'draft',
+    source,
+    frontmatter: { title, status: 'draft', topics: [], distribution: { mode: 'full' } },
+    body: '',
+    series: [],
+    baseCommitSha,
+  };
+  editorSource.value = source;
+  editorMessage.value = '已建立無系列文章草稿；儲存至 Git 後才會寫入儲存庫。';
+  scheduleDate.value = '';
+  scheduleTime.value = '09:00';
+  publicationStates.value = [];
+  workspaceMode.value = 'post';
+}
+
 async function loadPublicationStates(post = selectedPost.value): Promise<void> {
   if (!post) return;
   try {
@@ -359,6 +406,15 @@ function movePost(sectionId: string, index: number, delta: -1 | 1): void {
   seriesManifest.value = moveSeriesPost(seriesManifest.value, sectionId, index, delta);
   seriesDirty.value = true;
   seriesMessage.value = '排序尚未儲存，只是這個畫面的暫存狀態。';
+}
+
+function addPost(sectionId: string, slug: string): void {
+  if (!seriesManifest.value || !slug) return;
+  const post = posts.value.find((item) => item.slug === slug);
+  if (!post) return;
+  seriesManifest.value = addSeriesPost(seriesManifest.value, sectionId, { slug, status: post.status });
+  seriesDirty.value = true;
+  seriesMessage.value = `已將「${post.title}」加入系列；只有系列 YAML 會在儲存時更新。`;
 }
 
 function eventValue(event: Event): string {
@@ -491,6 +547,8 @@ async function copyOldDraft(): Promise<void> {
 async function saveToGit(): Promise<void> {
   if (!selectedPost.value || !session.value.authenticated) return;
   try {
+    const wasNew = !selectedPost.value.baseBlobSha;
+    const savedSlug = selectedPost.value.slug;
     const removedUrls = removedImageUrls(selectedPost.value.source, editorSource.value);
     let cleanupCandidates: readonly MediaRecord[] = [];
     if (removedUrls.length) {
@@ -510,9 +568,9 @@ async function saveToGit(): Promise<void> {
       headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
       body: JSON.stringify({
         expectedBaseCommitSha: selectedPost.value.baseCommitSha,
-        message: `Update ${selectedPost.value.slug}`,
+        message: `${selectedPost.value.baseBlobSha ? 'Update' : 'Create'} ${selectedPost.value.slug}`,
         files: [
-          { path: selectedPost.value.path, expectedBlobSha: selectedPost.value.baseBlobSha, source: editorSource.value },
+          { path: selectedPost.value.path, ...(selectedPost.value.baseBlobSha ? { expectedBlobSha: selectedPost.value.baseBlobSha } : {}), source: editorSource.value },
           ...(seriesDirty.value && selectedSeries.value && seriesManifest.value
             ? [{
                 path: selectedSeries.value.path,
@@ -545,6 +603,12 @@ async function saveToGit(): Promise<void> {
     const cleanupMessage = cleanupCandidates.length
       ? ` 已刪除 ${deleted.length} 個未使用媒體；${retained.length ? `${retained.length} 個仍被其他內容引用而保留；` : ''}${failed.length ? `${failed.length} 個清理失敗，請到媒體庫重試；` : ''}`
       : '';
+    if (wasNew) {
+      newPostTitle.value = '';
+      newPostSlug.value = '';
+      await loadAdmin();
+      await openPost(savedSlug);
+    }
     editorMessage.value = `已儲存至 Git（${result.commitSha ?? '新修訂版'}）；${cleanupMessage}公開部署仍需另外確認。`;
     if (mediaOpen.value) await loadMedia();
   } catch (error) {
@@ -697,18 +761,32 @@ onMounted(() => {
               </div>
               <span class="count">{{ posts.length }} 篇</span>
             </div>
-            <ul v-if="posts.length" class="item-list">
-              <li v-for="post in posts" :key="post.slug">
+            <form class="new-post-form" @submit.prevent="createPost">
+              <label><span>文章標題</span><input v-model="newPostTitle" type="text" required></label>
+              <label><span>文章 slug</span><input v-model="newPostSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required></label>
+              <button class="secondary-action" type="submit">新增無系列文章</button>
+            </form>
+            <label class="series-filter">
+              <span>系列篩選</span>
+              <select v-model="seriesFilter">
+                <option value="all">全部文章</option>
+                <option value="standalone">無系列</option>
+                <option v-for="item in series" :key="item.slug" :value="item.slug">{{ item.slug }}</option>
+              </select>
+            </label>
+            <p v-if="message" class="editor-message" aria-live="polite">{{ message }}</p>
+            <ul v-if="filteredPosts.length" class="item-list">
+              <li v-for="post in filteredPosts" :key="post.slug">
                 <button class="post-button" type="button" @click="openPost(post.slug)">
                   <span>
                     <strong>{{ post.title }}</strong>
-                    <small>{{ post.path }}</small>
+                    <small>{{ post.series.length ? post.series.map((item) => item.title).join('、') : '無系列' }} · {{ post.path }}</small>
                   </span>
                   <span class="badge">{{ post.status }}</span>
                 </button>
               </li>
             </ul>
-            <p v-else class="empty">目前沒有文章。</p>
+            <p v-else class="empty">這個篩選條件目前沒有文章。</p>
             </article>
 
             <aside class="panel">
@@ -795,6 +873,13 @@ onMounted(() => {
                 </span>
               </li>
             </ol>
+            <label v-if="availableStandalonePosts.length" class="add-series-post">
+              <span>加入無系列文章</span>
+              <select value="" @change="addPost(section.id, eventValue($event))">
+                <option value="" disabled>選擇文章</option>
+                <option v-for="post in availableStandalonePosts" :key="post.slug" :value="post.slug">{{ post.title }}</option>
+              </select>
+            </label>
           </section>
         </section>
 
@@ -808,6 +893,7 @@ onMounted(() => {
               <p class="eyebrow">文章編輯器</p>
               <h1 id="editor-title">{{ selectedPost.title }}</h1>
               <p class="workspace-path">{{ selectedPost.path }}</p>
+              <p class="post-series-status">系列：{{ selectedPost.series.length ? selectedPost.series.map((item) => item.title).join('、') : '無系列' }}</p>
             </div>
             <div class="editor-actions">
               <label class="sync-control">
@@ -816,7 +902,7 @@ onMounted(() => {
               </label>
               <button type="button" class="secondary-action" @click="autosaveDraft">暫存到瀏覽器</button>
               <button type="button" class="secondary-action" @click="openMediaLibrary">媒體庫</button>
-              <button type="button" class="secondary-action danger-action" @click="requestDelete">刪除文章</button>
+              <button type="button" class="secondary-action danger-action" :disabled="!selectedPost.baseBlobSha" @click="requestDelete">刪除文章</button>
               <button type="button" class="secondary-action" @click="saveToGit">儲存至 Git</button>
               <button type="button" class="primary-action compact" @click="cycleEditorView">{{ nextViewLabel }}</button>
             </div>

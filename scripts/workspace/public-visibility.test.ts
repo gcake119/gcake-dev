@@ -37,3 +37,14 @@ test('catalog-derived RSS, search, navigation, and series outputs cannot bypass 
     assert.match(await source(path), /loadReadingCatalog\(/, `${path} must derive output from the filtered catalog`);
   }
 });
+
+test('public post pages derive series membership from manifests and hide sequence UI for standalone posts', async () => {
+  const catalog = await source('src/lib/content/catalog.ts');
+  const page = await source('src/pages/posts/[...slug].astro');
+
+  assert.doesNotMatch(catalog, /p\.data\.series/);
+  assert.match(catalog, /seriesMembership/);
+  assert.match(page, /allSeries\.find\(.*articles\.some/);
+  assert.match(page, /\{series && <><p class="article-breadcrumb"/);
+  assert.match(page, /\{\(previous \|\| next\) && <nav class="article-pagination"/);
+});

@@ -179,6 +179,12 @@ h2 { font-size: 1.35rem; }
   gap: 20px;
 }
 .panel-heading { margin-bottom: 10px; }
+.new-post-form { margin-bottom: 18px; display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 10px; }
+.new-post-form label, .series-filter, .add-series-post { display: grid; gap: 5px; color: var(--muted); font-size: .78rem; }
+.new-post-form input, .series-filter select, .add-series-post select { min-height: 44px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 5px; color: var(--ink); background: var(--paper); }
+.series-filter { margin-bottom: 12px; }
+.post-series-status { margin: 6px 0 0; color: var(--muted); font-size: .82rem; }
+.add-series-post { margin-top: 12px; max-width: 28rem; }
 .panel-heading .eyebrow { margin-bottom: 2px; }
 .count, .badge {
   padding: 3px 8px;
@@ -388,6 +394,7 @@ h2 { font-size: 1.35rem; }
   .editor-actions { justify-content: start; }
   .series-section-heading { align-items: stretch; flex-direction: column; }
   .series-section-fields { grid-template-columns: minmax(0, 1fr); }
+  .new-post-form { grid-template-columns: minmax(0, 1fr); }
   .section-actions { justify-content: start; }
   .schedule-panel { grid-template-columns: 1fr; align-items: stretch; }
   .schedule-state, .schedule-panel > .muted { grid-column: auto; }
