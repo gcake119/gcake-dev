@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import YAML from 'yaml';
+import matter from 'gray-matter';
 import { listLocalPostFiles } from '../../src/lib/content/local-posts';
 
 type PostStatus = 'planned' | 'draft' | 'ready' | 'published';
@@ -27,15 +28,38 @@ interface Manifest {
   editorial?: { currentPost?: string; nextPost?: string };
 }
 
+interface TopicDefinition {
+  id: string;
+  label: string;
+  labelEn: string;
+}
+
 const seriesDir = path.resolve('src/content/series');
 const postsDir = path.resolve('src/content/posts');
+const topicsFile = path.resolve('src/data/topics.yaml');
 
 const seriesFiles = (await fs.readdir(seriesDir)).filter((name) => /\.ya?ml$/.test(name));
 const localPosts = await listLocalPostFiles(postsDir);
 const markdownFiles = new Set(localPosts.map((post) => post.slug));
 
+const topicRaw = await fs.readFile(topicsFile, 'utf8');
+const taxonomy = (YAML.parse(topicRaw) as { topics?: TopicDefinition[] }).topics ?? [];
+const topicIds = new Set<string>();
 let errors = 0;
 let warnings = 0;
+
+for (const topic of taxonomy) {
+  if (!topic.id || !topic.label || !topic.labelEn) {
+    console.error('ERROR topics.yaml: every topic requires id/label/labelEn');
+    errors++;
+    continue;
+  }
+  if (topicIds.has(topic.id)) {
+    console.error(`ERROR topics.yaml: duplicate topic id "${topic.id}"`);
+    errors++;
+  }
+  topicIds.add(topic.id);
+}
 
 const pathsBySlug = new Map<string, string[]>();
 for (const post of localPosts) {
@@ -47,6 +71,38 @@ for (const [slug, paths] of pathsBySlug) {
   if (paths.length > 1) {
     console.error(`ERROR duplicate local post slug "${slug}": ${paths.join(', ')}`);
     errors++;
+  }
+}
+
+for (const post of localPosts) {
+  const raw = await fs.readFile(post.path, 'utf8');
+  const data = matter(raw).data as {
+    title?: string;
+    description?: string;
+    status?: string;
+    topics?: string[];
+  };
+  const topics = data.topics ?? [];
+
+  if (topics.length > 3) {
+    console.error(`ERROR ${post.path}: at most 3 topics are allowed`);
+    errors++;
+  }
+  for (const topic of topics) {
+    if (!topicIds.has(topic)) {
+      console.error(`ERROR ${post.path}: unknown topic id "${topic}"`);
+      errors++;
+    }
+  }
+  if (data.status === 'ready' || data.status === 'published') {
+    if (!data.description?.trim()) {
+      console.error(`ERROR ${post.path}: ${data.status} posts require description`);
+      errors++;
+    }
+    if (topics.length === 0) {
+      console.error(`ERROR ${post.path}: ${data.status} posts require 1–3 topics`);
+      errors++;
+    }
   }
 }
 
