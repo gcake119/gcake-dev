@@ -38,3 +38,14 @@ export function createStandaloneSource(title: string): string {
     .replace(/^/, '---\n')
     .concat('---\n\n');
 }
+
+export function updatePostTitle(source: string, title: string): string {
+  const closing = source.indexOf('\n---', 4);
+  if (!source.startsWith('---\n') || closing < 0) return source;
+  const frontmatter = source.slice(4, closing);
+  const titleLine = YAML.stringify({ title: title.trim() }, { lineWidth: 0 }).trim();
+  const updated = /^title:.*$/m.test(frontmatter)
+    ? frontmatter.replace(/^title:.*$/m, titleLine)
+    : `${titleLine}\n${frontmatter}`;
+  return `---\n${updated}${source.slice(closing)}`;
+}

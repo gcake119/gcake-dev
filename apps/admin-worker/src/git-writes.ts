@@ -1,3 +1,5 @@
+import YAML from 'yaml';
+
 export type ConflictCode = 'ARTICLE_CONFLICT' | 'SERIES_CONFLICT';
 
 export class RepositoryConflictError extends Error {
@@ -52,6 +54,62 @@ export async function saveRepositoryTransaction(
     }
   }
   return repository.commit(transaction);
+}
+
+export async function renamePost(repository: GitWriteRepository, input: {
+  readonly oldSlug: string;
+  readonly newSlug: string;
+  readonly source: string;
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+  readonly oldPath?: string;
+  readonly seriesFiles?: readonly {
+    readonly path: string;
+    readonly expectedBlobSha: string;
+    readonly source: string;
+  }[];
+}): Promise<RepositoryCommit> {
+  const oldPath = input.oldPath ?? `src/content/posts/${input.oldSlug}.md`;
+  const newPath = `src/content/posts/${input.newSlug}.md`;
+  const seriesChanges = (input.seriesFiles ?? []).flatMap((file) => {
+    const source = renameSeriesReferences(file.source, input.oldSlug, input.newSlug);
+    return source === file.source ? [] : [{ path: file.path, expectedBlobSha: file.expectedBlobSha, content: source }];
+  });
+  return saveRepositoryTransaction(repository, {
+    expectedBaseCommitSha: input.expectedBaseCommitSha,
+    message: `Rename ${input.oldSlug} to ${input.newSlug}`,
+    changes: [
+      { path: newPath, content: input.source },
+      ...seriesChanges,
+      { path: oldPath, expectedBlobSha: input.expectedBlobSha },
+    ],
+  });
+}
+
+export function renameSeriesReferences(source: string, oldSlug: string, newSlug: string): string {
+  const manifest = YAML.parse(source) as {
+    sections?: Array<{ posts?: Array<{ slug?: unknown }> }>;
+    editorial?: { currentPost?: unknown; nextPost?: unknown };
+    [key: string]: unknown;
+  };
+  let changed = false;
+  for (const section of manifest.sections ?? []) {
+    for (const post of section.posts ?? []) {
+      if (post.slug === oldSlug) {
+        post.slug = newSlug;
+        changed = true;
+      }
+    }
+  }
+  if (manifest.editorial?.currentPost === oldSlug) {
+    manifest.editorial.currentPost = newSlug;
+    changed = true;
+  }
+  if (manifest.editorial?.nextPost === oldSlug) {
+    manifest.editorial.nextPost = newSlug;
+    changed = true;
+  }
+  return changed ? YAML.stringify(manifest, { lineWidth: 0 }) : source;
 }
 
 export class InMemoryGitRepository implements GitWriteRepository {

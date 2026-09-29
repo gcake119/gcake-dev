@@ -73,6 +73,24 @@ test('content workbench creates, labels, and filters standalone posts without a 
   assert.doesNotMatch(source, /文章類型/);
 });
 
+test('new article workspace exposes an explicit editable slug suggestion without autosave', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, /<span>文章標題<\/span><input v-model="newPostTitle"/);
+  assert.match(source, /<span>Slug<\/span>/);
+  assert.match(source, /@click="generateNewPostSlug">產生 slug<\/button>/);
+  assert.doesNotMatch(source, /watch\([^)]*Title[^)]*generate/i);
+});
+
+test('existing article workspace keeps title and slug editable and generates only on explicit action', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, /<input v-model="editorTitle" type="text"/);
+  assert.match(source, /<input v-model="editorSlug" type="text"/);
+  assert.match(source, /@click="generateEditorSlug">產生 slug<\/button>/);
+  assert.doesNotMatch(source, /watch\([^)]*editorTitle[^)]*generateEditorSlug/i);
+});
+
 test('series editor adds standalone posts by changing only its manifest state', async () => {
   const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
 

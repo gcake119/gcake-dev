@@ -29,7 +29,8 @@ import {
   type AdminSeriesSection,
   updateSeriesSection,
 } from './series-editor';
-import { createStandaloneSource, filterPostsBySeries, standalonePosts } from './post-series';
+import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePostTitle } from './post-series';
+import { requestSlugSuggestion } from './slug-suggestion';
 
 type ViewState = 'loading' | 'signed-out' | 'ready' | 'error';
 type WorkspaceMode = 'overview' | 'post' | 'series';
@@ -50,6 +51,12 @@ const seriesMessage = ref('');
 const seriesFilter = ref('all');
 const newPostTitle = ref('');
 const newPostSlug = ref('');
+const slugSuggestionMessage = ref('');
+const slugSuggestionLoading = ref(false);
+const editorTitle = ref('');
+const editorSlug = ref('');
+const editorSlugSuggestionMessage = ref('');
+const editorSlugSuggestionLoading = ref(false);
 const draggedSeriesPost = ref<{ sectionId: string; index: number }>();
 const editorSource = ref('');
 const scheduleDate = ref('');
@@ -291,6 +298,9 @@ async function openPost(slug: string): Promise<void> {
   try {
     const post = await readJson<PostSource>(`/api/v1/posts/${slug}`);
     selectedPost.value = post;
+    editorTitle.value = post.title;
+    editorSlug.value = post.slug;
+    editorSlugSuggestionMessage.value = '';
     const key = `gcake:draft:gcake119/gcake-dev:${slug}:${post.baseBlobSha}`;
     const draft = localStorage.getItem(key);
     const prefix = `gcake:draft:gcake119/gcake-dev:${slug}:`;
@@ -343,12 +353,55 @@ function createPost(): void {
     series: [],
     baseCommitSha,
   };
+  editorTitle.value = title;
+  editorSlug.value = slug;
+  editorSlugSuggestionMessage.value = '';
   editorSource.value = source;
   editorMessage.value = '已建立無系列文章草稿；儲存至 Git 後才會寫入儲存庫。';
   scheduleDate.value = '';
   scheduleTime.value = '09:00';
   publicationStates.value = [];
   workspaceMode.value = 'post';
+}
+
+async function generateNewPostSlug(): Promise<void> {
+  const currentSlug = newPostSlug.value;
+  slugSuggestionLoading.value = true;
+  slugSuggestionMessage.value = '';
+  const result = await requestSlugSuggestion(
+    newPostTitle.value,
+    import.meta.env.VITE_SLUG_GENERATOR_URL ?? '',
+  );
+  slugSuggestionLoading.value = false;
+  if (result.kind === 'empty-title') {
+    slugSuggestionMessage.value = '請先輸入文章標題。';
+  } else if (result.kind === 'suggested') {
+    newPostSlug.value = result.slug;
+    slugSuggestionMessage.value = '已填入 slug 建議；你仍可手動修改，尚未儲存。';
+  } else {
+    newPostSlug.value = currentSlug;
+    slugSuggestionMessage.value = '目前無法產生 slug，可以手動輸入。';
+  }
+}
+
+async function generateEditorSlug(): Promise<void> {
+  const currentSlug = editorSlug.value;
+  editorSlugSuggestionLoading.value = true;
+  editorSlugSuggestionMessage.value = '';
+  const result = await requestSlugSuggestion(
+    editorTitle.value,
+    import.meta.env.VITE_SLUG_GENERATOR_URL ?? '',
+  );
+  editorSlugSuggestionLoading.value = false;
+  if (result.kind === 'empty-title') {
+    editorSlugSuggestionMessage.value = '請先輸入文章標題。';
+  } else if (result.kind === 'suggested') {
+    editorSlug.value = result.slug;
+    editorSlugSuggestionMessage.value = '已填入 slug 建議；你仍可手動修改，尚未儲存。';
+  } else {
+    editorSlug.value = currentSlug;
+    editorSlugSuggestionMessage.value = '目前無法產生 slug，可以手動輸入。';
+  }
 }
 
 async function loadPublicationStates(post = selectedPost.value): Promise<void> {
@@ -548,7 +601,18 @@ async function saveToGit(): Promise<void> {
   if (!selectedPost.value || !session.value.authenticated) return;
   try {
     const wasNew = !selectedPost.value.baseBlobSha;
-    const savedSlug = selectedPost.value.slug;
+    const savedSlug = editorSlug.value.trim();
+    const savedTitle = editorTitle.value.trim();
+    if (!savedTitle || !/^[a-z0-9][a-z0-9-]*$/.test(savedSlug)) {
+      editorMessage.value = '請輸入標題與小寫英文、數字或連字號組成的 slug。';
+      return;
+    }
+    if (savedSlug !== selectedPost.value.slug && posts.value.some((post) => post.slug === savedSlug)) {
+      editorMessage.value = '這個 slug 已經存在。';
+      return;
+    }
+    const savedSource = updatePostTitle(editorSource.value, savedTitle);
+    editorSource.value = savedSource;
     const removedUrls = removedImageUrls(selectedPost.value.source, editorSource.value);
     let cleanupCandidates: readonly MediaRecord[] = [];
     if (removedUrls.length) {
@@ -562,15 +626,21 @@ async function saveToGit(): Promise<void> {
         }
       }
     }
+    const renaming = Boolean(selectedPost.value.baseBlobSha && savedSlug !== selectedPost.value.slug);
     const response = await fetch(`/api/v1/posts/${selectedPost.value.slug}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
-      body: JSON.stringify({
+      body: JSON.stringify(renaming ? {
         expectedBaseCommitSha: selectedPost.value.baseCommitSha,
-        message: `${selectedPost.value.baseBlobSha ? 'Update' : 'Create'} ${selectedPost.value.slug}`,
+        expectedBlobSha: selectedPost.value.baseBlobSha,
+        newSlug: savedSlug,
+        source: savedSource,
+      } : {
+        expectedBaseCommitSha: selectedPost.value.baseCommitSha,
+        message: `${selectedPost.value.baseBlobSha ? 'Update' : 'Create'} ${savedSlug}`,
         files: [
-          { path: selectedPost.value.path, ...(selectedPost.value.baseBlobSha ? { expectedBlobSha: selectedPost.value.baseBlobSha } : {}), source: editorSource.value },
+          { path: `src/content/posts/${savedSlug}.md`, ...(selectedPost.value.baseBlobSha ? { expectedBlobSha: selectedPost.value.baseBlobSha } : {}), source: savedSource },
           ...(seriesDirty.value && selectedSeries.value && seriesManifest.value
             ? [{
                 path: selectedSeries.value.path,
@@ -603,7 +673,7 @@ async function saveToGit(): Promise<void> {
     const cleanupMessage = cleanupCandidates.length
       ? ` 已刪除 ${deleted.length} 個未使用媒體；${retained.length ? `${retained.length} 個仍被其他內容引用而保留；` : ''}${failed.length ? `${failed.length} 個清理失敗，請到媒體庫重試；` : ''}`
       : '';
-    if (wasNew) {
+    if (wasNew || renaming) {
       newPostTitle.value = '';
       newPostSlug.value = '';
       await loadAdmin();
@@ -763,9 +833,11 @@ onMounted(() => {
             </div>
             <form class="new-post-form" @submit.prevent="createPost">
               <label><span>文章標題</span><input v-model="newPostTitle" type="text" required></label>
-              <label><span>文章 slug</span><input v-model="newPostSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required></label>
+              <label><span>Slug</span><input v-model="newPostSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required></label>
+              <button type="button" class="secondary-action" :disabled="slugSuggestionLoading" @click="generateNewPostSlug">產生 slug</button>
               <button class="secondary-action" type="submit">新增無系列文章</button>
             </form>
+            <p v-if="slugSuggestionMessage" class="slug-suggestion-message" aria-live="polite">{{ slugSuggestionMessage }}</p>
             <label class="series-filter">
               <span>系列篩選</span>
               <select v-model="seriesFilter">
@@ -891,8 +963,8 @@ onMounted(() => {
           <div class="editor-toolbar">
             <div>
               <p class="eyebrow">文章編輯器</p>
-              <h1 id="editor-title">{{ selectedPost.title }}</h1>
-              <p class="workspace-path">{{ selectedPost.path }}</p>
+              <h1 id="editor-title">{{ editorTitle }}</h1>
+              <p class="workspace-path">src/content/posts/{{ editorSlug }}.md</p>
               <p class="post-series-status">系列：{{ selectedPost.series.length ? selectedPost.series.map((item) => item.title).join('、') : '無系列' }}</p>
             </div>
             <div class="editor-actions">
@@ -907,6 +979,12 @@ onMounted(() => {
               <button type="button" class="primary-action compact" @click="cycleEditorView">{{ nextViewLabel }}</button>
             </div>
           </div>
+          <div class="editor-metadata">
+            <label><span>文章標題</span><input v-model="editorTitle" type="text" required></label>
+            <label><span>Slug</span><input v-model="editorSlug" type="text" inputmode="url" pattern="[a-z0-9][a-z0-9-]*" required></label>
+            <button type="button" class="secondary-action" :disabled="editorSlugSuggestionLoading || !editorTitle.trim()" @click="generateEditorSlug">產生 slug</button>
+          </div>
+          <p v-if="editorSlugSuggestionMessage" class="slug-suggestion-message" aria-live="polite">{{ editorSlugSuggestionMessage }}</p>
           <p v-if="editorMessage" class="editor-message" aria-live="polite">{{ editorMessage }}</p>
           <section class="schedule-panel" aria-labelledby="schedule-title">
             <div>

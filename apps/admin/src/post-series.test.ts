@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { PostSummary, SeriesSource } from '@gcake/admin-contract';
-import { createStandaloneSource, filterPostsBySeries, standalonePosts } from './post-series';
+import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePostTitle } from './post-series';
 
 const posts: readonly PostSummary[] = [
   { slug: 'standalone', path: 'src/content/posts/standalone.md', title: '單篇文章', status: 'draft', series: [], blobSha: 'one', commitSha: 'commit' },
@@ -28,4 +28,12 @@ test('new post source is standalone and contains no permanent article-type or se
   assert.match(source, /title: 新的單篇文章/);
   assert.match(source, /status: draft/);
   assert.doesNotMatch(source, /series:|section:|order:|standalone:/);
+});
+
+test('editing an article title updates only the frontmatter title', () => {
+  const source = '---\ntitle: 舊標題\nstatus: draft\n---\n\n# 舊標題仍可出現在正文\n';
+  const updated = updatePostTitle(source, '新的：標題');
+
+  assert.match(updated, /^---\ntitle: 新的：標題\nstatus: draft\n---/);
+  assert.match(updated, /# 舊標題仍可出現在正文/);
 });

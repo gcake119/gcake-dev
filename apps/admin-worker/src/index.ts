@@ -4,7 +4,7 @@ import {
 } from '@gcake/admin-contract';
 import { D1SessionStore, type SessionDatabase } from './auth.js';
 import { readProviderWriteFlags, type WorkerBindings } from './bindings.js';
-import { GitHubAppInstallationTokenProvider, GitHubAppReadClient } from './github.js';
+import { GitHubAppInstallationTokenProvider, GitHubAppReadClient, GitHubAppWriteClient } from './github.js';
 import { createPhase1Handler, type OAuthClient } from './router.js';
 
 export const serviceName = 'gcake-admin-worker' as const;
@@ -104,16 +104,19 @@ export async function handleRequest(
 
     const oauth = githubOAuth(env, fetcher);
     const owners = ownerIds(env.GITHUB_OWNER_USER_IDS);
-    const github = env.GITHUB_APP_ID && env.GITHUB_APP_INSTALLATION_ID && env.GITHUB_APP_PRIVATE_KEY
-      ? new GitHubAppReadClient({
-          installationTokens: new GitHubAppInstallationTokenProvider({
+    const installationTokens = env.GITHUB_APP_ID && env.GITHUB_APP_INSTALLATION_ID && env.GITHUB_APP_PRIVATE_KEY
+      ? new GitHubAppInstallationTokenProvider({
             appId: env.GITHUB_APP_ID,
             installationId: env.GITHUB_APP_INSTALLATION_ID,
             privateKey: env.GITHUB_APP_PRIVATE_KEY,
             fetch: fetcher,
-          }),
-          fetch: fetcher,
         })
+      : undefined;
+    const github = installationTokens
+      ? new GitHubAppReadClient({ installationTokens, fetch: fetcher })
+      : undefined;
+    const githubWrites = installationTokens
+      ? new GitHubAppWriteClient({ installationTokens, fetch: fetcher })
       : undefined;
     const isOAuthRoute = url.pathname === '/api/v1/auth/login'
       || url.pathname === '/api/v1/auth/callback';
@@ -129,6 +132,7 @@ export async function handleRequest(
       },
       sessions: new D1SessionStore(env.CMS_DB),
       github,
+      githubWrites,
       allowedGitHubUserIds: owners,
       oauthStateSecret: env.OAUTH_STATE_SECRET ?? '',
     })(request);

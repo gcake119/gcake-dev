@@ -41,6 +41,13 @@ export interface GitHubContentReader {
 
 export interface GitHubContentWriter {
   save(request: SaveContentRequest): Promise<{ readonly commitSha: string; readonly paths: readonly string[] }>;
+  renamePost?(input: {
+    readonly slug: string;
+    readonly newSlug: string;
+    readonly source: string;
+    readonly expectedBlobSha: string;
+    readonly expectedBaseCommitSha: string;
+  }): Promise<{ readonly commitSha: string; readonly paths: readonly string[] }>;
   deletePost(input: {
     readonly slug: string;
     readonly expectedBlobSha: string;
@@ -414,10 +421,35 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
       try {
         const payload = await request.json() as Record<string, unknown>;
         if (request.method === 'POST') {
+          if ('newSlug' in payload) {
+            if (typeof payload.newSlug !== 'string' || !SAFE_SLUG.test(payload.newSlug)
+              || payload.newSlug === slug || typeof payload.source !== 'string'
+              || typeof payload.expectedBlobSha !== 'string'
+              || typeof payload.expectedBaseCommitSha !== 'string') {
+              return jsonError(400, 'VALIDATION_FAILED', '文章 slug 改名資料格式不正確。');
+            }
+            if (!dependencies.githubWrites.renamePost) {
+              return jsonError(503, 'GITHUB_API_FAILED', '文章 slug 改名服務尚未設定。');
+            }
+            return Response.json(await dependencies.githubWrites.renamePost({
+              slug,
+              newSlug: payload.newSlug,
+              source: payload.source,
+              expectedBlobSha: payload.expectedBlobSha,
+              expectedBaseCommitSha: payload.expectedBaseCommitSha,
+            }));
+          }
           if (!Array.isArray(payload.files) || typeof payload.expectedBaseCommitSha !== 'string' || typeof payload.message !== 'string') {
             return jsonError(400, 'VALIDATION_FAILED', '儲存資料格式不正確。');
           }
           const requested = payload as unknown as SaveContentRequest;
+          const postPath = new RegExp(`^src/content/posts/(?:[^/]+/)*${slug}\\.mdx?$`);
+          const postFiles = requested.files.filter((file) => postPath.test(file.path));
+          const pathsAreBounded = requested.files.every((file) => postPath.test(file.path)
+            || /^src\/content\/series\/[a-z0-9][a-z0-9-]*\.ya?ml$/.test(file.path));
+          if (postFiles.length !== 1 || !pathsAreBounded) {
+            return jsonError(400, 'VALIDATION_FAILED', '儲存路徑不在允許的文章或系列範圍內。');
+          }
           const seriesFiles = requested.files.filter((file) => file.path.startsWith('src/content/series/'));
           if (seriesFiles.length && !dependencies.seriesValidator) {
             return jsonError(503, 'GITHUB_API_FAILED', '系列驗證服務尚未設定。');
