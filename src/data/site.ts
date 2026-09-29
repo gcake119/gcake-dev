@@ -2,7 +2,11 @@ export const site = {
   title: '雞蛋糕的開發筆記',
   tagline: '在 AI 協作開發中，邊做、邊學、邊想。',
   description: '從真實專案出發，記錄 AI 協作開發中的學習與思考。',
-  author: 'gcake',
+  url: 'https://gcake119.github.io/gcake-dev',
+  author: {
+    name: 'gcake',
+    github: 'https://github.com/gcake119',
+  },
   repository: 'gcake119/gcake-dev',
   basePath: '/gcake-dev',
   legacySeries: {
