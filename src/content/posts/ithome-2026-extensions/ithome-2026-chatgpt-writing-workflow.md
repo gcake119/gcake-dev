@@ -4,10 +4,8 @@ description: 30 篇文章放在同一個 ChatGPT Project、每篇各自開對話
 status: ready
 series: ithome-2026-extensions
 topics:
-  - ChatGPT
-  - AI 協作
-  - 技術寫作
-  - iThome 鐵人賽
+  - ai-assisted-development
+  - technical-writing
 ---
 
 今年準備 iThome 鐵人賽時，我先把 30 篇文章全部寫完，再等開賽後一天發一篇。
