@@ -14,14 +14,16 @@ Series manifests are both editorial planning records and website navigation sour
 8. Section structure may change while future posts are still unpublished.
 9. Production pages show only published posts.
 10. A completed series must not contain unfinished posts.
+11. Article topics use only IDs defined in src/data/topics.yaml.
+12. Ready/published articles use 1–3 high-level topics selected from the article's core problem/development domain, not incidental tools.
 
 ## Status
 
-Series: `planned | active | completed | archived`
+Series: planned | active | completed | archived
 
-Section: `planned | active | completed`
+Section: planned | active | completed
 
-Post planning: `planned | draft | ready | published`
+Post planning: planned | draft | ready | published
 
 ## Responsibility
 
@@ -34,19 +36,23 @@ Series answers:
 Post answers:
 - What is the article?
 - When was it published?
-- What topics does it discuss?
+- What problem/development domains does it discuss?
+
+Topic taxonomy answers:
+- Which recurring high-level problem/development domains connect articles across series?
+- What stable topic ID and bilingual labels represent each domain?
 
 ## Public publication state
 
-The existing `status` field describes editorial/archive management. Optional `publication` describes reader-facing lifecycle independently:
+The existing status field describes editorial/archive management. Optional publication describes reader-facing lifecycle independently:
 
-```yaml
+~~~yaml
 publication:
   status: active # active | completed | paused
   endsAt: '2026-10-08' # optional, explicit final release day
-```
+~~~
 
-When an explicit final release date exists, the series stays ongoing until that Taipei calendar day, then becomes completed. `paused` overrides this transition. Without an end date, an active series remains active regardless of inactivity. Do not infer completion from archive status when a publication schedule is present.
+When an explicit final release date exists, the series stays ongoing until that Taipei calendar day, then becomes completed. paused overrides this transition. Without an end date, an active series remains active regardless of inactivity. Do not infer completion from archive status when a publication schedule is present.
 
 Only posts marked published and whose date has arrived appear in the reading catalog, series navigation or generated public routes. Series without readable posts are hidden. The period starts at the earliest readable installment; ongoing series show 至今, completed series end at the final readable installment, and paused series show the latest published date without an implication of completion.
 
