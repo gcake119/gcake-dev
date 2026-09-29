@@ -53,11 +53,13 @@ test('public post pages derive series membership from manifests and hide sequenc
 test('public article pages emit shared structured data', async () => {
   const localPage = await source('src/pages/posts/[...slug].astro');
   const externalPage = await source('src/pages/series/ithome-2026/[post].astro');
+  const seriesPage = await source('src/pages/series/[slug].astro');
   const layout = await source('src/layouts/BaseLayout.astro');
 
   assert.match(localPage, /articleStructuredData/);
   assert.match(localPage, /breadcrumbStructuredData/);
   assert.match(externalPage, /articleStructuredData/);
+  assert.match(seriesPage, /seriesStructuredData/);
   assert.match(layout, /application\/ld\+json/);
   assert.match(layout, /og:title/);
   assert.match(layout, /twitter:card/);
