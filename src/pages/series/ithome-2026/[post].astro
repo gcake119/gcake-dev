@@ -25,6 +25,10 @@ const structuredData = [
     description: article.description,
     canonical: article.canonicalUrl,
     publishedAt: article.publishedAt,
+    series: {
+      title: series.title,
+      url: localCanonical(`/series/${series.slug}/`),
+    },
   }),
   breadcrumbStructuredData([
     { name: '首頁', url: localCanonical('/') },
