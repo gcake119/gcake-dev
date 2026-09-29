@@ -10,6 +10,10 @@ const workerConfig = await readFile(
   new URL('../../apps/admin-worker/wrangler.toml', import.meta.url),
   'utf8',
 );
+const adminDeployWorkflow = await readFile(
+  new URL('../../.github/workflows/deploy-admin-worker.yml', import.meta.url),
+  'utf8',
+);
 
 test('Phase 0 exposes independent workspace build and test entry points', async () => {
   assert.equal(rootPackage.scripts['build:astro'], 'pnpm content:validate && astro build');
@@ -42,4 +46,14 @@ test('preview Worker serves the built Admin as a same-origin SPA while runtime r
   assert.match(workerConfig, /directory\s*=\s*"\.\.\/admin\/dist"/);
   assert.match(workerConfig, /not_found_handling\s*=\s*"single-page-application"/);
   assert.match(workerConfig, /run_worker_first\s*=\s*\[\s*"\/api\/\*"\s*,\s*"\/health"\s*\]/);
+});
+
+test('production Admin deployment migrates before deploy and verifies health', () => {
+  assert.match(adminDeployWorkflow, /CLOUDFLARE_API_TOKEN/);
+  assert.match(adminDeployWorkflow, /CLOUDFLARE_ACCOUNT_ID/);
+  assert.match(adminDeployWorkflow, /d1 migrations apply CMS_DB --env production --remote/);
+  assert.match(adminDeployWorkflow, /deploy --env production/);
+  assert.match(adminDeployWorkflow, /steps\.deploy\.outputs\.deployment-url/);
+  assert.match(adminDeployWorkflow, /\/health/);
+  assert.doesNotMatch(adminDeployWorkflow, /deploy-pages/);
 });
