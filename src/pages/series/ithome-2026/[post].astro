@@ -3,11 +3,15 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SeriesNavigation from '@/components/SeriesNavigation.astro';
 import { loadIthomeArticles } from '@/lib/content/external';
 import { loadReadingCatalog } from '@/lib/content/catalog';
+import { articleStructuredData, breadcrumbStructuredData } from '@/lib/seo/structured-data';
+import { localCanonical } from '@/lib/seo/canonical';
 import { formatDate } from '@/lib/content/format';
 import { site } from '@/data/site';
+
 export async function getStaticPaths() {
   return loadIthomeArticles().map(article => ({ params: { post: article.slug }, props: { article } }));
 }
+
 const { article } = Astro.props;
 const { series: allSeries } = await loadReadingCatalog();
 const series = allSeries.find(s => s.slug === 'ithome-2026')!;
@@ -15,8 +19,23 @@ const index = series.articles.findIndex(p => p.slug === article.slug);
 const previous = series.articles[index - 1];
 const next = series.articles[index + 1];
 const toc = article.headings.filter(h => h.depth === 2 || h.depth === 3);
+const structuredData = [
+  articleStructuredData({
+    title: article.title,
+    description: article.description,
+    canonical: article.canonicalUrl,
+    publishedAt: article.publishedAt,
+  }),
+  breadcrumbStructuredData([
+    { name: '首頁', url: localCanonical('/') },
+    { name: '系列', url: localCanonical('/series/') },
+    { name: series.title, url: localCanonical(`/series/${series.slug}/`) },
+    { name: article.title, url: article.canonicalUrl },
+  ]),
+];
 ---
-<BaseLayout title={article.title} description={article.description} canonical={article.canonicalUrl} mainClass="article-page">
+
+<BaseLayout title={article.title} description={article.description} canonical={article.canonicalUrl} type="article" structuredData={structuredData} mainClass="article-page">
   <article>
     <header class="article-header">
       <p class="article-breadcrumb"><a href={`${site.basePath}/series/${series.slug}/`}>{series.title}</a></p>
