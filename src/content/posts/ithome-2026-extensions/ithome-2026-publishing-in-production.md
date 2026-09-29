@@ -4,11 +4,9 @@ description: 正式開賽後，自動發文開始遇到 Chrome、反自動化、
 status: ready
 series: ithome-2026-extensions
 topics:
-  - iThome 鐵人賽
-  - 自動化
-  - Playwright
-  - Hermes
-  - 驗證
+  - development-automation
+  - debugging-operations
+  - testing-verification
 ---
 
 Day 1 本來就預計手動發文，因為要先拿到正式系列資訊。
