@@ -1,0 +1,41 @@
+# gcake-dev Topic Taxonomy
+#
+# 用途：
+# - 作為文章 topics 的正式候選清單。
+# - 新文章由 AI / Codex 依正文核心問題自動選擇 1–3 個 topic。
+# - Topic 描述文章主要在解決／討論的問題領域，不描述文章碰巧使用的工具。
+# - 優先使用既有 topic；只有現有 taxonomy 無法合理涵蓋，且預期可形成多篇內容時才新增。
+# - 文章 frontmatter 建議保存 id，顯示名稱由本檔統一提供。
+
+topics:
+  - id: ai-assisted-development
+    label: AI 協作開發
+    labelEn: AI-assisted Development
+
+  - id: product-development
+    label: 產品開發
+    labelEn: Product Development
+
+  - id: system-design
+    label: 系統設計
+    labelEn: System Design
+
+  - id: testing-verification
+    label: 測試與驗證
+    labelEn: Testing & Verification
+
+  - id: development-automation
+    label: 開發自動化
+    labelEn: Development Automation
+
+  - id: debugging-operations
+    label: 除錯與維運
+    labelEn: Debugging & Operations
+
+  - id: developer-learning
+    label: 開發學習
+    labelEn: Developer Learning
+
+  - id: technical-writing
+    label: 技術寫作
+    labelEn: Technical Writing
