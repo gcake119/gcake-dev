@@ -16,12 +16,16 @@ test('article structured data uses canonical page and shared author identity', (
     publishedAt: new Date('2026-09-30T00:00:00.000Z'),
     updatedAt: new Date('2026-10-01T00:00:00.000Z'),
     topics: ['系統設計'],
+    image: '/images/example.png',
   }) as Record<string, any>;
 
   assert.equal(data['@type'], 'BlogPosting');
   assert.equal(data.mainEntityOfPage['@id'], canonical);
   assert.equal(data.author['@id'], `${site.url}/about/#author`);
+  assert.equal(data.author.name, site.author.name);
+  assert.equal(data.author.url, `${site.url}/about/`);
   assert.deepEqual(data.keywords, ['系統設計']);
+  assert.equal(data.image, `${site.url}/images/example.png`);
   assert.equal(data.datePublished, '2026-09-30T00:00:00.000Z');
   assert.equal(data.dateModified, '2026-10-01T00:00:00.000Z');
 });
