@@ -6,21 +6,43 @@ import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
 import { loadTopicTaxonomy } from '@/lib/content/topics';
+import { loadIthomeArticles } from '@/lib/content/external';
 
 export async function getStaticPaths() {
-  const posts = (await getCollection('posts')).filter((post) => isPublicPost(post.data));
-  const used = new Set(posts.flatMap((post) => post.data.topics));
+  const local = (await getCollection('posts')).filter((post) => isPublicPost(post.data));
+  const external = loadIthomeArticles();
+  const used = new Set([
+    ...local.flatMap((post) => post.data.topics),
+    ...external.flatMap((post) => post.topics),
+  ]);
   const topics = (await loadTopicTaxonomy()).filter((topic) => used.has(topic.id));
   return topics.map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
 }
 
 const { topic } = Astro.props;
-const posts = (await getCollection('posts'))
+const localPosts = (await getCollection('posts'))
   .filter((post) => isPublicPost(post.data) && post.data.topics.includes(topic.id))
-  .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
+  .map((post) => ({
+    title: post.data.title,
+    description: post.data.description,
+    date: post.data.publishedAt,
+    href: `${site.basePath}/posts/${post.id}/`,
+  }));
+
+const externalPosts = loadIthomeArticles()
+  .filter((post) => post.topics.includes(topic.id))
+  .map((post) => ({
+    title: post.title,
+    description: post.description,
+    date: post.publishedAt,
+    href: `${site.basePath}/series/ithome-2026/${post.slug}/`,
+  }));
+
+const posts = [...localPosts, ...externalPosts]
+  .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 ---
 
 <BaseLayout title={topic.label} description={`${topic.label}（${topic.labelEn}）相關文章。`} canonical={localCanonical(`/topics/${topic.id}/`)}>
   <header class="index-header"><p class="page-kicker">{topic.labelEn}</p><h1 class="page-title">{topic.label}</h1><p class="lede">共 {posts.length} 篇相關文章。</p></header>
-  <ul class="post-list">{posts.map((post) => <li class="post-row">{post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}<div><h3><a href={`${site.basePath}/posts/${post.id}/`}>{post.data.title}</a></h3>{post.data.description && <p>{post.data.description}</p>}</div></li>)}</ul>
+  <ul class="post-list">{posts.map((post) => <li class="post-row">{post.date && <time datetime={post.date.toISOString()}>{formatDate(post.date)}</time>}<div><h3><a href={post.href}>{post.title}</a></h3>{post.description && <p>{post.description}</p>}</div></li>)}</ul>
 </BaseLayout>
