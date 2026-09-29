@@ -7,6 +7,13 @@ export interface ArticleStructuredDataInput {
   publishedAt?: Date;
   updatedAt?: Date;
   topics?: string[];
+  image?: string;
+}
+
+function absoluteSiteAsset(value: string): string {
+  return /^https?:\/\//.test(value)
+    ? value
+    : new URL(value.replace(/^\/+/, ''), `${site.url}/`).toString();
 }
 
 export function articleStructuredData(input: ArticleStructuredDataInput) {
@@ -18,7 +25,13 @@ export function articleStructuredData(input: ArticleStructuredDataInput) {
     ...(input.publishedAt ? { datePublished: input.publishedAt.toISOString() } : {}),
     ...(input.updatedAt ? { dateModified: input.updatedAt.toISOString() } : {}),
     ...(input.topics?.length ? { keywords: input.topics } : {}),
-    author: { '@id': `${site.url}/about/#author` },
+    ...(input.image ? { image: absoluteSiteAsset(input.image) } : {}),
+    author: {
+      '@type': 'Person',
+      '@id': `${site.url}/about/#author`,
+      name: site.author.name,
+      url: `${site.url}/about/`,
+    },
     mainEntityOfPage: { '@type': 'WebPage', '@id': input.canonical },
   };
 }
