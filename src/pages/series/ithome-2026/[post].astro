@@ -6,6 +6,7 @@ import { loadReadingCatalog } from '@/lib/content/catalog';
 import { articleStructuredData, breadcrumbStructuredData } from '@/lib/seo/structured-data';
 import { localCanonical } from '@/lib/seo/canonical';
 import { formatDate } from '@/lib/content/format';
+import { topicMap } from '@/lib/content/topics';
 import { site } from '@/data/site';
 
 export async function getStaticPaths() {
@@ -19,12 +20,18 @@ const index = series.articles.findIndex(p => p.slug === article.slug);
 const previous = series.articles[index - 1];
 const next = series.articles[index + 1];
 const toc = article.headings.filter(h => h.depth === 2 || h.depth === 3);
+const topics = await topicMap();
+const topicDefinitions = article.topics.flatMap((id) => {
+  const topic = topics.get(id);
+  return topic ? [topic] : [];
+});
 const structuredData = [
   articleStructuredData({
     title: article.title,
     description: article.description,
     canonical: article.canonicalUrl,
     publishedAt: article.publishedAt,
+    topics: topicDefinitions.map((topic) => topic.label),
     series: {
       title: series.title,
       url: localCanonical(`/series/${series.slug}/`),
@@ -45,7 +52,11 @@ const structuredData = [
       <p class="article-breadcrumb"><a href={`${site.basePath}/series/${series.slug}/`}>{series.title}</a></p>
       <SeriesNavigation series={series} current={article.slug} />
       <h1>{article.title}</h1>
-      <div class="article-meta">{article.publishedAt && <time datetime={article.publishedAt.toISOString()}>{formatDate(article.publishedAt)}</time>}<a href={article.canonicalUrl}>原始版本 ↗</a></div>
+      <div class="article-meta">
+        {article.publishedAt && <time datetime={article.publishedAt.toISOString()}>{formatDate(article.publishedAt)}</time>}
+        {topicDefinitions.map((topic) => <a class="topic-pill" href={`${site.basePath}/topics/${topic.id}/`} title={topic.labelEn} aria-label={`${topic.label}（${topic.labelEn}）`}>{topic.label}</a>)}
+        <a href={article.canonicalUrl}>原始版本 ↗</a>
+      </div>
     </header>
     {toc.length > 0 && <details class="reading-toc"><summary>本篇目錄</summary><ol>{toc.map(h => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></details>}
     <div class="prose" set:html={article.html} />
