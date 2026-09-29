@@ -9,6 +9,9 @@ interface Props {
   description?: string;
   canonical?: string;
   mainClass?: string;
+  type?: 'website' | 'article';
+  image?: string;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -16,9 +19,14 @@ const {
   description = site.description,
   canonical,
   mainClass = '',
+  type = 'website',
+  image,
+  structuredData,
 } = Astro.props;
 
 const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
+const imageUrl = image ? new URL(image, `${site.url}/`).toString() : undefined;
+const structuredItems = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 ---
 <!doctype html>
 <html lang="zh-Hant">
@@ -26,6 +34,17 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    <meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     <link id="site-favicon" rel="icon" type="image/svg+xml" href={`${site.basePath}/favicon-light.svg`} data-base-path={site.basePath} />
     <title>{pageTitle}</title>
     <script is:inline>
@@ -40,6 +59,7 @@ const pageTitle = title === site.title ? title : `${title} | ${site.title}`;
       })();
     </script>
     {canonical && <link rel="canonical" href={canonical} />}
+    {structuredItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳至主要內容</a>
