@@ -4,11 +4,9 @@ description: 30 篇文章原本只想自動發到 iThome，實作後卻一路拆
 status: ready
 series: ithome-2026-extensions
 topics:
-  - iThome 鐵人賽
-  - Playwright
-  - Computer Use
-  - 自動化
-  - AI 協作
+  - development-automation
+  - ai-assisted-development
+  - technical-writing
 ---
 
 一開始，我只是想解決一件事：30 篇文章會先寫完，開賽後我不想每天再手動登入 iThome 發一篇。
