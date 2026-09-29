@@ -16,6 +16,7 @@ test('every direct local-post surface uses the shared publication-time predicate
     'src/pages/posts/[...slug].astro',
     'src/pages/topics/index.astro',
     'src/pages/topics/[topic].astro',
+    'src/pages/sitemap.xml.ts',
   ];
   for (const path of directConsumers) {
     const value = await source(path);
@@ -47,6 +48,19 @@ test('public post pages derive series membership from manifests and hide sequenc
   assert.match(page, /allSeries\.find\(.*articles\.some/);
   assert.match(page, /\{series && <><p class="article-breadcrumb"/);
   assert.match(page, /\{\(previous \|\| next\) && <nav class="article-pagination"/);
+});
+
+test('public article pages emit shared structured data', async () => {
+  const localPage = await source('src/pages/posts/[...slug].astro');
+  const externalPage = await source('src/pages/series/ithome-2026/[post].astro');
+  const layout = await source('src/layouts/BaseLayout.astro');
+
+  assert.match(localPage, /articleStructuredData/);
+  assert.match(localPage, /breadcrumbStructuredData/);
+  assert.match(externalPage, /articleStructuredData/);
+  assert.match(layout, /application\/ld\+json/);
+  assert.match(layout, /og:title/);
+  assert.match(layout, /twitter:card/);
 });
 
 test('public Astro and Cloudflare Worker runtimes do not depend on Ollama', async () => {
