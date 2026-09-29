@@ -4,8 +4,8 @@ description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動
 status: active
 featured: true
 editorial:
-  currentPost: ithome-2026-astro-choice
-  nextPost: ithome-2026-publishing-in-production
+  currentPost: ithome-2026-publishing-in-production
+  nextPost: ithome-2026-template-hardening
 source:
   type: local
 canonical:
@@ -26,8 +26,8 @@ sections:
         status: ready
         workingTitle: 當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？
       - slug: ithome-2026-publishing-in-production
-        status: planned
-        workingTitle: 開賽後，自動發文到底有沒有成功
+        status: ready
+        workingTitle: 正式開賽後，我怎麼知道自動發文真的完成了？
       - slug: ithome-2026-template-hardening
         status: planned
         workingTitle: 一開始就做成模板，正式使用後為什麼還要一直補
