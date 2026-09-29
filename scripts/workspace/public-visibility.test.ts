@@ -63,6 +63,17 @@ test('public article pages emit shared structured data', async () => {
   assert.match(layout, /twitter:card/);
 });
 
+test('article topics use the approved mist-blue pill treatment', async () => {
+  const page = await source('src/pages/posts/[...slug].astro');
+  const styles = await source('src/styles/global.css');
+
+  assert.match(page, /class="topic-pill"/);
+  assert.match(styles, /\.article-meta \.topic-pill\s*\{[^}]*background:\s*var\(--accent-soft\)/s);
+  assert.match(styles, /\.article-meta \.topic-pill\s*\{[^}]*color:\s*var\(--accent\)/s);
+  assert.match(styles, /\.article-meta \.topic-pill\s*\{[^}]*border:\s*1px solid var\(--rule\)/s);
+  assert.match(styles, /\.article-meta \.topic-pill\s*\{[^}]*border-radius:\s*999px/s);
+});
+
 test('public Astro and Cloudflare Worker runtimes do not depend on Ollama', async () => {
   const publicFiles = [
     'src/lib/content/catalog.ts',
