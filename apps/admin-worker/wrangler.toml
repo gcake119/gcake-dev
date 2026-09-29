@@ -39,7 +39,18 @@ database_id = "5a720d84-cebd-4322-955f-7c06e569d815"
 binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-preview"
 
-# Production resources are intentionally not bound in Phase 0.
 [env.production.vars]
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
+GITHUB_APP_ID = "5109954"
+GITHUB_APP_INSTALLATION_ID = "165836027"
+
+[[env.production.d1_databases]]
+binding = "CMS_DB"
+database_name = "gcake-cms-production"
+database_id = "47dad56f-334f-4941-8565-62d43cd6bbde"
+migrations_dir = "migrations"
+
+[[env.production.r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "gcake-media-production"

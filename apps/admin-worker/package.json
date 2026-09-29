@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --import tsx --test src/*.test.ts"
+    "test": "node --import tsx --test src/*.test.ts",
+    "deploy:production:dry-run": "wrangler deploy --env production --dry-run",
+    "migrate:production": "wrangler d1 migrations apply CMS_DB --env production --remote",
+    "deploy:production": "wrangler deploy --env production"
   },
   "dependencies": {
     "@gcake/admin-contract": "workspace:*",

@@ -444,6 +444,13 @@ No external publish should happen merely because content was saved to Git.
 
 Use migrations.
 
+Production uses the dedicated `gcake-cms-production` D1 database and
+`gcake-media-production` R2 bucket. The Admin Worker deployment applies all
+committed D1 migrations before publishing `gcake-admin-worker-production`, then
+verifies its `/health` endpoint. Cloudflare CI credentials remain in GitHub
+Actions secrets; GitHub App and OAuth secrets remain Cloudflare Worker secrets.
+Paragraph and Substack writes remain disabled unless separately authorized.
+
 Exact SQL may vary, but the logical schema is fixed.
 
 ### users
