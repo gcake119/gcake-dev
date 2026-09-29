@@ -126,6 +126,8 @@ test('authorized owner browses repository-derived series with base SHAs', async 
     getPost: async () => undefined,
     listSeries: async () => [{
       slug: 'agent-camp',
+      title: 'Agent Camp',
+      postCount: 0,
       path: 'src/content/series/agent-camp.yaml',
       source: 'title: Agent Camp',
       baseBlobSha: 'series-list-blob',
@@ -133,6 +135,8 @@ test('authorized owner browses repository-derived series with base SHAs', async 
     }],
     getSeries: async (slug) => ({
       slug,
+      title: 'Agent Camp',
+      postCount: 0,
       path: `src/content/series/${slug}.yaml`,
       source: 'title: Agent Camp',
       baseBlobSha: 'series-detail-blob',

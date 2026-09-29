@@ -1,4 +1,5 @@
-import type { DeploymentObservation, PostSource, PostSummary, SeriesSource } from '@gcake/admin-contract';
+import type { DeploymentObservation, PostSource, PostSummary, SaveContentRequest, SeriesSource } from '@gcake/admin-contract';
+import { deletePost, saveRepositoryTransaction, type GitWriteRepository, type RepositoryChange, type RepositoryCommit } from './git-writes.js';
 import YAML from 'yaml';
 
 const repositoryPath = '/repos/gcake119/gcake-dev';
@@ -18,6 +19,9 @@ export interface GitHubAppInstallationTokenProviderOptions {
 }
 export interface GitHubAppReadClientOptions {
   readonly installationTokens: InstallationTokenProvider; readonly fetch?: typeof fetch;
+}
+export interface GitHubAppWriteClientOptions extends GitHubAppReadClientOptions {
+  readonly reader: GitHubAppReadClient;
 }
 type GitTreeEntry = { readonly path: string; readonly type: string; readonly sha: string };
 type RepositorySnapshot = {
@@ -130,6 +134,19 @@ function splitFrontmatter(source: string): {
 
 function slugFromPath(path: string): string {
   return path.slice(path.lastIndexOf('/') + 1).replace(/\.(mdx?|ya?ml)$/i, '');
+}
+
+function seriesSummary(source: string, fallbackSlug: string): { title: string; postCount: number } {
+  const manifest = YAML.parse(source) as {
+    title?: unknown;
+    sections?: Array<{ posts?: unknown[] }>;
+  } | undefined;
+  return {
+    title: typeof manifest?.title === 'string' ? manifest.title : fallbackSlug,
+    postCount: Array.isArray(manifest?.sections)
+      ? manifest.sections.reduce((count, section) => count + (Array.isArray(section.posts) ? section.posts.length : 0), 0)
+      : 0,
+  };
 }
 
 export class GitHubAppReadClient {
@@ -251,10 +268,14 @@ export class GitHubAppReadClient {
     const snapshot = await this.#snapshot();
     const entries = snapshot.tree.filter((entry) => entry.type === 'blob'
       && /^src\/content\/series\/[^/]+\.ya?ml$/.test(entry.path));
-    return Promise.all(entries.map(async (entry) => ({
-      slug: slugFromPath(entry.path), path: entry.path, source: await this.#readBlob(entry.sha),
-      baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
-    })));
+    return Promise.all(entries.map(async (entry) => {
+      const slug = slugFromPath(entry.path);
+      const source = await this.#readBlob(entry.sha);
+      return {
+        slug, ...seriesSummary(source, slug), path: entry.path, source,
+        baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
+      };
+    }));
   }
   async getSeries(slug: string): Promise<SeriesSource | undefined> {
     const snapshot = await this.#snapshot();
@@ -262,8 +283,9 @@ export class GitHubAppReadClient {
       && /^src\/content\/series\/[^/]+\.ya?ml$/.test(candidate.path)
       && slugFromPath(candidate.path) === slug);
     if (!entry) return undefined;
+    const source = await this.#readBlob(entry.sha);
     return {
-      slug, path: entry.path, source: await this.#readBlob(entry.sha),
+      slug, ...seriesSummary(source, slug), path: entry.path, source,
       baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
     };
   }
@@ -287,5 +309,107 @@ export class GitHubAppReadClient {
         ? { completedAt: run.updated_at } : {}),
       ...(typeof run.html_url === 'string' ? { url: run.html_url } : {}),
     };
+  }
+}
+
+export class GitHubGitWriteRepository implements GitWriteRepository {
+  readonly #installationTokens: InstallationTokenProvider;
+  readonly #fetch: typeof fetch;
+  constructor(options: GitHubAppReadClientOptions) {
+    this.#installationTokens = options.installationTokens;
+    this.#fetch = options.fetch ?? fetch;
+  }
+  async #request(path: string, init: RequestInit = {}): Promise<unknown> {
+    const token = await this.#installationTokens.create();
+    const response = await this.#fetch(`https://api.github.com${path}`, {
+      ...init,
+      headers: {
+        accept: 'application/vnd.github+json', authorization: `Bearer ${token}`,
+        'content-type': 'application/json', 'user-agent': 'gcake-admin-worker',
+        'x-github-api-version': '2022-11-28', ...init.headers,
+      },
+    });
+    if (!response.ok) throw new Error(`GITHUB_API_FAILED: GitHub returned HTTP ${response.status}`);
+    return response.json();
+  }
+  async #defaultBranch(): Promise<string> {
+    const repository = await this.#request(repositoryPath) as { default_branch?: unknown };
+    if (typeof repository.default_branch !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected repository response');
+    return repository.default_branch;
+  }
+  async currentCommitSha(): Promise<string> {
+    const branch = await this.#defaultBranch();
+    const value = await this.#request(`${repositoryPath}/git/ref/heads/${encodeURIComponent(branch)}`) as { object?: { sha?: unknown } };
+    if (typeof value.object?.sha !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected ref response');
+    return value.object.sha;
+  }
+  async getFile(path: string): Promise<{ readonly sha: string; readonly content: string } | undefined> {
+    const branch = await this.#defaultBranch();
+    const response = await this.#fetch(`https://api.github.com${repositoryPath}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(branch)}`, {
+      method: 'GET', headers: {
+        accept: 'application/vnd.github+json', authorization: `Bearer ${await this.#installationTokens.create()}`,
+        'user-agent': 'gcake-admin-worker', 'x-github-api-version': '2022-11-28',
+      },
+    });
+    if (response.status === 404) return undefined;
+    if (!response.ok) throw new Error(`GITHUB_API_FAILED: GitHub returned HTTP ${response.status}`);
+    const value = await response.json() as { sha?: unknown; content?: unknown; encoding?: unknown };
+    if (typeof value.sha !== 'string' || typeof value.content !== 'string' || value.encoding !== 'base64') {
+      throw new Error('GITHUB_API_FAILED: Unexpected content response');
+    }
+    return { sha: value.sha, content: decodeBase64(value.content) };
+  }
+  async commit(transaction: { readonly expectedBaseCommitSha: string; readonly message: string; readonly changes: readonly RepositoryChange[] }): Promise<RepositoryCommit> {
+    const branch = await this.#defaultBranch();
+    const parent = await this.#request(`${repositoryPath}/git/commits/${transaction.expectedBaseCommitSha}`) as { tree?: { sha?: unknown } };
+    if (typeof parent.tree?.sha !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected commit response');
+    const entries = await Promise.all(transaction.changes.map(async (change) => {
+      if (change.content === undefined) return { path: change.path, mode: '100644', type: 'blob', sha: null };
+      const blob = await this.#request(`${repositoryPath}/git/blobs`, {
+        method: 'POST', body: JSON.stringify({ content: change.content, encoding: 'utf-8' }),
+      }) as { sha?: unknown };
+      if (typeof blob.sha !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected blob response');
+      return { path: change.path, mode: '100644', type: 'blob', sha: blob.sha };
+    }));
+    const tree = await this.#request(`${repositoryPath}/git/trees`, {
+      method: 'POST', body: JSON.stringify({ base_tree: parent.tree.sha, tree: entries }),
+    }) as { sha?: unknown };
+    if (typeof tree.sha !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected tree response');
+    const commit = await this.#request(`${repositoryPath}/git/commits`, {
+      method: 'POST', body: JSON.stringify({ message: transaction.message, tree: tree.sha, parents: [transaction.expectedBaseCommitSha] }),
+    }) as { sha?: unknown };
+    if (typeof commit.sha !== 'string') throw new Error('GITHUB_API_FAILED: Unexpected commit response');
+    await this.#request(`${repositoryPath}/git/refs/heads/${encodeURIComponent(branch)}`, {
+      method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }),
+    });
+    return { sha: commit.sha, message: transaction.message, paths: transaction.changes.map((change) => change.path) };
+  }
+}
+
+export class GitHubAppWriteClient {
+  readonly #repository: GitWriteRepository;
+  readonly #reader: GitHubAppReadClient;
+  constructor(options: GitHubAppWriteClientOptions) {
+    this.#repository = new GitHubGitWriteRepository(options);
+    this.#reader = options.reader;
+  }
+  async save(request: SaveContentRequest): Promise<{ readonly commitSha: string; readonly paths: readonly string[] }> {
+    const commit = await saveRepositoryTransaction(this.#repository, {
+      expectedBaseCommitSha: request.expectedBaseCommitSha,
+      message: request.message,
+      changes: request.files.map((file) => ({ path: file.path, expectedBlobSha: file.expectedBlobSha, content: file.source })),
+    });
+    return { commitSha: commit.sha, paths: commit.paths };
+  }
+  async deletePost(input: { readonly slug: string; readonly expectedBlobSha: string; readonly expectedBaseCommitSha: string; readonly confirmed: boolean }) {
+    const post = (await this.#reader.listPosts()).find((candidate) => candidate.slug === input.slug);
+    const result = await deletePost(this.#repository, {
+      path: post?.path ?? `src/content/posts/${input.slug}.md`,
+      expectedBlobSha: input.expectedBlobSha,
+      expectedBaseCommitSha: input.expectedBaseCommitSha,
+      confirmed: input.confirmed,
+      seriesReferences: post?.series.map((series) => series.slug) ?? [],
+    });
+    return result.kind === 'deleted' ? { kind: 'deleted' as const, commitSha: result.commit.sha } : result;
   }
 }

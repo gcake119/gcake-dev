@@ -3,6 +3,7 @@ import { loadSeriesManifests } from './series';
 import { loadIthomeArticles, ithomePublicationState } from './external';
 import { isPublicPost, publicationStatus } from './publication';
 import { site } from '../../data/site';
+import { seriesMembership } from './series-membership';
 
 export interface ReadingPost {
   slug: string;
@@ -11,16 +12,6 @@ export interface ReadingPost {
   date?: Date;
   href: string;
   series?: string;
-}
-
-export function seriesMembership(manifests: readonly { slug: string; sections: readonly { posts: readonly { slug: string }[] }[] }[]) {
-  const membership = new Map<string, string>();
-  for (const manifest of manifests) {
-    for (const post of manifest.sections.flatMap((section) => section.posts)) {
-      if (!membership.has(post.slug)) membership.set(post.slug, manifest.slug);
-    }
-  }
-  return membership;
 }
 
 export async function loadReadingCatalog() {

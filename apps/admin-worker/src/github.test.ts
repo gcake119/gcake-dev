@@ -5,6 +5,7 @@ import {
   GITHUB_APP_PERMISSIONS,
   GitHubAppInstallationTokenProvider,
   GitHubAppReadClient,
+  GitHubAppWriteClient,
 } from './github';
 
 test('GitHub App boundary is pinned to the approved repository and least privileges', () => {
@@ -138,6 +139,9 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
   }]);
   assert.deepEqual((await client.getPost('hello'))?.series, [{ slug: 'notes', title: 'Notes', sectionId: 'start', position: 0 }]);
   assert.deepEqual((await client.getPost('standalone'))?.series, []);
+  assert.deepEqual((await client.listSeries()).map(({ slug, title, postCount }) => ({ slug, title, postCount })), [{
+    slug: 'notes', title: 'Notes', postCount: 1,
+  }]);
   assert.match((await client.listSeries())[0]?.source ?? '', /slug: notes[\s\S]*slug: hello/);
   assert.equal((await client.getSeries('notes'))?.baseCommitSha, 'commit-main');
   assert.deepEqual(await client.getLatestDeployment(), {
@@ -145,6 +149,35 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
     completedAt: '2026-09-28T01:05:00Z',
     url: 'https://github.com/gcake119/gcake-dev/actions/runs/1',
   });
+});
+
+test('GitHub write client creates one optimistic Git Data commit and advances the branch without force', async () => {
+  const requests: Array<{ path: string; method: string; body?: unknown }> = [];
+  const fetcher: typeof fetch = async (input, init) => {
+    const url = new URL(String(input));
+    const method = init?.method ?? 'GET';
+    requests.push({ path: url.pathname + url.search, method, body: init?.body ? JSON.parse(String(init.body)) : undefined });
+    if (url.pathname === '/repos/gcake119/gcake-dev' && method === 'GET') return Response.json({ default_branch: 'main' });
+    if (url.pathname.endsWith('/git/ref/heads/main')) return Response.json({ object: { sha: 'base-commit' } });
+    if (url.pathname.includes('/contents/src/content/series/new-series.yaml')) return Response.json({}, { status: 404 });
+    if (url.pathname.endsWith('/git/commits/base-commit')) return Response.json({ tree: { sha: 'base-tree' } });
+    if (url.pathname.endsWith('/git/blobs')) return Response.json({ sha: 'new-blob' });
+    if (url.pathname.endsWith('/git/trees')) return Response.json({ sha: 'new-tree' });
+    if (url.pathname.endsWith('/git/commits')) return Response.json({ sha: 'new-commit' });
+    if (url.pathname.endsWith('/git/refs/heads/main')) return Response.json({ object: { sha: 'new-commit' } });
+    return Response.json({}, { status: 500 });
+  };
+  const reader = new GitHubAppReadClient({ installationTokens: { create: async () => 'token' }, fetch: fetcher });
+  const writer = new GitHubAppWriteClient({ installationTokens: { create: async () => 'token' }, fetch: fetcher, reader });
+
+  assert.deepEqual(await writer.save({
+    expectedBaseCommitSha: 'base-commit', message: 'Create series new-series',
+    files: [{ path: 'src/content/series/new-series.yaml', source: 'slug: new-series\nsections: []\n' }],
+  }), { commitSha: 'new-commit', paths: ['src/content/series/new-series.yaml'] });
+  assert.deepEqual(requests.find((request) => request.path.endsWith('/git/trees'))?.body, {
+    base_tree: 'base-tree', tree: [{ path: 'src/content/series/new-series.yaml', mode: '100644', type: 'blob', sha: 'new-blob' }],
+  });
+  assert.deepEqual(requests.find((request) => request.method === 'PATCH')?.body, { sha: 'new-commit', force: false });
 });
 
 async function createTestPrivateKey(): Promise<string> {

@@ -9,7 +9,8 @@ const posts: readonly PostSummary[] = [
 ];
 
 const series: readonly SeriesSource[] = [{
-  slug: 'demo', path: 'src/content/series/demo.yaml', baseBlobSha: 'series', baseCommitSha: 'commit',
+  slug: 'demo', title: '示範系列', postCount: 1,
+  path: 'src/content/series/demo.yaml', baseBlobSha: 'series', baseCommitSha: 'commit',
   source: 'slug: demo\ntitle: 示範系列\nstatus: active\nsections:\n  - id: start\n    title: 開始\n    status: active\n    posts:\n      - slug: chapter\n        status: ready\n',
 }];
 

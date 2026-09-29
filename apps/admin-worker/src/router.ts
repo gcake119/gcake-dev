@@ -72,7 +72,7 @@ export interface MediaApi {
 }
 
 export interface SeriesWriteValidator {
-  validateAndSerialize(manifest: SeriesManifestInput): { readonly yaml: string; readonly path: string };
+  validateAndSerialize(manifest: SeriesManifestInput): { readonly yaml: string; readonly path: string } | Promise<{ readonly yaml: string; readonly path: string }>;
 }
 
 export interface PreviewApi {
@@ -422,13 +422,14 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
           if (seriesFiles.length && !dependencies.seriesValidator) {
             return jsonError(503, 'GITHUB_API_FAILED', '系列驗證服務尚未設定。');
           }
-          const files = requested.files.map((file) => {
+          const files = await Promise.all(requested.files.map(async (file) => {
             if (!file.path.startsWith('src/content/series/')) return file;
+            if (typeof file.source !== 'string') throw new InvalidSeriesError(['系列來源內容不可為空']);
             const manifest = YAML.parse(file.source) as SeriesManifestInput;
-            const validated = dependencies.seriesValidator!.validateAndSerialize(manifest);
+            const validated = await dependencies.seriesValidator!.validateAndSerialize(manifest);
             if (validated.path !== file.path) throw new InvalidSeriesError(['系列 slug 與檔案路徑不一致']);
             return { ...file, source: validated.yaml };
-          });
+          }));
           const saved = await dependencies.githubWrites.save({ ...requested, files });
           return Response.json(saved);
         }
@@ -474,7 +475,8 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
       }
     }
 
-    if (request.method === 'POST' && url.pathname.startsWith('/api/v1/series/')) {
+    if ((request.method === 'POST' || request.method === 'PUT' || request.method === 'DELETE')
+      && (url.pathname === '/api/v1/series' || url.pathname.startsWith('/api/v1/series/'))) {
       const rawToken = cookieValue(request, 'gcake_session');
       const session = rawToken ? await dependencies.sessions.findByRawToken(rawToken) : undefined;
       if (!session || session.expiresAt <= (dependencies.now?.() ?? Date.now())) return jsonError(401, 'UNAUTHENTICATED', '請先登入。');
@@ -482,25 +484,73 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
       if (!dependencies.githubWrites || !dependencies.seriesValidator) return jsonError(503, 'GITHUB_API_FAILED', '系列寫入服務尚未設定。');
       try {
         const slug = url.pathname.slice('/api/v1/series/'.length);
-        if (!SAFE_SLUG.test(slug)) return jsonError(404, 'SERIES_NOT_FOUND', '找不到這個系列。');
-        const payload = await request.json() as {
-          manifest?: SeriesManifestInput; expectedBlobSha?: string; expectedBaseCommitSha?: string;
-        };
-        if (!payload.manifest || payload.manifest.slug !== slug || typeof payload.expectedBlobSha !== 'string' || typeof payload.expectedBaseCommitSha !== 'string') {
+        const payload = await request.json() as Record<string, unknown>;
+        if (request.method === 'POST' && url.pathname === '/api/v1/series') {
+          if (typeof payload.slug !== 'string' || !SAFE_SLUG.test(payload.slug)
+            || typeof payload.title !== 'string' || !payload.title.trim()
+            || typeof payload.expectedBaseCommitSha !== 'string') {
+            return jsonError(400, 'VALIDATION_FAILED', '系列名稱、slug 或修訂版格式不正確。');
+          }
+          const manifest: SeriesManifestInput = {
+            slug: payload.slug,
+            title: payload.title.trim(),
+            status: 'planned',
+            featured: false,
+            editorial: { currentPost: undefined, nextPost: undefined },
+            source: { type: 'local' },
+            canonical: { mode: 'local' },
+            sections: [],
+          };
+          const validated = await dependencies.seriesValidator.validateAndSerialize(manifest);
+          const saved = await dependencies.githubWrites.save({
+            expectedBaseCommitSha: payload.expectedBaseCommitSha,
+            message: `Create series ${payload.slug}`,
+            files: [{ path: validated.path, source: validated.yaml }],
+          });
+          return Response.json(saved, { status: 201 });
+        }
+
+        if (!slug || !SAFE_SLUG.test(slug)) return jsonError(404, 'SERIES_NOT_FOUND', '找不到這個系列。');
+        if (typeof payload.expectedBlobSha !== 'string' || typeof payload.expectedBaseCommitSha !== 'string') {
+          return jsonError(400, 'VALIDATION_FAILED', '系列修訂版格式不正確。');
+        }
+        if (request.method === 'DELETE') {
+          if (payload.confirmed !== true) return jsonError(400, 'CONFIRMATION_REQUIRED', '請明確確認刪除系列；文章不會被刪除。');
+          return Response.json(await dependencies.githubWrites.save({
+            expectedBaseCommitSha: payload.expectedBaseCommitSha,
+            message: `Delete series ${slug}`,
+            files: [{ path: `src/content/series/${slug}.yaml`, expectedBlobSha: payload.expectedBlobSha }],
+          }));
+        }
+
+        const manifest = payload.manifest as SeriesManifestInput | undefined;
+        if (!manifest || typeof manifest.slug !== 'string' || !SAFE_SLUG.test(manifest.slug)) {
           return jsonError(400, 'VALIDATION_FAILED', '系列儲存資料格式不正確。');
         }
-        const validated = dependencies.seriesValidator.validateAndSerialize(payload.manifest);
+        const validated = await dependencies.seriesValidator.validateAndSerialize(manifest);
+        const oldPath = `src/content/series/${slug}.yaml`;
+        const renamed = manifest.slug !== slug;
         return Response.json(await dependencies.githubWrites.save({
           expectedBaseCommitSha: payload.expectedBaseCommitSha,
-          message: `Update series ${slug}`,
-          files: [{ path: validated.path, expectedBlobSha: payload.expectedBlobSha, source: validated.yaml }],
+          message: renamed ? `Rename series ${slug} to ${manifest.slug}` : `Update series ${slug}`,
+          files: renamed
+            ? [
+                { path: oldPath, expectedBlobSha: payload.expectedBlobSha },
+                { path: validated.path, source: validated.yaml },
+              ]
+            : [{ path: validated.path, expectedBlobSha: payload.expectedBlobSha, source: validated.yaml }],
         }));
       } catch (error) {
         if (error instanceof InvalidSeriesError) {
           return Response.json({ error: { code: 'INVALID_SERIES', message: '系列資料未通過驗證。', details: { issues: error.issues } } }, { status: 400 });
         }
         if (error && typeof error === 'object' && 'code' in error && (error as { code?: unknown }).code === 'SERIES_CONFLICT') {
-          return Response.json({ error: { code: 'SERIES_CONFLICT', message: '系列已在 GitHub 更新，沒有覆蓋較新版本。' } }, { status: 409 });
+          const conflict = error as { currentBlobSha?: unknown; currentCommitSha?: unknown };
+          return Response.json({ error: {
+            code: 'SERIES_CONFLICT',
+            message: '系列已在 GitHub 更新，沒有覆蓋較新版本。',
+            details: { currentBlobSha: conflict.currentBlobSha, currentCommitSha: conflict.currentCommitSha },
+          } }, { status: 409 });
         }
         return jsonError(502, 'GITHUB_API_FAILED', '目前無法儲存系列。');
       }

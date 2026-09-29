@@ -80,3 +80,24 @@ test('series editor adds standalone posts by changing only its manifest state', 
   assert.match(source, /addSeriesPost\(seriesManifest\.value, sectionId/);
   assert.match(source, /只有系列 YAML 會在儲存時更新/);
 });
+
+test('Series workspace exposes complete lifecycle controls and article counts', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, />新增系列<\/button>/);
+  assert.match(source, /\{\{ item\.postCount \}\} 篇/);
+  assert.match(source, /<span>系列名稱<\/span>/);
+  assert.match(source, /<span>系列 slug<\/span>/);
+  assert.match(source, /method: 'PUT'/);
+  assert.match(source, /@click="deleteSeries">刪除系列<\/button>/);
+});
+
+test('Series delete copy says posts remain and failed saves preserve the working manifest', async () => {
+  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
+
+  assert.match(source, /seriesDeleteConfirmation\(seriesManifest\.value\.title, postCount\)/);
+  assert.match(source, /文章與 Markdown 均保留，現在會顯示為無系列文章/);
+  const failedSave = source.slice(source.indexOf('async function saveSeries'), source.indexOf('function useRepositoryVersion'));
+  assert.match(failedSave, /if \(!response\.ok\)[\s\S]*return;/);
+  assert.ok(failedSave.indexOf('if (!response.ok)') < failedSave.indexOf('seriesDirty.value = false'));
+});

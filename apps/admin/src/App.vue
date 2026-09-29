@@ -20,13 +20,16 @@ import { applyTaipeiSchedule, readScheduleFields, schedulePresentation } from '.
 import {
   addSeriesSection,
   addSeriesPost,
+  createSeriesManifest,
   moveSeriesPost,
   moveSeriesSection,
   parseSeriesManifest,
   removeEmptySeriesSection,
   serializeSeriesManifest,
+  seriesDeleteConfirmation,
   type AdminSeriesManifest,
   type AdminSeriesSection,
+  updateSeriesMetadata,
   updateSeriesSection,
 } from './series-editor';
 import { createStandaloneSource, filterPostsBySeries, standalonePosts } from './post-series';
@@ -48,6 +51,8 @@ const seriesManifest = ref<AdminSeriesManifest>();
 const seriesDirty = ref(false);
 const seriesMessage = ref('');
 const seriesFilter = ref('all');
+const newSeriesTitle = ref('');
+const newSeriesSlug = ref('');
 const newPostTitle = ref('');
 const newPostSlug = ref('');
 const draggedSeriesPost = ref<{ sectionId: string; index: number }>();
@@ -96,6 +101,7 @@ const availableStandalonePosts = computed(() => {
   const pending = new Set(seriesManifest.value?.sections.flatMap((section) => section.posts.map((post) => post.slug)) ?? []);
   return candidates.filter((post) => !pending.has(post.slug));
 });
+const repositoryRevision = computed(() => series.value[0]?.baseCommitSha ?? posts.value[0]?.commitSha);
 
 async function readJson<T>(path: string): Promise<T> {
   const response = await fetch(path, { credentials: 'same-origin' });
@@ -397,6 +403,39 @@ async function openSeries(slug: string): Promise<void> {
   }
 }
 
+async function createSeries(): Promise<void> {
+  if (!session.value.authenticated || !repositoryRevision.value) {
+    message.value = '目前沒有可用的 Git 修訂版，請重新整理後再試。';
+    return;
+  }
+  const manifest = createSeriesManifest(newSeriesTitle.value, newSeriesSlug.value);
+  const response = await fetch('/api/v1/series', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
+    body: JSON.stringify({
+      title: manifest.title, slug: manifest.slug, expectedBaseCommitSha: repositoryRevision.value,
+    }),
+  });
+  const result = await response.json() as { commitSha?: string; error?: { message?: string } };
+  if (!response.ok) {
+    message.value = result.error?.message ?? '無法新增系列。';
+    return;
+  }
+  const slug = manifest.slug;
+  newSeriesTitle.value = '';
+  newSeriesSlug.value = '';
+  await loadAdmin();
+  await openSeries(slug);
+  seriesMessage.value = `空系列已建立（${result.commitSha ?? '新修訂版'}），可以繼續新增章節或文章。`;
+}
+
+function editSeriesMetadata(patch: Partial<Pick<AdminSeriesManifest, 'title' | 'slug'>>): void {
+  if (!seriesManifest.value) return;
+  seriesManifest.value = updateSeriesMetadata(seriesManifest.value, patch);
+  seriesDirty.value = true;
+  seriesMessage.value = '系列名稱或 slug 尚未儲存；slug 儲存後會同步 rename manifest。';
+}
+
 function closeWorkspace(): void {
   workspaceMode.value = 'overview';
 }
@@ -507,7 +546,7 @@ async function requestFormalPreview(): Promise<void> {
 async function saveSeries(): Promise<void> {
   if (!selectedSeries.value || !seriesManifest.value || !session.value.authenticated) return;
   const response = await fetch(`/api/v1/series/${selectedSeries.value.slug}`, {
-    method: 'POST', credentials: 'same-origin',
+    method: 'PUT', credentials: 'same-origin',
     headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
     body: JSON.stringify({
       expectedBlobSha: selectedSeries.value.baseBlobSha,
@@ -520,8 +559,36 @@ async function saveSeries(): Promise<void> {
     seriesMessage.value = `${result.error?.message ?? '無法儲存系列。'}${result.error?.details?.issues?.length ? ` ${result.error.details.issues.join('；')}` : ''}`;
     return;
   }
+  const savedSlug = seriesManifest.value.slug;
   seriesDirty.value = false;
+  await loadAdmin();
+  await openSeries(savedSlug);
   seriesMessage.value = `系列 YAML 已儲存至 Git（${result.commitSha ?? '新修訂版'}）；尚未代表公開部署完成。`;
+}
+
+async function deleteSeries(): Promise<void> {
+  if (!selectedSeries.value || !seriesManifest.value || !session.value.authenticated) return;
+  const postCount = seriesManifest.value.sections.reduce((count, section) => count + section.posts.length, 0);
+  if (!window.confirm(seriesDeleteConfirmation(seriesManifest.value.title, postCount))) return;
+  const response = await fetch(`/api/v1/series/${selectedSeries.value.slug}`, {
+    method: 'DELETE', credentials: 'same-origin',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
+    body: JSON.stringify({
+      expectedBlobSha: selectedSeries.value.baseBlobSha,
+      expectedBaseCommitSha: selectedSeries.value.baseCommitSha,
+      confirmed: true,
+    }),
+  });
+  const result = await response.json() as { commitSha?: string; error?: { message?: string } };
+  if (!response.ok) {
+    seriesMessage.value = result.error?.message ?? '無法刪除系列。';
+    return;
+  }
+  selectedSeries.value = undefined;
+  seriesManifest.value = undefined;
+  workspaceMode.value = 'overview';
+  await loadAdmin();
+  message.value = `系列已刪除（${result.commitSha ?? '新修訂版'}）；文章與 Markdown 均保留，現在會顯示為無系列文章。`;
 }
 
 function useRepositoryVersion(): void {
@@ -797,11 +864,16 @@ onMounted(() => {
               </div>
               <span class="count">{{ series.length }} 組</span>
             </div>
+            <form class="new-series-form" @submit.prevent="createSeries">
+              <label><span>系列名稱</span><input v-model="newSeriesTitle" type="text" required></label>
+              <label><span>系列 slug</span><input v-model="newSeriesSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required></label>
+              <button class="secondary-action" type="submit">新增系列</button>
+            </form>
             <ul v-if="series.length" class="series-list">
               <li v-for="item in series" :key="item.slug">
                 <button class="post-button" type="button" @click="openSeries(item.slug)">
-                  <strong>{{ item.slug }}</strong>
-                  <small>{{ item.path }}</small>
+                  <span><strong>{{ item.title }}</strong><small>{{ item.slug }}</small></span>
+                  <span class="badge">{{ item.postCount }} 篇</span>
                 </button>
               </li>
             </ul>
@@ -822,10 +894,16 @@ onMounted(() => {
             </div>
             <div class="editor-actions">
               <button type="button" class="secondary-action" @click="addSection">新增章節</button>
+              <button type="button" class="secondary-action danger-action" @click="deleteSeries">刪除系列</button>
               <button type="button" class="primary-action compact" :disabled="!seriesDirty" @click="saveSeries">儲存系列 YAML</button>
             </div>
           </div>
           <p class="editor-message" aria-live="polite">{{ seriesMessage }}</p>
+          <div class="series-metadata-fields">
+            <label><span>系列名稱</span><input :value="seriesManifest.title" type="text" required @input="editSeriesMetadata({ title: eventValue($event) })"></label>
+            <label><span>系列 slug</span><input :value="seriesManifest.slug" type="text" pattern="[a-z0-9][a-z0-9-]*" required @input="editSeriesMetadata({ slug: eventValue($event) })"></label>
+          </div>
+          <p class="series-order-hint">修改 slug 會同步更新 manifest 檔名、後台路徑與公開系列網址；若新 slug 已存在，儲存會被阻止。</p>
           <p class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
           <section v-for="(section, sectionIndex) in seriesManifest.sections" :key="section.id" class="series-section">
             <div class="series-section-heading">
