@@ -2,9 +2,10 @@
 import { socialLinks } from '@/data/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { localCanonical } from '@/lib/seo/canonical';
+import { profileStructuredData } from '@/lib/seo/structured-data';
 ---
 
-<BaseLayout title="關於" canonical={localCanonical('/about/')}>
+<BaseLayout title="關於" canonical={localCanonical('/about/')} structuredData={profileStructuredData()}>
   <article class="simple-page prose">
     <h1 class="page-title">關於雞蛋糕</h1>
     <h2>為什麼寫</h2>
