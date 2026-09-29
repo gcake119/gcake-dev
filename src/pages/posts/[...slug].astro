@@ -44,6 +44,7 @@ const structuredData = [
     publishedAt: post.data.publishedAt,
     updatedAt: post.data.updatedAt,
     topics: topicDefinitions.map((topic) => topic.label),
+    image: post.data.image,
   }),
   breadcrumbStructuredData(breadcrumbs),
 ];
