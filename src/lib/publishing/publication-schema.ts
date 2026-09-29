@@ -24,7 +24,8 @@ export const postFrontmatterSchema = z.object({
   updatedAt: z.coerce.date().optional(),
   status: z.enum(['draft', 'ready', 'published']).default('draft'),
   series: z.string().optional(),
-  topics: z.array(z.string()).default([]),
+  topics: z.array(z.string()).max(3).default([]),
+  image: z.string().trim().min(1).optional(),
   distribution: distributionSchema,
 });
 
