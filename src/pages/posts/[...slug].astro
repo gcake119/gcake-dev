@@ -45,6 +45,12 @@ const structuredData = [
     updatedAt: post.data.updatedAt,
     topics: topicDefinitions.map((topic) => topic.label),
     image: post.data.image,
+    ...(series ? {
+      series: {
+        title: series.title,
+        url: localCanonical(`/series/${series.slug}/`),
+      },
+    } : {}),
   }),
   breadcrumbStructuredData(breadcrumbs),
 ];
