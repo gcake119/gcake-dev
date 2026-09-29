@@ -4,11 +4,9 @@ description: 鐵人賽文章網站由 AI 協作實作，我如何從產品需求
 status: ready
 series: ithome-2026-extensions
 topics:
-  - Astro
-  - Vue
-  - 技術選型
-  - AI 協作
-  - iThome 鐵人賽
+  - ai-assisted-development
+  - system-design
+  - developer-learning
 ---
 
 30 篇鐵人賽文章寫完後，我想把這些 Markdown 做成自己的系列閱讀網站。
