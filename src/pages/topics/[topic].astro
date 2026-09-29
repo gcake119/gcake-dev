@@ -5,20 +5,22 @@ import { getCollection } from 'astro:content';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
 import { formatDate } from '@/lib/content/format';
+import { loadTopicTaxonomy } from '@/lib/content/topics';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('posts')).filter((post) => isPublicPost(post.data));
-  const topics = [...new Set(posts.flatMap((post) => post.data.topics))];
-  return topics.map((topic) => ({ params: { topic }, props: { topic } }));
+  const used = new Set(posts.flatMap((post) => post.data.topics));
+  const topics = (await loadTopicTaxonomy()).filter((topic) => used.has(topic.id));
+  return topics.map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
 }
 
 const { topic } = Astro.props;
 const posts = (await getCollection('posts'))
-  .filter((post) => isPublicPost(post.data) && post.data.topics.includes(topic))
+  .filter((post) => isPublicPost(post.data) && post.data.topics.includes(topic.id))
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
 ---
 
-<BaseLayout title={topic} canonical={localCanonical(`/topics/${encodeURIComponent(topic)}/`)}>
-  <header class="index-header"><p class="page-kicker">Topic</p><h1 class="page-title">{topic}</h1><p class="lede">共 {posts.length} 篇相關文章。</p></header>
+<BaseLayout title={topic.label} description={`${topic.label}（${topic.labelEn}）相關文章。`} canonical={localCanonical(`/topics/${topic.id}/`)}>
+  <header class="index-header"><p class="page-kicker">{topic.labelEn}</p><h1 class="page-title">{topic.label}</h1><p class="lede">共 {posts.length} 篇相關文章。</p></header>
   <ul class="post-list">{posts.map((post) => <li class="post-row">{post.data.publishedAt && <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>}<div><h3><a href={`${site.basePath}/posts/${post.id}/`}>{post.data.title}</a></h3>{post.data.description && <p>{post.data.description}</p>}</div></li>)}</ul>
 </BaseLayout>
