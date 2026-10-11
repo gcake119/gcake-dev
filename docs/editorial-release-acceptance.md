@@ -14,6 +14,8 @@
 
 ## A．PR 與內容審閱
 
+代理已完成隔離 Chromium 桌面／手機與觸控檢查，證據見 [預覽驗收紀錄](editorial-release-preview-review.md)。需要擁有者執行的設定與限制見 [設定步驟](editorial-release-user-setup.md)。以下核取方塊仍保留給擁有者簽核，不將代理檢查當作人工接受。
+
 - [ ] PR 保持 OPEN／未合併；最新完整 SHA 的 `Validate editorial release / validate` 全綠。若要設為 required check，由擁有者另行設定 ruleset，不能為了排程關閉分支保護。
 - [ ] 審閱 Git journal 儲存例外與 publication intent／public confirmation 的區別；接受目前操作資料存 Git，正文與順序仍以 Markdown／manifest 為唯一來源。
 - [ ] 核對六篇正文與原稿逐字一致、manifest 順序一致、status 仍為 ready；只接受第五篇分類修正。
