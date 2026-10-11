@@ -233,3 +233,35 @@ async function createTestPrivateKey(): Promise<string> {
   const base64 = Buffer.from(bytes).toString('base64').match(/.{1,64}/g)?.join('\n') ?? '';
   return `-----BEGIN PRIVATE KEY-----\n${base64}\n-----END PRIVATE KEY-----`;
 }
+
+
+test('OAuth login and token exchange use the initiating CMS callback in production and preview', async () => {
+  for (const origin of ['https://production.test', 'https://preview.test']) {
+    const env = {
+      CMS_DB: { prepare: () => ({ bind() { return this; }, async run() { return {}; }, async first() { return null; } }) },
+      GITHUB_OAUTH_CLIENT_ID: 'client-id', GITHUB_OAUTH_CLIENT_SECRET: 'test-secret',
+      GITHUB_OWNER_USER_IDS: '119', OAUTH_STATE_SECRET: 'state-secret', RELEASE_WRITE_ENABLED: 'false',
+    };
+    const login = await handleRequest(new Request(origin + '/api/v1/auth/login'), env);
+    assert.equal(login.status, 302);
+    const authorization = new URL(login.headers.get('location')!);
+    assert.equal(authorization.searchParams.get('redirect_uri'), origin + '/api/v1/auth/callback');
+    const state = authorization.searchParams.get('state')!;
+    let exchanged = false;
+    const callback = await handleRequest(new Request(origin + '/api/v1/auth/callback?code=test-code&state=' + encodeURIComponent(state), {
+      headers: { cookie: login.headers.get('set-cookie')!.split(';')[0] },
+    }), env, async (input, init) => {
+      if (String(input).includes('/login/oauth/access_token')) {
+        assert.equal(JSON.parse(String(init?.body)).redirect_uri, origin + '/api/v1/auth/callback');
+        exchanged = true;
+        return Response.json({ access_token: 'test-token' });
+      }
+      return Response.json({ id: 119, login: 'gcake119', avatar_url: 'https://avatar.test/owner' });
+    });
+    assert.equal(exchanged, true);
+    assert.equal(callback.status, 302);
+    assert.equal(callback.headers.get('location'), '/');
+    assert.match(callback.headers.get('set-cookie')!, /gcake_session=/);
+    assert.equal(env.RELEASE_WRITE_ENABLED, 'false');
+  }
+});

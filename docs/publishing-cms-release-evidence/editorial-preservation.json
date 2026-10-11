@@ -1,0 +1,36 @@
+{
+  "posts": [
+    {
+      "slug": "ithome-2026-astro-choice",
+      "bodySha256": "1d4884658e16b8416cbeb38d455741f928b36393565c04426b777bfa247a3667",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-chatgpt-writing-workflow",
+      "bodySha256": "4e6ed69e9b208be78cc3d8658a6889953b5b2b1ce21429c8d2587d6674200f1e",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-in-production",
+      "bodySha256": "06088f6691f149257c91c09b3bf707c94e84229fca6342d0a5fbf2eb6a81fa61",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-toolchain",
+      "bodySha256": "31fe6462c670948317bd44c330ac0799550ae67cea1a93c277236e31bbdc4627",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-tech-blog-boundary",
+      "bodySha256": "2c5c644a90751b5cd5c758783954380b8886d376ee66b3f336626afe76c056b1",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-template-hardening",
+      "bodySha256": "4870dec00d1499c2c9655d7243090476546d25d018f92aacc8d39f8e3632c05e",
+      "unchanged": true
+    }
+  ],
+  "manifestSha256": "59dd4d79ef95a85ade5592c7d0abaf6fc99b7581dd52993b6cd97d67f06ed724",
+  "manifestUnchanged": true
+}

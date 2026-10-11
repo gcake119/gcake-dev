@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./release-queue": "./src/release-queue.ts",
+    "./release-eligibility": "./src/release-eligibility.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

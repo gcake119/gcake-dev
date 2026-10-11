@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import YAML from 'yaml';
 import test from 'node:test';
 
 const rootPackage = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8'));
@@ -56,4 +57,47 @@ test('production Admin deployment migrates before deploy and verifies health', (
   assert.match(adminDeployWorkflow, /steps\.deploy\.outputs\.deployment-url/);
   assert.match(adminDeployWorkflow, /\/health/);
   assert.doesNotMatch(adminDeployWorkflow, /deploy-pages/);
+});
+
+test('main pull requests receive full local gates without deployment authority', async () => {
+  const directory = new URL('../../.github/workflows/', import.meta.url);
+  const workflows = await Promise.all((await readdir(directory)).filter((name) => /\.ya?ml$/.test(name))
+    .map(async (name) => YAML.parse(await readFile(new URL(name, directory), 'utf8'))));
+  const validation = workflows.filter((workflow) => workflow.on?.pull_request?.branches?.includes('main'));
+  assert.ok(validation.length > 0, 'main pull requests require a validation workflow');
+  const commands = validation.flatMap((workflow) => Object.values(workflow.jobs).flatMap((job: any) => job.steps.map((step: any) => step.run ?? ''))).join('\n');
+  for (const gate of ['pnpm test', 'pnpm check', 'pnpm build:all', 'pnpm release:dry-run'])
+    assert.ok(commands.split('\n').includes(gate), `PR validation must run ${gate}`);
+  for (const workflow of validation) {
+    assert.deepEqual(workflow.permissions, { contents: 'read' });
+    assert.equal(workflow.on.pull_request.paths, undefined, 'all PR changes require gates');
+    assert.equal(workflow.on.pull_request_target, undefined);
+    const text = JSON.stringify(workflow);
+    assert.doesNotMatch(text, /secrets\.|deploy-pages|wrangler-action|--remote|release-orchestrate/);
+    for (const job of Object.values(workflow.jobs) as any[]) {
+      assert.equal(job.permissions, undefined);
+      assert.equal(job.environment, undefined);
+    }
+  }
+});
+
+
+for (const name of ['deploy-admin-worker.yml', 'deploy-pages.yml']) {
+  test(`${name} deploys only by manual dispatch on main, never on merge or hourly passage`, async () => {
+    const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/' + name, import.meta.url), 'utf8'));
+    assert.deepEqual(Object.keys(workflow.on), ['workflow_dispatch'], name);
+    for (const [name, job] of Object.entries(workflow.jobs) as [string, any][]) {
+      assert.match(job.if, /(?:^| && )github.ref == 'refs\/heads\/main'$/, name);
+    }
+  });
+}
+
+
+test('production and preview deployment retain verified OAuth client and owner configuration', () => {
+  for (const environment of ['production', 'preview']) {
+    const section = workerConfig.split(`[env.${environment}.vars]`)[1].split('\n[')[0];
+    assert.match(section, /GITHUB_OAUTH_CLIENT_ID\s*=\s*"[^"\s]+"/);
+    assert.match(section, /GITHUB_OWNER_USER_IDS\s*=\s*"\d+(,\d+)*"/);
+    assert.match(section, /RELEASE_WRITE_ENABLED\s*=\s*"false"/);
+  }
 });

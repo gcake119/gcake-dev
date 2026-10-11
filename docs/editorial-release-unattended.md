@@ -58,3 +58,11 @@ hermes 帳號、Python `/Users/hermes/.hermes/hermes-agent/venv/bin/python3` 3.1
 後續 CMS 相容性補強：先觀察兩個新測試失敗，再修正精確雙 App 例外；完整本機 222 項 Node、27 項 Python 通過，check 133 檔零錯誤／警告／提示，build 32 頁，Spectra validate 通過。沙箱首次禁止 loopback 監聽而造成整合測試環境失敗；允許本機模擬伺服器後完整測試成功，不是真實 Telegram 測試。唯讀 provider 盤點確認正式停用、環境無逐次人工核准、僅 Branch main、禁止強推／刪除四項通過；私鑰／安裝、main review 與私人 App metadata 仍不完整。
 
 後續 GitHub 設定驗收：main integrity（24885806）精確 main、active、deletion／non_fast_forward、bypass 空；main review（24886109）精確 main、active、0 required human approvals、validate 來源 GitHub Actions integration 15368、strict up-to-date true，Always bypass 僅 CMS 5109954 與 editorial 5276010。沒有 classic branch protection（該 API 404），main 的 protected 為 true。Repository EDITORIAL_RELEASE_ENABLED=false；未觸發候選部署、App token mint、內容寫入或 Telegram。CLI 私人 App metadata 仍不可讀，configurationReady=false／activationReady=false，不將 UI 配置驗收當成供應商寫入驗收。main 此時為 f9e8d461（另案 PR ＃10 的正式 CMS OAuth 修正），PR ＃7 尚未合併；正式合併前仍需更新到最新 main 並重新驗證。
+
+## 同步最新 main 的驗收邊界
+
+2026／10／12：同步 f9e8d461，保留 main 的人工 Pages 部署（只有 workflow_dispatch，沒有 push／schedule）。Git journal prepare／confirm 與 CMS D1 佇列均維持停用；兩者是不同發佈權威，不能同時替相同文章安排發佈。正式無人值守 Pages 接法尚未完成，不可因本次同步或 CI 成功啟用。共用 publishing-contract 排程器保留固定承諾，並補入嚴格日期／保留時段驗證；舊 editorial activeSeries 介面透過 adapter 相容，避免續刊順序遺失。六篇正文及 manifest 章序未改。
+
+整合 RED：10 項中 4 項失敗，涵蓋人工 Pages 觸發、非法日期、非法保留時段及既有 active series；修正後 10 項通過。另以 foundation 整合檢查修復新增 job 的 main 限制，保留全部部署 job 都不能在其他分支執行。完整驗證與精確候選 CI 結果見 PR 說明。受控 CMS／App 寫入驗收只使用可回復的驗收草稿／標記，不使用六篇正文，不設定 published，不觸發 Pages 或 Telegram。
+
+同步後完整本機：272 項 Node 測試執行及 31 項 Python 全部通過，check 152 檔零錯誤／警告／提示，build:all（Astro＋全部 workspace）、editorial:rehearse、release:dry-run、Worker production deploy --dry-run、actionlint 與兩份 active Spectra validate 通過。隔離演練六篇正文／閱讀順序保持，真實 Telegram 呼叫零；以上不代表正式部署或供應商寫入驗收。

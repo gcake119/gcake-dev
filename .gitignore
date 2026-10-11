@@ -13,5 +13,6 @@ dist/
 .playwright-cli/
 openspec/.vector-search.db*
 
-# Python monitor bytecode; runtime state belongs to the Hermes account.
+output/playwright/
 __pycache__/
+output/release-verification/

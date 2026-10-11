@@ -1,0 +1,12 @@
+{
+  "mode": "local-simulation",
+  "directory": "/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-release-simulation-eulb0b",
+  "releaseId": "50cd90d2-0535-44bc-b4eb-d48d3cb16ee3",
+  "slug": "ithome-2026-chatgpt-writing-workflow",
+  "gitCommit": "52f4dd3744a0e6210dcd188c9b6653dc96f1b444",
+  "bodyAndOrderPreserved": true,
+  "page": true,
+  "rssGuid": "https://gcake119.github.io/gcake-dev/posts/ithome-2026-chatgpt-writing-workflow/",
+  "notification": "simulated-once-across-restart",
+  "productionEnabled": false
+}

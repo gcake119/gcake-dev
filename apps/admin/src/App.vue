@@ -32,8 +32,18 @@ import {
 import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePostTitle } from './post-series';
 import { requestSlugSuggestion } from './slug-suggestion';
 
+import ReleaseQueuePanel from './ReleaseQueuePanel.vue';
+import type { QueueView } from '@gcake/admin-contract';
+import { releaseEstimate, eligibilityReason, seriesProgress } from './release-presentation';
+
 type ViewState = 'loading' | 'signed-out' | 'ready' | 'error';
 type WorkspaceMode = 'overview' | 'post' | 'series';
+
+const releaseQueue = ref<QueueView>();
+const selectedCandidate = computed(() => releaseQueue.value?.items.find((i) => i.slug === selectedPost.value?.slug));
+const selectedSeriesProgress = computed(() => (seriesManifest.value ? seriesProgress(seriesManifest.value) : undefined));
+const selectedSeriesNext = computed(() => releaseQueue.value?.plan.find(p => releaseQueue.value?.items.find(i => i.slug === p.slug)?.seriesSlug === selectedSeries.value?.slug));
+const selectedSeriesStarted = computed(() => seriesManifest.value?.sections.some(s => s.posts.some(p => p.status === 'published')) || releaseQueue.value?.releases.some(r => r.seriesSlug === selectedSeries.value?.slug));
 
 const state = ref<ViewState>('loading');
 const session = ref<SessionResponse>({ authenticated: false });
@@ -455,7 +465,7 @@ function closeWorkspace(): void {
 }
 
 function movePost(sectionId: string, index: number, delta: -1 | 1): void {
-  if (!seriesManifest.value) return;
+  if (!seriesManifest.value || selectedSeriesStarted.value) return;
   seriesManifest.value = moveSeriesPost(seriesManifest.value, sectionId, index, delta);
   seriesDirty.value = true;
   seriesMessage.value = '排序尚未儲存，只是這個畫面的暫存狀態。';
@@ -489,7 +499,7 @@ function editSection(sectionId: string, patch: Partial<Pick<AdminSeriesSection, 
 }
 
 function moveSection(index: number, delta: -1 | 1): void {
-  if (!seriesManifest.value) return;
+  if (!seriesManifest.value || selectedSeriesStarted.value) return;
   seriesManifest.value = moveSeriesSection(seriesManifest.value, index, delta);
   seriesDirty.value = true;
   seriesMessage.value = '章節順序尚未儲存，只是這個畫面的暫存狀態。';
@@ -510,7 +520,7 @@ function removeSection(sectionId: string): void {
 function dropPost(sectionId: string, targetIndex: number): void {
   const dragged = draggedSeriesPost.value;
   draggedSeriesPost.value = undefined;
-  if (!dragged || dragged.sectionId !== sectionId || dragged.index === targetIndex || !seriesManifest.value) return;
+  if (selectedSeriesStarted.value || !dragged || dragged.sectionId !== sectionId || dragged.index === targetIndex || !seriesManifest.value) return;
   const section = seriesManifest.value.sections.find((item) => item.id === sectionId);
   if (!section) return;
   const posts = section.posts.map((post) => ({ ...post }));
@@ -554,6 +564,34 @@ async function requestFormalPreview(): Promise<void> {
       : `正式預覽狀態：${formalPreview.value.status}`;
   } catch (error) {
     formalPreviewMessage.value = `${error instanceof Error ? error.message : '正式預覽失敗。'} 請確認基礎修訂版仍可重建，再重試。`;
+  }
+}
+
+async function finalizePost(): Promise<void> {
+  if (!session.value.authenticated || !selectedPost.value?.baseBlobSha) return;
+  try {
+    const response = await fetch('/api/v1/releases/finalize', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': session.value.csrfToken,
+      },
+      body: JSON.stringify({
+        slug: selectedPost.value.slug,
+        revision: selectedPost.value.baseCommitSha,
+        blobSha: selectedPost.value.baseBlobSha,
+        source: updatePostTitle(editorSource.value, editorTitle.value),
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error?.message ?? '定稿未完成。');
+    await openPost(selectedPost.value.slug);
+    const queue = await readJson<QueueView>('/api/v1/releases');
+    releaseQueue.value = queue;
+    editorMessage.value = '已確認定稿並儲存 Git；尚未代表公開。';
+  } catch (e) {
+    editorMessage.value = e instanceof Error ? e.message : '定稿未完成。';
   }
 }
 
@@ -822,6 +860,12 @@ onMounted(() => {
             </div>
           </div>
 
+          <ReleaseQueuePanel
+            v-if="session.authenticated"
+            :csrf-token="session.csrfToken"
+            @loaded="releaseQueue = $event"
+          />
+
           <div class="content-grid">
             <article class="panel posts-panel">
             <div class="panel-heading">
@@ -883,6 +927,20 @@ onMounted(() => {
         </section>
 
         <section v-if="workspaceMode === 'series' && selectedSeries && seriesManifest" class="editor-panel workspace-panel series-editor" aria-labelledby="series-editor-title">
+          <p v-if="selectedSeriesProgress">
+            定稿 {{ selectedSeriesProgress.ready }}／{{ selectedSeriesProgress.total }}；Git 已標記公開 {{ selectedSeriesProgress.published }}／{{
+              selectedSeriesProgress.total
+            }}。{{
+              releaseQueue?.blockedSeries.find((s) => s.seriesSlug === selectedSeries!.slug)?.reasons.join('；') ?? '依完整系列資格取得排程'
+            }}
+          </p>
+          <p>
+            {{
+              releaseEstimate(
+                selectedSeriesNext?.releaseAt,
+              )
+            }}；連載開始後篇序鎖定。
+          </p>
           <div class="workspace-navigation">
             <button type="button" class="back-action" @click="closeWorkspace">返回內容清單</button>
             <span>系列編輯</span>
@@ -898,7 +956,8 @@ onMounted(() => {
             </div>
           </div>
           <p class="editor-message" aria-live="polite">{{ seriesMessage }}</p>
-          <p class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
+          <p v-if="selectedSeriesStarted" class="series-order-hint">連載已有發布承諾，篇序已鎖定。修改內容仍須重新驗證。</p>
+          <p v-else class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
           <section v-for="(section, sectionIndex) in seriesManifest.sections" :key="section.id" class="series-section">
             <div class="series-section-heading">
               <div class="series-section-fields">
@@ -920,8 +979,8 @@ onMounted(() => {
                 </label>
               </div>
               <div class="section-actions" aria-label="章節操作">
-                <button type="button" :aria-label="`將 ${section.title} 往上移`" :disabled="sectionIndex === 0" @click="moveSection(sectionIndex, -1)">↑</button>
-                <button type="button" :aria-label="`將 ${section.title} 往下移`" :disabled="sectionIndex === seriesManifest.sections.length - 1" @click="moveSection(sectionIndex, 1)">↓</button>
+                <button type="button" :aria-label="`將 ${section.title} 往上移`" :disabled="selectedSeriesStarted || sectionIndex === 0" @click="moveSection(sectionIndex, -1)">↑</button>
+                <button type="button" :aria-label="`將 ${section.title} 往下移`" :disabled="selectedSeriesStarted || sectionIndex === seriesManifest.sections.length - 1" @click="moveSection(sectionIndex, 1)">↓</button>
                 <button type="button" class="danger-action" :aria-label="`刪除 ${section.title}`" :disabled="section.posts.length > 0" :title="section.posts.length > 0 ? '請先移出章節內的文章' : '刪除空白章節'" @click="removeSection(section.id)">刪除</button>
               </div>
             </div>
@@ -930,7 +989,7 @@ onMounted(() => {
                 v-for="(post, index) in section.posts"
                 :key="post.slug"
                 :class="{ 'is-dragging': draggedSeriesPost?.sectionId === section.id && draggedSeriesPost?.index === index }"
-                draggable="true"
+                :draggable="!selectedSeriesStarted"
                 title="拖曳調整順序"
                 @dragstart="draggedSeriesPost = { sectionId: section.id, index }"
                 @dragend="draggedSeriesPost = undefined"
@@ -940,8 +999,8 @@ onMounted(() => {
                 <span class="drag-handle" aria-hidden="true">⠿</span>
                 <span class="series-post-copy"><strong>{{ post.workingTitle || post.slug }}</strong><small>{{ post.slug }} · {{ post.status }}</small></span>
                 <span class="order-actions">
-                  <button type="button" :aria-label="`將 ${post.slug} 往上移`" :disabled="index === 0" @click="movePost(section.id, index, -1)">↑</button>
-                  <button type="button" :aria-label="`將 ${post.slug} 往下移`" :disabled="index === section.posts.length - 1" @click="movePost(section.id, index, 1)">↓</button>
+                  <button type="button" :aria-label="`將 ${post.slug} 往上移`" :disabled="selectedSeriesStarted || index === 0" @click="movePost(section.id, index, -1)">↑</button>
+                  <button type="button" :aria-label="`將 ${post.slug} 往下移`" :disabled="selectedSeriesStarted || index === section.posts.length - 1" @click="movePost(section.id, index, 1)">↓</button>
                 </span>
               </li>
             </ol>
@@ -986,19 +1045,39 @@ onMounted(() => {
           </div>
           <p v-if="editorSlugSuggestionMessage" class="slug-suggestion-message" aria-live="polite">{{ editorSlugSuggestionMessage }}</p>
           <p v-if="editorMessage" class="editor-message" aria-live="polite">{{ editorMessage }}</p>
-          <section class="schedule-panel" aria-labelledby="schedule-title">
+          <section class="schedule-panel" aria-label="自動排程">
             <div>
-              <p class="eyebrow">Asia／Taipei 排程</p>
-              <h3 id="schedule-title">公開時間</h3>
+              <h3>自動排程</h3>
+              <p>{{ releaseEstimate(selectedCandidate?.estimatedAt) }}</p>
+              <p>{{ selectedPost.status === 'draft' ? '草稿尚未定稿，尚未取得候選資格。' : selectedPost.status === 'published' ? '文章已標記公開，請以公開驗證紀錄確認結果。' : eligibilityReason(selectedCandidate?.reason) }}</p>
+              <p>確認定稿並儲存 Git 後取得候選資格；正式發布未啟用時仍不公開。</p>
             </div>
-            <label>日期<input v-model="scheduleDate" type="date"></label>
-            <label>時間<input v-model="scheduleTime" type="time"></label>
-            <button type="button" class="secondary-action" @click="applySchedule">套用到文章</button>
-            <div v-if="activeSchedule" class="schedule-state" :data-state="activeSchedule.state">
-              <strong>{{ activeSchedule.label }}</strong><span>{{ activeSchedule.detail }}</span>
-            </div>
-            <p v-else class="muted">公開文章需先到達排程時間，且之後有一次成功的靜態部署；Git 儲存本身不等於公開。</p>
+            <button
+              type="button"
+              class="secondary-action"
+              :disabled="!selectedPost.baseBlobSha || selectedPost.status === 'published'"
+              @click="finalizePost"
+            >
+              確認定稿並儲存 Git
+            </button>
           </section>
+          <details>
+            <summary>進階：既有手動公開日期</summary>
+            <section class="schedule-panel" aria-labelledby="schedule-title">
+              <div>
+                <p class="eyebrow">Asia／Taipei 排程</p>
+                <h3 id="schedule-title">公開時間</h3>
+              </div>
+              <label>日期<input v-model="scheduleDate" type="date" /></label>
+              <label>時間<input v-model="scheduleTime" type="time" /></label>
+              <button type="button" class="secondary-action" @click="applySchedule">套用到文章</button>
+              <div v-if="activeSchedule" class="schedule-state" :data-state="activeSchedule.state">
+                <strong>{{ activeSchedule.label }}</strong
+                ><span>{{ activeSchedule.detail }}</span>
+              </div>
+              <p v-else class="muted">公開文章需先到達排程時間，且之後有一次成功的靜態部署；Git 儲存本身不等於公開。</p>
+            </section>
+          </details>
           <div v-if="recoveryConflict" class="conflict-panel" role="alert">
             <div>
               <strong>需要處理內容衝突</strong>
