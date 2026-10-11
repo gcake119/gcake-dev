@@ -135,8 +135,12 @@ export class ReleaseQueue {
         p.publishedAt &&
         Date.parse(p.publishedAt.length === 10 ? p.publishedAt + 'T00:00:00+08:00' : p.publishedAt) >=
           Date.parse(currentSlot(now)) - 7 * 3600000
-      )
-        reserved.add(dateOf(p.publishedAt) + 'T07:00:00+08:00');
+      ) {
+        const date = dateOf(p.publishedAt);
+        // Classify the extracted Taipei date without moving off-calendar dates to the next slot.
+        const taipeiWeekday = new Date(date + 'T00:00:00Z').getUTCDay();
+        if (taipeiWeekday === 1 || taipeiWeekday === 4) reserved.add(date + 'T07:00:00+08:00');
+      }
     const baseReason = (slug: string, seriesSlug?: string) => {
       if (s.data.paused.includes('post:' + slug) || s.data.paused.includes('series:' + seriesSlug)) return 'PAUSED';
       const p = snapshot.posts.find((p) => p.slug === slug)!;

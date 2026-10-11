@@ -327,3 +327,30 @@ test('operator pause flags stay separate from release state and pause scope', as
   await queue.control(s, { action: 'resume', scope: 'series', slug: 's' });
   assert.equal((await queue.view(s)).items[0].seriesPaused, false);
 });
+
+
+test('off-calendar published legacy dates do not consume Monday or Thursday slots', async () => {
+  for (const publishedAt of ['2026-10-13', '2026-10-17', '2026-10-12T23:30:00Z']) {
+    const { queue } = setup();
+    const s = snapshot(0);
+    const legacy = post('legacy', 'published', publishedAt);
+    s.posts = [legacy, post('a'), post('b')];
+    const view = await queue.ingest(s);
+    assert.deepEqual(view.plan, [
+      { slug: 'a', releaseAt: '2026-10-12T07:00:00+08:00' },
+      { slug: 'b', releaseAt: '2026-10-15T07:00:00+08:00' },
+    ], publishedAt);
+    assert.equal(legacy.publishedAt, publishedAt);
+    assert.equal(legacy.source, post('legacy', 'published', publishedAt).source);
+  }
+});
+
+test('legacy reservations use the Taipei weekday across UTC midnight', async () => {
+  const { queue } = setup();
+  const s = snapshot(0);
+  s.posts = [post('legacy', 'published', '2026-10-14T23:30:00Z'), post('a'), post('b')];
+  assert.deepEqual((await queue.ingest(s)).plan, [
+    { slug: 'a', releaseAt: '2026-10-12T07:00:00+08:00' },
+    { slug: 'b', releaseAt: '2026-10-19T07:00:00+08:00' },
+  ]);
+});
