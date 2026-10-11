@@ -84,3 +84,9 @@ Playwright 操作真實 build 的 Admin，後端使用真實 ReleaseQueue／Rele
 - [固定並重新載入後](publishing-cms-release-evidence/cms-fixed-confirmed.jpg)
 - [取消固定後](publishing-cms-release-evidence/cms-fixed-cancelled.jpg)
 - [最終修正後再次驗證](publishing-cms-release-evidence/cms-final-review-acceptance.jpg)
+
+## PR #9 CI 補強
+
+原因：Actions 已啟用，既有 workflow 僅 main 部署、schedule／workflow_dispatch，沒有 pull_request trigger，所以原 head 沒有檢查。新增 `validate-pr.yml` 對 main 目標的 PR 執行完整 gates，不限制 paths；只有 contents read，checkout 不保留認證、無 production environment／secrets／部署步驟。
+
+既有 foundation 測試新增 PR 檢查完整性與無部署授權的回歸情境，先觀察缺少 PR workflow 的 RED，再新增流程達成 GREEN。推送前完整本機執行 frozen-lockfile 安裝、221 Node／4 Python tests、check（144 files 零 errors／warnings／hints）、build:all、release:dry-run 及 diff whitespace check 通過。線上 CI 結果以 PR Checks／Actions run 為準；不把本機通過當成線上成功。正式發布 gates 未變更。

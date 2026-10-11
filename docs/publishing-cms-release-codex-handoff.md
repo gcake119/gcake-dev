@@ -4,7 +4,7 @@
 
 成果工作目錄：`/Users/caiyijun/project/gcake-dev-release`，分支 `feat/publishing-cms-release-design`，基底 `dd1b9de`。本次交付依功能拆為 atomic commits；主 checkout 的既有 dirty main 未改動。下方 original baseline 是接手前快照，當時的 UNVERIFIED／缺少功能敘述不是現在的狀態。
 
-Spectra change `openspec/changes/integrate-durable-release-queue` 已完成持久化 D1 佇列、Git 歷史首次定稿時間、唯一時段與 fenced lease、停用的原子 Git 發布、公開頁／RSS 分別驗證、CMS owner／CSRF 操作、受 gate 保護的 Actions 排程及可安裝的 Hermes poller。最終 220 Node／4 Python tests、check（144 files 無 errors／warnings／hints）、build:all 與本機 release:dry-run 通過。AI review 的預覽競態與 scope 暫停問題已以 RED→GREEN 修正並複查關閉；停用說明已釐清 Worker 才是寫入 gate。完整測試／build／模擬及 AI review 以 `docs/publishing-cms-release-verification.md` 為證據，部署與啟用步驟見 `docs/publishing-cms-release-operations.md`。
+Spectra change `openspec/changes/integrate-durable-release-queue` 已完成持久化 D1 佇列、Git 歷史首次定稿時間、唯一時段與 fenced lease、停用的原子 Git 發布、公開頁／RSS 分別驗證、CMS owner／CSRF 操作、受 gate 保護的 Actions 排程及可安裝的 Hermes poller。PR CI 補強後 221 Node／4 Python tests、check（144 files 無 errors／warnings／hints）、build:all 與本機 release:dry-run 通過。AI review 的預覽競態與 scope 暫停問題已以 RED→GREEN 修正並複查關閉；停用說明已釐清 Worker 才是寫入 gate。完整測試／build／模擬及 AI review 以 `docs/publishing-cms-release-verification.md` 為證據，部署與啟用步驟見 `docs/publishing-cms-release-operations.md`。
 
 ### Admin 介面調整
 
@@ -77,3 +77,5 @@ Read in this order:
 8. Report on remaining secrets/production permissions and request a single explicit production enablement decision.
 
 Do not silently merge these branches into main and do not mark Oct 12 or later as promised release dates until the scheduler has been activated and checked.
+
+PR #9 原無 CI 的原因與新增只讀 pull_request workflow，見 verification 的「PR #9 CI 補強」；線上成功以 PR Checks 為準。未合併、未部署，正式發文停用。
