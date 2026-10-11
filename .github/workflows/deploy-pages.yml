@@ -237,8 +237,9 @@ jobs:
           # Contents-read is constrained by the pinned token-creation action above.
           permissions=repos[0].get('permissions')
           if permissions is not None:
-              assert permissions.get('pull') is True, 'Unexpected read metadata'
+              assert isinstance(permissions, dict), 'Unexpected permission metadata type'
               assert not any(permissions.get(x) for x in ['push','admin','maintain']), 'Write metadata rejected'
+              assert not any(v in ('write','admin') for v in permissions.values()), 'Write permission metadata rejected'
           PYTHON
           gh api --hostname github.com /repos/gcake119/gcake-dev/contents/package.json > "$RUNNER_TEMP/editorial-secret-content.json"
           python3 - <<'PYTHON'

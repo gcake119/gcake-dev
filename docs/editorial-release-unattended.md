@@ -96,3 +96,5 @@ GitHub installation repositories 官方回應不保證 user-style permissions �
 來源： https://docs.github.com/en/rest/apps/installations#list-repositories-accessible-to-the-app-installation ； https://github.com/actions/create-github-app-token/blob/bcd2ba49218906704ab6c1aa796996da409d3eb1/lib/main.js 。修正後真實驗收須另行核准最新精確 SHA 的一次執行；維持 main-only 與正式停用，無 Telegram 呼叫。
 
 API 格式修正後完整本機：282 Node／31 Python 通過，check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Spectra validate 通過。actionlint 原生平行 ShellCheck 在本機掛起，改用只序列化呼叫的暫存 wrapper（仍同一 ShellCheck binary／完整參數與 script），所有 workflow 完整檢查 exit 0；不略過 shell 檢查。正式內容／DB 沒有寫入、Pages 沒有部署，Telegram 呼叫零。
+
+擁有者另核准 45e0282 的單次重驗，run 38163326113 的 preflight／token mint 通過，但 permission metadata 未提供 pull=true，仍在代理的判讀條件失敗；不能推定 Secret 或 token 失效，也沒有取得完整內容 GET 證據。撤銷步驟 success，policy 62710931 立即移除，main-only 已確認。進一步修正不要求 pull 欄位：可選 metadata 只作拒絕明顯寫入值的附加護欄；唯讀權限來源是 pinned 官方 action 的明確 token 建立請求，測試嚴格限制 permission-* 只能為 permission-contents:read。保留 App／installation／唯一 repo／固定內容 GET／正式 gate／精確 SHA 驗證。mock 包含無 permissions 與 contents:read／metadata:read 格式，不宣稱已保留真實回應形狀。這兩次是有限供應商驗收，不是新文章發布；各單次授權均已消耗，未自行重跑。

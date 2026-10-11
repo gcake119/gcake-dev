@@ -76,6 +76,7 @@ test('manual Secret acceptance isolates environment credentials and excludes eve
  assert.deepEqual(probe.permissions,{contents:'read'});
  const auth=probe.steps.find((x:any)=>x.id==='acceptance-app');
  assert.equal(auth.with['permission-contents'],'read');assert.equal(auth.with['skip-token-revoke'],undefined);
+ assert.deepEqual(Object.entries(auth.with).filter(([name])=>name.startsWith('permission-')),[['permission-contents','read']]);
  assert.equal(auth.with['private-key'],'${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}');
  assert.equal(auth.with.repositories,'${{ github.event.repository.name }}');
  assert.match(auth.uses,/create-github-app-token@[a-f0-9]{40}$/);
@@ -106,6 +107,8 @@ test('Secret identity acceptance accepts installation schema and rejects scope d
   assert.equal((await run(repo)).status,0);
   // Installation repository responses legitimately omit user permission booleans.
   assert.equal((await run({full_name:'gcake119/gcake-dev'})).status,0);
+  assert.equal((await run({...repo,permissions:{contents:'read',metadata:'read'}})).status,0);
+  assert.notEqual((await run({...repo,permissions:{contents:'write',metadata:'read'}})).status,0);
   for(const [value,env] of [[{...repo,full_name:'other/repo'},{}],[{...repo,permissions:{pull:true,push:true}},{}],[repo,{APP_SLUG:'other-app'}],[repo,{INSTALLATION:'1'}]] as [any,Record<string,string>][]) {
    const result=await run(value,env); assert.notEqual(result.status,0);assert.doesNotMatch(result.stdout+result.stderr,/synthetic-never-print/);
   }
