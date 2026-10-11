@@ -13,6 +13,14 @@ Read in this order:
 6. `apps/admin/src/App.vue`, `apps/admin/src/scheduling.ts`, `apps/admin-worker/src/*`, `src/lib/content/publication.ts`
 7. `src/content/series/ithome-2026-extensions.yaml`, `.github/workflows/deploy-pages.yml`
 
+## Work already committed in this branch
+
+- Added `docs/publishing-cms-release-queue-spec.md` (product information architecture, state model, P0/P1, acceptance scenarios).
+- Added `src/lib/publishing/release-eligibility.ts` and `.test.ts` (pure snapshot-based whole-manifest eligibility, fail-closed on incomplete/mismatched/missing articles and ambiguous membership).
+- Registered both existing planner tests and new eligibility tests in `package.json` `test:public`.
+- No production scheduler, queue persistence, CMS routes, Hermes job, GitHub Actions write permission, or release activation was added.
+- GitHub connector operations cannot execute the repository test/build pipeline here; `pnpm test`, `pnpm check`, `pnpm build` remain UNVERIFIED, not PASS.
+
 ## Existing verified findings
 
 - The existing pure planner is not production-connected, nor can it validate omitted series posts.
