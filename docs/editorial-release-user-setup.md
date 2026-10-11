@@ -8,18 +8,16 @@
 
 請人工確認桌面、手機版的標題／正文、章序、上一篇／下一篇與返回系列總覽符合預期。代理完成的 Chromium 視覺與互動檢查，不代表你已簽署驗收；也不代表實體 iPhone／Android 或正式 Pages 已驗收。
 
-## 2．GitHub：先準備保護，旗標維持 false
+## 2．D1／GitHub：保留已驗收保護，正式開關維持 false
 
-本次唯讀盤點：repo 為 public，default branch 為 main；已有 github-pages（限 main）及 production 環境，沒有 editorial-release；repository variables 為空，main 的 protected 為 false，rulesets 列表為空。設定可能在你操作前改變，請再核對。
+2026／10／12 候選改為 D1 唯一佇列，先前 Git journal／prepare／confirm 的操作步驟已退役；不再新增 App 寫入 Secret 給 Actions。詳細接法與停止方式見 [操作交接](editorial-release-operations.md)。
 
-1. 打開 [PR ＃7](https://github.com/gcake119/gcake-dev/pull/7)，確認最新候選的 validate 全綠。現在不要點 Merge，也不要手動執行 Deploy GitHub Pages。
-2. 到 [Settings → Secrets and variables → Actions → Variables](https://github.com/gcake119/gcake-dev/settings/variables/actions)。`EDITORIAL_RELEASE_ENABLED` 可以保持未建立；若建立，值只填小寫 `false`。它是 **repository variable**，不要只放 environment variable，因為 job 的啟動條件在進入環境前就會檢查。
-3. 到 [Settings → Environments](https://github.com/gcake119/gcake-dev/settings/environments) 建立 `editorial-release`，Deployment branches 選 Selected branches and tags，只加入 Branch `main`。先指定 Required reviewers；如要禁止自己核准自己觸發的工作，勾選 Prevent self-review，並指定另一位可核准的人。只有你一位 reviewer 時，須先確認這個選項不會讓受控測試永遠無法核准。[GitHub 官方環境操作說明](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
-4. 到 [Settings → Rules → Rulesets](https://github.com/gcake119/gcake-dev/settings/rules)，決定 main 保護與 required check。現在不要為了讓佇列可以直接 push 而關閉保護、開 force push 或加廣權限 PAT。若要求所有更新都經 PR，目前直接推 main 的 GITHUB_TOKEN 路徑必須另外調整與驗收。
-5. 目前 prepare／confirm 使用專用 App 的 contents write；內建 GITHUB_TOKEN 與 build 的 contents 均只讀。不需新增 Telegram secret 到 GitHub。不要順手把所有 workflow 的預設權限改成廣泛 write。若組織政策或 ruleset 不允許寫入，由擁有者決定最小授權；專用 GitHub App 限此 repo／必要 contents write；候選已加入認證接法，安裝及真實權限仍待驗收，程式不使用既有 CMS App secret。
-6. 決定正式運行要每次人工批准，還是另行設計已驗收的無人值守保護。Required reviewers 會讓工作等待批准，不能同時宣稱完全無人值守。部署競爭窗口、Git journal 例外及故障處理人也需明確接受。
-
-你需要回覆的非敏感資料：環境已建立或尚未建立、reviewer 策略、main 保護策略、打算使用的寫入身份。不要傳 token。首次 GitHub 寫入權限與 Pages 正式部署驗收，仍需另外授權，不在這次執行。
+1. 查看 [PR ＃7](https://github.com/gcake119/gcake-dev/pull/7) 最新 SHA 的 CI，不點 Merge，不執行正式部署。
+2. GitHub Repository variables 的 RELEASE_AUTOMATION_ENABLED 與 EDITORIAL_RELEASE_ENABLED 保持小寫 false；Worker RELEASE_WRITE_ENABLED 保持 false。CI 成功不能作啟用依據。
+3. `editorial-release` 維持 Selected branches 的精確 Branch main。已選擇無協作者、沒有逐次 reviewer 的方案；不為本次測試增加分支例外。main integrity／review 與 CMS／editorial App 例外保持原設定。
+4. 後續成對 automation Secret 驗收需要核對 Worker 的 RELEASE_AUTOMATION_SECRET 與 editorial-release 環境同名 Secret、RELEASE_WORKER_URL。不要把值貼給代理。此次專用 App 唯讀驗收没有測試此 Secret，也未部署 D1 候選；若需要重設，由擁有者親自填入。
+5. 正式 D1 部署／migration／runtime 備份與供應商驗收另行授權。既有 legacy journal 或缺少正文 digest 的 releases 必須先保留證據並對帳，不清庫，不擅自把舊 pending 匯入新身份。
+6. 完成內容／畫面與停止／競爭／恢復驗收後，再分開核准合併、正式候選部署及啟用。D1 發文用 CMS Worker App；專用 editorial App 已安裝且保留唯讀驗收，不自動移除私鑰或保護例外。
 
 ## 3．Hermes：在真正的 OS 帳號先做 dry-run
 
@@ -81,4 +79,4 @@ hermes cron list
 合併、正式 Pages 部署、GitHub 寫入試跑、真實私人 Telegram 發送與正式啟用都是後續分開的授權步驟。CI、隔離預覽或安裝成功不會自動通過這些項目。
 
 
-2026／10／12 無人值守後續：專用 GitHub App 接法與唯讀配置盤點已加入候選；前文「App 認證未實作」為歷史起點，現況與仍待擁有者授權的 repo scope／main bypass／CMS 相容性，見 [無人值守方案](editorial-release-unattended.md)。正式開關維持停用，所有真人／供應商未完成勾選保持未完成。
+D1 整合不改變 Hermes／Telegram 的私人驗收與啟用授權界線；目前僅模擬 API、正式推播停用。

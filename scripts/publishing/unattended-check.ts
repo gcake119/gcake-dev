@@ -16,7 +16,7 @@ export function inspectConfiguration(c:Configuration){
   &&r.bypass_actors.every((a:any)=>a.actor_type==='Integration'&&a.bypass_mode==='always'
    &&[c.app?.id,5109954].includes(a.actor_id)));
  const checks=[
-  {name:'production remains disabled',passed:vars.EDITORIAL_RELEASE_ENABLED===undefined||vars.EDITORIAL_RELEASE_ENABLED==='false'},
+  {name:'production remains disabled',passed:[vars.EDITORIAL_RELEASE_ENABLED,vars.RELEASE_AUTOMATION_ENABLED].every(value=>value===undefined||value==='false')},
   {name:'environment does not require human or custom approval',passed:!!env&&Array.isArray(env.protection_rules)&&env.protection_rules.every((r:any)=>r.type==='branch_policy')},
   {name:'environment permits only Branch main',passed:env?.deployment_branch_policy?.custom_branch_policies===true&&env.branches?.length===1&&env.branches[0].name==='main'&&env.branches[0].type==='branch'},
   {name:'dedicated App client ID and private key name configured',passed:!!vars.EDITORIAL_APP_CLIENT_ID&&secrets.has('EDITORIAL_APP_PRIVATE_KEY')},
@@ -26,7 +26,7 @@ export function inspectConfiguration(c:Configuration){
   {name:'main PR and validate required with only editorial and existing CMS exceptions',passed:review}
  ];
  return {configurationReady:checks.every(c=>c.passed),activationReady:false,
-  evidence:'read-only configuration metadata; installation scope and provider writes unverified',checks,
+  evidence:'read-only configuration metadata; D1 delivery uses the CMS Worker identity; provider/runtime acceptance remains separate',checks,
   remainingAcceptance:['App installation scope and protected-main write','Pages revision and deployment race/stop rehearsal','owner content and visual acceptance','Hermes scheduled dry-run completion','private Telegram receipt and live baseline','separate merge/deployment/activation authorization']};
 }
 export function readConfiguration():Configuration {

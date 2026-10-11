@@ -126,7 +126,7 @@ test('editorial release deploys only newly committed revisions with isolated Pag
   assert.deepEqual(workflow.permissions,{contents:'read'});
   assert.equal(workflow.jobs.release.permissions,undefined);
   assert.equal(workflow.jobs.build.permissions,undefined);
-  assert.deepEqual(workflow.jobs.deploy.permissions,{pages:'write','id-token':'write'});
+  assert.deepEqual(workflow.jobs.deploy.permissions,{contents:'read',pages:'write','id-token':'write'});
   assert.deepEqual(workflow.jobs.deploy.needs,['release','build']);
   assert.equal(workflow.jobs.deploy.if,"needs.release.outputs.release_sha != ''");
   assert.equal(workflow.jobs.deploy.environment.name,'github-pages');

@@ -313,6 +313,8 @@ export class GitHubAppReadClient {
   }
   async releaseSnapshot(): Promise<ReleaseSnapshot> {
     const snapshot = await this.#snapshot();
+    if (snapshot.tree.some(entry=>entry.path==='src/data/editorial-queue.json'))
+      throw new Error('LEGACY_JOURNAL_RECONCILIATION_REQUIRED');
     const entries = snapshot.tree.filter(
       (e) => e.type === 'blob' && (/^src\/content\/posts\/.+\.mdx?$/.test(e.path) || /^src\/content\/series\/[^/]+\.ya?ml$/.test(e.path)),
     );

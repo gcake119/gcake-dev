@@ -1,52 +1,40 @@
-# 發文佇列與 Hermes 操作交接
+# D1 發文佇列與 Hermes 操作交接
 
-## 交付邊界
+2026／10／12：本 PR 候選已採 D1 作唯一操作佇列，Git journal 寫入路徑退役。PR ＃7 不合併、不部署正式候選、不啟用正式發文或 Telegram。Git 仍保存 Markdown、frontmatter 與 Series manifest，D1 只保存資格時間、暫停／指定時段、租約、發佈身份及公開驗證紀錄。
 
-實作基底是 feat/editorial-release-queue 的 2351b17。本候選依功能拆分 commit，交付至同名 feature branch 並建立 PR，供人工審閱。合併、部署正式候選、建立 GitHub variable/environment、安裝 Hermes job 與發送 Telegram 尚未執行；正式發文及推播維持停用，驗收完成後才可啟用。
+## 目前接法
 
-正式站 RSS 已唯讀確認回應 200： https://gcake119.github.io/gcake-dev/rss.xml 。此次查核沒有本地 canonical 文章；六篇幕後文章未出現在 feed。這不代表新程式已部署或 Hermes 帳號已驗收。
+- CMS 讀取同一 Git revision 的完整文章／manifest，D1 以版本式 CAS 保存操作狀態。歷史資料只增補 observation／active series 與預期正文 SHA，不清庫、不丟棄既有 releases。
+- Worker 以既有 CMS App 原子提交文章及 manifest。Actions `editorial-release.yml` 只透過環境的 RELEASE_AUTOMATION_SECRET 請求 Worker；只有新提交的 release SHA 才交給 build／deploy。GitHub Actions 不 mint 寫入 App token。專用 editorial App 與既有保護例外不自動刪除；私鑰只保留已驗收的唯讀接法。
+- 每週一／四台北 07：00 起，一時段一篇。恢復只考慮最近已到的時段，不能早於首次 durable observation，不能使用當時尚未 ready 的文章，不能補發更早時段。UI 的未來估計不是已取得時段。
+- 文章 FIFO 取目前連續 ready 期間；退稿後再定稿會重排，即使两次檢查間 final blob 相同也讀新 Git revision 的 first-parent 歷史。正文編輯保留順位，合併前功能分支的較早定稿不當成 main 已可見；歷史走訪上限 1000 個 first-parent commits，不完整就停止。全系列資格另核對 manifest 完整度、暫停與固定 membership；未開始系列的變動會重新取得資格。
+- 獨立文章可插隊，接續系列保持閱讀順序與優先於等待系列。多個人工開始系列缺少有效選擇、接續系列刪除／改序／前章在未來時停止取得新承諾，不能自行換系列。
+- 發佈前持久保存完整轉換後 Markdown SHA-256；Git 回應遺失保留身份。公開頁 canonical、metadata、來源 SHA 與 RSS link／GUID 一致才 verified-public。Git pending 內容已改、來源消失或舊紀錄缺少 digest 時保留紀錄並要求對帳，不自動改寫證據或重新發文。
+- `Deploy GitHub Pages` 仍為 main 的人工部署，沒有 prepare／confirm 或 journal writer。手動部署及 D1 自動部署均檢查 artifact revision 是否仍為 main；檢查與部署不是跨服務原子鎖，競爭窗口仍需人工接受／演練。
 
-## 設計與可觀察結果
+## Git journal 退役與舊資料
 
-- Git Markdown／manifest 仍是正文、frontmatter、閱讀順序的唯一來源。journal 不存文章或排序副本，只存 membership fingerprint、readyAt、startedAt、activeSeries、pending 與 completed。
-- 專用 src/data/editorial-queue.json 是 Actions 佇列的持久日誌。這是原有「操作狀態使用 D1」方向的明確例外，理由是本次不得假設 Admin production D1 可用；沒有改變 CMS 既有 D1 所有權。決策載於本次 Spectra design。
-- 初次匯入會從完整、first-parent Git 歷史取得連續 ready／published 的起點，並與 manifest 完成時間取較晚者；因此同一小時內先後 CMS save 的文章仍保持 FIFO，後續改正文不會改排位。不使用檔案 mtime。無歷史的本機 fixture 採首次觀測時間。Actions checkout 必須 fetch-depth: 0。
-- Git 時間是提交者提供的證據；匯入採 first-parent merge 可見時間，不宣稱是編輯者按按鈕的精確時刻。全系列必須有檔案、完整 manifest、ready／published 一致，且 published 前章不可仍在未來；planned、draft、缺章、暫停都不排程。
-- 每週一、四台北 07：00 起，一時段一篇；standalone FIFO 優先，已開始系列先於其他等待系列。首次啟用以前的時段不補發，恢復也只選最近已到的時段。
-- prepare 將 pending、文章 published／publishedAt 與 manifest status 一起提交。此處 published 是部署意圖；completed 才是 RSS＋公開 canonical HTML＋內容 SHA-256 證據確認。失敗不標 completed，保留同一 pending，阻擋下一篇。
-- pending 保存的是改完發佈 metadata 後的完整 Markdown SHA-256。CMS 改稿、刪除 pending、metadata 不一致、刪除 active series，都停止並要求人工修復。公開文章 head 的 gcake-source-revision 必須吻合，舊頁不能確認新版本。
-- Actions 使用既有 pages concurrency，保留每小時 minute 37 恢復，新增 UTC 週日／三 23：00 的觸發。push 可 ingestion／recover，不能新增 reservation。寫入只在 prepare／confirm job，正常 build 僅 contents/read＋pages/read。
-- 所有 Git push 為非 force。CMS 同時寫入造成 push 衝突時不 rebase／merge、不覆蓋；下次從最新 main 重做。部署前比對 artifact 與 main SHA。SHA 檢查與 Pages deploy 仍不是跨服務的原子鎖；CMS 正好在兩者之間更新時，可能短暫部署舊 artifact，下一輪最新 main build 恢復。這是正式驗收必須接受或另做 CMS 協調鎖的限制。
+`pnpm editorial:release` 保留明確失敗的相容入口，所有 command／--write／舊旗標組合都回報 GIT_JOURNAL_RETIRED，不讀寫檔案、不呼叫 Git 或網路。`src/lib/publishing/editorial-state.ts` 已移除，沒有另一套可呼叫 publisher。
 
-## 本機驗證
+若 Git snapshot 仍有 `src/data/editorial-queue.json`，D1 ingestion／delivery 停在 LEGACY_JOURNAL_RECONCILIATION_REQUIRED。先保持三個正式開關停用、停止 active runs、保存原 journal／來源 SHA／D1 備份，逐筆核對 pending／completed 與真正公開的 RSS／HTML。沒有自動 import、覆寫、刪除或 replay 工具；有紀錄時須另行制定對帳／遷移方案並授權。此候選與目前檢查的來源沒有 journal 檔，不需要自動搬入任何承諾。
 
-在交付 clone 執行：
+## 本機驗收
 
 ```sh
-pnpm install --frozen-lockfile
 pnpm test
 pnpm check
-pnpm build
-actionlint -shellcheck= .github/workflows/deploy-pages.yml
+pnpm build:all
+pnpm release:dry-run
 pnpm editorial:rehearse
-pnpm editorial:release plan
 ```
 
-rehearse 只在暫存目錄建站，監聽 127.0.0.1，產生 dry-run SQLite；不推 Git、不連 Telegram。它會驗證六篇 ready 路由不存在、故意讓建置失敗、保留同篇重試、成功後 RSS 僅新增一篇、canonical／source revision、五篇仍隱藏、通知去重及六篇正文／順序不變。
+兩個演練入口均使用同一 D1 實作、暫存 SQLite／Git 副本、回環靜態站與 hardened Hermes monitor。原稿六篇先僅在副本設成 ready，實際 Astro build 顯示六篇未公開；D1 提交一篇、故意使 build 失敗、保留同一身份，再 build 並核對正文 SHA／canonical／RSS。獨立 dry-run 與 test-delivery DB 分別觀察一則 dry-run 及一個模擬 Telegram POST，重啟不重複；沒有正式資料庫或真實 Telegram。
 
-正文保留測試以 Markdown content 逐字比較。第五篇 frontmatter 的錯誤 topic automation 改為既有 development-automation，使原先被阻擋的 content validation 通過；正文未改。
+## 正式設定與仍需人工驗收
 
-## 正式啟用前的人工設定與驗收
+GitHub RELEASE_AUTOMATION_ENABLED=false、退役的 EDITORIAL_RELEASE_ENABLED=false；Worker RELEASE_WRITE_ENABLED=false；Hermes HERMES_RSS_NOTIFY_ENABLED 保持未設／false。環境保持 main-only。本次不改 Secret、安裝範圍或 ruleset。
 
-逐項勾選並留存版本／執行人／證據，使用 [PR ＃7 人工驗收清單](editorial-release-acceptance.md)。新增的 Validate editorial release CI 只跑測試、建置與隔離演練，顯式停用兩個正式旗標；CI 成功不等於已完成下列人工設定或供應商驗收。
-
-1. 審閱 PR 並完成驗收，另行授權合併本候選至 main。GitHub 排程只使用 default branch，feature branch 不會啟動正式排程。
-2. 建立 GitHub environment editorial-release，限制 main，先保持人工 reviewer 保護。確認 repository ruleset／branch protection 允許所選 unattended GitHub token 的 contents write；若 GITHUB_TOKEN 無法直接推 main，須改用僅安裝此 repo、僅需 contents write 的 GitHub App 路徑，另做權限驗收，不能 force push、關掉保護或使用廣權限 PAT 繞過。當前程式使用 checkout 的短效 GITHUB_TOKEN，不依赖 Admin App secrets。
-3. 保持 repository variable EDITORIAL_RELEASE_ENABLED 未設或 false，先確認 feature CI、本機演練、實際候選預覽／部署與競爭情境。環境 reviewer 保護要如何在啟用後提供無人值守排程，須由擁有者決定。
-4. 人工確認候選版本、journal 儲存例外、發佈 metadata 意圖與公開確認區別、部署競爭限制，以及延遲無精確分鐘保證。接受後才設定 EDITORIAL_RELEASE_ENABLED=true。初次 ingestion 必須在要使用的 07：00 時段之前成功持久化；若錯過則使用下一個時段。
-5. 在 Hermes 所屬的獨立 OS 帳號安裝下節工具與唯一 hourly job。repo 存取不等於 Hermes runtime 存取。本次沒有改動現有 Hermes daemon／Telegram poller。
-6. 在私人測試 chat 驗收真實 Telegram：新 feed＋200 canonical page 才成功；重新啟動仍不重送；失敗應顯示 outbox uncertain。此測試需擁有者提供並授權私人帳號／測試 chat，dry-run 不等同 Telegram provider 成功。
-7. 驗收後才為正式 Hermes job 啟用 live，避免多個資料庫或多個 job 各送一份。既有 Hermes Telegram 通道若共用同 bot，允許 sendMessage，不另建立 getUpdates poller。
+仍需核對 Worker／Actions automation secret 成對、實際 CMS App 身份及 D1 migration／備份、舊 release 的 digest 對帳、停止／競爭／失敗 delivery 恢復演練、正式候選 SHA 的部署／RSS，以及原稿與桌面／手機簽核。專用 App 的唯讀 Secret 驗收成功不代表 RELEASE_AUTOMATION_SECRET 或整個 D1 pipeline 已驗收。需要輸入憑證時由擁有者親自操作，不貼出憑證。
 
 ## Hermes 安裝與 job
 
@@ -74,12 +62,10 @@ canonical URL 是去重主鍵，GUID 留作證據；RSS 外部 iThome entry 不�
 
 ## 故障修復與停止
 
-- 失敗 build／deploy／RSS verification：保留 journal pending，下次原時段原文章重試；不要手動把它標 completed。
-- CMS 改稿：系統會明確拒絕不同 digest。由擁有者確認新的正文及 publication metadata，計算完整 Markdown SHA-256，僅更新同一 pending.revision 後提交；重新 build、公開驗證。不得清除 pending 後重排已公開內容。
-- 刪除 pending 或 active manifest：恢復原檔／manifest，或由擁有者審閱取消／遷移狀態；系統不擅自放行另一個系列。
-- Git conflict：保持遠端 CMS 內容，從最新 main 重試；不 force push。
-- Telegram uncertain：用 --status 及私人 chat 查核。如果已收到，人工將該 URL 狀態核對為 sent；若無法判斷，保持 uncertain，不自動重送。真的確定未送達且批准重送時，先停 hourly job，人工處理該筆後再恢復；程式不提供會大量重播的清庫開關。
-- 停止新發文：將 EDITORIAL_RELEASE_ENABLED=false。已有 published 意圖仍可能被普通 Pages build 部署；要取消尚未公開的 pending，必須由擁有者確認公開證據後，原子恢復 post／manifest／journal，或暫停整個 Pages workflow。不要把關掉 queue flag 當成已發布內容的回滾。
-- 停止通知：停用 Hermes hourly job 或取消 HERMES_RSS_NOTIFY_ENABLED；保留 live SQLite，避免再次建立基線改變去重證據。
+- 先關 Worker RELEASE_WRITE_ENABLED，再關 GitHub RELEASE_AUTOMATION_ENABLED；停用／取消正在執行的 delivery workflow，觀察 Pages 已開始的部署。只關旗標不是瞬時停止，也不是撤回已公開文章。
+- build／deploy 失敗：保留 D1 原 release ID／slot／SHA，核對匹配的失敗 run 後僅重跑原失敗 delivery jobs，或另行授權同版本人工 Pages 部署。一般 hourly run 不自動重發舊文章／重部署未知結果。
+- Git 寫入回應未知：只核對原身份與正文、公開頁及 RSS，不刪紀錄、不換新身份重發。missing digest 或 pending 正文改動須人工對帳，不將目前內容直接當作已驗收版本。
+- 已知寫入前衝突可由 CMS 的受控 retry 沿用身份；解除承諾只限確認未寫入的安全失敗。正文、manifest、D1 狀態要一致，不能清庫或 force push。
+- Telegram uncertain：保持私人 SQLite，人工核對 chat 與 outbox；不刪 DB 或自動重送。停止 live job／旗標並保留去重資料。
 
-六篇原先的 10／12、15、19、22、26、29 只是未受 standalone 插隊且及時啟用的可能時段，本交付沒有承諾或宣稱任何一篇已在正式環境發佈。
+原先六篇可能日期不是正式承諾。本次沒有授權合併、正式部署、發文或真實收訊。

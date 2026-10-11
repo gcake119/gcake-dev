@@ -2,7 +2,7 @@
 
 此表是待驗收項目，不代表正式環境已驗收。每項請記錄候選完整 SHA、執行人、時間、環境及證據連結；私人憑證與 chat 內容不得貼入公開 PR。
 
-本次權限只有審查、修正、測試、推送 feature branch 與更新 PR。不要合併，不要建立正式排程、部署正式候選或啟用通知。正式 `EDITORIAL_RELEASE_ENABLED` 保持未設／false，Hermes 正式 `HERMES_RSS_NOTIFY_ENABLED` 保持未設／false。
+本次權限只有審查、修正、測試、推送 feature branch 與更新 PR。不要合併，不要建立正式排程、部署正式候選或啟用通知。正式 `RELEASE_AUTOMATION_ENABLED`／Worker `RELEASE_WRITE_ENABLED` 保持 false，退役的 `EDITORIAL_RELEASE_ENABLED` 保持未設／false，Hermes 正式 `HERMES_RSS_NOTIFY_ENABLED` 保持未設／false。
 
 ## 已完成的技術查核
 
@@ -18,7 +18,7 @@
 代理已完成隔離 Chromium 桌面／手機與觸控檢查，證據見 [預覽驗收紀錄](editorial-release-preview-review.md)。需要擁有者執行的設定與限制見 [設定步驟](editorial-release-user-setup.md)。以下核取方塊仍保留給擁有者簽核，不將代理檢查當作人工接受。
 
 - [ ] PR 保持 OPEN／未合併；最新完整 SHA 的 `Validate editorial release / validate` 全綠。若要設為 required check，由擁有者另行設定 ruleset，不能為了排程關閉分支保護。
-- [ ] 審閱 Git journal 儲存例外與 publication intent／public confirmation 的區別；接受目前操作資料存 Git，正文與順序仍以 Markdown／manifest 為唯一來源。
+- [ ] 審閱 D1 單一操作權威與 publication intent／public confirmation 的區別；Git journal writer 已退役，正文與順序仍以 Markdown／manifest 為唯一來源。
 - [ ] 核對六篇正文與原稿逐字一致、manifest 順序一致、status 仍為 ready；只接受第五篇分類修正。
 - [ ] 在隔離預覽人工查看文章版面、上一章／下一章與返回系列連結，至少檢查桌面及手機寬度。預覽不得將六篇正式 Markdown 改為 published。
 
@@ -36,7 +36,7 @@
 ## C．GitHub 正式設定（須另行授權）
 
 - [ ] 決定 GitHub environment `editorial-release` 的 main 限制、reviewer 與無人值守策略；先保持正式旗標停用。
-- [ ] 測試所選 token 的最小 contents write 權限與 main ruleset 相容性。候選已接專用 GitHub App，只限此 repo、必要權限；安裝 scope、ruleset 相容性及真實 push 仍需供應商驗收。
+- [ ] 測試所選 token 的最小 contents write 權限與 main ruleset 相容性。D1 由既有 CMS Worker App 寫入；Actions 不 mint 寫入 App token。既有受控 CMS／專用 App 寫入及唯讀 Secret 證據见無人值守紀錄，不等於 D1 全流程已驗收。
 - [ ] 記錄候選預覽與正式 Pages 部署的版本證據，確認完整 manifest、RSS 與公開 HTML。PR CI 是本機形狀的部署演練，不能代替正式 Pages 供應商驗收。
 - [ ] 規劃首次 durable ingestion，必須在想使用的 07：00 時段前完成；錯過就等待下一時段，不修改 startedAt 偽造啟用時間。
 
@@ -52,10 +52,19 @@
 ## E．啟用與停止（本次不執行）
 
 - [ ] A～D 完成或明確記錄豁免後，由擁有者另行授權合併及正式啟用；GitHub 與 Hermes 兩個旗標分別控制，不因 CI 全綠自動啟用。
-- [ ] 驗證停止流程：關閉 queue 旗標只停止新準備，已有 published 意圖仍可能被一般 Pages build 部署；取消 pending 要核對公開證據並一起恢復 post／manifest／journal，必要時暫停 Pages workflow。
+- [ ] 驗證停止流程：關閉 queue 旗標只停止新準備，已有 published 意圖仍可能被一般 Pages build 部署；取消 pending 要核對公開證據並一起恢復 post／manifest／D1 commitment，必要時暫停 Pages workflow。
 - [ ] 停止 Telegram job／live 旗標並保留私人 DB，不能刪 DB 來重送；指定故障處理人與 uncertain 對帳方式。
 
 詳細安裝命令、故障修復與停止步驟見 [操作交接](editorial-release-operations.md)。
 
 
 2026／10／12 無人值守後續：專用 GitHub App 接法與唯讀配置盤點已加入候選；前文「App 認證未實作」為歷史起點，現況與仍待擁有者授權的 repo scope／main bypass／CMS 相容性，見 [無人值守方案](editorial-release-unattended.md)。正式開關維持停用，所有真人／供應商未完成勾選保持未完成。
+
+## F．D1 唯一佇列後續驗收
+
+- [ ] 確認本候選與正式 runtime 版本差異，Worker／Actions automation Secret 成對及 main-only；本次沒有修改正式設定或部署候選。
+- [ ] 如有旧 journal／缺少 digest 的 D1 release，保留來源與原身份逐筆對帳，不自動搬移、不清庫。
+- [ ] 以 D1 CMS 介面核對連續 ready FIFO、系列 membership、錯過時段與 active series reconciliation；原章序不可改。
+- [ ] 演練同一 release 的失敗 build／deploy 恢復與停止，正式開關保持停用直到另行啟用授權。
+
+本機 D1 acceptance／mock／static rehearsal 是技術證據，以上正式供應商與人工項目仍未自動勾選。

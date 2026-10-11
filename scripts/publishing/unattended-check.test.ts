@@ -80,3 +80,8 @@ else: print(json.dumps([[]] if '--slurp' in sys.argv else []))
  const result=spawnSync(process.execPath,['--import','tsx','scripts/publishing/unattended-check.ts'],{encoding:'utf8',env:{...process.env,PATH:root+path.delimiter+process.env.PATH}});
  assert.equal(JSON.parse(result.stdout).checks.find((c:any)=>c.name==='production remains disabled').passed,false);
 });
+
+test('D1 automation gate drift is reported even when the retired journal flag is disabled',()=>{
+ const c=configured();c.variables.variables.push({name:'RELEASE_AUTOMATION_ENABLED',value:'true'});
+ assert.equal(inspectConfiguration(c).configurationReady,false);
+});

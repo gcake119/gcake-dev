@@ -21,65 +21,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  prepare:
-    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
-    environment: editorial-release
-    permissions:
-      contents: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: main
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.17.1
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm content:validate
-      - name: Validate trusted source before granting write credential
-        env:
-          EDITORIAL_RELEASE_ENABLED: 'false'
-          HERMES_RSS_NOTIFY_ENABLED: 'false'
-        run: |
-          pnpm test
-          pnpm check
-      - name: Create repository-scoped editorial App token
-        id: editorial-app
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
-        with:
-          client-id: ${{ vars.EDITORIAL_APP_CLIENT_ID }}
-          private-key: ${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-      - name: Persist readiness and recover or reserve one release
-        env:
-          EDITORIAL_RELEASE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
-          EDITORIAL_GIT_TOKEN: ${{ steps.editorial-app.outputs.token }}
-          RELEASE_EVENT: ${{ github.event_name }}
-        run: |
-          args=()
-          if [[ "$RELEASE_EVENT" == schedule || "$RELEASE_EVENT" == workflow_dispatch ]]; then
-            args+=(--allow-reserve)
-          fi
-          pnpm editorial:release prepare --write "${args[@]}"
-
   build:
-    needs: prepare
     permissions:
       contents: read
       pages: read
-    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped') && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
+    if: inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     outputs:
       revision: ${{ steps.source.outputs.revision }}
     steps:
-      - name: Checkout latest main including release intent
+      - name: Checkout latest main for manual deployment
         uses: actions/checkout@v7
         with:
           ref: main
@@ -132,48 +83,6 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v5
-
-  confirm:
-    needs: deploy
-    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
-    environment: editorial-release
-    permissions:
-      contents: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: main
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.17.1
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-      - run: pnpm install --frozen-lockfile
-      - name: Validate trusted source before granting write credential
-        env:
-          EDITORIAL_RELEASE_ENABLED: 'false'
-          HERMES_RSS_NOTIFY_ENABLED: 'false'
-        run: |
-          pnpm test
-          pnpm check
-      - name: Create repository-scoped editorial App token
-        id: editorial-app
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
-        with:
-          client-id: ${{ vars.EDITORIAL_APP_CLIENT_ID }}
-          private-key: ${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          permission-contents: write
-      - name: Confirm canonical RSS and page before consuming reserved slot
-        env:
-          EDITORIAL_RELEASE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
-          EDITORIAL_GIT_TOKEN: ${{ steps.editorial-app.outputs.token }}
-        run: pnpm editorial:release confirm --write
 
   secret-check-preflight:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'secret-check' && github.ref == 'refs/heads/feat/editorial-release-queue'

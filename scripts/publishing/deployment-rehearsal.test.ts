@@ -5,21 +5,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import YAML from 'yaml';
-test('manual Pages deployment preserves disabled editorial writers and never triggers on pushes or schedules',async()=>{
+test('manual Pages has no queue writer, even when legacy flag is true',async()=>{
  const workflow=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
- assert.equal(workflow.permissions.contents,'read');assert.equal(workflow.concurrency.group,'pages');assert.equal(workflow.concurrency['cancel-in-progress'],false);
- assert.equal(workflow.on.schedule,undefined);
- assert.equal(workflow.on.push,undefined);
- assert.ok(Object.hasOwn(workflow.on,'workflow_dispatch'));
- for(const job of ['prepare','confirm']){
-  assert.match(workflow.jobs[job].if,/vars.EDITORIAL_RELEASE_ENABLED == 'true'/);
-  assert.match(workflow.jobs[job].if,/refs\/heads\/main/);
-  assert.equal(workflow.jobs[job].environment,'editorial-release');assert.equal(workflow.jobs[job].permissions.contents,'read');
+ assert.equal(workflow.jobs.prepare,undefined);assert.equal(workflow.jobs.confirm,undefined);
+ assert.equal(workflow.permissions.contents,'read');assert.equal(workflow.concurrency.group,'pages');
+ assert.equal(workflow.on.schedule,undefined);assert.equal(workflow.on.push,undefined);
+ for(const name of ['build','deploy']) {
+  assert.match(workflow.jobs[name].if,/inputs.mode != 'secret-check'/);
+  assert.match(workflow.jobs[name].if,/refs\/heads\/main/);
+  assert.doesNotMatch(JSON.stringify(workflow.jobs[name]),/EDITORIAL_GIT_TOKEN|permission-contents.*write|editorial:release|release-orchestrate/);
  }
- assert.match(workflow.jobs.prepare.steps.at(-1).run,/RELEASE_EVENT.*schedule.*workflow_dispatch/);
- assert.equal(workflow.jobs.confirm.needs,'deploy');
  assert.match(workflow.jobs.deploy.steps[0].run,/test "\$current" = "\$SOURCE_REVISION"/);
- assert.deepEqual(workflow.jobs.build.permissions,{contents:'read',pages:'read'});
 });
 test('PR CI validates the candidate without deployment credentials or production writes',async()=>{
  const workflow=YAML.parse(await fs.readFile('.github/workflows/validate-editorial.yml','utf8'));
@@ -35,32 +31,6 @@ test('PR CI validates the candidate without deployment credentials or production
  const run=workflow.jobs.validate.steps.map((step:any)=>step.run??'').join('\n');
  for(const command of ['pnpm test','pnpm check','pnpm build','pnpm editorial:rehearse'])assert.ok(run.includes(command));
  assert.doesNotMatch(JSON.stringify(workflow),/secrets\.|deploy-pages@|wrangler|git push|--live/);
-});
-
-test('unattended App credentials are scoped to release writers after dependency installation',async()=>{
- const workflow=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
- for(const name of ['prepare','confirm']){
-  const steps=workflow.jobs[name].steps;
-  const auth=steps.find((s:any)=>s.id==='editorial-app');
-  assert.ok(auth,'Dedicated App authentication required');
-  assert.match(auth.uses,/^actions\/create-github-app-token@[a-f0-9]{40}$/);
-  assert.deepEqual(auth.with,{
-   'client-id': '${{ vars.EDITORIAL_APP_CLIENT_ID }}',
-   'private-key': '${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}',
-   owner: '${{ github.repository_owner }}',
-   repositories: '${{ github.event.repository.name }}',
-   'permission-contents':'write'
-  });
-  assert.ok(steps.indexOf(auth)>steps.findIndex((s:any)=>s.run==='pnpm install --frozen-lockfile'));
-  const gate=steps.find((s:any)=>s.run?.includes('pnpm test')&&s.run?.includes('pnpm check'));
-  assert.ok(gate,'Full source validation required before App token');
-  assert.ok(steps.indexOf(gate)<steps.indexOf(auth));
-  assert.equal(gate.env.EDITORIAL_RELEASE_ENABLED,'false');
-  assert.equal(gate.env.HERMES_RSS_NOTIFY_ENABLED,'false');
-  assert.equal(steps.find((s:any)=>s.uses?.startsWith('actions/checkout@')).with['persist-credentials'],false);
-  assert.equal(steps.at(-1).env.EDITORIAL_GIT_TOKEN,'${{ steps.editorial-app.outputs.token }}');
- }
- for(const name of ['build','deploy'])assert.doesNotMatch(JSON.stringify(workflow.jobs[name]),/EDITORIAL_APP_PRIVATE_KEY|EDITORIAL_GIT_TOKEN|create-github-app-token/);
 });
 
 test('manual Secret acceptance isolates environment credentials and excludes every publication job',async()=>{
@@ -81,7 +51,7 @@ test('manual Secret acceptance isolates environment credentials and excludes eve
  assert.equal(auth.with.repositories,'${{ github.event.repository.name }}');
  assert.match(auth.uses,/create-github-app-token@[a-f0-9]{40}$/);
  assert.doesNotMatch(JSON.stringify(probe),/checkout@|pnpm|editorial:release|release-orchestrate|deploy-pages@|wrangler|sendMessage|git push/);
- for(const name of ['prepare','build','deploy','confirm'])assert.match(w.jobs[name].if,/inputs.mode != 'secret-check'/,name);
+ for(const name of ['build','deploy'])assert.match(w.jobs[name].if,/inputs.mode != 'secret-check'/,name);
 });
 test('Secret acceptance preflight rejects SHA drift and enabled gates before Secret access',async()=>{
  const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
@@ -113,5 +83,21 @@ test('Secret identity acceptance accepts installation schema and rejects scope d
    const result=await run(value,env); assert.notEqual(result.status,0);assert.doesNotMatch(result.stdout+result.stderr,/synthetic-never-print/);
   }
   assert.notEqual((await run(repo,{FAIL_CONTENTS:'1'})).status,0,'Content read failure must stop acceptance');
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('D1 delivery rejects a stale Pages artifact after a concurrent CMS edit without writer credentials',async()=>{
+ const w=YAML.parse(await fs.readFile('.github/workflows/editorial-release.yml','utf8'));
+ const step=w.jobs.deploy.steps.find((s:any)=>s.name==='Reject stale D1 publication artifact');
+ assert.ok(step,'D1 deployment requires current-main comparison');
+ assert.equal(step.env.SOURCE_REVISION,'${{ needs.release.outputs.release_sha }}');
+ assert.equal(w.jobs.deploy.permissions.contents,'read');
+ assert.doesNotMatch(JSON.stringify(w.jobs.deploy),/PRIVATE_KEY|AUTOMATION_SECRET|permission-contents.*write/);
+ const dir=await fs.mkdtemp(join(tmpdir(),'gcake-d1-deploy-'));
+ try {
+  await fs.writeFile(dir+'/gh','#!/bin/sh\nprintf "%s\\n" "$CURRENT_SHA"\n',{mode:0o700});
+  const run=(current:string)=>spawnSync('/bin/bash',['-e','-c',step.run],{encoding:'utf8',env:{PATH:dir+':'+process.env.PATH,REPOSITORY:'gcake119/gcake-dev',SOURCE_REVISION:'a'.repeat(40),CURRENT_SHA:current}});
+  assert.equal(run('a'.repeat(40)).status,0);
+  assert.notEqual(run('b'.repeat(40)).status,0);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });

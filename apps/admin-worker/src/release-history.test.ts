@@ -65,6 +65,18 @@ test('whole-series history retains only current complete ordered membership afte
   }
 });
 
+test('legacy Git journal evidence blocks D1 snapshot before content ingestion instead of replaying or deleting it',async()=>{
+  const methods:string[]=[];
+  const client=new GitHubAppReadClient({installationTokens:{create:async()=> 'synthetic'},fetch:async(input,init)=>{
+    methods.push(init?.method??'GET');const url=new URL(String(input));
+    if(url.pathname.endsWith('/gcake-dev'))return Response.json({full_name:'gcake119/gcake-dev',default_branch:'main',private:false});
+    if(url.pathname.endsWith('/branches/main'))return Response.json({commit:{sha:'pinned',commit:{tree:{sha:'tree'}}}});
+    return Response.json({tree:[{path:'src/data/editorial-queue.json',sha:'journal',type:'blob'}]});
+  }});
+  await assert.rejects(()=>client.releaseSnapshot(),/LEGACY_JOURNAL_RECONCILIATION_REQUIRED/);
+  assert.deepEqual(methods,['GET','GET','GET']);
+});
+
 test('D1 readiness uses first-parent main visibility, not the earlier feature-branch ready commit',async()=>{
   const client=new GitHubAppReadClient({installationTokens:{create:async()=> 'synthetic'},fetch:async input=>{
     const url=new URL(String(input));

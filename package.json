@@ -23,7 +23,7 @@
     "test:public": "node --import tsx --test src/data/external/ithome-2026-topics.test.ts src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/seo/structured-data.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/paragraph-prepare.test.ts scripts/publishing/release-orchestrate.test.ts scripts/external/ithome-sync.test.ts src/lib/publishing/release-queue.test.ts src/lib/publishing/release-eligibility.test.ts",
     "test:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
     "test": "pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces",
-    "test:editorial": "node --import tsx --test src/lib/publishing/release-queue.test.ts src/lib/publishing/editorial-state.test.ts scripts/publishing/editorial-release.test.ts scripts/publishing/deployment-rehearsal.test.ts scripts/publishing/unattended-check.test.ts",
+    "test:editorial": "node --import tsx --test src/lib/publishing/release-queue.test.ts scripts/publishing/editorial-release.test.ts scripts/publishing/deployment-rehearsal.test.ts scripts/publishing/unattended-check.test.ts",
     "editorial:unattended:check": "node --import tsx scripts/publishing/unattended-check.ts",
     "editorial:release": "node --import tsx scripts/publishing/editorial-release.ts",
     "editorial:rehearse": "node --import tsx scripts/publishing/rehearse-editorial.ts",

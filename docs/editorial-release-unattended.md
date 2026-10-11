@@ -1,5 +1,8 @@
 # PR ＃7：無人值守準備與驗收
 
+**目前有效接法：D1 已由擁有者選為唯一正式操作佇列，候選的 Git journal writer 與 Actions prepare／confirm 已退役。本文前段是歷次驗收紀錄；現在的操作以 [D1 操作交接](editorial-release-operations.md) 為準。App／Secret／保護設定保留，正式開關仍停用。**
+
+
 2026／10／12。擁有者沒有協作者，要求推進無人值守方案；這不是正式啟用授權。PR 不合併、正式 Pages 候選不部署、兩個正式開關不啟用。擁有者已授權透過 Computer Use 建立私人專用 App，並選擇保留 CMS 直接儲存方案。已完成 gcake-editorial-release（App ID 5276010／installation 170331414）只安裝 gcake-dev、main-only editorial-release 環境及 active main integrity／main review。擁有者親自產生與存入私鑰，代理只確認 environment Secret 名稱 EDITORIAL_APP_PRIVATE_KEY，未讀取內容或驗證私鑰有效性。真實發文身份寫入尚未執行。決策來源為 `integrate-editorial-release` 的 Unattended release preparation；repo 沒有 docs/decisions 索引，使用現有 Spectra 決策，不另建平行追蹤。
 
 ## 一次設定、後續不逐次核准
@@ -108,3 +111,11 @@ API 格式修正後完整本機：282 Node／31 Python 通過，check 153 檔零
 這證明 environment 私鑰可建立預期 App 的限定讀取 token，並完成實際內容讀取，不代表 Actions protected-main 寫入或正式 prepare→deploy→confirm 通過。RELEASE_AUTOMATION_SECRET／D1 正式接法未由此次驗收測試；私鑰本身仍可 mint 安裝範圍內的寫入 token。建議 D1 作單一佇列尚未完成遷移，正式運作仍需對齊兩套佇列語意、公開版本／競爭／停止／恢復演練、內容與畫面簽核，以及 Hermes 自動 dry-run 紀錄；真實私人 Telegram 收訊需另行授權。
 
 此次受驗程式的完整本機 282 Node／31 Python、check、build:all、兩套隔離演練、workflow 與 Spectra 驗證已通過，精確 3a51b9f 的三個 CI 均成功。本次驗收後只更新證據與 task 狀態，不修改程式、workflow、正文或章序。
+
+## D1 單一權威整合（候選，未正式部署）
+
+對齊 continuous-ready FIFO（包含 final blob 相同的退稿循環）、完整 manifest／membership、最近已到時段、首次 durable observation 與 active series 對帳。D1 寫入前保存轉換後 Markdown digest，RSS＋canonical＋metadata＋digest 與當前 Git intent 均一致才 verified-public；unknown／legacy missing digest 保留身份。舊 Git journal 若存在會明確停止，沒有自動搬入或刪除。
+
+Git journal CLI 只回報退役、不存取檔案／網路；state module 已移除，manual Pages 無寫入 jobs。D1 editorial Pages deploy 增加 main SHA 複查，僅增加 contents read 來核對，不使用 App 私鑰或 Worker Secret。這仍不是跨服務原子鎖。Hermes 正式 transport／private DB 隔離未更動。
+
+實際隔離演練使用 D1-compatible SQLite／一次 Git publication／真正 Astro build 失敗後同身份恢復、公開來源 digest／RSS、dry-run 及 mock HTTP Telegram 一次通知跨重啟；只在副本固定六篇 ready，正文與閱讀順序不變。本次不更動正式 D1、App／Secret／rulesets，不合併、部署或啟用。
