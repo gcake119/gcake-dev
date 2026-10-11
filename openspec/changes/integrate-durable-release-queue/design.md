@@ -11,9 +11,9 @@ Non-goals: production activation, provider publishing, newsletter delivery, P1 c
 
 Use a D1 transactional compare-and-swap runtime document with version fencing, containing operational records only. This keeps ingestion, reservations, active-series progress, events and leases atomic together instead of performing independent partial writes. Article bodies/titles/order are joined from the current immutable Git snapshot, never editable in D1. Bound event history and return optimistic conflict errors rather than silently overwriting.
 
-Use the existing GitHub App atomic Git writer. A separate secret-authenticated automation route permits only release execution/verification, not arbitrary content changes. Gate defaults false in every environment; Actions retains contents read permission. Cron also attempts hourly recovery but never backfills skipped slots; existing failed reservations retain their date. Git writes have an unknown-result boundary persisted before invocation.
+Use the existing GitHub App atomic Git writer. A separate secret-authenticated automation route permits only release execution/verification, not arbitrary content changes. Gate defaults false in every environment; Actions retains contents read permission. Editorial cron also attempts hourly public verification (not Pages deployment) but never backfills skipped slots; existing failed reservations retain their date. Git writes have an unknown-result boundary persisted before invocation.
 
-Adopt legacy schedules only through explicit preview and confirmation. Published future dates block their Taipei date; existing ready dates remain held until automatic scheduling or a fixed slot is explicitly adopted. Series progress is inferred from verified release records and contiguous published prefix; partial out-of-order publication is held.
+Adopt legacy schedules only through explicit preview and confirmation. Published future dates block their Taipei date only when it is Monday or Thursday; existing ready dates remain held until automatic scheduling or a fixed slot is explicitly adopted. Series progress is inferred from verified release records and contiguous published prefix; partial out-of-order publication is held.
 
 Public verification fetches only the configured canonical origin without following redirects. Validate title, slug, canonical, publication metadata and RSS GUID/link. Feed outage never changes Git. Deployment retry uses a separately authorized rerun of the matching failed Pages workflow and preserves release identity; unknown Git write results never automatically publish again.
 
@@ -30,6 +30,8 @@ Public verification fetches only the configured canonical origin without followi
 ## Risks / Trade-offs
 
 Single runtime document contention → CAS conflicts fail closed and next request retries from fresh state; personal CMS volume is bounded. Unknown sends → human reconciliation, never blind duplicate sends. Separate Hermes account → provide install procedure and leave runtime installation for human authorization.
+
+Worker and Pages deployment workflows accept manual dispatch on main only. They do not run on push/merge or hourly schedules. PR CI retains test/check/build/simulation without deployment authority. Automatic publication-to-Pages delivery must be separately designed and authorized before enabling production publication; current manual deployment is not unattended delivery.
 
 ## Migration Plan
 

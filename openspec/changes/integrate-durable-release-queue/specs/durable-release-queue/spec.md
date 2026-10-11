@@ -25,7 +25,17 @@ The queue SHALL ingest all local posts and manifests from one Git revision, pres
 #### Scenario: Legacy publication dates
 - **GIVEN** historical published posts, future published posts and ready posts with dates
 - **WHEN** ingestion runs
-- **THEN** history remains unchanged, future publications reserve their date, and ready dates require explicit operator adoption
+- **THEN** history remains unchanged, future publications reserve their date only when it is a Taipei Monday or Thursday, and ready dates require explicit operator adoption
+
+#### Scenario: Off-calendar legacy publication
+- **GIVEN** a published article dated Tuesday or Saturday and two ready standalone articles
+- **WHEN** estimates are calculated before the next Monday
+- **THEN** the ready articles retain Monday and Thursday estimates and the legacy publication date remains unchanged
+
+#### Scenario: Taipei calendar boundary
+- **GIVEN** a published article whose UTC Wednesday timestamp falls on Thursday in Taipei
+- **WHEN** estimates are calculated
+- **THEN** that Taipei Thursday is reserved without changing the publication timestamp
 
 ### Requirement: Unique durable commitments
 The queue SHALL allow only one article per Taipei release date and one public release identity per article. Concurrent publishers SHALL use a fenced lease; failed and unknown attempts SHALL retain their identity and reservation. Expired write leases SHALL require verification before another write. Completed and locked slots SHALL NOT be replanned.
@@ -41,7 +51,7 @@ The queue SHALL allow only one article per Taipei release date and one public re
 - **THEN** it is estimated at the next unconsumed unlocked slot
 
 ### Requirement: Disabled atomic delivery
-Production release SHALL require an explicit server gate and authenticated orchestration. Delivery SHALL compare revision and blob identities, update only publication frontmatter and the matching manifest status in one atomic Git commit, preserve bodies/order, and stop on conflicts. Actions SHALL trigger Monday/Thursday after 07:00 Taipei and retain hourly Pages recovery. Failed builds SHALL NOT consume slots.
+Production release SHALL require an explicit server gate and authenticated orchestration. Delivery SHALL compare revision and blob identities, update only publication frontmatter and the matching manifest status in one atomic Git commit, preserve bodies/order, and stop on conflicts. Editorial Actions SHALL remain gated and target Monday/Thursday after 07:00 Taipei. Worker and Pages deployment SHALL require explicit manual dispatch on main; merging changes and hourly time passage SHALL NOT deploy or migrate production. Failed builds SHALL NOT consume slots.
 
 #### Scenario: Disabled gate or stale Git revision
 - **GIVEN** a disabled gate or concurrent editorial change
@@ -52,6 +62,16 @@ Production release SHALL require an explicit server gate and authenticated orche
 - **GIVEN** an enabled simulation with a due ready article
 - **WHEN** release executes
 - **THEN** the article and matching manifest become published in one commit with unchanged body and order, while the slot awaits public verification
+
+#### Scenario: Merge and hourly passage cannot deploy
+- **GIVEN** Worker and Pages deployment require manual authorization
+- **WHEN** a pull request is merged or an hour passes
+- **THEN** no Worker deployment, production migration or Pages deployment starts automatically
+
+#### Scenario: Manual deployment from another branch
+- **GIVEN** deployment workflows are manually dispatched from a branch other than main
+- **WHEN** the workflows run
+- **THEN** production migration and deployment are skipped
 
 ### Requirement: Independent public evidence
 Only verified canonical page identity and matching RSS GUID SHALL consume a release slot. Page success without RSS SHALL remain awaiting verification. Unknown write results SHALL be reverified without unconditional publication. Git SHA, deployment run, URL, GUID, timestamps, errors and retry events SHALL be inspectable. Telegram success SHALL NOT advance publication status.

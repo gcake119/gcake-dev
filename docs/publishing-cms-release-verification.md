@@ -4,7 +4,7 @@
 
 ## 驗證範圍
 
-Spectra change：`integrate-durable-release-queue`。先完成 requirement 與 Given／When／Then，再產生 tasks；接受交接文件既定政策。新增持久化候選／承諾、原子 Git 發布、獨立公開驗證、CMS API／介面、Actions orchestration 與外部 poller。正式發布 gate 各環境仍為 false，Actions 必須額外明確設定 true 才執行。既有 Pages 第 37 分鐘 hourly workflow 未修改。
+Spectra change：`integrate-durable-release-queue`。先完成 requirement 與 Given／When／Then，再產生 tasks；接受交接文件既定政策。新增持久化候選／承諾、原子 Git 發布、獨立公開驗證、CMS API／介面、Actions orchestration 與外部 poller。正式發布 gate 各環境仍為 false，Actions 必須額外明確設定 true 才執行。此段為最初交付快照；最新合併前修正已移除 Pages 第 37 分鐘 hourly 與 push 部署，Worker／Pages 僅 main 人工觸發，見文末。
 
 ## 本機結果
 
@@ -90,3 +90,16 @@ Playwright 操作真實 build 的 Admin，後端使用真實 ReleaseQueue／Rele
 原因：Actions 已啟用，既有 workflow 僅 main 部署、schedule／workflow_dispatch，沒有 pull_request trigger，所以原 head 沒有檢查。新增 `validate-pr.yml` 對 main 目標的 PR 執行完整 gates，不限制 paths；只有 contents read，checkout 不保留認證、無 production environment／secrets／部署步驟。
 
 既有 foundation 測試新增 PR 檢查完整性與無部署授權的回歸情境，先觀察缺少 PR workflow 的 RED，再新增流程達成 GREEN。推送前完整本機執行 frozen-lockfile 安裝、221 Node／4 Python tests、check（144 files 零 errors／warnings／hints）、build:all、release:dry-run 及 diff whitespace check 通過。線上 CI 結果以 PR Checks／Actions run 為準；不把本機通過當成線上成功。正式發布 gates 未變更。
+
+
+## PR #9 合併前修正與部署隔離
+
+依最新使用者指示修正非發文日 legacy publishedAt 錯占下一個 slot。回歸測試在修改程式前重現：週二 10/13 讓第二篇估算從 10/15 錯移到 10/19。修正後，週二、週六及 UTC 週一晚間（台北週二）不占位；UTC 週三晚間（台北週四）仍保留該週四。舊 publishedAt／source 不改。
+
+Worker／Pages 的 push 部署與 Pages 每小時第 37 分鐘部署均移除，只接受 workflow_dispatch，所有 jobs 限 main。兩個 workflow 回歸測試各自在修改前因 push／schedule 觸發而 RED，修正後 GREEN；focused tests 26／26。PR CI 繼續自動執行，沒有部署權限。Editorial 每小時公開查核保留既有停用 gate，不是 Pages 部署。
+
+完整本機結果：225 項 Node／4 項 Python tests；check 144 files 零 errors／warnings／hints；build:all（32 公開頁面與全部 workspaces）；release:dry-run 與 git diff --check 全通過。模擬 bodyAndOrderPreserved=true、productionEnabled=false，Telegram 為 stub，未使用遠端 migration 或部署。與此前 PR head 3364f7b 比較，src/content 沒有變更。
+
+Spectra validate 無 errors／warnings。三個唯讀 AI review（契約、安全、預設／混淆）未發現程式阻塞；review 發現本文件殘留 hourly 保留說法，已修正並送回複查。本機 RED／GREEN 與完整 gates logs 位於 /private/tmp/gcake-premerge-{red,green,test,check,build,simulation}.log。線上 CI 以 PR #9 最新 head 的 Checks／run 為準，不能用本機結果替代。
+
+尚未完成或授權：合併、Worker／Pages 人工部署與遠端 D1 migration、provider 真實發布／公開驗證、Hermes／Telegram、正式自動部署串接及最後發文 gates 啟用。現在人工部署不等同無人值守交付；正式自動發文啟用前必須另行設計、授權與驗證 deployment 串接。既有 Computer Use 介面驗收紀錄保留，本次未宣稱新增介面或 production 驗收。

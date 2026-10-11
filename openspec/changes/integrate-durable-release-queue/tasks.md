@@ -16,3 +16,9 @@
 ## 4. Acceptance
 
 - [x] 4.1 Run full pnpm test, check, build and workspaces builds, local migration and publication-to-page/RSS/notification simulation, Worker deploy dry-run and AI review; record exact evidence and human authorization checklist without enabling production.
+
+## 5. Pre-merge corrections
+
+- [x] 5.1 Reproduce and fix off-calendar legacy reservations with Taipei boundary regression coverage.
+- [x] 5.2 Make Worker and Pages deployments manual-only on main, remove hourly Pages recovery, verify workflow safety and update operations.
+- [x] 5.3 Complete local gates and AI review; prepare the reviewed PR #9 update without merging, deploying or enabling publication. Remote CI completion is recorded in PR Checks.

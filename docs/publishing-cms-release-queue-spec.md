@@ -38,7 +38,7 @@
 
 D1 必須有原子化 slot reservation + unique release-slot（Taipei 日期）及 per-article unique public release id；重複 Webhook/GitHub Actions 不得重複取用。Slot 只有 verified-public 才算消費；進行中佔位阻止後續衝突。正式發布時先核對 Git head/revision、再確認未公開、最後寫入 Git publication status 與 publishedAt，與 manifest 同一原子 commit；Git 並行衝突停止並重算。排程觸發不可只根據 ready 日期靜態展示。
 
-舊文章已有手動 publishedAt 的情況先**逐筆分類**：已公開保留歷史、未到期 published 為已預約且占位、ready 舊資料不自動視為已啟用。不要在無採納策略前轉換舊 publishedAt。必要時為手動「指定時段」單獨建持久承諾並納入 reserved slots。
+舊文章已有手動 publishedAt 的情況先**逐筆分類**：已公開保留歷史、未到期 published 僅在台北日期為週一／四時占用該日的發文時段；其他日期保留原值，不挪移到下一個發文日、ready 舊資料不自動視為已啟用。不要在無採納策略前轉換舊 publishedAt。必要時為手動「指定時段」單獨建持久承諾並納入 reserved slots。
 
 ## 預計日期和插隊規則
 
@@ -60,7 +60,7 @@ D1 必須有原子化 slot reservation + unique release-slot（Taipei 日期）�
 2. D1 durable queue ingestion、unique slot 鎖、首次 readyAt、累積進度、重複執行冪等、發布失敗恢復。
 3. 對應 CMS API（queue listing、detail、pause/resume、reverify、safe retry、override）和顯示介面（Editor、Series、Publishing）。
 4. 具 least privilege 的無人值守 GitHub 狀態寫入路徑；與 CMS/Codex 併發時 fail closed。
-5. GitHub Actions 發布 orchestration：週一/四 07:00 後啟動；保留每小時第 37 分鐘的部署復原；測試單時段唯一。
+5. GitHub Actions 發布 orchestration：週一/四 07:00 後啟動；依最新合併前授權邊界，Worker／Pages 僅 main 人工觸發，移除合併部署及 Pages 每小時第 37 分鐘部署；正式自動發文仍停用，自動部署串接須另行設計與授權；測試單時段唯一。
 6. 網站 URL 與 RSS 驗證、Hermes RSS poller 及 Telegram 去重（token 和本機 state 不進 Git）。
 7. 全功能 dry run、回歸測試、操作驗收後人工啟用 production gate。
 
