@@ -194,3 +194,5 @@ export function isSessionResponse(value: unknown): value is SessionResponse {
   const identity = user as Record<string, unknown>;
   return typeof identity.githubUserId === 'string' && typeof identity.login === 'string';
 }
+
+export type { ReleaseState, ReleaseRecord, QueueItem, QueueView, OverridePreview, QueueControl } from './release.js';
