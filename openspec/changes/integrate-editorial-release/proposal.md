@@ -13,3 +13,5 @@ None.
 ## Impact
 - Modified: `src/lib/publishing/release-queue.ts`, `package.json`, `.github/workflows/deploy-pages.yml`.
 - New: `scripts/publishing/editorial-release.ts`, `scripts/hermes/rss_monitor.py`, `src/lib/publishing/editorial-state.ts`.
+
+The owner requested an unattended operating plan without collaborators. Add scoped GitHub App authentication for release pushes, a read-only configuration audit, and owner setup/stop instructions; production stays disabled.

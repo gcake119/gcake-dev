@@ -93,3 +93,22 @@ The system SHALL provide an explicit isolated notification test mode accepting o
 - **GIVEN** a status request selects a missing state file
 - **WHEN** it runs
 - **THEN** no state file is created
+
+### Requirement: Unattended release preparation
+The system SHALL support release writes using a dedicated repository-scoped GitHub App without a fallback write identity. The system SHALL provide a read-only audit that distinguishes configuration evidence from permission, deployment and human acceptance. Production SHALL remain disabled until separately accepted.
+#### Scenario: Missing identity or wrong destination
+- **GIVEN** production is disabled, the branch is not main, unattended release credentials are missing or the Git destination differs from gcake119/gcake-dev
+- **WHEN** a release push is requested
+- **THEN** no authenticated push occurs and the operation fails without exposing credentials
+#### Scenario: Scoped release writer
+- **GIVEN** an accepted dedicated App identity for gcake119/gcake-dev and a validated release commit
+- **WHEN** the release writer pushes
+- **THEN** only main is advanced without force and the temporary credential is not saved in the checkout
+#### Scenario: Configuration inspection
+- **GIVEN** production is disabled and unattended environment, identity or main protection settings are missing
+- **WHEN** the owner runs the configuration audit
+- **THEN** missing requirements are reported without creating settings, tokens, publication commits or messages
+#### Scenario: Configuration is not activation acceptance
+- **GIVEN** configuration requirements have been satisfied
+- **WHEN** the audit completes
+- **THEN** provider-write, Pages, content and Telegram acceptance remain explicit separate gates, and production remains disabled

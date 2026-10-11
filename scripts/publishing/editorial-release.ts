@@ -90,7 +90,8 @@ export function prepareRelease(snapshot:Snapshot,state:QueueState,now:string,all
  if(json!==snapshot.journalRaw)changes.set(JOURNAL,json);
  return {state:next,changes};
 }
-const git=(root:string,...args:string[])=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+const publicEnvironment=()=>{const env={...process.env};delete env.EDITORIAL_GIT_TOKEN;return env;};
+const git=(root:string,...args:string[])=>execFileSync('git',args,{cwd:root,env:publicEnvironment(),encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
 export function commitChanges(root:string,expectedHead:string,changes:Map<string,string>,enabled:boolean):string{
  if(!enabled)throw new Error('Production writes disabled');
  if(git(root,'rev-parse','HEAD')!==expectedHead)throw new Error('Repository conflict');
@@ -107,12 +108,26 @@ export function commitChanges(root:string,expectedHead:string,changes:Map<string
 }
 export async function verifyPublic(root:string,url:string,revision:string):Promise<void>{
  // Shared strict XML/canonical parser with Hermes; no credentials or notifications here.
- execFileSync('python3',[path.join(root,'scripts/hermes/rss_monitor.py'),'--verify-url',url,'--revision',revision],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+ execFileSync('python3',[path.join(root,'scripts/hermes/rss_monitor.py'),'--verify-url',url,'--revision',revision],{env:publicEnvironment(),encoding:'utf8',stdio:['ignore','pipe','pipe']});
+}
+export function pushRelease(root:string, token?:string):void {
+ if(process.env.EDITORIAL_RELEASE_ENABLED!=='true')throw new Error('Production writes disabled');
+ if(git(root,'branch','--show-current')!=='main')throw new Error('Writes require main');
+ if(!token || /\s/.test(token))throw new Error('Editorial App credential required');
+ const remote=git(root,'remote','get-url','--push','--all','origin');
+ if(!/^https:\/\/github\.com\/gcake119\/gcake-dev(?:\.git)?$/.test(remote))throw new Error('Untrusted release destination');
+ const env={...publicEnvironment(),GIT_CONFIG_COUNT:'2',
+  GIT_CONFIG_KEY_0:'http.https://github.com/.extraheader',
+  GIT_CONFIG_VALUE_0:'AUTHORIZATION: basic '+Buffer.from('x-access-token:'+token).toString('base64'),
+  GIT_CONFIG_KEY_1:'http.followRedirects',GIT_CONFIG_VALUE_1:'false'};
+ try{execFileSync('git',['push','origin','HEAD:refs/heads/main'],{cwd:root,env,stdio:['ignore','pipe','pipe']});}
+ catch{throw new Error('Editorial push failed; inspect remote state before retrying');}
 }
 async function main(){
  const command=process.argv[2]??'plan';if(!['plan','prepare','confirm'].includes(command))throw new Error('Unknown command');
  const write=process.argv.includes('--write');const enabled=process.env.EDITORIAL_RELEASE_ENABLED==='true';
  if(write&&!enabled)throw new Error('Production writes disabled');
+ if(write&&!process.env.EDITORIAL_GIT_TOKEN)throw new Error('Editorial App credential required');
  const root=process.cwd();const head=git(root,'rev-parse','HEAD');const snapshot=await readSnapshot(root);
  const state=snapshot.journalRaw?queueSchema.parse(JSON.parse(snapshot.journalRaw)):emptyQueue();const now=new Date().toISOString();
  let changes:Map<string,string>,next:QueueState;
@@ -123,6 +138,6 @@ async function main(){
   await verifyPublic(root,url,state.pending.revision);next=confirmRelease(retry.state,state.pending.slug,now);changes=new Map([[JOURNAL,JSON.stringify(next,null,2)+'\n']]);
  }else{const prepared=prepareRelease(snapshot,state,now,command==='prepare'&&process.argv.includes('--allow-reserve'));next=prepared.state;changes=prepared.changes;}
  console.log(JSON.stringify({mode:write?'write':'dry-run',pending:next.pending??null,groups:Object.keys(next.groups),changedFiles:[...changes.keys()]},null,2));
- if(write&&changes.size){commitChanges(root,head,changes,enabled);git(root,'push','origin','HEAD:refs/heads/main');}
+ if(write&&changes.size){commitChanges(root,head,changes,enabled);pushRelease(root,process.env.EDITORIAL_GIT_TOKEN);}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)main().catch(e=>{console.error(e.message);process.exitCode=1;});

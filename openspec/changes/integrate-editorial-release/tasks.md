@@ -11,3 +11,7 @@
 ## 5. Boundary re-review
 - [x] 5.1 Reproduce and fix Controlled mock delivery transport/activation and production-state isolation gaps; verify direct interface regression tests and CLI mock integration without external requests.
 - [x] 5.2 Review complete PR diff and exact-head CI, run complete test/check/build/rehearsal, and document remaining human acceptance without production activation.
+
+## 6. Unattended release preparation
+- [x] 6.1 Test-first Unattended release preparation: missing token/wrong remote cause no authenticated push, credentials stay out of Git config/arguments, App writer scopes remain constrained; verify editorial tests and workflow validation.
+- [ ] 6.2 Provide read-only Unattended release preparation audit and owner App/ruleset/stop instructions; verify simulated gh responses, actual disabled configuration and full local gates before pushing PR updates. Provider/human acceptance stays incomplete.
