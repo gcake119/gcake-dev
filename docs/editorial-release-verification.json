@@ -2,7 +2,7 @@
   "date": "2026-10-11",
   "baseRevision": "2351b17",
   "nodeTestsPassed": 206,
-  "hermesTestsPassed": 16,
+  "hermesTestsPassed": 27,
   "editorialTestsPassed": 26,
   "check": {
     "errors": 0,
@@ -71,8 +71,8 @@
   "hermesAccountInstalled": false,
   "activationChanged": false,
   "mockDelivery": {
-    "featureRevision": "d1795036989f00021331824435c2654777913d61",
-    "acceptanceTestsPassed": 8,
+    "featureRevision": "84d89c8c895a1f9140dcf7ada92e7958c935de00",
+    "acceptanceTestsPassed": 10,
     "transport": "loopback HTTP CLI integration",
     "baselinePosts": 0,
     "verifiedNewArticlePosts": 1,
@@ -85,5 +85,19 @@
     "usesSyntheticCredentials": true,
     "realTelegramNetworkCalls": 0,
     "productionActivationChanged": false
+  },
+  "boundaryReview": {
+    "reviewedBase": "883ee22b563480200d75524c28b3033c7e6069a2",
+    "reviewedOriginalHead": "fea6aafe910b4d9cc878f1f51f0d80bdaf8a5e58",
+    "reviewedOriginalFiles": 35,
+    "regressionTestsPassed": 9,
+    "activationCheckedAtTransport": true,
+    "fixedMockSenderOnly": true,
+    "defaultLivePathReserved": true,
+    "incompatibleDatabaseUnmodified": true,
+    "statusReadOnly": true,
+    "realTelegramCalls": 0,
+    "productionChanges": false,
+    "fixRevision": "84d89c8c895a1f9140dcf7ada92e7958c935de00"
   }
 }

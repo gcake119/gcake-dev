@@ -2,6 +2,8 @@
 
 日期：2026／10／11。功能候選：`d1795036989f00021331824435c2654777913d61`。這份證據涵蓋真實 CLI 子程序與本機 HTTP 傳輸，不代表 Telegram 供應商、Hermes 服務帳號或正式 Pages 已驗收。
 
+後續完整差異複審發現並修正底層 gate／sender 與 DB 初始化界線；最新結果為 27 項 Python 通過，詳見 [安全邊界複審](editorial-release-boundary-review.md)。以下 16 項紀錄保留為初次 mock 交付的歷史證據。
+
 ## 接法與重現
 
 新增 `--test-delivery`，受控站點與模擬 API 都必須是 `http://127.0.0.1:<明確埠號>/`。站點可以有 `/review/` 等基底路徑；API 必須使用根路徑。測試模式必須明確指定 `--db`，不能與 `--live`／`--dry-run` 混用。
@@ -26,6 +28,8 @@ HERMES_RSS_NOTIFY_ENABLED=false python3 scripts/hermes/rss_monitor.py \
 第一次成功讀 feed 只建立歷史基線；在同一站點新增測試文章，並提供吻合的 canonical HTML 後，再執行相同命令。模擬端收到標題、URL、台北時間；CLI 顯示 `Verified test article notification sent to loopback mock API`。加上 `--status` 可核對 baseline／sent／uncertain。埠號與基底路徑也是站點身份，變更時要另用測試 DB；不得拿正式 DB 試跑、刪除正式 DB 或修改正式六篇 metadata。
 
 測試模式固定使用合成 bot token `0:TEST_ONLY`、chat ID `0`，不讀真實 Telegram 憑證。回環請求停用外部 proxy，所有 redirect 都拒絕；資料庫綁定 mode 與 site，poll 和 status 都拒絕跨模式／跨站點使用。既有未綁 site 的正式 DB 可在固定正式站保留去重資料，舊未綁站點的測試 DB 不自動升級。
+
+非 live 模式亦拒絕預設 `$HOME/.local/state/gcake-rss/live.sqlite`，即使檔案未建立；既有 DB 先唯讀核對 scope，不能先改 schema／權限再拒絕。status 不建立缺少的 DB；DB／lock 的 symlink／hardlink 也拒絕。程式介面使用 `Monitor(..., test_delivery=True, mock_api=<回環 API>)`，不能在測試模式注入 sender。
 
 ## TDD 與測試結果
 

@@ -1,5 +1,7 @@
 # Editorial release scoped security review
 
+Latest follow-up: [test-mode boundary re-review](../editorial-release-boundary-review.md) reproduced and fixed transport activation/interface gaps and DB setup side effects introduced or exposed by the mock integration. The original review below predates that follow-up; its empty remote-exploit findings do not imply these safety gaps were previously covered. The follow-up was a single-agent local review, with intercepted transport tests, not a new independent multi-agent audit.
+
 No exploitable privilege escalation or credential disclosure was confirmed in the introduced queue/Actions/Hermes integration. Three independent reviewers mapped the architecture and then hunted Git lifecycle/access, network/outbox/secrets, and input/file/config boundaries. This is a local source review with dynamic reproductions, not a full CMS security audit or production provider acceptance.
 
 Baseline: trusted repository writers control static blog content and workflows, as in Git/Jekyll/Hugo CI publishing; the Hermes OS owner controls its private outbox and credentials. That existing privilege was not misclassified as a vulnerability. Public RSS/HTML cannot select arbitrary origins, redirects or private secret-bearing targets.

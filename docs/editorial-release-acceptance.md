@@ -11,7 +11,7 @@
 - 補上 `Validate editorial release`：PR、feature push 與 main push 的只讀 CI。執行完整測試、Astro check、build 及暫存 HTTP 演練；顯式設定兩個啟用旗標為 false，不取得 secrets、不部署、不推 Git、不發真實 Telegram。
 - 原 main 最新失敗 run `38137837004` 是第五篇 unknown topic `automation`。PR 已改成既有分類 `development-automation`。這只修正候選，未修復尚未合併的 main；不重跑舊 main 或部署舊內容。
 - 本機結果見 `editorial-release-verification.json`。線上結果必須確認 PR 最新完整 SHA 對應的 CI，不以舊提交成功或自動程式審查代替。
-- 已完成 TDD 回環 RSS／HTML 到模擬 Telegram API：實際 CLI 子程序、HTTP POST、重啟／GUID 去重、故障退避、uncertain、proxy／redirect 與資料庫 mode／site 隔離；16 項 Python 測試通過。證據與重現命令見 [模擬驗收紀錄](editorial-release-mock-review.md)。這不勾選下方真實私人 Telegram／Hermes 供應商驗收。
+- 已完成 TDD 回環 RSS／HTML 到模擬 Telegram API，並複審／補強底層正式 gate、固定 mock sender、DB 拒絕前唯讀檢查與預設 live 路徑保留；27 項 Python 測試通過。證據與重現命令見 [模擬驗收紀錄](editorial-release-mock-review.md) 及 [安全邊界複審與剩餘人工項目](editorial-release-boundary-review.md)。這不勾選下方真實私人 Telegram／Hermes 供應商驗收。
 
 ## A．PR 與內容審閱
 
