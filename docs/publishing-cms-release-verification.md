@@ -148,3 +148,14 @@ Worker 已人工部署，版本 4b93b235-0810-4891-9813-b5a2379133df；RELEASE_W
 後續 main 26b304c（PR #11，2026-10-12 01：47 合併）將系列第４篇〈正式開賽後，我怎麼知道自動發文真的完成了？〉與 manifest 同篇狀態改為 published，人工 Pages run 38161118291 成功。這是另案內容發布，不是本次自動流程發文，也不是本次改動正文／篇序。Computer Use reload 看見五篇 ready、一篇 published，系列不完整／檔案與狀態不一致，尚無候選／預計時段；既定中途發文防護正常阻擋自動排程。
 
 原本的六個估算日期目前已失效。7.3 重新標為未完成；交接 PR #14 保持未合併。已向使用者提出政策決定：是否保留已公開第４篇，依原篇序排其餘五篇，並授權協調另一對話仍要求停用的指示。未取得決定前，不重啟 Actions、不撤回已公開文章、不修改系列排程政策。Worker／Actions 尚未形成可正式啟用的一致狀態；需完成此阻塞後重新驗證並更新結論。
+
+
+### 第４篇撤下及原序正式啟用完成（2026-10-12）
+
+使用者選擇「將第四篇隱藏，恢復原有排序」。PR #14 已合併為 d29466ce4c2a55d9fa29e92e04aefa26e198e05a；本機完整 234 Node／4 Python tests、check 145files零診斷、build:all、release:dry-run、diff check及三面向Spectra audit通過，必要CI 38161803064成功。正文六篇SHA-256与原manifest完全一致，未改閱讀順序。
+
+人工Pages run 38161908028成功且head為d29466c；真實第４篇網址HTTP404、RSS HTTP200且不含該篇。Computer Use確認六篇ready、0篇需處理，原序估算10/12、10/15、10/19、10/22、10/26、10/29，每週一／四07：00起，Asia/Taipei；第４篇仍在第四順位。未放寬中途發文防護。
+
+重新人工部署Worker，版本8a499d11-7bd3-4d73-b36f-6d2aa0466e5d，保留正式OAuth／preview設定及其他provider停用狀態；UI確認RELEASE_WRITE_ENABLED已啟用。Repository RELEASE_AUTOMATION_ENABLED=true；正式巡查38162097114成功，release成功、build/deploy skipped，結束後再次API確認Actions gate仍true，沒有巡查後自動關閉。此段取代上方最終阻塞狀態，Spectra7.3已完成。
+
+首次到時publication→Pages→公開page/RSS的完整生產結果仍待實際執行；空巡查成功不代表首篇已公開。Hermes／Telegram未啟用，仍須另行授權。既有CMS部署banner可能延遲，不以其顯示取代Actions run及公開頁面/RSS證據。證據截圖：production-original-order-enabled-20261012.png（本次Codex visualization）。
