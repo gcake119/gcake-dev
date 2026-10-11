@@ -23,3 +23,7 @@ None. Existing publication visibility and external provider gates remain intact.
 - New Worker release modules and migration, shared release contract, Actions runner and RSS poller.
 - Modified Admin Editor, Series and Publishing views; GitHub snapshot reader and Worker router.
 - No article body or manifest-order edits; no production activation, commit, push or deployment.
+
+## Authorized activation extension — 2026-10-12
+
+The owner authorizes publication-conditioned Pages delivery, restricted deployment permissions, paired Worker/Actions automation credentials, reviewed merge/manual rollout, and activation after verification. Add Pages build/deploy jobs only when the release request returns a newly committed publication identity. Keep ordinary merge and empty hourly checks deployment-free. Preserve six finalized bodies/order; Hermes installation and Telegram remain outside this authorization.
