@@ -27,6 +27,8 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-development"
 
 [env.preview.vars]
+GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
+GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
@@ -43,6 +45,8 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-preview"
 
 [env.production.vars]
+GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
+GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"

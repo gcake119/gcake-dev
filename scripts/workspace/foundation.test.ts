@@ -91,3 +91,13 @@ for (const name of ['deploy-admin-worker.yml', 'deploy-pages.yml']) {
     }
   });
 }
+
+
+test('production and preview deployment retain verified OAuth client and owner configuration', () => {
+  for (const environment of ['production', 'preview']) {
+    const section = workerConfig.split(`[env.${environment}.vars]`)[1].split('\n[')[0];
+    assert.match(section, /GITHUB_OAUTH_CLIENT_ID\s*=\s*"[^"\s]+"/);
+    assert.match(section, /GITHUB_OWNER_USER_IDS\s*=\s*"\d+(,\d+)*"/);
+    assert.match(section, /RELEASE_WRITE_ENABLED\s*=\s*"false"/);
+  }
+});

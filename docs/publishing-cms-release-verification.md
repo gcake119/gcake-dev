@@ -103,3 +103,14 @@ Worker／Pages 的 push 部署與 Pages 每小時第 37 分鐘部署均移除，
 Spectra validate 無 errors／warnings。三個唯讀 AI review（契約、安全、預設／混淆）未發現程式阻塞；review 發現本文件殘留 hourly 保留說法，已修正並送回複查。本機 RED／GREEN 與完整 gates logs 位於 /private/tmp/gcake-premerge-{red,green,test,check,build,simulation}.log。線上 CI 以 PR #9 最新 head 的 Checks／run 為準，不能用本機結果替代。
 
 尚未完成或授權：合併、Worker／Pages 人工部署與遠端 D1 migration、provider 真實發布／公開驗證、Hermes／Telegram、正式自動部署串接及最後發文 gates 啟用。現在人工部署不等同無人值守交付；正式自動發文啟用前必須另行設計、授權與驗證 deployment 串接。既有 Computer Use 介面驗收紀錄保留，本次未宣稱新增介面或 production 驗收。
+
+
+## 2026-10-12 正式 owner 登入修正（待外部 callback 確認）
+
+PR #9 已合併並完成 Worker／Pages 人工部署（run 38155346370／38155350826）；D1 先備份，再套用 0006。health 200 不證明 owner 登入可用。使用者實際登入遇到 RUNTIME_NOT_CONFIGURED。
+
+唯讀查核 production 三项 secrets 名稱均存在，但 OAuth client ID／owner ID 不在 runtime；前一個 production 版本也缺少，因此不宣稱本次部署清除了秘密。preview live bindings 與 GitHub 已登入 owner 身分核對一致後，將非秘密 client／owner 設定寫入 preview／production vars，避免後續部署遺失。OAuth App 目前只登記 preview callback；程式 authorization／token exchange 原本未傳 redirect_uri，需明確指定起始 CMS 的同站 callback。
+
+先以真實 entrypoint 回歸重現兩個 RED（缺 deployment vars、缺 callback），再修正為 GREEN 16／16。完整 227 Node／4 Python tests、check 144 files 零 errors／warnings／hints、build:all、release:dry-run、diff check 通過；三面向 AI review 無重要 findings。模擬仍 productionEnabled=false、正文／篇序保留，未讀取任何秘密值。
+
+尚待：GitHub OAuth App 新增精確 production callback（保留 preview、wildcard 關閉）。依 Computer Use 規則，新增可信憑證接收端屬安全敏感存取變更，必須在提交前取得使用者即時確認。程式與設定修正可供 PR review，但尚未部署或完成真實 owner 登入，不宣稱錯誤已解除。正式發文 gates 仍 false。

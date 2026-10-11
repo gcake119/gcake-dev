@@ -22,3 +22,8 @@
 - [x] 5.1 Reproduce and fix off-calendar legacy reservations with Taipei boundary regression coverage.
 - [x] 5.2 Make Worker and Pages deployments manual-only on main, remove hourly Pages recovery, verify workflow safety and update operations.
 - [x] 5.3 Complete local gates and AI review; prepare the reviewed PR #9 update without merging, deploying or enabling publication. Remote CI completion is recorded in PR Checks.
+
+## 6. Production owner login repair
+
+- [x] 6.1 Restore verified OAuth client and owner deployment configuration, pin authorization and token exchange to the initiating environment, and verify RED/GREEN plus full gates.
+- [ ] 6.2 Review and deliver the fix; production callback registration requires browser action-time confirmation before submission, then verify owner login without enabling publication.
