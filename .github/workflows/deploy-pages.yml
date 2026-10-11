@@ -4,50 +4,83 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '37 * * * *'
+    - cron: '37 * * * *' # hourly recovery and readiness ingestion
+    - cron: '0 23 * * 0,3' # Monday/Thursday 07:00 Asia/Taipei
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  prepare:
+    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    environment: editorial-release
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.17.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm content:validate
+      - name: Persist readiness and recover or reserve one release
+        env:
+          EDITORIAL_RELEASE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
+          RELEASE_EVENT: ${{ github.event_name }}
+        run: |
+          args=()
+          if [[ "$RELEASE_EVENT" == schedule || "$RELEASE_EVENT" == workflow_dispatch ]]; then
+            args+=(--allow-reserve)
+          fi
+          pnpm editorial:release prepare --write "${args[@]}"
 
+  build:
+    needs: prepare
+    permissions:
+      contents: read
+      pages: read
+    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped') && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    outputs:
+      revision: ${{ steps.source.outputs.revision }}
+    steps:
+      - name: Checkout latest main including release intent
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+      - id: source
+        run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
-
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 22
-
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
+        run: pnpm install --frozen-lockfile
       - name: Validate editorial series
         run: pnpm content:validate
-
       - name: Restore final snapshot or sync ongoing iThome series
         run: pnpm content:sync:ithome
-
       - name: Build
         run: pnpm build
-
       - name: Configure Pages
         uses: actions/configure-pages@v6
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
@@ -57,9 +90,45 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-24.04
     needs: build
     steps:
+      - name: Reject stale artifact after concurrent CMS edit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REVISION: ${{ needs.build.outputs.revision }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          current=$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          test "$current" = "$SOURCE_REVISION"
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v5
+
+  confirm:
+    needs: deploy
+    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    environment: editorial-release
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.17.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Confirm canonical RSS and page before consuming reserved slot
+        env:
+          EDITORIAL_RELEASE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
+        run: pnpm editorial:release confirm --write
