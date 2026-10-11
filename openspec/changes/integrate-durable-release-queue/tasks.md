@@ -31,5 +31,5 @@
 ## 7. Authorized production activation
 
 - [x] 7.1 Publication conditioned Pages delivery: prove runner acceptance RED/GREEN for exact committed SHA, no-op, invalid response and disabled gate; wire isolated build/deploy jobs with least privilege and workflow safety tests.
-- [ ] 7.2 Complete full pnpm test/check/build:all/release:dry-run and AI review; update activation/recovery evidence, atomic commits, PR and successful CI before authorized merge.
-- [ ] 7.3 Configure paired private Worker/Actions credentials and main-only automation environment; verify disabled authentication, activate Worker and Actions gates, run a controlled due/no-op check and verify production UI/public evidence without modifying bodies/order.
+- [x] 7.2 Complete full pnpm test/check/build:all/release:dry-run and AI review; update activation/recovery evidence, atomic commits, PR and successful CI before authorized merge.
+- [x] 7.3 Configure paired private Worker/Actions credentials and main-only automation environment; verify disabled authentication, activate Worker and Actions gates, run a controlled due/no-op check and verify production UI/public evidence without modifying bodies/order.

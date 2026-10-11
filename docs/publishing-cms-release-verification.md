@@ -124,3 +124,18 @@ Spectra CLI 在此 Git worktree 中解析錯誤根目錄，使用私有 `/privat
 Spectra audit 三個獨立 AI 審查完成。P2：CMS 原本附上另一 revision 的人工部署觀察，已以同 SHA 關聯檢查／回歸測試修正並兩位 reviewer 複查關閉。剩餘已明示限制：CMS 未直接追蹤 editorial workflow deployment metadata，查看該次 Actions build/deploy；公開判定由頁面／RSS獨立證據完成。
 
 Provider 查核：editorial-release environment main-only；正式 CMS App 只選 gcake119/gcake-dev，Actions/Metadata read、Contents read/write，無新增 App 權限。Actions URL/secret 已配置；正式 Worker secret／gate、合併後 CI／部署與 controlled no-op 驗證另以後續生產查核紀錄更新，不用本機結果冒充正式上線。
+
+
+## 正式啟用完成紀錄 — 2026-10-12 01：44（Asia/Taipei）
+
+本段取代此前「正式發文尚未啟用／待授權」的狀態敘述。使用者已明確授權補齊、驗證後啟用。PR #12 於 01：41 合併，部署來源為 f2cf3a8fed1c2613bc584541e732fc29cee48ec0；最新候選 c554258 的必要 CI validate 通過（run 38160597474）。本機完整 234 Node／4 Python tests、check、build:all、release:dry-run 與三面向 AI review 證據見上方啟用延伸。
+
+Worker 已人工部署，版本 4b93b235-0810-4891-9813-b5a2379133df；RELEASE_WRITE_ENABLED=true。Actions repository variable RELEASE_AUTOMATION_ENABLED=true；editorial-release environment 限 main，Worker／Actions 共用 secret 已配對。停用 gate 時真實請求回應 RELEASE_DISABLED，證明憑證通過但寫入仍被阻擋。OAuth／preview 設定保留，其他 providers 仍停用。
+
+正式 controlled workflow run 38160839881 成功：release 成功，build／deploy 均 skipped；當時尚未到 07：00，沒有新增 publication commit，也沒有部署 Pages。production health 200；Computer Use reload 後 owner gcake119 仍登入，介面顯示「正式發布已啟用」、六篇 ready、首篇〈我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的〉估算 10/12 週一 07：00起。接續日期為 10/15、10/19、10/22、10/26、10/29；遵守台北週一／四、一時段一篇。正文與篇序保留。
+
+這是「已啟用與正式空巡查通過」，不是「首篇已公開」。啟用前六篇頁面 404、RSS 未包含六篇；首次真實 publication → Pages build/deploy → public page/RSS 的完整生產證據仍待到時觀察。一般合併不部署；每小時巡查只在新發文提交時觸發 Pages。若建置失敗，重跑原 run 的 failed jobs，未知 Git 寫入結果先查核原身分，不重新發布。
+
+剩餘人工／授權界線：首篇實際頁面與 RSS 可讀性驗收；需要時人工處理未知寫入或失敗部署；Hermes 安裝、Telegram 收件驗證及外部 provider 發布仍未啟用、未包含本次授權。公開驗證由 CMS 與頁面／RSS 判定，editorial 部署紀錄查看 Actions，CMS 不宣稱舊人工部署證明新 editorial 部署。
+
+證據：PR https://github.com/gcake119/gcake-dev/pull/12；CI https://github.com/gcake119/gcake-dev/actions/runs/38160597474；正式空巡查 https://github.com/gcake119/gcake-dev/actions/runs/38160839881。啟用 UI 截圖保存在本次 Codex visualization 的 production-release-enabled-20261012.png。隨後 main 的 PR #13 僅修正本機 dry-run fixture，Worker／editorial workflow 無差異，不需再次部署。
