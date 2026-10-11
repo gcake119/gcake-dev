@@ -83,3 +83,7 @@ Read in this order:
 Do not silently merge these branches into main and do not mark Oct 12 or later as promised release dates until the scheduler has been activated and checked.
 
 PR #9 原無 CI 的原因與新增只讀 pull_request workflow，見 verification 的「PR #9 CI 補強」；線上成功以 PR Checks 為準。未合併、未部署，正式發文停用。
+
+## 正式啟用授權延伸 — 2026-10-12
+
+PR #9/#10 已經明確授權合併與人工部署。正式 owner OAuth 更新後 Computer Use 登入通過且reload保持，六篇ready／三組系列／排程正常。使用者現已授權補齊 conditional Pages delivery、驗證後合併及 rollout 並啟用兩道 gates。新增流程只在新 publication SHA 時建置／部署，一般 merge 與空 hourly check不部署。復原以原 run 的 failed jobs 為主，未知Git結果保留身分需人工查核。Hermes／Telegram未啟用，其他providers仍停用。最新驗證見verification啟用延伸，操作與metadata限制見operations啟用延伸。
