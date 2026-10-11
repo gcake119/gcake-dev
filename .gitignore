@@ -12,3 +12,6 @@ dist/
 # Local browser QA artifacts
 .playwright-cli/
 openspec/.vector-search.db*
+
+# Python monitor bytecode; runtime state belongs to the Hermes account.
+__pycache__/
