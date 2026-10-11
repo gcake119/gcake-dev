@@ -34,6 +34,10 @@ export function collectReleaseEligibility(
     bySlug.set(post.slug, post);
   }
   const memberships = new Set<string>();
+  const ownerCounts = new Map<string, number>();
+  for (const manifest of manifests) for (const section of manifest.sections) for (const ref of section.posts) {
+    ownerCounts.set(ref.slug, (ownerCounts.get(ref.slug) ?? 0) + 1);
+  }
   const blockedSeries: ReleaseEligibilityResult['blockedSeries'] = [];
   const articles: PendingArticle[] = [];
   const seenSeries = new Set<string>();
@@ -46,7 +50,7 @@ export function collectReleaseEligibility(
     for (const ref of references) {
       if (localSlugs.has(ref.slug)) reasons.push('Duplicate series post: ' + ref.slug);
       localSlugs.add(ref.slug);
-      if (memberships.has(ref.slug)) reasons.push('Post referenced by multiple series: ' + ref.slug);
+      if ((ownerCounts.get(ref.slug) ?? 0) > 1) reasons.push('Post referenced multiple times: ' + ref.slug);
       memberships.add(ref.slug);
       const file = bySlug.get(ref.slug);
       if (ref.status === 'planned' || ref.status === 'draft') reasons.push('Incomplete post: ' + ref.slug);
