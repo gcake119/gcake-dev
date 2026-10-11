@@ -1,0 +1,54 @@
+# PR ＃7：無人值守準備與驗收
+
+2026／10／12。擁有者沒有協作者，要求推進無人值守方案；這不是正式啟用授權。PR 不合併、正式 Pages 候選不部署、兩個正式開關不啟用。專用 App 接法已加入候選，實際 App 安裝／授權、main 保護／environment 修改與真實寫入尚未執行。決策來源為 `integrate-editorial-release` 的 Unattended release preparation；repo 沒有 docs/decisions 索引，使用現有 Spectra 決策，不另建平行追蹤。
+
+## 一次設定、後續不逐次核准
+
+1. `editorial-release` 只允許 Branch `main`，沒有 required reviewer、wait timer 或自訂核准規則。先保持 `EDITORIAL_RELEASE_ENABLED` repository variable 未設定／false。移除 reviewer 是正式運作策略變更，不在此次代做。
+2. 建立**專用** GitHub App，只安裝到 `gcake119/gcake-dev`，Repository Contents：read/write、Metadata：read。不要共用 CMS App，不給 Workflows、Administration、Actions、Secrets 或其他額外寫入權限。選 private App／僅自己可安裝、關閉未使用的 webhook，不需要 user OAuth。註冊 App、產生／存入私鑰及授權必須由擁有者完成；不把私鑰貼給代理。
+3. Repository variables：`EDITORIAL_APP_CLIENT_ID`（App Client ID，不是數字 App ID）、`EDITORIAL_APP_SLUG`（網址中的 slug，供唯讀盤點）。只有 `editorial-release` environment secret 放 `EDITORIAL_APP_PRIVATE_KEY`。不要放 repository secret、Git、Telegram 或 Hermes 提示詞。App 私鑰可以 mint 安裝權限範圍的 token，不等同短期 token；它是持久敏感憑證。
+4. 建立兩組**active branch ruleset**，target 精確 `refs/heads/main`，沒有排除條件：
+   - main integrity：Block force pushes、Restrict deletions，bypass list 為空。專用 App 也不能 bypass 這組。
+   - main review：Require a pull request、Require status checks（`validate`，選 GitHub Actions 作為來源）。只列專用 App，bypass mode 為 Always，以允許既有原子 release commit 直接推 main；不要加入 repository role、所有 App 或其他廣泛 bypass。要求真人 approval 不適合目前無協作者的本人 PR，普通 PR 仍須完整 CI 與本人合併。
+5. 確認其他 inherited rules／classic protection 不會衝突。CMS 既有直接寫 main 的接法也會受 main review 阻擋：不可偷偷給 CMS 廣泛 bypass。首次正式切換前必須核對並決定 CMS 改為 PR 或另行審查其專用例外；目前沒有代改 CMS 寫入流程。
+6. Actions 中只有 prepare／confirm mint 短期 App token，限目前 repository 與 contents write；內建 GITHUB_TOKEN 全部只讀 content。checkout 不保存憑證，依賴安裝、完整 pnpm test／pnpm check（測試旗標強制 false）通過後才 mint token；token 不繼承到 Git 讀取／commit 或公開頁面驗證子程序，只有 release CLI 的 push 子程序收到臨時 HTTP header；push 介面另檢查啟用旗標、main 與所有 push URL，不傳到 build、Hermes 或 Telegram，沒有 GITHUB_TOKEN fallback。App token 使用官方 v3 action，pin `bcd2ba49218906704ab6c1aa796996da409d3eb1`，正常 job 結束預設撤銷。
+
+App 的 contents write 是 repository 級權限，不能由 GitHub 限到文章／journal 路徑。程式路徑白名單只能限制正常 writer；私鑰或可信 main 程式遭改動仍可能修改其他內容。接受此風險或另行採用保護機制是正式授權前提。App commit 保留 `[skip ci]`，避免其 push 再啟動部署／CI，當次 prepare→build→deploy→confirm 及 scheduled/manual recovery 接續處理；不能把人寫 PR 的 CI 當作新 release commit 已跑過 CI。[GitHub token 事件說明](https://docs.github.com/en/actions/concepts/security/github_token)、[App token action](https://github.com/actions/create-github-app-token)、[跳過 workflow](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs)。
+
+## 唯讀盤點
+
+以擁有者 gh 登入執行：
+
+```sh
+pnpm editorial:unattended:check
+```
+
+自動讀取所有 API 分頁，只用 gh api GET 讀 environment、branch policies、repository variables、environment secret **名稱**、rulesets 與公開 App metadata；不讀私鑰、不 mint token、不改 GitHub 設定、不發文／推播。配置缺項／無讀取權限退出 1。配置齊全退出 0 只代表 `configurationReady`，`activationReady` 永遠為 false，列出供應商／人工驗收項目。工具不驗證 App installation 的 repo selection、私鑰有效性、真實 protected-main push、其他保護相容性或 CI 來源；這些仍需受控供應商驗收。盤點採保守的精確 main 規則，不宣稱能分析所有 glob/inherited 組合。
+
+## 停止與恢復
+
+- Queue 旗標 false 會停止新 prepare／confirm，但 Actions job 使用已快取旗標，已保留的 published intent 也可能被一般 Pages build 部署。緊急停止必須同時停用 Deploy GitHub Pages workflow、取消 active runs，觀察正在執行的 Pages deployment；已開始的供應商寫入不保證可撤回。這不是瞬時全域 kill switch。正式運作前，停止演練尚未通過時不能啟用。
+- 保留 post／manifest／journal、pending identity 與來源 SHA。是否已公開以 RSS＋canonical HTML＋revision 核對，不能刪 pending 來重試。撤回文章須另外授權、一起修復三者並核對部署結果。
+- 停止 Hermes 正式 job／live flag、保留 live SQLite，uncertain 必須人工對帳，不能改 DB 路徑或刪資料庫重送。
+- 恢復先 ingest，startedAt 不回填舊時段；延遲不是準點失敗，週一／四 07：00 起，只選最新時段、一篇，不補發舊時段。
+- 保留既有 CMS／Pages 非原子競爭窗口；不能宣稱無人值守消除了跨服務競爭。拒絕此窗口時須先完成 CMS 共用鎖方案，不能直接啟用。
+
+## 目前真人回報的 Hermes 證據
+
+hermes 帳號、Python `/Users/hermes/.hermes/hermes-agent/venv/bin/python3` 3.11.15、Hermes v0.21.4（2026.9.21）、default profile `/Users/hermes/.hermes`。兩次手動 dry-run exit 0，mode dry-run、initialized true、failures 0、文章數 0，第二次基線未重建。這是擁有者回報，代理沒有讀取私人 runtime DB。
+
+唯一 dry-run job `ea3c550669f1`，script `gcake-rss-dry.sh`、no-agent、deliver local、failure delivery local，首次預定 2026／10／12 01：03（Asia/Taipei）；最後回報於 00：23 尚未執行。**自動排程成功仍待驗收**。此 job 使用獨立 `dry-review-5e16b6e.sqlite`，不是正式 live DB；空 RSS 試跑不是新文章去重或 Telegram 供應商驗收。既有 daemon／getUpdates 未更動。
+
+## 仍需擁有者操作與簽核
+
+- App 安裝 repo selection、最小權限、private key 保管與撤銷；editorial-release／兩組 main ruleset 的實際設定，CMS 寫入相容性決策。
+- 另行授權 App protected-main 寫入、正式 Pages 版本、停止／競爭／故障恢復演練；今回不使用六篇正文作供應商測試。
+- 簽核六篇內容、原順序、隔離桌面／手機畫面；實體手機／Safari 如需要另測。
+- Hermes 第一次自動 dry-run 的 exit code／DB／唯一 job；私人普通 DM 的真實 Telegram 接法、憑證與收訊另行授權，目前隔離 RSS 只接 mock。
+- 最後分開批准 PR 合併、正式部署、queue 旗標與唯一 live Hermes job。不要同時保留 dry/live 雙重工作當正式推播來源。
+
+## 本機驗證紀錄
+
+新行為先觀察失敗再修正：App push 憑證／目的地／錯誤保密、子程序 token 隔離、push URL override、直接介面的正式開關與 main、token mint 前完整來源驗證、配置未就緒及跨頁正式旗標。模擬 git／gh 的測試不 mint 真實 token、不對 GitHub 寫入。完整本機 219 項 Node、27 項 Python 通過；check 133 檔零錯誤／警告／提示、build 32 頁、actionlint、Spectra validate 及隔離部署演練通過。六篇正文／章序不變，真實 Telegram 呼叫零。Spectra analyze 僅保留原有四項已完成 task 名稱 coverage 警告，沒有新增一致性／歧義／缺口問題。
+
+實際 gh 唯讀盤點：production disabled 通過，environment／App 身份／main rulesets 六項尚未通過，退出 1 為預期未就緒，不是測試失敗。後續精確 commit 與 CI 以 PR 說明為準。

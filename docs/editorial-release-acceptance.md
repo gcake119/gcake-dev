@@ -36,7 +36,7 @@
 ## C．GitHub 正式設定（須另行授權）
 
 - [ ] 決定 GitHub environment `editorial-release` 的 main 限制、reviewer 與無人值守策略；先保持正式旗標停用。
-- [ ] 測試所選 token 的最小 contents write 權限與 main ruleset 相容性。若需 GitHub App，只限此 repo、必要權限，另做實作與驗收；當前程式沒有新增 App 認證。
+- [ ] 測試所選 token 的最小 contents write 權限與 main ruleset 相容性。候選已接專用 GitHub App，只限此 repo、必要權限；安裝 scope、ruleset 相容性及真實 push 仍需供應商驗收。
 - [ ] 記錄候選預覽與正式 Pages 部署的版本證據，確認完整 manifest、RSS 與公開 HTML。PR CI 是本機形狀的部署演練，不能代替正式 Pages 供應商驗收。
 - [ ] 規劃首次 durable ingestion，必須在想使用的 07：00 時段前完成；錯過就等待下一時段，不修改 startedAt 偽造啟用時間。
 
@@ -56,3 +56,6 @@
 - [ ] 停止 Telegram job／live 旗標並保留私人 DB，不能刪 DB 來重送；指定故障處理人與 uncertain 對帳方式。
 
 詳細安裝命令、故障修復與停止步驟見 [操作交接](editorial-release-operations.md)。
+
+
+2026／10／12 無人值守後續：專用 GitHub App 接法與唯讀配置盤點已加入候選；前文「App 認證未實作」為歷史起點，現況與仍待擁有者授權的 repo scope／main bypass／CMS 相容性，見 [無人值守方案](editorial-release-unattended.md)。正式開關維持停用，所有真人／供應商未完成勾選保持未完成。

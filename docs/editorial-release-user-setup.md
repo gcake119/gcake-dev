@@ -16,7 +16,7 @@
 2. 到 [Settings → Secrets and variables → Actions → Variables](https://github.com/gcake119/gcake-dev/settings/variables/actions)。`EDITORIAL_RELEASE_ENABLED` 可以保持未建立；若建立，值只填小寫 `false`。它是 **repository variable**，不要只放 environment variable，因為 job 的啟動條件在進入環境前就會檢查。
 3. 到 [Settings → Environments](https://github.com/gcake119/gcake-dev/settings/environments) 建立 `editorial-release`，Deployment branches 選 Selected branches and tags，只加入 Branch `main`。先指定 Required reviewers；如要禁止自己核准自己觸發的工作，勾選 Prevent self-review，並指定另一位可核准的人。只有你一位 reviewer 時，須先確認這個選項不會讓受控測試永遠無法核准。[GitHub 官方環境操作說明](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
 4. 到 [Settings → Rules → Rulesets](https://github.com/gcake119/gcake-dev/settings/rules)，決定 main 保護與 required check。現在不要為了讓佇列可以直接 push 而關閉保護、開 force push 或加廣權限 PAT。若要求所有更新都經 PR，目前直接推 main 的 GITHUB_TOKEN 路徑必須另外調整與驗收。
-5. 本程式只在 prepare／confirm 宣告 `contents: write`，build 為只讀；不需新增 Telegram secret 到 GitHub。不要順手把所有 workflow 的預設權限改成廣泛 write。若組織政策或 ruleset 不允許寫入，由擁有者決定最小授權；若選 GitHub App，限此 repo／必要 contents write，還需另外實作 App 認證，目前程式不會自動使用既有 CMS App secret。
+5. 目前 prepare／confirm 使用專用 App 的 contents write；內建 GITHUB_TOKEN 與 build 的 contents 均只讀。不需新增 Telegram secret 到 GitHub。不要順手把所有 workflow 的預設權限改成廣泛 write。若組織政策或 ruleset 不允許寫入，由擁有者決定最小授權；專用 GitHub App 限此 repo／必要 contents write；候選已加入認證接法，安裝及真實權限仍待驗收，程式不使用既有 CMS App secret。
 6. 決定正式運行要每次人工批准，還是另行設計已驗收的無人值守保護。Required reviewers 會讓工作等待批准，不能同時宣稱完全無人值守。部署競爭窗口、Git journal 例外及故障處理人也需明確接受。
 
 你需要回覆的非敏感資料：環境已建立或尚未建立、reviewer 策略、main 保護策略、打算使用的寫入身份。不要傳 token。首次 GitHub 寫入權限與 Pages 正式部署驗收，仍需另外授權，不在這次執行。
@@ -79,3 +79,6 @@ hermes cron list
 你可以先回覆畫面是否接受、GitHub reviewer／分支保護策略、Hermes 帳號的版本與 dry-run 結果，以及是否有可用的私人測試 bot／普通 DM。不要提供 token；未完成項目直接標示未完成。
 
 合併、正式 Pages 部署、GitHub 寫入試跑、真實私人 Telegram 發送與正式啟用都是後續分開的授權步驟。CI、隔離預覽或安裝成功不會自動通過這些項目。
+
+
+2026／10／12 無人值守後續：專用 GitHub App 接法與唯讀配置盤點已加入候選；前文「App 認證未實作」為歷史起點，現況與仍待擁有者授權的 repo scope／main bypass／CMS 相容性，見 [無人值守方案](editorial-release-unattended.md)。正式開關維持停用，所有真人／供應商未完成勾選保持未完成。

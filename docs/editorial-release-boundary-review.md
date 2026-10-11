@@ -36,3 +36,6 @@
 6. 最後分開授權合併、正式部署、兩個正式開關與排程啟用；本次全部保持停用。
 
 Hermes OS 帳號／程式碼／設定的擁有者仍屬可信邊界；本修正不能防止該帳號刻意改 Python、HOME、旗標或 DB。正式 DB 的語意隔離與別名拒絕也不宣稱是對同帳號攻擊者的 filesystem sandbox。這次沒有操作 Hermes runtime、正式帳號、Telegram 憑證或 GitHub 設定。
+
+
+2026／10／12 無人值守後續：專用 GitHub App 接法與唯讀配置盤點已加入候選；前文「App 認證未實作」為歷史起點，現況與仍待擁有者授權的 repo scope／main bypass／CMS 相容性，見 [無人值守方案](editorial-release-unattended.md)。正式開關維持停用，所有真人／供應商未完成勾選保持未完成。

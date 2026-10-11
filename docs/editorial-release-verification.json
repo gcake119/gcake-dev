@@ -99,5 +99,41 @@
     "realTelegramCalls": 0,
     "productionChanges": false,
     "fixRevision": "84d89c8c895a1f9140dcf7ada92e7958c935de00"
+  },
+  "unattendedPreparation": {
+    "date": "2026-10-12",
+    "featureRevision": "4d49f19",
+    "nodeTestsPassed": 219,
+    "hermesTestsPassed": 27,
+    "editorialTestsPassed": 39,
+    "checkFiles": 133,
+    "checkErrors": 0,
+    "checkWarnings": 0,
+    "checkHints": 0,
+    "buildPages": 32,
+    "actionlint": "passed",
+    "spectraValidation": "passed",
+    "rehearsal": "passed",
+    "configurationReady": false,
+    "activationReady": false,
+    "actualAuditReadOnly": true,
+    "appProvisioned": false,
+    "productionChanges": false,
+    "realTelegramCalls": 0,
+    "bodiesAndOrderUnchanged": true,
+    "ownerReportedHermes": {
+      "account": "hermes",
+      "version": "v0.21.4",
+      "python": "3.11.15",
+      "dryRunPasses": 2,
+      "initializationStable": true,
+      "failures": 0,
+      "articles": 0,
+      "jobId": "ea3c550669f1",
+      "deliver": "local",
+      "firstScheduledRun": "2026-10-12T01:03:00+08:00",
+      "scheduledCompletion": "not yet reported",
+      "independentlyInspected": false
+    }
   }
 }
