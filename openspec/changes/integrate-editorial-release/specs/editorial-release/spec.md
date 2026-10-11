@@ -120,3 +120,25 @@ The system SHALL support release writes using a dedicated repository-scoped GitH
 - **GIVEN** either approved App exception is missing, an App identity differs, or another actor has a bypass
 - **WHEN** the main protection configuration is inspected
 - **THEN** configuration is reported incomplete and production stays disabled
+
+### Requirement: Read-only Actions Secret acceptance
+The system SHALL offer manually selected Secret acceptance on the exact reviewed feature revision, independent of production activation. It SHALL require both release automation flags false or unset, mint only repository-scoped contents-read access, validate the dedicated App installation and selected repository, and revoke the token on job completion. It SHALL perform no content, queue, database, deployment or Telegram writes, and SHALL NOT print credentials. Temporary environment branch permission SHALL require explicit owner approval and be removed after acceptance.
+#### Scenario: Valid reviewed Secret
+- **GIVEN** the owner has allowed the reviewed feature branch and both release flags are disabled
+- **WHEN** manual Secret acceptance runs for that exact revision
+- **THEN** the stored environment key produces only scoped read access for the expected App and repository, identity acceptance is reported, and no publication or deployment occurs
+#### Scenario: Wrong revision or enabled production
+- **GIVEN** the supplied revision differs, a release flag is enabled, or a non-approved branch invokes acceptance
+- **WHEN** acceptance is requested
+- **THEN** it stops before accessing the environment key and no publication job runs
+#### Scenario: Wrong identity or invalid Secret
+- **GIVEN** the environment key is invalid, App installation differs, or the token can write or access another repository
+- **WHEN** acceptance checks it
+- **THEN** it fails without revealing credentials and production remains disabled
+
+### Requirement: Reproducible isolated rehearsal
+The rehearsal SHALL remain independent of current manuscript publication status, preserve source bodies and reading order, and use disposable local artifacts only.
+#### Scenario: A source chapter is already published
+- **GIVEN** the source series contains a published chapter
+- **WHEN** the local release rehearsal runs
+- **THEN** it exercises the fixed unpublished baseline and one new verified article in its disposable copy, without changing source files or contacting Telegram

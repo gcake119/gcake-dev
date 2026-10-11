@@ -2,6 +2,16 @@ name: Deploy GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Deploy main or perform approved read-only Secret acceptance
+        type: choice
+        default: deploy
+        options: [deploy, secret-check]
+      expected_sha:
+        description: Exact reviewed feature SHA required for secret-check
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -12,7 +22,7 @@ concurrency:
 
 jobs:
   prepare:
-    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     environment: editorial-release
     permissions:
       contents: read
@@ -64,7 +74,7 @@ jobs:
     permissions:
       contents: read
       pages: read
-    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped') && github.ref == 'refs/heads/main'
+    if: always() && (needs.prepare.result == 'success' || needs.prepare.result == 'skipped') && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     outputs:
       revision: ${{ steps.source.outputs.revision }}
@@ -100,7 +110,7 @@ jobs:
           path: dist
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -125,7 +135,7 @@ jobs:
 
   confirm:
     needs: deploy
-    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    if: vars.EDITORIAL_RELEASE_ENABLED == 'true' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     environment: editorial-release
     permissions:
       contents: read
@@ -164,3 +174,67 @@ jobs:
           EDITORIAL_RELEASE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
           EDITORIAL_GIT_TOKEN: ${{ steps.editorial-app.outputs.token }}
         run: pnpm editorial:release confirm --write
+
+  secret-check-preflight:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'secret-check' && github.ref == 'refs/heads/feat/editorial-release-queue'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Require exact reviewed source and disabled production before Secret access
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          ACTUAL_SHA: ${{ github.sha }}
+          QUEUE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
+          CMS_ENABLED: ${{ vars.RELEASE_AUTOMATION_ENABLED }}
+        run: |
+          [[ "$EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]
+          test "$EXPECTED_SHA" = "$ACTUAL_SHA"
+          test "${QUEUE_ENABLED:-false}" = false
+          test "${CMS_ENABLED:-false}" = false
+
+  secret-check:
+    needs: secret-check-preflight
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'secret-check' && github.ref == 'refs/heads/feat/editorial-release-queue'
+    environment: editorial-release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Require disabled production again before minting
+        env:
+          QUEUE_ENABLED: ${{ vars.EDITORIAL_RELEASE_ENABLED }}
+          CMS_ENABLED: ${{ vars.RELEASE_AUTOMATION_ENABLED }}
+        run: |
+          test "${QUEUE_ENABLED:-false}" = false
+          test "${CMS_ENABLED:-false}" = false
+      - name: Create repository-scoped read-only acceptance token
+        id: acceptance-app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          client-id: ${{ vars.EDITORIAL_APP_CLIENT_ID }}
+          private-key: ${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: read
+      - name: Verify expected installation and read-only repository scope
+        env:
+          GH_TOKEN: ${{ steps.acceptance-app.outputs.token }}
+          APP_SLUG: ${{ steps.acceptance-app.outputs.app-slug }}
+          INSTALLATION: ${{ steps.acceptance-app.outputs.installation-id }}
+        run: |
+          test "$APP_SLUG" = gcake-editorial-release
+          test "$INSTALLATION" = 170331414
+          gh api --hostname github.com /installation/repositories > "$RUNNER_TEMP/editorial-secret-scope.json"
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          value=json.loads((Path(os.environ['RUNNER_TEMP'])/'editorial-secret-scope.json').read_text())
+          repos=value.get('repositories',[])
+          assert value.get('total_count') == 1 and len(repos) == 1, 'Unexpected repository scope'
+          assert repos[0]['full_name'] == 'gcake119/gcake-dev', 'Wrong repository'
+          permissions=repos[0].get('permissions',{})
+          assert permissions.get('pull') is True, 'Read access missing'
+          assert not any(permissions.get(x) for x in ['push','admin','maintain']), 'Write access rejected'
+          print('Environment Secret accepted: expected App, one repository, read-only token; no publication or deployment.')
+          PYTHON

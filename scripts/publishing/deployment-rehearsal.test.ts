@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -58,4 +59,51 @@ test('unattended App credentials are scoped to release writers after dependency 
   assert.equal(steps.at(-1).env.EDITORIAL_GIT_TOKEN,'${{ steps.editorial-app.outputs.token }}');
  }
  for(const name of ['build','deploy'])assert.doesNotMatch(JSON.stringify(workflow.jobs[name]),/EDITORIAL_APP_PRIVATE_KEY|EDITORIAL_GIT_TOKEN|create-github-app-token/);
+});
+
+test('manual Secret acceptance isolates environment credentials and excludes every publication job',async()=>{
+ const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
+ assert.equal(w.on.workflow_dispatch.inputs.mode.default,'deploy');
+ assert.deepEqual(w.on.workflow_dispatch.inputs.mode.options,['deploy','secret-check']);
+ const pre=w.jobs['secret-check-preflight'], probe=w.jobs['secret-check'];
+ assert.ok(pre&&probe,'Independent Secret acceptance jobs required');
+ assert.equal(pre.environment,undefined);
+ assert.match(pre.if,/workflow_dispatch/);assert.match(pre.if,/inputs.mode == 'secret-check'/);
+ assert.match(pre.if,/refs\/heads\/feat\/editorial-release-queue/);
+ assert.equal(probe.needs,'secret-check-preflight');assert.equal(probe.environment,'editorial-release');
+ assert.deepEqual(probe.permissions,{contents:'read'});
+ const auth=probe.steps.find((x:any)=>x.id==='acceptance-app');
+ assert.equal(auth.with['permission-contents'],'read');assert.equal(auth.with['skip-token-revoke'],undefined);
+ assert.equal(auth.with['private-key'],'${{ secrets.EDITORIAL_APP_PRIVATE_KEY }}');
+ assert.equal(auth.with.repositories,'${{ github.event.repository.name }}');
+ assert.match(auth.uses,/create-github-app-token@[a-f0-9]{40}$/);
+ assert.doesNotMatch(JSON.stringify(probe),/checkout@|pnpm|editorial:release|release-orchestrate|deploy-pages@|wrangler|sendMessage|git push/);
+ for(const name of ['prepare','build','deploy','confirm'])assert.match(w.jobs[name].if,/inputs.mode != 'secret-check'/,name);
+});
+test('Secret acceptance preflight rejects SHA drift and enabled gates before Secret access',async()=>{
+ const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
+ const step=w.jobs['secret-check-preflight']?.steps[0];assert.ok(step,'Pre-secret gate required');
+ const sha='a'.repeat(40);
+ const run=(override:Record<string,string>)=>spawnSync('/bin/bash',['-e','-c',step.run],{encoding:'utf8',env:{PATH:process.env.PATH,EXPECTED_SHA:sha,ACTUAL_SHA:sha,QUEUE_ENABLED:'false',CMS_ENABLED:'false',...override}});
+ assert.equal(run({}).status,0);
+ for(const config of [{EXPECTED_SHA:'bad'},{ACTUAL_SHA:'b'.repeat(40)},{QUEUE_ENABLED:'true'},{CMS_ENABLED:'true'}] as Record<string,string>[])assert.notEqual(run(config).status,0);
+});
+
+test('Secret identity acceptance rejects other Apps, repositories and write-capable tokens without printing token',async()=>{
+ const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
+ const step=w.jobs['secret-check'].steps.at(-1);
+ const dir=await fs.mkdtemp('/private/tmp/gcake-secret-shell-');
+ try {
+  const fixture=dir+'/fixture.json';
+  await fs.writeFile(dir+'/gh', '#!/bin/sh\n[ "$1" = api ] && [ "$2" = --hostname ] && [ "$3" = github.com ] && [ "$4" = /installation/repositories ] || exit 2\ncat "$FIXTURE"\n',{mode:0o700});
+  const run=async(repo:any,env:Record<string,string>={})=>{
+   await fs.writeFile(fixture,JSON.stringify({total_count:1,repositories:[repo]}));
+   return spawnSync('/bin/bash',['-e','-c',step.run],{encoding:'utf8',env:{PATH:dir+':'+process.env.PATH,RUNNER_TEMP:dir,FIXTURE:fixture,APP_SLUG:'gcake-editorial-release',INSTALLATION:'170331414',GH_TOKEN:'synthetic-never-print',...env}});
+  };
+  const repo={full_name:'gcake119/gcake-dev',permissions:{pull:true,push:false,admin:false,maintain:false}};
+  assert.equal((await run(repo)).status,0);
+  for(const [value,env] of [[{...repo,full_name:'other/repo'},{}],[{...repo,permissions:{pull:true,push:true}},{}],[repo,{APP_SLUG:'other-app'}],[repo,{INSTALLATION:'1'}]] as [any,Record<string,string>][]) {
+   const result=await run(value,env); assert.notEqual(result.status,0);assert.doesNotMatch(result.stdout+result.stderr,/synthetic-never-print/);
+  }
+ }finally{await fs.rm(dir,{recursive:true,force:true});}
 });

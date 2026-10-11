@@ -70,3 +70,17 @@ hermes 帳號、Python `/Users/hermes/.hermes/hermes-agent/venv/bin/python3` 3.1
 CMS 真實 protected-main 寫入已驗收：Computer Use 新增 draft cms-write-acceptance-20261012，CMS bot commit 9dde9ab57f3260864c5f1767c2a58a764456ca3e 僅新增草稿。擁有者親自完成瀏覽器刪除確認；CMS bot commit 6204d60620120e885e1aa0d633f35bd42a346040 僅移除草稿。GitHub compare 與驗收前 f9e8d461 的檔案差異為空，六篇正文及章序保持；未觸發本次正式 Pages 部署。App 私鑰驗收仍待擁有者執行；代理提供本機固定 docs/acceptance 標記的單次操作工具，語法、無寫入 plan 及 synthetic API 全流程通過，尚未 mint 真實 token。工具不是正式佇列介面，不修改其啟用開關，不可用於文章發佈；結果未知時停止並保留 receipt，不重跑。
 
 專用 App 真實 protected-main 寫入亦已驗收：擁有者親自使用 PEM 執行單次標記工具，短期 token 權限僅 Contents write／Metadata read、唯一 repository gcake119/gcake-dev。GitHub API 確認 gcake-editorial-release[bot] commit f69b14af25327fb5078dfc9a656ccfe8c4a3c934 僅新增 docs/acceptance/editorial-app-write-20261012.txt，9d81aa385985eb32f65451f449c3df32dd0bdfc6 僅刪除該標記；非強制 main 推進通過，與驗收前 f9e8d461 的檔案差異為空。擁有者 receipt 回報 tree_restored=true／token_revoked=true／production_enabled=false。代理未讀 PEM 或 token。這證明該 PEM／App scope／main 寫入相容；不驗證 GitHub environment Secret 中保存的 PEM 相同，也不代表正式 prepare→deploy→confirm 已驗收。最終 PR 再同步至 9d81aa38，所有正式發文／部署／Telegram 授權仍分開。
+
+## 佇列比較與唯讀環境 Secret 驗收準備
+
+建議以 CMS D1 作為唯一正式佇列；此為建議，尚未刪除或遷移 Git journal。D1 已支援管理 UI 的暫停、指定時段、事件、租約與版本式 CAS，符合 Git 內容／D1 runtime 的既有分工。Git journal 的優點是內容＋manifest＋journal 同一 commit 與少一個 DB 依賴；缺點是 CMS 沒有直接管理該 journal，形成第二套順位／故障紀錄。退役前須逐項對齊重新定稿的 FIFO、錯過時段、series membership 變動、多個已開始系列及公開正文 SHA 驗證，不把目前兩套當成等價。保留 Hermes mock／去重與共用 planner 的驗證能力。D1 目前透過 Worker CMS App 寫入；專用 editorial App Secret 驗收不會自動改變 D1 寫入身份。
+
+外部 main 已合併 PR ＃12（f2cf3a8），新增取得新 release SHA 才 build／deploy 的 D1 Actions 接法。本次查核發現 RELEASE_AUTOMATION_ENABLED=true，已依本對話停用要求恢復 false；EDITORIAL_RELEASE_ENABLED=false。既有 run 38160839881 completed success，但 build/deploy skipped，不能當成文章公開或 App Secret 驗收。擁有者已恢復 RELEASE_WRITE_ENABLED=false；Computer Use 重新載入 CMS 確認「正式發布尚未啟用」。
+
+準備中的 deploy-pages 手動 mode=secret-check：指定 feature SHA、兩個 repo gate false/unset，無 Secret preflight 成功後才引用 editorial-release。只用 pinned 官方 action mint contents read，核對 app slug／installation／唯一 repo／無 push/admin/maintain，沒有 checkout、依賴安裝、內容寫入、D1、Pages 或 Telegram。token 預設由 action 在 job 結束撤銷；驗收中私鑰本身仍具有 App 的既有 write 能力，不能把唯讀 token 稱為私鑰唯讀。
+
+editorial-release 目前 main-only，因此驗收仍被環境策略擋住。需擁有者另行核准暫時增加精確 feat/editorial-release-queue Branch（不是 refs/pull/* 或 wildcard）；這會讓該分支 workflow 可取用環境內所有 Secrets，包括已存在的 automation secret。先完成程式／完整測試／精確 CI 再核准，手動執行指定 SHA，完成或失敗後立即移除例外、取消仍在執行的驗收工作，確認回到 main-only。沒有同意前不改環境策略、不 mint 真實 token、不透過正式開關進行測試。
+
+本次期間外部 PR ＃13／＃11 又推進 main 至 26b304c，將 publishing-in-production 文章與 manifest 標為 published，run 38161118291 build／deploy success。這不是本次授權或本次發文成果；不逆轉外部內容狀態，正文及閱讀順序仍保留。演練原先因該文章已公開而失敗，現在只在 disposable copy 將六篇生命週期固定為 ready，移除測試副本 publishedAt，保留正文／manifest 章序；正式來源不修改。GitHub 兩個 gate 與 Worker gate 仍停用，正式通知未啟用。
+
+最新 main 26b304c 同步後完整本機驗證：282 項 Node 測試執行與 31 項 Python 通過；check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Worker production deploy --dry-run、actionlint 全 workflows、兩份 active Spectra validate 通過。Secret 新測試觀察兩項 RED 再 GREEN；公開來源的 rehearsal 亦有實際 RED 再 GREEN。真實 Secret job 尚未執行，環境目前 main-only；token／供應商驗收不能由 mock 結果推定。

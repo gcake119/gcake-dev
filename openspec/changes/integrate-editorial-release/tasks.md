@@ -16,3 +16,8 @@
 - [x] 6.1 Test-first Unattended release preparation: missing token/wrong remote cause no authenticated push, credentials stay out of Git config/arguments, App writer scopes remain constrained; verify editorial tests and workflow validation.
 - [x] 6.2 Provide read-only Unattended release preparation audit and owner App/ruleset/stop instructions; verify simulated gh responses, actual disabled configuration and full local gates before pushing PR updates. Provider/human acceptance stays incomplete.
 - [x] 6.3 Unattended release preparation: preserve the owner-approved CMS direct-save exception with failing acceptance tests, reject missing/extra identities and integrity bypass, retain unavailable private metadata as incomplete, and run full local verification before pushing. Provider installation/key/review rules remain pending.
+
+## 7. Read-only Actions Secret acceptance
+- [ ] 7.1 Implement Read-only Actions Secret acceptance with manual mode, exact revision and disabled-flag preflight, scoped read-only App checks and publication-job exclusion; verify RED/GREEN workflow and shell acceptance tests, full local gates and CI.
+- [ ] 7.2 Perform Read-only Actions Secret acceptance after owner approval of temporary feature-branch environment access; verify exact run, revoked token, main-only restoration and disabled production.
+- [x] 7.3 Verify Reproducible isolated rehearsal against latest published source content with observed RED/GREEN, unchanged bodies/order and full gates.
