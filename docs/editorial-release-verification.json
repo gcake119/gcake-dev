@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-11",
+  "baseRevision": "2351b17",
+  "nodeTestsPassed": 204,
+  "hermesTestsPassed": 7,
+  "editorialTestsPassed": 24,
+  "check": {
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "build": {
+    "passed": true,
+    "pages": 32
+  },
+  "actionlint": "passed",
+  "spectraValidation": "passed",
+  "rehearsal": {
+    "result": "passed",
+    "buildFailureRetriedSameArticle": true,
+    "baselineReadyRoutesAbsent": 6,
+    "newRSSArticles": 1,
+    "otherReadyRoutesAbsent": 5,
+    "canonicalHTML": true,
+    "dryRunNotifications": 1,
+    "repeatNotifications": 0,
+    "sixBodiesUnchanged": true,
+    "readingOrderUnchanged": true,
+    "productionWrites": false,
+    "telegramNetworkCalls": 0
+  },
+  "sixBodies": [
+    {
+      "slug": "ithome-2026-astro-choice",
+      "bodySHA256": "da9ec0b3776a59d5a980c0a95d527e41dedf20beae7e661aa547327241b4535b",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-chatgpt-writing-workflow",
+      "bodySHA256": "ae9a06bc77cb04ba7b12d47d736135e5501c5c32eccf522fc2bfeea3863d93bf",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-in-production",
+      "bodySHA256": "ce934cc6e402a6a4cdb9bec0e4fd2a7571a4d20d96c0d89dd427579959adbc16",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-toolchain",
+      "bodySHA256": "c170c4567a7a1175fd926012a463d018cf4598d9431d879f2254ced590b27e63",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-tech-blog-boundary",
+      "bodySHA256": "634ec60faa4e64a61a3e0b7a6a13dda8a96aa2a8a1a61d421c08c1245b4ca74a",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-template-hardening",
+      "bodySHA256": "ab1e3017c19c20b474ae97722f5aa1e097c5ffd11021a7a5b043af7dde2e171e",
+      "unchanged": true
+    }
+  ],
+  "productionRSS": {
+    "url": "https://gcake119.github.io/gcake-dev/rss.xml",
+    "HTTP": 200,
+    "localCanonicalArticles": 0
+  },
+  "productionCandidateDeployed": false,
+  "realTelegramSent": false,
+  "hermesAccountInstalled": false,
+  "activationChanged": false
+}
