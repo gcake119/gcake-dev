@@ -7,6 +7,7 @@ import {createServer} from 'node:http';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import matter from 'gray-matter';
+import YAML from 'yaml';
 import {readSnapshot,prepareRelease} from './editorial-release';
 import {emptyQueue} from '../../src/lib/publishing/editorial-state';
 const exec=promisify(execFile);
@@ -30,9 +31,19 @@ try{
  const data=path.join(root,'src/data/site.ts');await fs.writeFile(data,(await fs.readFile(data,'utf8')).replace("url: 'https://gcake119.github.io/gcake-dev'",`url: '${site.slice(0,-1)}'`));
  const build=()=>exec('pnpm',['build'],{cwd:root,maxBuffer:4*1024*1024});
  const python=(...args:string[])=>exec('python3',[path.join(root,'scripts/hermes/rss_monitor.py'),'--site',site,...args],{cwd:root});
- const initial=await readSnapshot(root);const series=initial.manifests.find(m=>m.slug==='ithome-2026-extensions')!;
+ const source=await readSnapshot(root);const series=source.manifests.find(m=>m.slug==='ithome-2026-extensions')!;
  const order=series.posts.map(p=>p.slug);assert.equal(order.length,6);
- const bodies=new Map(initial.posts.map(p=>[p.slug,matter(p.raw).content]));
+ const bodies=new Map(source.posts.map(p=>[p.slug,matter(p.raw).content]));
+ // Fixture lifecycle belongs only to the disposable copy, independent of real publication.
+ for(const post of source.posts.filter(p=>order.includes(p.slug))){
+  const parsed=matter(post.raw);parsed.data.status='ready';delete parsed.data.publishedAt;
+  await fs.writeFile(path.join(root,post.file),matter.stringify(parsed.content,parsed.data));
+ }
+ const manifestFile=path.join(root,'src/content/series/ithome-2026-extensions.yaml');
+ const manifest=YAML.parse(await fs.readFile(manifestFile,'utf8'));
+ for(const section of manifest.sections)for(const post of section.posts)post.status='ready';
+ await fs.writeFile(manifestFile,YAML.stringify(manifest));
+ const initial=await readSnapshot(root);
  await build();
  const feedBefore=await (await fetch(site+'rss.xml')).text();
  for(const slug of order){assert.ok(!feedBefore.includes('/posts/'+slug+'/'));assert.equal((await fetch(site+'posts/'+slug+'/')).status,404);}
