@@ -8,10 +8,12 @@ not_found_handling = "single-page-application"
 run_worker_first = ["/api/*", "/health"]
 
 [vars]
+RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
 [env.development.vars]
+RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
@@ -25,6 +27,7 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-development"
 
 [env.preview.vars]
+RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 GITHUB_APP_ID = "5109954"
@@ -40,6 +43,7 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-preview"
 
 [env.production.vars]
+RELEASE_WRITE_ENABLED = "false"
 PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 GITHUB_APP_ID = "5109954"

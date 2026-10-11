@@ -5,7 +5,7 @@ status: ready
 series: ithome-2026-extensions
 topics:
   - ai-assisted-development
-  - automation
+  - development-automation
   - developer-learning
 ---
 

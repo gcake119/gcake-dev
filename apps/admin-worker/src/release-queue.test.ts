@@ -1,0 +1,356 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { DatabaseSync } from 'node:sqlite';
+import { readFileSync } from 'node:fs';
+import { ReleaseQueue, D1ReleaseStore, type ReleaseSnapshot } from './release-queue.js';
+
+function database() {
+  const db = new DatabaseSync(':memory:');
+  db.exec(readFileSync(new URL('../migrations/0006_release_queue.sql', import.meta.url), 'utf8'));
+  return {
+    prepare(sql: string) {
+      let values: any[] = [];
+      return {
+        bind(...v: any[]) {
+          values = v;
+          return this;
+        },
+        async first<T>() {
+          return (db.prepare(sql).get(...values) as T) ?? null;
+        },
+        async run() {
+          return { meta: { changes: db.prepare(sql).run(...values).changes } };
+        },
+      };
+    },
+  };
+}
+const post = (slug: string, status = 'ready', publishedAt?: string) => ({
+  slug,
+  title: slug,
+  status,
+  publishedAt,
+  path: `src/content/posts/${slug}.md`,
+  sha: slug,
+  source: `---\ntitle: ${slug}\nstatus: ${status}\n${publishedAt ? 'publishedAt: ' + publishedAt + '\n' : ''}---\nBODY ${slug}\n`,
+});
+const snapshot = (n = 3): ReleaseSnapshot => ({
+  revision: 'head-1',
+  posts: Array.from({ length: n }, (_, i) => post('p' + i)),
+  series: [
+    {
+      slug: 's',
+      path: 'src/content/series/s.yaml',
+      sha: 'series',
+      source: '',
+      sections: [
+        {
+          posts: Array.from({ length: n }, (_, i) => ({
+            slug: 'p' + i,
+            status: 'ready',
+          })),
+        },
+      ],
+    },
+  ],
+});
+function setup() {
+  const store = new D1ReleaseStore(database());
+  let now = '2026-10-11T10:00:00Z';
+  return {
+    store,
+    queue: new ReleaseQueue(store, () => now),
+    time: (v: string) => {
+      now = v;
+    },
+  };
+}
+
+test('complete snapshot ingestion preserves firstReadyAt across repeated snapshots and partial series', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  s.posts[2].status = 'draft';
+  let view = await queue.ingest(s);
+  assert.equal(view.plan.length, 0);
+  assert.ok(view.blockedSeries.length);
+  time('2026-10-11T12:00:00Z');
+  s.posts[2].status = 'ready';
+  view = await queue.ingest(s);
+  assert.deepEqual(
+    view.plan.map((x) => x.slug),
+    ['p0', 'p1', 'p2'],
+  );
+  const first = view.items[0].readyAt;
+  time('2026-10-13T10:00:00Z');
+  view = await queue.ingest({ ...s, revision: 'head-2' });
+  assert.equal(view.items[0].readyAt, first);
+  assert.equal(view.seriesReadyAt.s, '2026-10-11T12:00:00Z');
+});
+test('two concurrent reservations acquire only one Taipei slot and expired writes require verification', async () => {
+  const { queue, store, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const second = new ReleaseQueue(store, () => '2026-10-11T23:05:00Z');
+  const attempts = await Promise.allSettled([queue.acquire(s, true), second.acquire(s, true)]);
+  const releases = attempts.filter((x) => x.status === 'fulfilled' && x.value);
+  assert.equal(releases.length, 1);
+  const r = (releases[0] as any).value;
+  await queue.beginWrite(r.id, r.lease);
+  time('2026-10-12T00:00:00Z');
+  assert.equal(await queue.acquire(s, true), undefined);
+  assert.equal((await queue.view(s)).releases[0].state, 'verification-unknown');
+});
+test('disabled gate makes no queue reservation or editorial writes', async () => {
+  const { queue } = setup();
+  await assert.rejects(() => queue.acquire(snapshot(), false), /RELEASE_DISABLED/);
+  assert.equal((await queue.view(snapshot())).releases.length, 0);
+});
+test('future published dates reserve their Taipei date and ready legacy dates need adoption', async () => {
+  const { queue } = setup();
+  const s = snapshot(0);
+  s.posts = [
+    post('history', 'published', '2026-10-01'),
+    post('future', 'published', '2026-10-12T09:00:00+08:00'),
+    post('legacy', 'ready', '2026-10-15'),
+    post('single'),
+  ];
+  const view = await queue.ingest(s);
+  assert.deepEqual(view.plan, [{ slug: 'single', releaseAt: '2026-10-15T07:00:00+08:00' }]);
+  assert.equal(view.items.find((x) => x.slug === 'legacy')?.reason, 'LEGACY_SCHEDULE_REQUIRES_ADOPTION');
+});
+test('committed slots resist late standalone insertion and paused series cannot acquire', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  assert.equal(r?.slug, 'p0');
+  s.posts.push(post('single'));
+  await queue.ingest(s);
+  assert.equal((await queue.view(s)).plan[0].slug, 'single');
+  await queue.control(s, { action: 'pause', scope: 'series', slug: 's' });
+  assert.equal((await queue.view(s)).items.find((x) => x.slug === 'p1')?.state, 'paused');
+});
+test('override preview rejects conflict and confirmation compares plan version and source', async () => {
+  const { queue } = setup();
+  const s = snapshot(0);
+  s.posts = [post('a'), post('b')];
+  await queue.ingest(s);
+  const preview = await queue.previewOverride(s, 'b', '2026-10-12T07:00:00+08:00');
+  assert.equal(preview.after[0].slug, 'b');
+  await queue.control(s, {
+    action: 'override',
+    slug: 'b',
+    releaseAt: preview.releaseAt,
+    version: preview.version,
+    revision: s.revision,
+  });
+  await assert.rejects(
+    () =>
+      queue.control(s, {
+        action: 'override',
+        slug: 'a',
+        releaseAt: preview.releaseAt,
+        version: preview.version,
+        revision: s.revision,
+      }),
+    /QUEUE_CONFLICT/,
+  );
+  assert.ok((await queue.previewOverride(s, 'a', preview.releaseAt)).conflicts.length);
+});
+
+test('unverified first installment blocks later slot acquisition instead of skipping it', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  await queue.beginWrite(r!.id, r!.lease);
+  time('2026-10-14T23:05:00Z');
+  assert.equal(await queue.acquire(s, true), undefined);
+});
+
+test('active series resumes third post after standalone, ahead of an older waiting series', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  s.posts.push(post('other'));
+  s.series.push({
+    slug: 'other-series',
+    sha: 's2',
+    path: 'src/content/series/other.yaml',
+    source: '',
+    sections: [{ posts: [{ slug: 'other', status: 'ready' }] }],
+  });
+  s.posts[0].status = 'published';
+  s.posts[1].status = 'published';
+  s.series[0].sections[0].posts[0].status = 'published';
+  s.series[0].sections[0].posts[1].status = 'published';
+  time('2026-10-16T01:00:00Z');
+  s.posts.push(post('standalone'));
+  const v = await queue.ingest(s);
+  assert.deepEqual(
+    v.plan.map((p) => p.slug),
+    ['standalone', 'p2', 'other'],
+  );
+});
+
+test('paused or legacy-held predecessor withholds later installments and retains fixed reservations', async () => {
+  const { queue } = setup();
+  const s = snapshot(2);
+  await queue.ingest(s);
+  await queue.control(s, { action: 'pause', slug: 'p0' });
+  assert.equal((await queue.view(s)).plan.length, 0);
+  const singles = snapshot(0);
+  singles.posts = [post('a'), post('b')];
+  const { queue: q } = setup();
+  await q.ingest(singles);
+  const p = await q.previewOverride(singles, 'a', '2026-10-12T07:00:00+08:00');
+  await q.control(singles, { action: 'override', slug: 'a', releaseAt: p.releaseAt, version: p.version, revision: singles.revision });
+  await q.control(singles, { action: 'pause', slug: 'a' });
+  assert.equal((await q.view(singles)).plan[0].releaseAt, '2026-10-15T07:00:00+08:00');
+});
+test('same-day legacy publication consumes the Taipei date even after its midnight instant', async () => {
+  const { queue, time } = setup();
+  const s = snapshot(0);
+  s.posts = [post('old', 'published', '2026-10-12'), post('new')];
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  assert.equal(await queue.acquire(s, true), undefined);
+});
+test('prestart reorder refreshes baseline; fixed chapter protects predecessors from late insertion', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  s.series[0].sections = [{ posts: [...s.series[0].sections[0].posts].reverse() }];
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  assert.equal(r?.slug, 'p2');
+  assert.equal((await queue.view(s)).blockedSeries.length, 0);
+  const { queue: q } = setup();
+  const ordered = snapshot();
+  await q.ingest(ordered);
+  const p = await q.previewOverride(ordered, 'p1', '2026-10-15T07:00:00+08:00');
+  await q.control(ordered, { action: 'override', slug: 'p1', releaseAt: p.releaseAt, version: p.version, revision: ordered.revision });
+  ordered.posts.push(post('single'));
+  const view = await q.ingest(ordered);
+  assert.ok(view.plan.findIndex((p) => p.slug === 'p0') < view.plan.findIndex((p) => p.slug === 'p1'));
+  assert.equal(view.plan.find((p) => p.slug === 'p1')?.releaseAt, '2026-10-15T07:00:00+08:00');
+});
+test('verified-public is terminal and cannot be downgraded by a stale response', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  await queue.record(r!.id, r!.lease, { state: 'verified-public', rssGuid: 'canonical', verifiedAt: 'verified' }, 'verified');
+  await queue.record(r!.id, r!.lease, { state: 'awaiting-verification', rssGuid: undefined, verifiedAt: undefined }, 'stale');
+  assert.equal((await queue.view(s)).releases[0].state, 'verified-public');
+});
+
+test('fixed current-day commitment remains executable after 07:00 rather than failing estimate refresh', async () => {
+  const { queue, time } = setup();
+  const s = snapshot(0);
+  s.posts = [post('a')];
+  await queue.ingest(s);
+  const p = await queue.previewOverride(s, 'a', '2026-10-12T07:00:00+08:00');
+  await queue.control(s, { action: 'override', slug: 'a', releaseAt: p.releaseAt, version: p.version, revision: s.revision });
+  time('2026-10-11T23:05:00Z');
+  assert.equal((await queue.acquire(s, true))?.slug, 'a');
+});
+test('identity changes are refused for commitments and pre-write eligibility failures can recover safely', async () => {
+  const { queue, time } = setup();
+  const s = snapshot();
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  await assert.rejects(() => queue.assertPostIdentityChange(s, r!.slug), /RELEASE_IDENTITY_LOCKED/);
+  await queue.record(r!.id, r!.lease, { state: 'failed', error: 'ELIGIBILITY_CHANGED' }, 'paused-before-write');
+  const recovered = await queue.retryLease(r!.id);
+  assert.equal(recovered.id, r?.id);
+  assert.equal(recovered.state, 'committed-slot');
+});
+
+test('safe unlock preserves article identity/history and permits recovery after a rename race', async () => {
+  const { queue, time } = setup();
+  const s = snapshot(0);
+  s.posts = [post('single')];
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  const r = await queue.acquire(s, true);
+  await queue.record(r!.id, r!.lease, { state: 'failed', error: 'GIT_CONFLICT' }, 'conflict');
+  await queue.control(s, { action: 'unlock', slug: 'single', confirmed: true });
+  const next = await queue.acquire(s, true);
+  assert.equal(next?.id, r?.id);
+  assert.ok(next?.events.some((e) => e.type === 'conflict'));
+  await queue.record(next!.id, next!.lease, { state: 'failed', error: 'GIT_CONFLICT' }, 'conflict');
+  s.posts = [];
+  await queue.control(s, { action: 'unlock', slug: 'single', confirmed: true });
+  assert.equal((await queue.view(s)).releases[0].id, r?.id);
+});
+test('delayed ingestion keeps actual first-ready commit chronology immutable', async () => {
+  const { queue, time } = setup();
+  const s = snapshot(0);
+  s.posts = [post('a-second'), post('b-first')];
+  s.firstReadyAt = async (p) => (p.slug === 'b-first' ? '2026-10-10T01:00:00Z' : '2026-10-10T02:00:00Z');
+  const v = await queue.ingest(s);
+  assert.deepEqual(
+    v.plan.map((p) => p.slug),
+    ['b-first', 'a-second'],
+  );
+  time('2026-10-12T01:00:00Z');
+  s.firstReadyAt = async () => {
+    throw new Error('must not resolve again');
+  };
+  assert.equal((await queue.ingest(s)).items.find((p) => p.slug === 'b-first')?.readyAt, '2026-10-10T01:00:00Z');
+});
+
+test('operator pause flags stay separate from release state and pause scope', async () => {
+  const { queue, time } = setup();
+  const s = snapshot(1);
+  await queue.ingest(s);
+  time('2026-10-12T00:00:00Z');
+  const release = await queue.acquire(s, true);
+  assert.ok(release);
+  await queue.control(s, { action: 'pause', slug: 'p0' });
+  let item = (await queue.view(s)).items[0];
+  assert.equal(item.state, 'committed-slot');
+  assert.equal(item.postPaused, true);
+  assert.equal(item.seriesPaused, false);
+  await queue.control(s, { action: 'pause', scope: 'series', slug: 's' });
+  await queue.control(s, { action: 'resume', slug: 'p0' });
+  item = (await queue.view(s)).items[0];
+  assert.equal(item.postPaused, false);
+  assert.equal(item.seriesPaused, true);
+  await queue.control(s, { action: 'resume', scope: 'series', slug: 's' });
+  assert.equal((await queue.view(s)).items[0].seriesPaused, false);
+});
+
+
+test('off-calendar published legacy dates do not consume Monday or Thursday slots', async () => {
+  for (const publishedAt of ['2026-10-13', '2026-10-17', '2026-10-12T23:30:00Z']) {
+    const { queue } = setup();
+    const s = snapshot(0);
+    const legacy = post('legacy', 'published', publishedAt);
+    s.posts = [legacy, post('a'), post('b')];
+    const view = await queue.ingest(s);
+    assert.deepEqual(view.plan, [
+      { slug: 'a', releaseAt: '2026-10-12T07:00:00+08:00' },
+      { slug: 'b', releaseAt: '2026-10-15T07:00:00+08:00' },
+    ], publishedAt);
+    assert.equal(legacy.publishedAt, publishedAt);
+    assert.equal(legacy.source, post('legacy', 'published', publishedAt).source);
+  }
+});
+
+test('legacy reservations use the Taipei weekday across UTC midnight', async () => {
+  const { queue } = setup();
+  const s = snapshot(0);
+  s.posts = [post('legacy', 'published', '2026-10-14T23:30:00Z'), post('a'), post('b')];
+  assert.deepEqual((await queue.ingest(s)).plan, [
+    { slug: 'a', releaseAt: '2026-10-12T07:00:00+08:00' },
+    { slug: 'b', releaseAt: '2026-10-19T07:00:00+08:00' },
+  ]);
+});

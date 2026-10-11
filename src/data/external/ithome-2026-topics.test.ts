@@ -15,3 +15,15 @@ test('all 30 fixed Ironman articles have 1-3 curated topics from the shared taxo
     for (const topic of topics) assert.ok(allowed.has(topic), `${slug} uses unknown topic: ${topic}`);
   }
 });
+
+test("all local finalized manuscripts use existing topic taxonomy without rewriting prose", async () => {
+  const { listLocalPostFiles } = await import("../../lib/content/local-posts");
+  const fs = await import("node:fs/promises");
+  const { default: matter } = await import("gray-matter");
+  const allowed = new Set((await loadTopicTaxonomy()).map((t) => t.id));
+  for (const file of await listLocalPostFiles("src/content/posts")) {
+    const frontmatter = matter(await fs.readFile(file.path, "utf8")).data;
+    for (const topic of frontmatter.topics ?? [])
+      assert.ok(allowed.has(topic), `${file.slug} unknown topic ${topic}`);
+  }
+});

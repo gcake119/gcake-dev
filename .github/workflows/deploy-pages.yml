@@ -1,10 +1,6 @@
 name: Deploy GitHub Pages
 
 on:
-  push:
-    branches: [main]
-  schedule:
-    - cron: '37 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -18,6 +14,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -57,6 +54,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     needs: build
     steps:

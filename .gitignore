@@ -12,3 +12,7 @@ dist/
 # Local browser QA artifacts
 .playwright-cli/
 openspec/.vector-search.db*
+
+output/playwright/
+__pycache__/
+output/release-verification/
