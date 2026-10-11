@@ -8,6 +8,7 @@ import { buildDistributionBundle, writeDistributionBundle } from './prepare-dist
 const valid = `---
 title: Example
 description: Testing distribution
+status: published
 publishedAt: 2026-09-28
 ---
 Hello distribution.
@@ -37,6 +38,14 @@ test('invalid slugs and missing content fail closed', async () => {
   try {
     await assert.rejects(() => buildDistributionBundle('../secret', dir), /INVALID_POST_SLUG/);
     await assert.rejects(() => buildDistributionBundle('missing', dir), /POST_NOT_FOUND/);
+  } finally { await fs.rm(dir, { recursive: true, force: true }); }
+});
+
+test('ready posts are not prepared for distribution', async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'gcake-distribution-'));
+  try {
+    await fs.writeFile(path.join(dir, 'ready.md'), valid.replace('status: published', 'status: ready'));
+    await assert.rejects(() => buildDistributionBundle('ready', dir), /UNPUBLISHED_POST_NOT_DISTRIBUTABLE/);
   } finally { await fs.rm(dir, { recursive: true, force: true }); }
 });
 
