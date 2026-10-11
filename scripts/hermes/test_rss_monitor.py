@@ -8,6 +8,8 @@ def feed(items):
  return '<rss><channel>'+''.join(f'<item><title>{title}</title><link>{SITE}posts/{slug}/</link><guid>{guid}</guid><pubDate>Mon, 12 Oct 2026 00:00:00 GMT</pubDate></item>' for slug,title,guid in items)+'</channel></rss>'
 class Tests(unittest.TestCase):
  def setUp(self):
+  from unittest.mock import patch
+  self.enterContext(patch.dict(os.environ,HERMES_RSS_NOTIFY_ENABLED='true')) # fake fetcher/sender only
   self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.db=str(Path(self.tmp.name)/'monitor.sqlite');self.messages=[];self.items=[];self.bad=False
  def fetch(self,url):
   if url.endswith('rss.xml'): return feed(self.items).encode(),url,'application/rss+xml'

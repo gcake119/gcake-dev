@@ -93,8 +93,9 @@ class MockDeliveryAcceptance(unittest.TestCase):
         self.site = self.enterContext(server(Site)) + 'review/'
         self.api = self.enterContext(server(Telegram))
 
-    def cli(self, *extra, success=True):
-        env = dict(os.environ, HERMES_RSS_NOTIFY_ENABLED='false', EDITORIAL_RELEASE_ENABLED='false',
+    def cli(self, *extra, success=True, notify='false'):
+        env = dict(os.environ, HERMES_RSS_NOTIFY_ENABLED=notify, EDITORIAL_RELEASE_ENABLED='false',
+                   HOME=self.tmp.name,
                    TELEGRAM_BOT_TOKEN='REAL_CREDENTIAL_MUST_NOT_BE_USED', TELEGRAM_CHAT_ID='REAL_CHAT_MUST_NOT_BE_USED',
                    http_proxy=self.api, https_proxy=self.api, HTTP_PROXY=self.api, HTTPS_PROXY=self.api,
                    no_proxy='', NO_PROXY='')
@@ -125,6 +126,23 @@ class MockDeliveryAcceptance(unittest.TestCase):
         self.assertEqual(len(self.requests), 1)
         self.assertEqual(json.loads(self.cli('--status').stdout)[self.site + 'posts/new/'], 'sent')
         self.assertEqual(os.stat(self.db).st_mode & 0o777, 0o600)
+
+    def test_enabled_flag_cannot_promote_test_delivery_to_real_transport(self):
+        self.cli(notify='true')
+        self.items.append('new')
+        self.cli(notify='true')
+        self.assertEqual(len(self.requests), 1)
+        self.assertEqual(self.requests[0][1], '/bot0:TEST_ONLY/sendMessage')
+        self.assertEqual(self.requests[0][2]['chat_id'], '0')
+
+    def test_reserved_live_path_is_rejected_before_http_or_state_creation(self):
+        self.db = Path(self.tmp.name) / '.local/state/gcake-rss/live.sqlite'
+        self.cli(success=False)
+        self.cli('--status', success=False)
+        self.assertFalse(self.db.exists())
+        self.assertFalse(Path(str(self.db) + '.lock').exists())
+        self.assertEqual(self.site_requests, [])
+        self.assertEqual(self.requests, [])
 
     def test_page_outage_canonical_backoff_then_recovery(self):
         self.cli()
@@ -202,13 +220,16 @@ class MockDeliveryAcceptance(unittest.TestCase):
 
     def test_mock_database_cannot_become_live_or_legacy_unbound(self):
         from rss_monitor import Monitor, SITE
+        from unittest.mock import patch
         self.cli()
         def forbidden_fetch(_):
             self.fail('State guard must reject before any production request')
-        with self.assertRaises(ValueError):
-            Monitor(self.db, SITE, fetcher=forbidden_fetch, live=True).poll()
-        with self.assertRaises(ValueError):
-            Monitor(self.db, SITE, fetcher=forbidden_fetch, live=True).statuses()
+        # Scope checks, not only the disabled flag, must reject the mock DB.
+        with patch.dict(os.environ, HERMES_RSS_NOTIFY_ENABLED='true'):
+            with self.assertRaises(ValueError):
+                Monitor(self.db, SITE, fetcher=forbidden_fetch, sender=lambda _: self.fail('Unexpected send'), live=True).poll()
+            with self.assertRaises(ValueError):
+                Monitor(self.db, SITE, fetcher=forbidden_fetch, sender=lambda _: self.fail('Unexpected send'), live=True).statuses()
         with closing(sqlite3.connect(self.db)) as db, db:
             db.execute("DELETE FROM meta WHERE key='site'")
         self.cli(success=False)

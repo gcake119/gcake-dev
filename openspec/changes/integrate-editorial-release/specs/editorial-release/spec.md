@@ -82,3 +82,14 @@ The system SHALL provide an explicit isolated notification test mode accepting o
 - **GIVEN** the test site or simulated API returns a redirect
 - **WHEN** the monitor requests it
 - **THEN** the redirect is rejected without contacting the redirected destination
+#### Scenario: Transport boundary remains gated
+- **GIVEN** production notifications are disabled or a caller attempts to substitute a production sender into test mode
+- **WHEN** delivery is invoked through the program interface
+- **THEN** it fails before opening a real transport, and test delivery accepts only its fixed synthetic loopback destination and chat
+#### Scenario: Production state stays untouched
+- **GIVEN** a non-live run selects the default live state path or existing state belonging to another mode or site
+- **WHEN** it polls or requests status
+- **THEN** it fails before changing database contents or permissions, including when the default live file does not exist yet
+- **GIVEN** a status request selects a missing state file
+- **WHEN** it runs
+- **THEN** no state file is created

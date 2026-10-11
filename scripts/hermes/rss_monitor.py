@@ -18,6 +18,11 @@ import xml.etree.ElementTree as ET
 
 SITE = 'https://gcake119.github.io/gcake-dev/'
 LIMIT = 8 * 1024 * 1024
+MOCK_METHOD = 'bot0:TEST_ONLY/sendMessage'
+
+def require_live_activation():
+    if os.environ.get('HERMES_RSS_NOTIFY_ENABLED') != 'true':
+        raise ValueError('Live notifications disabled')
 
 def validate_loopback(url, api=False):
     if re.search(r'[\x00-\x20\x7f]', url):
@@ -123,6 +128,7 @@ def _page_args(url):
     return raw, url, final, mime
 
 def telegram_send(message):
+    require_live_activation()
     token = os.environ['TELEGRAM_BOT_TOKEN']
     chat = os.environ['TELEGRAM_CHAT_ID']
     if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+', token) or not re.fullmatch(r'-?\d+', chat):
@@ -131,9 +137,20 @@ def telegram_send(message):
 
 def mock_telegram_sender(api):
     validate_loopback(api, api=True)
-    return lambda message: _telegram_request(message, api + 'bot0:TEST_ONLY/sendMessage', '0', mock=True)
+    return lambda message: _telegram_request(message, api + MOCK_METHOD, '0', mock=True)
 
 def _telegram_request(message, url, chat, mock=False):
+    if mock:
+        if not url.endswith('/' + MOCK_METHOD) or chat != '0':
+            raise ValueError('Invalid synthetic Telegram target')
+        validate_loopback(url[:-len(MOCK_METHOD)], api=True)
+    else:
+        require_live_activation()
+        u = urlsplit(url)
+        if (u.scheme != 'https' or u.netloc != 'api.telegram.org' or u.query or u.fragment
+                or not re.fullmatch(r'/bot\d+:[A-Za-z0-9_-]+/sendMessage', u.path)
+                or not re.fullmatch(r'-?\d+', chat)):
+            raise ValueError('Invalid production Telegram target')
     data = json.dumps({'chat_id': chat, 'text': message, 'disable_web_page_preview': True}).encode()
     req = urllib.request.Request(url, data=data,
                                  headers={'Content-Type': 'application/json'}, method='POST')
@@ -149,15 +166,32 @@ def _telegram_request(message, url, chat, mock=False):
             raise ValueError('Telegram response unsuccessful')
 
 class Monitor:
-    def __init__(self, db_path, site=SITE, fetcher=fetch, sender=telegram_send, live=False, test_delivery=False):
+    def __init__(self, db_path, site=SITE, fetcher=fetch, sender=telegram_send, live=False, test_delivery=False, mock_api=None):
+        if live:
+            require_live_activation()
         if test_delivery:
-            if live or sender is telegram_send:
-                raise ValueError('Test delivery cannot use live Telegram transport')
+            if live or sender is not telegram_send or not mock_api:
+                raise ValueError('Test delivery requires its own fixed mock transport')
             validate_loopback(site)
+            sender = mock_telegram_sender(mock_api)
+        elif mock_api:
+            raise ValueError('Mock API requires test delivery')
         validate_site(site, dry=not live)
         self.path, self.site, self.fetch, self.send, self.live = Path(db_path), site, fetcher, sender, live
         self.mode = 'test-delivery' if test_delivery else ('live' if live else 'dry-run')
         self.delivering = live or test_delivery
+        self.check_state_path()
+    def check_state_path(self):
+        reserved = Path.home()/'.local/state/gcake-rss/live.sqlite'
+        if not self.live and self.path.resolve() == reserved.resolve():
+            raise ValueError('Default live state path is reserved')
+        for file in (self.path, Path(str(self.path)+'.lock')):
+            if file.is_symlink() or (file.exists() and file.stat().st_nlink != 1):
+                raise ValueError('Unsafe state path')
+    def read_existing_scope(self):
+        # Do not mutate an incompatible DB even during setup or status inspection.
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+'?mode=ro', uri=True)) as db:
+            self.bind_state(db)
     def bind_state(self, db, write=False):
         meta = dict(db.execute('SELECT key,value FROM meta'))
         if meta.get('mode', self.mode) != self.mode or meta.get('site', self.site) != self.site:
@@ -169,17 +203,26 @@ class Monitor:
             db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('site', self.site))
         return meta
     def statuses(self):
-        with closing(sqlite3.connect(self.path)) as db:
+        self.check_state_path()
+        with closing(sqlite3.connect(self.path.resolve().as_uri()+'?mode=ro', uri=True)) as db:
             self.bind_state(db)
             return dict(db.execute('SELECT url,status FROM outbox'))
     def poll(self, now=None):
+        if self.live:
+            require_live_activation()
+        self.check_state_path()
         now = time.time() if now is None else now
+        if self.path.exists():
+            self.read_existing_scope()
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         if self.path.is_symlink() or Path(str(self.path)+'.lock').is_symlink():
             raise ValueError('Unsafe state path')
         os.umask(0o077)
         with open(str(self.path)+'.lock', 'a') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.check_state_path()
+            if self.path.exists():
+                self.read_existing_scope()
             with closing(sqlite3.connect(self.path)) as db, db:
                 os.chmod(self.path, 0o600)
                 db.execute('CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
@@ -263,8 +306,7 @@ def main():
         p.error('Private Telegram configuration missing')
     suffix = 'live' if args.live else 'dry-run'
     db = args.db or str(Path.home()/'.local/state/gcake-rss'/f'{suffix}.sqlite')
-    sender = mock_telegram_sender(args.telegram_api) if args.test_delivery else telegram_send
-    m = Monitor(db, args.site, sender=sender, live=args.live, test_delivery=args.test_delivery)
+    m = Monitor(db, args.site, live=args.live, test_delivery=args.test_delivery, mock_api=args.telegram_api)
     if args.status:
         print(json.dumps(m.statuses(), ensure_ascii=False, indent=2))
     else:

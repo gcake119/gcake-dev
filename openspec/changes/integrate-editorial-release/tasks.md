@@ -8,3 +8,6 @@
 ## 4. Controlled mock delivery
 - [x] 4.1 Test-first Controlled mock delivery through CLI subprocesses and loopback RSS/HTML/API servers; implement exactly-once observed mock requests, canonical failure/backoff, uncertain response handling, restart/GUID deduplication and mode/site state isolation. Verify with test:hermes.
 - [x] 4.2 Document the mock-only operator command and evidence boundary; run complete test/check/build, static rehearsal and Spectra validation before feature-only commits and PR update. Production activation and real Telegram remain disabled.
+## 5. Boundary re-review
+- [x] 5.1 Reproduce and fix Controlled mock delivery transport/activation and production-state isolation gaps; verify direct interface regression tests and CLI mock integration without external requests.
+- [ ] 5.2 Review complete PR diff and exact-head CI, run complete test/check/build/rehearsal, and document remaining human acceptance without production activation.
