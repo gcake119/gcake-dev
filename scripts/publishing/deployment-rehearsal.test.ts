@@ -1,4 +1,6 @@
 import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -92,7 +94,7 @@ test('Secret acceptance preflight rejects SHA drift and enabled gates before Sec
 test('Secret identity acceptance rejects other Apps, repositories and write-capable tokens without printing token',async()=>{
  const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
  const step=w.jobs['secret-check'].steps.at(-1);
- const dir=await fs.mkdtemp('/private/tmp/gcake-secret-shell-');
+ const dir=await fs.mkdtemp(join(tmpdir(),'gcake-secret-shell-'));
  try {
   const fixture=dir+'/fixture.json';
   await fs.writeFile(dir+'/gh', '#!/bin/sh\n[ "$1" = api ] && [ "$2" = --hostname ] && [ "$3" = github.com ] && [ "$4" = /installation/repositories ] || exit 2\ncat "$FIXTURE"\n',{mode:0o700});

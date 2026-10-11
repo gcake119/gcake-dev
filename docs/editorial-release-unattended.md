@@ -84,3 +84,5 @@ editorial-release 目前 main-only，因此驗收仍被環境策略擋住。需�
 本次期間外部 PR ＃13／＃11 又推進 main 至 26b304c，將 publishing-in-production 文章與 manifest 標為 published，run 38161118291 build／deploy success。這不是本次授權或本次發文成果；不逆轉外部內容狀態，正文及閱讀順序仍保留。演練原先因該文章已公開而失敗，現在只在 disposable copy 將六篇生命週期固定為 ready，移除測試副本 publishedAt，保留正文／manifest 章序；正式來源不修改。GitHub 兩個 gate 與 Worker gate 仍停用，正式通知未啟用。
 
 最新 main 26b304c 同步後完整本機驗證：282 項 Node 測試執行與 31 項 Python 通過；check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Worker production deploy --dry-run、actionlint 全 workflows、兩份 active Spectra validate 通過。Secret 新測試觀察兩項 RED 再 GREEN；公開來源的 rehearsal 亦有實際 RED 再 GREEN。真實 Secret job 尚未執行，環境目前 main-only；token／供應商驗收不能由 mock 結果推定。
+
+外部 PR ＃14 將 main 推進 d29466c，第四篇及 manifest 恢復 ready；本 PR 已再次同步，不覆寫外部決策。首次 Secret 候選 CI 38161997387 等三 run 在 Ubuntu 因測試使用 macOS 專用 /private/tmp 而失敗；本機模擬該路徑不存在重現 ENOENT，改用系統 tmpdir 後模擬及完整驗證重跑。這是測試平台相容性，不是 Secret 供應商測試失敗。
