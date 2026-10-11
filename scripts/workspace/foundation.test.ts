@@ -80,3 +80,14 @@ test('main pull requests receive full local gates without deployment authority',
     }
   }
 });
+
+
+for (const name of ['deploy-admin-worker.yml', 'deploy-pages.yml']) {
+  test(`${name} deploys only by manual dispatch on main, never on merge or hourly passage`, async () => {
+    const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/' + name, import.meta.url), 'utf8'));
+    assert.deepEqual(Object.keys(workflow.on), ['workflow_dispatch'], name);
+    for (const [name, job] of Object.entries(workflow.jobs) as [string, any][]) {
+      assert.equal(job.if, "github.ref == 'refs/heads/main'", name);
+    }
+  });
+}
