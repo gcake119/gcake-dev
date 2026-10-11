@@ -18,6 +18,10 @@ for (const path of ['src', 'scripts', 'packages', 'astro.config.mjs', 'tsconfig.
     filter: (p) => !p.includes('/node_modules') && !p.includes('/dist') && !p.includes('/__pycache__'),
   });
 await symlink(join(root, 'node_modules'), join(dir, 'node_modules'), 'dir');
+// Keep the fixed simulation clock independent of real editorial publication dates.
+// This standalone exists only in the temporary copy; real manuscripts stay intact.
+await writeFile(join(dir, 'src/content/posts/release-simulation-fixture.md'),
+  '---\ntitle: Local release simulation\ndescription: Local-only release acceptance fixture\nstatus: ready\ntopics:\n  - testing-verification\n---\n\nLocal-only release acceptance fixture.\n');
 const git = (...args: string[]) => execFileSync('git', args, { cwd: dir, encoding: 'utf8' }).trim();
 git('init', '--quiet');
 git('config', 'user.name', 'Release simulation');
