@@ -65,6 +65,7 @@ test('main pull requests receive full local gates without deployment authority',
     .map(async (name) => YAML.parse(await readFile(new URL(name, directory), 'utf8'))));
   const validation = workflows.filter((workflow) => workflow.on?.pull_request?.branches?.includes('main'));
   assert.ok(validation.length > 0, 'main pull requests require a validation workflow');
+  assert.ok(validation.some((workflow) => Object.entries(workflow.jobs).some(([id, job]: [string, any]) => (job.name ?? id) === 'validate')), 'protected main requires the validate check context');
   const commands = validation.flatMap((workflow) => Object.values(workflow.jobs).flatMap((job: any) => job.steps.map((step: any) => step.run ?? ''))).join('\n');
   for (const gate of ['pnpm test', 'pnpm check', 'pnpm build:all', 'pnpm release:dry-run'])
     assert.ok(commands.split('\n').includes(gate), `PR validation must run ${gate}`);
