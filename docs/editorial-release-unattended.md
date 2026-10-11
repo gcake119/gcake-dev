@@ -86,3 +86,13 @@ editorial-release 目前 main-only，因此驗收仍被環境策略擋住。需�
 最新 main 26b304c 同步後完整本機驗證：282 項 Node 測試執行與 31 項 Python 通過；check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Worker production deploy --dry-run、actionlint 全 workflows、兩份 active Spectra validate 通過。Secret 新測試觀察兩項 RED 再 GREEN；公開來源的 rehearsal 亦有實際 RED 再 GREEN。真實 Secret job 尚未執行，環境目前 main-only；token／供應商驗收不能由 mock 結果推定。
 
 外部 PR ＃14 將 main 推進 d29466c，第四篇及 manifest 恢復 ready；本 PR 已再次同步，不覆寫外部決策。首次 Secret 候選 CI 38161997387 等三 run 在 Ubuntu 因測試使用 macOS 專用 /private/tmp 而失敗；本機模擬該路徑不存在重現 ENOENT，改用系統 tmpdir 後模擬及完整驗證重跑。這是測試平台相容性，不是 Secret 供應商測試失敗。
+
+## 單次 Secret 驗收與 API 格式修正（2026／10／12）
+
+擁有者核准 2579cf12dd991cee157d000fc498261dde39633e 的單次唯讀驗收。Computer Use 將正式 Worker RELEASE_WRITE_ENABLED 恢復 false 並部署設定，GitHub EDITORIAL_RELEASE_ENABLED／RELEASE_AUTOMATION_ENABLED 均 false。只為精確 feature branch 暫增 policy 62710245，run 38162730351 的 preflight 通過、expected App／installation token 建立成功；prepare/build/deploy/confirm 全部 skipped。identity step 因 installation repositories 回應不含 permissions.pull 而失敗，不能宣稱完整驗收通過。action 的 post token revocation 成功，完成後立即 DELETE 該 policy，API 確認 main-only 62703748 保持。
+
+GitHub installation repositories 官方回應不保證 user-style permissions 欄位。修正以 pinned 官方 action 的 permission-contents:read 限縮 token（無其他 permission inputs），清單核對唯一 repo，另 GET 固定 package.json 確認內容讀取；可選 permission metadata 若存在，仍拒絕不符或寫入布林值。清單 metadata 不是 token 權限 introspection，亦不做真實寫入來測拒絕。官方 pinned action 將明確 permissions 與 repositoryNames 傳给 installation token 建立 API；不把內容 GET 單獨當成無寫入權限證明。缺少 permissions 的實際形狀先在本機 RED 再 GREEN，模擬內容 GET 失敗仍 fail closed。沒有重新輸入私鑰、不重跑已消耗的單次驗收。
+
+來源： https://docs.github.com/en/rest/apps/installations#list-repositories-accessible-to-the-app-installation ； https://github.com/actions/create-github-app-token/blob/bcd2ba49218906704ab6c1aa796996da409d3eb1/lib/main.js 。修正後真實驗收須另行核准最新精確 SHA 的一次執行；維持 main-only 與正式停用，無 Telegram 呼叫。
+
+API 格式修正後完整本機：282 Node／31 Python 通過，check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Spectra validate 通過。actionlint 原生平行 ShellCheck 在本機掛起，改用只序列化呼叫的暫存 wrapper（仍同一 ShellCheck binary／完整參數與 script），所有 workflow 完整檢查 exit 0；不略過 shell 檢查。正式內容／DB 沒有寫入、Pages 沒有部署，Telegram 呼叫零。

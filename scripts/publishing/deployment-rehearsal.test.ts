@@ -91,21 +91,24 @@ test('Secret acceptance preflight rejects SHA drift and enabled gates before Sec
  for(const config of [{EXPECTED_SHA:'bad'},{ACTUAL_SHA:'b'.repeat(40)},{QUEUE_ENABLED:'true'},{CMS_ENABLED:'true'}] as Record<string,string>[])assert.notEqual(run(config).status,0);
 });
 
-test('Secret identity acceptance rejects other Apps, repositories and write-capable tokens without printing token',async()=>{
+test('Secret identity acceptance accepts installation schema and rejects scope drift without printing token',async()=>{
  const w=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
  const step=w.jobs['secret-check'].steps.at(-1);
  const dir=await fs.mkdtemp(join(tmpdir(),'gcake-secret-shell-'));
  try {
   const fixture=dir+'/fixture.json';
-  await fs.writeFile(dir+'/gh', '#!/bin/sh\n[ "$1" = api ] && [ "$2" = --hostname ] && [ "$3" = github.com ] && [ "$4" = /installation/repositories ] || exit 2\ncat "$FIXTURE"\n',{mode:0o700});
+  await fs.writeFile(dir+'/gh', '#!/bin/sh\n[ "$1" = api ] && [ "$2" = --hostname ] && [ "$3" = github.com ] || exit 2\ncase "$4" in\n/installation/repositories) cat "$FIXTURE";;\n/repos/gcake119/gcake-dev/contents/package.json) [ "$FAIL_CONTENTS" != 1 ] || exit 1; printf "{\\"type\\":\\"file\\",\\"path\\":\\"package.json\\"}";;\n*) exit 2;;\nesac\n',{mode:0o700});
   const run=async(repo:any,env:Record<string,string>={})=>{
    await fs.writeFile(fixture,JSON.stringify({total_count:1,repositories:[repo]}));
    return spawnSync('/bin/bash',['-e','-c',step.run],{encoding:'utf8',env:{PATH:dir+':'+process.env.PATH,RUNNER_TEMP:dir,FIXTURE:fixture,APP_SLUG:'gcake-editorial-release',INSTALLATION:'170331414',GH_TOKEN:'synthetic-never-print',...env}});
   };
   const repo={full_name:'gcake119/gcake-dev',permissions:{pull:true,push:false,admin:false,maintain:false}};
   assert.equal((await run(repo)).status,0);
+  // Installation repository responses legitimately omit user permission booleans.
+  assert.equal((await run({full_name:'gcake119/gcake-dev'})).status,0);
   for(const [value,env] of [[{...repo,full_name:'other/repo'},{}],[{...repo,permissions:{pull:true,push:true}},{}],[repo,{APP_SLUG:'other-app'}],[repo,{INSTALLATION:'1'}]] as [any,Record<string,string>][]) {
    const result=await run(value,env); assert.notEqual(result.status,0);assert.doesNotMatch(result.stdout+result.stderr,/synthetic-never-print/);
   }
+  assert.notEqual((await run(repo,{FAIL_CONTENTS:'1'})).status,0,'Content read failure must stop acceptance');
  }finally{await fs.rm(dir,{recursive:true,force:true});}
 });

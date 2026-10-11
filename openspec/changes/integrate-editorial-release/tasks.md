@@ -18,6 +18,7 @@
 - [x] 6.3 Unattended release preparation: preserve the owner-approved CMS direct-save exception with failing acceptance tests, reject missing/extra identities and integrity bypass, retain unavailable private metadata as incomplete, and run full local verification before pushing. Provider installation/key/review rules remain pending.
 
 ## 7. Read-only Actions Secret acceptance
-- [ ] 7.1 Implement Read-only Actions Secret acceptance with manual mode, exact revision and disabled-flag preflight, scoped read-only App checks and publication-job exclusion; verify RED/GREEN workflow and shell acceptance tests, full local gates and CI.
+- [x] 7.1 Implement Read-only Actions Secret acceptance with manual mode, exact revision and disabled-flag preflight, scoped read-only App checks and publication-job exclusion; verify RED/GREEN workflow and shell acceptance tests, full local gates and CI.
 - [ ] 7.2 Perform Read-only Actions Secret acceptance after owner approval of temporary feature-branch environment access; verify exact run, revoked token, main-only restoration and disabled production.
 - [x] 7.3 Verify Reproducible isolated rehearsal against latest published source content with observed RED/GREEN, unchanged bodies/order and full gates.
+- [ ] 7.4 Fix Read-only Actions Secret acceptance for installation repository schema, prove local RED/GREEN and full gates/CI before a separately approved retry.

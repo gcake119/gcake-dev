@@ -233,8 +233,18 @@ jobs:
           repos=value.get('repositories',[])
           assert value.get('total_count') == 1 and len(repos) == 1, 'Unexpected repository scope'
           assert repos[0]['full_name'] == 'gcake119/gcake-dev', 'Wrong repository'
-          permissions=repos[0].get('permissions',{})
-          assert permissions.get('pull') is True, 'Read access missing'
-          assert not any(permissions.get(x) for x in ['push','admin','maintain']), 'Write access rejected'
-          print('Environment Secret accepted: expected App, one repository, read-only token; no publication or deployment.')
+          # This endpoint does not promise user-style permission booleans.
+          # Contents-read is constrained by the pinned token-creation action above.
+          permissions=repos[0].get('permissions')
+          if permissions is not None:
+              assert permissions.get('pull') is True, 'Unexpected read metadata'
+              assert not any(permissions.get(x) for x in ['push','admin','maintain']), 'Write metadata rejected'
+          PYTHON
+          gh api --hostname github.com /repos/gcake119/gcake-dev/contents/package.json > "$RUNNER_TEMP/editorial-secret-content.json"
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          value=json.loads((Path(os.environ['RUNNER_TEMP'])/'editorial-secret-content.json').read_text())
+          assert value.get('type') == 'file' and value.get('path') == 'package.json', 'Content read not verified'
+          print('Environment Secret accepted: expected App, one repository, contents-read constrained at token creation and content GET verified; no publication or deployment.')
           PYTHON
