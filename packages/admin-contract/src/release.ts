@@ -16,6 +16,8 @@ export interface ReleaseRecord {
   leaseUntil: string;
   attempts: number;
   commitSha?: string;
+  /** SHA-256 of the exact transformed Markdown, stored before the external write. */
+  publicationDigest?: string;
   error?: string;
   unlockedAt?: string;
   pageVerifiedAt?: string;
