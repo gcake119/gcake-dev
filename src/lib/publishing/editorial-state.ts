@@ -48,8 +48,12 @@ export function ingestQueue(state:QueueState,posts:QueuePost[],manifests:QueueMa
  for(const g of eligible){
   const old=state.groups[g.key];
   const evidence=[...g.slugs.map(s=>posts.find(p=>p.slug===s)?.eligibleSince),manifests.find(m=>m.slug===g.seriesSlug)?.eligibleSince].filter((s):s is string=>!!s);
-  const readyAt=old?now:evidence.length?new Date(Math.max(...evidence.map(instant))).toISOString():now;
-  groups[g.key]=old?.signature===g.signature?old:{signature:g.signature,readyAt};
+  const evidenceAt=evidence.length?Math.max(...evidence.map(instant)):undefined;
+  // A draft/pause cycle between polls is visible in Git history even if membership is unchanged.
+  const sameMembership=old?.signature===g.signature;
+  const renewed=sameMembership && evidenceAt!==undefined && evidenceAt>instant(old.readyAt);
+  const readyAt=renewed?new Date(evidenceAt).toISOString():old?now:evidenceAt!==undefined?new Date(evidenceAt).toISOString():now;
+  groups[g.key]=sameMembership&&!renewed?old:{signature:g.signature,readyAt};
  }
  const started=eligible.filter(g=>g.started);
  // Multiple manually-started groups need an explicit choice; never silently reorder them.

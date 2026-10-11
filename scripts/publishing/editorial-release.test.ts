@@ -67,6 +67,23 @@ test('CMS content revision change during pending recovery is rejected',async t=>
  const updated=await readSnapshot(root);
  assert.throws(()=>prepareRelease(updated,planned.state,'2026-10-15T07:00:00+08:00',true),/revision.*repair/i);
 });
+test('CMS draft and ready transitions between polls restart standalone FIFO eligibility',async t=>{
+ const root=await fixture(t);await fs.rm(path.join(root,'src/content/series/s.yaml'));
+ const git=(...args:string[])=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ git('init','-b','main');git('config','user.name','Test');git('config','user.email','test@example.invalid');
+ const commit=(date:string)=>{git('add','.');execFileSync('git',['commit','-m','CMS save'],{cwd:root,env:{...process.env,GIT_AUTHOR_DATE:date,GIT_COMMITTER_DATE:date}});};
+ const a=path.join(root,'src/content/posts/nested/a.md'),b=path.join(root,'src/content/posts/nested/b.md');
+ const original=await fs.readFile(a,'utf8');const bOriginal=await fs.readFile(b,'utf8');
+ await fs.writeFile(b,bOriginal.replace('status: ready','status: draft'));commit('2026-10-11T10:00:00+08:00');
+ const seeded=prepareRelease(await readSnapshot(root),emptyQueue(),'2026-10-11T10:01:00+08:00',false);
+ await fs.writeFile(b,bOriginal);commit('2026-10-11T10:05:00+08:00');
+ await fs.writeFile(a,original.replace('status: ready','status: draft'));commit('2026-10-11T10:10:00+08:00');
+ await fs.writeFile(a,original);commit('2026-10-11T10:15:00+08:00');
+ const snap=await readSnapshot(root);const ingested=prepareRelease(snap,seeded.state,'2026-10-11T10:37:00+08:00',false);
+ const release=prepareRelease(snap,ingested.state,'2026-10-12T07:00:00+08:00',true);
+ assert.equal(release.state.pending?.slug,'b');
+ assert.equal(new Date(ingested.state.groups['post:a'].readyAt).toISOString(),'2026-10-11T02:15:00.000Z');
+});
 test('atomic Git release commits all changes and non-force push preserves a competing CMS commit',async t=>{
  const root=await fixture(t);const git=(cwd:string,...args:string[])=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
  git(root,'init','-b','main');git(root,'config','user.name','Test');git(root,'config','user.email','test@example.invalid');git(root,'add','.');git(root,'commit','-m','initial');
