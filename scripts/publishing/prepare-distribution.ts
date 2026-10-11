@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -49,6 +50,7 @@ export async function buildDistributionBundle(
   const sourcePath = await resolveLocalPostFile(postsDir, safe);
   if (!sourcePath) throw new Error('POST_NOT_FOUND');
   const source = await fs.readFile(sourcePath, 'utf8');
+  if (matter(source).data.status !== 'published') throw new Error('UNPUBLISHED_POST_NOT_DISTRIBUTABLE');
   const sourceRevision = 'sha256:' + createHash('sha256').update(source).digest('hex');
   const publication = createPortablePublication({ slug: safe, source, sourceRevision });
   if (!publication.publishedAt) throw new Error('PUBLISHED_AT_REQUIRED_FOR_DISTRIBUTION');
