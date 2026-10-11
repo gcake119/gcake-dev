@@ -2,7 +2,7 @@
   "date": "2026-10-11",
   "baseRevision": "2351b17",
   "nodeTestsPassed": 206,
-  "hermesTestsPassed": 7,
+  "hermesTestsPassed": 16,
   "editorialTestsPassed": 26,
   "check": {
     "errors": 0,
@@ -69,5 +69,21 @@
   "productionCandidateDeployed": false,
   "realTelegramSent": false,
   "hermesAccountInstalled": false,
-  "activationChanged": false
+  "activationChanged": false,
+  "mockDelivery": {
+    "featureRevision": "d1795036989f00021331824435c2654777913d61",
+    "acceptanceTestsPassed": 8,
+    "transport": "loopback HTTP CLI integration",
+    "baselinePosts": 0,
+    "verifiedNewArticlePosts": 1,
+    "restartOrGuidChangeAdditionalPosts": 0,
+    "uncertainAutomaticResends": 0,
+    "canonicalFailurePosts": 0,
+    "stateModeAndSiteIsolation": true,
+    "externalProxyBypassed": true,
+    "redirectsRejected": true,
+    "usesSyntheticCredentials": true,
+    "realTelegramNetworkCalls": 0,
+    "productionActivationChanged": false
+  }
 }

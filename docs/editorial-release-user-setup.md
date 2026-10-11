@@ -1,6 +1,6 @@
 # PR ＃7：需要擁有者操作的設定與步驟
 
-目前先完成準備與人工核對，不合併 PR、不部署正式候選、不啟用正式佇列或 Telegram。此文件中的設定與命令尚未代你執行。驗收候選為 `02756f58c0d8ea6869258e4b3dcf94a8c96799d0`。
+目前先完成準備與人工核對，不合併 PR、不部署正式候選、不啟用正式佇列或 Telegram。此文件中的私人設定與命令尚未代你執行。視覺驗收候選為 `02756f58c0d8ea6869258e4b3dcf94a8c96799d0`；通知 mock 功能及重現命令見 [模擬驗收紀錄](editorial-release-mock-review.md)，操作前請核對 PR 最新 SHA。
 
 ## 1．先確認隔離預覽
 
@@ -69,7 +69,7 @@ hermes cron list
 2. 取得這個私人 DM 的數字 chat ID。可從既有 Hermes 私人設定／已收到的 update 查核，或用你自己控制的測試 bot 接收 `/start`；不要在正式 bot 已有 gateway 接收更新時另跑 getUpdates。普通 DM 的 chat ID 與使用者 ID 相同。[Hermes Telegram 官方說明](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/telegram/)
 3. 私人測試檔放 Hermes OS 帳號自己的 `$HOME/.config/gcake-rss/telegram-test.env`，目錄權限 700、檔案 600。用文字編輯器填 `TELEGRAM_BOT_TOKEN`、`TELEGRAM_CHAT_ID`，並保持 `HERMES_RSS_NOTIFY_ENABLED=false`。不要放 Git、排程提示詞、shell 命令參數或共用 plist；不用將 token 傳給我。
 4. 先核對 chat 確實只包含受控測試對象。真實 API 傳送需你另外明確授權私人測試範圍，再做獨立 sendMessage 連線測試；API 成功與你在私人 chat 看到訊息都要記錄，這仍不能當作公開文章成功的證據。
-5. **目前 live poller 固定正式 canonical 站點，不能拿 localhost 或其他測試域名做真實 Telegram 的完整端到端驗收。** 已完成的是隔離 RSS／HTML 與 dry-run 去重。若要在合併前完成「測試 RSS → 私人 Telegram」全鏈路，須另行實作與審查受控測試站點接法；另一條路是之後明確授權受控正式文章，但這次不做。不要為了測試把六篇正式文章先改 published。
+5. 已完成回環 `--test-delivery`，可將受控本機 RSS／HTML 接到本機模擬 Telegram API，不需 bot token，操作見 [模擬驗收紀錄](editorial-release-mock-review.md)。**live 仍固定正式 canonical 站點，不能拿 localhost 或其他測試域名發送真實 Telegram。** 若要做隔離站點到私人 chat 的真實供應商驗收，仍需另行授權及審查接法；另一條路是之後明確授權受控正式文章，這次不做。不要為了測試把六篇正式文章先改 published。
 6. 尚未支援 Telegram `message_thread_id`；私人測試先用普通 DM，不把 topic／thread ID 填到 `TELEGRAM_CHAT_ID`。這是工具介面限制，Bot API 把 chat_id 與 message_thread_id 分成兩個參數。[Telegram sendMessage 官方介面](https://core.telegram.org/bots/api#sendmessage)
 
 未來私人 live 驗收須確認：首次基線不發歷史文章、新文章驗證後只送一次、重啟／GUID 改變不重送、回應遺失保留 uncertain，並由私人 chat 與 `--status` 對帳。正式旗標與正式排程仍維持停用，直到所有驗收完成且你另外授權。

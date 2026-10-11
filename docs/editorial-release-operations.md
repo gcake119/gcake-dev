@@ -50,6 +50,8 @@ rehearse 只在暫存目錄建站，監聽 127.0.0.1，產生 dry-run SQLite；�
 
 ## Hermes 安裝與 job
 
+合併前可先跑本機 mock 整合，不安裝 Hermes 或提供真實憑證：`pnpm test:hermes`。`--test-delivery` 只允許回環 RSS 站點與本機模擬 Telegram API，必須指定獨立 DB；詳見 [模擬驗收紀錄與命令](editorial-release-mock-review.md)。它不啟用正式 live，test DB 的 sent 只代表模擬 API 確認。production、dry-run、test-delivery 及不同 canonical 站點不得共用 DB。
+
 程式只需 Python 3 標準函式庫，Linux／macOS 的 fcntl 鎖。以下由 Hermes 帳號本人執行；不要用 Codex 的 HOME 或替服務帳號啟動 GUI agent。
 
 ```sh
