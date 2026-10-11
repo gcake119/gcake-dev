@@ -114,3 +114,13 @@ PR #9 已合併並完成 Worker／Pages 人工部署（run 38155346370／3815535
 先以真實 entrypoint 回歸重現兩個 RED（缺 deployment vars、缺 callback），再修正為 GREEN 16／16。完整 227 Node／4 Python tests、check 144 files 零 errors／warnings／hints、build:all、release:dry-run、diff check 通過；三面向 AI review 無重要 findings。模擬仍 productionEnabled=false、正文／篇序保留，未讀取任何秘密值。
 
 尚待：GitHub OAuth App 新增精確 production callback（保留 preview、wildcard 關閉）。依 Computer Use 規則，新增可信憑證接收端屬安全敏感存取變更，必須在提交前取得使用者即時確認。程式與設定修正可供 PR review，但尚未部署或完成真實 owner 登入，不宣稱錯誤已解除。正式發文 gates 仍 false。
+
+## 正式啟用延伸 — 2026-10-12
+
+使用者明確授權条件式 Pages delivery、paired automation secret、完整驗證後合併／人工部署／啟用。runner acceptance RED 3 pass／2 fail，GREEN 5 pass；workflow safety RED 8 pass／1 fail，GREEN 9 pass；異版部署誤關聯 regression 先 RED 後 GREEN。最新完整 `pnpm test` 234 Node／4 Python 全部通過，`pnpm check` 145 files zero errors/warnings/hints，`pnpm build:all` 通過，`pnpm release:dry-run` 正文／篇序不變、page/RSS 成功、通知只為 stub、productionEnabled=false。`git diff --check` 通過。
+
+Spectra CLI 在此 Git worktree 中解析錯誤根目錄，使用私有 `/private/tmp/gcake-release-spectra-check` 規格副本執行 instructions/analyze/validate，未改動髒 main；analysis 四維 Clean、validate valid。`.spectra.yaml` 明確指向既有 openspec。
+
+Spectra audit 三個獨立 AI 審查完成。P2：CMS 原本附上另一 revision 的人工部署觀察，已以同 SHA 關聯檢查／回歸測試修正並兩位 reviewer 複查關閉。剩餘已明示限制：CMS 未直接追蹤 editorial workflow deployment metadata，查看該次 Actions build/deploy；公開判定由頁面／RSS獨立證據完成。
+
+Provider 查核：editorial-release environment main-only；正式 CMS App 只選 gcake119/gcake-dev，Actions/Metadata read、Contents read/write，無新增 App 權限。Actions URL/secret 已配置；正式 Worker secret／gate、合併後 CI／部署與 controlled no-op 驗證另以後續生產查核紀錄更新，不用本機結果冒充正式上線。
