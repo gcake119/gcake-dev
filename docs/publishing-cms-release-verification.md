@@ -139,3 +139,12 @@ Worker 已人工部署，版本 4b93b235-0810-4891-9813-b5a2379133df；RELEASE_W
 剩餘人工／授權界線：首篇實際頁面與 RSS 可讀性驗收；需要時人工處理未知寫入或失敗部署；Hermes 安裝、Telegram 收件驗證及外部 provider 發布仍未啟用、未包含本次授權。公開驗證由 CMS 與頁面／RSS 判定，editorial 部署紀錄查看 Actions，CMS 不宣稱舊人工部署證明新 editorial 部署。
 
 證據：PR https://github.com/gcake119/gcake-dev/pull/12；CI https://github.com/gcake119/gcake-dev/actions/runs/38160597474；正式空巡查 https://github.com/gcake119/gcake-dev/actions/runs/38160839881。啟用 UI 截圖保存在本次 Codex visualization 的 production-release-enabled-20261012.png。隨後 main 的 PR #13 僅修正本機 dry-run fixture，Worker／editorial workflow 無差異，不需再次部署。
+
+
+### 最終複查更正：啟用尚未完成
+
+上方 01：44 紀錄只代表當時快照，不能當成持續啟用或目前排程正常的結論。最後複查發現 repository RELEASE_AUTOMATION_ENABLED=false（updated_at 2026-10-11T17:43:59Z）；Worker RELEASE_WRITE_ENABLED 仍 true，因此正式 Actions 自動排程目前停用。run 38160839881 的成功空巡查證據仍有效，不代表開關持續保持 true。
+
+後續 main 26b304c（PR #11，2026-10-12 01：47 合併）將系列第４篇〈正式開賽後，我怎麼知道自動發文真的完成了？〉與 manifest 同篇狀態改為 published，人工 Pages run 38161118291 成功。這是另案內容發布，不是本次自動流程發文，也不是本次改動正文／篇序。Computer Use reload 看見五篇 ready、一篇 published，系列不完整／檔案與狀態不一致，尚無候選／預計時段；既定中途發文防護正常阻擋自動排程。
+
+原本的六個估算日期目前已失效。7.3 重新標為未完成；交接 PR #14 保持未合併。已向使用者提出政策決定：是否保留已公開第４篇，依原篇序排其餘五篇，並授權協調另一對話仍要求停用的指示。未取得決定前，不重啟 Actions、不撤回已公開文章、不修改系列排程政策。Worker／Actions 尚未形成可正式啟用的一致狀態；需完成此阻塞後重新驗證並更新結論。
