@@ -14,6 +14,7 @@ export interface ReleasePlanInput {
   articles: PendingArticle[];
   startAt: string;
   reservedSlots?: string[];
+  activeSeries?: string;
 }
 export interface ReleaseSlot {
   slug: string;
@@ -21,13 +22,17 @@ export interface ReleaseSlot {
 }
 const HOUR_MS = 3_600_000;
 const DAY_MS = 24 * HOUR_MS;
-function instant(value: string): number {
-  if (!/(?:Z|[+-]\d{2}:\d{2})$/.test(value)) throw new Error('Explicit timezone is required');
+export function instant(value: string): number {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)) throw new Error('Explicit timezone timestamp is required');
+  const calendar = value.slice(0, 10);
+  if (Number(value.slice(11, 13)) > 23 || Number(value.slice(14, 16)) > 59 || Number(value.slice(17, 19)) > 59) throw new Error('Invalid timestamp');
+  const day = Date.parse(calendar + 'T00:00:00Z');
+  if (!Number.isFinite(day) || new Date(day).toISOString().slice(0, 10) !== calendar) throw new Error('Invalid timestamp');
   const time = Date.parse(value);
   if (!Number.isFinite(time)) throw new Error('Invalid timestamp');
   return time;
 }
-function slotAtOrAfter(time: number): number {
+export function slotAtOrAfter(time: number): number {
   // Taiwan has no daylight saving time; convert into local-day UTC arithmetic.
   const taipei = time + 8 * HOUR_MS;
   let day = Math.floor(taipei / DAY_MS);
@@ -38,7 +43,7 @@ function slotAtOrAfter(time: number): number {
     day++;
   }
 }
-function formatTaipei(ms: number): string {
+export function formatTaipei(ms: number): string {
   const d = new Date(ms + 8 * HOUR_MS);
   return d.toISOString().slice(0, 19) + '+08:00';
 }
@@ -63,10 +68,15 @@ export function planReleaseQueue(input: ReleasePlanInput): ReleaseSlot[] {
     if (new Set(items.map(x => x.order)).size !== items.length) throw new Error('Duplicate series order: ' + slug);
     return { slug, items, readyAt: Math.max(...items.map(x => instant(x.readyAt))), index: 0 };
   });
-  const reserved = new Set((input.reservedSlots ?? []).map(x => slotAtOrAfter(instant(x))));
+  const reserved = new Set((input.reservedSlots ?? []).map(x => {
+    const ms = instant(x);
+    if (slotAtOrAfter(ms) !== ms) throw new Error('Invalid reserved slot');
+    return ms;
+  }));
   const result: ReleaseSlot[] = [];
   let time = slotAtOrAfter(instant(input.startAt));
-  let active: typeof groups[number] | undefined;
+  let active = groups.find(x => x.slug === input.activeSeries);
+  if (active && active.readyAt > time) active = undefined;
   while (result.length < input.articles.length) {
     if (reserved.has(time)) { time = slotAtOrAfter(time + 1); continue; }
     const eligibleSingles = singles.filter(x => instant(x.readyAt) <= time);
