@@ -19,11 +19,21 @@ import xml.etree.ElementTree as ET
 SITE = 'https://gcake119.github.io/gcake-dev/'
 LIMIT = 8 * 1024 * 1024
 
+def validate_loopback(url, api=False):
+    if re.search(r'[\x00-\x20\x7f]', url):
+        raise ValueError('URL control characters')
+    u = urlsplit(url)
+    if (u.scheme != 'http' or u.hostname != '127.0.0.1' or u.username or u.password
+            or not u.port or u.netloc != f'127.0.0.1:{u.port}' or u.query or u.fragment
+            or not re.fullmatch(r'/(?:[a-z0-9_-]+/)*', u.path)
+            or (api and u.path != '/')):
+        raise ValueError('Test transport requires explicit numeric IPv4 loopback and port')
+
 def validate_site(site, dry=False):
     if site == SITE:
         return
-    u = urlsplit(site)
-    if dry and u.scheme == 'http' and u.hostname == '127.0.0.1' and not u.username and not u.password and not u.query and not u.fragment and site.endswith('/'):
+    if dry:
+        validate_loopback(site)
         return
     raise ValueError('Unapproved canonical site')
 
@@ -87,7 +97,11 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def fetch(url):
     req = urllib.request.Request(url, headers={'User-Agent': 'gcake-editorial-rss/1', 'Cache-Control': 'no-cache'})
-    with urllib.request.build_opener(NoRedirect).open(req, timeout=20) as response:
+    # A loopback fixture must not be sent through a configured external proxy.
+    handlers = [NoRedirect]
+    if urlsplit(url).hostname == '127.0.0.1':
+        handlers.append(urllib.request.ProxyHandler({}))
+    with urllib.request.build_opener(*handlers).open(req, timeout=20) as response:
         if response.status != 200:
             raise ValueError('Public URL unavailable')
         raw = response.read(LIMIT + 1)
@@ -113,20 +127,50 @@ def telegram_send(message):
     chat = os.environ['TELEGRAM_CHAT_ID']
     if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+', token) or not re.fullmatch(r'-?\d+', chat):
         raise ValueError('Invalid Telegram configuration')
+    _telegram_request(message, 'https://api.telegram.org/bot' + token + '/sendMessage', chat)
+
+def mock_telegram_sender(api):
+    validate_loopback(api, api=True)
+    return lambda message: _telegram_request(message, api + 'bot0:TEST_ONLY/sendMessage', '0', mock=True)
+
+def _telegram_request(message, url, chat, mock=False):
     data = json.dumps({'chat_id': chat, 'text': message, 'disable_web_page_preview': True}).encode()
-    req = urllib.request.Request('https://api.telegram.org/bot' + token + '/sendMessage', data=data,
+    req = urllib.request.Request(url, data=data,
                                  headers={'Content-Type': 'application/json'}, method='POST')
-    with urllib.request.build_opener(NoRedirect).open(req, timeout=20) as response:
-        result = json.loads(response.read(65536))
-        if not result.get('ok'):
+    handlers = [NoRedirect]
+    if mock:
+        handlers.append(urllib.request.ProxyHandler({}))
+    with urllib.request.build_opener(*handlers).open(req, timeout=20) as response:
+        raw = response.read(65537)
+        if response.status != 200 or len(raw) > 65536:
+            raise ValueError('Invalid Telegram response')
+        result = json.loads(raw)
+        if result.get('ok') is not True:
             raise ValueError('Telegram response unsuccessful')
 
 class Monitor:
-    def __init__(self, db_path, site=SITE, fetcher=fetch, sender=telegram_send, live=False):
+    def __init__(self, db_path, site=SITE, fetcher=fetch, sender=telegram_send, live=False, test_delivery=False):
+        if test_delivery:
+            if live or sender is telegram_send:
+                raise ValueError('Test delivery cannot use live Telegram transport')
+            validate_loopback(site)
         validate_site(site, dry=not live)
         self.path, self.site, self.fetch, self.send, self.live = Path(db_path), site, fetcher, sender, live
+        self.mode = 'test-delivery' if test_delivery else ('live' if live else 'dry-run')
+        self.delivering = live or test_delivery
+    def bind_state(self, db, write=False):
+        meta = dict(db.execute('SELECT key,value FROM meta'))
+        if meta.get('mode', self.mode) != self.mode or meta.get('site', self.site) != self.site:
+            raise ValueError('Notification modes and sites require separate databases')
+        if 'initialized' in meta and 'site' not in meta and self.site != SITE:
+            raise ValueError('Legacy state is only compatible with the production site')
+        if write:
+            db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('mode', self.mode))
+            db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('site', self.site))
+        return meta
     def statuses(self):
         with closing(sqlite3.connect(self.path)) as db:
+            self.bind_state(db)
             return dict(db.execute('SELECT url,status FROM outbox'))
     def poll(self, now=None):
         now = time.time() if now is None else now
@@ -140,11 +184,7 @@ class Monitor:
                 os.chmod(self.path, 0o600)
                 db.execute('CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
                 db.execute('CREATE TABLE IF NOT EXISTS outbox (url TEXT PRIMARY KEY, guid TEXT, status TEXT NOT NULL)')
-                meta = dict(db.execute('SELECT key,value FROM meta'))
-                mode = 'live' if self.live else 'dry-run'
-                if meta.get('mode', mode) != mode:
-                    raise ValueError('Dry-run and live require separate databases')
-                db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('mode', mode))
+                meta = self.bind_state(db, write=True)
                 def put(key, value):
                     db.execute('INSERT OR REPLACE INTO meta VALUES (?,?)', (key, str(value)))
                 if now < float(meta.get('next_check', 0)):
@@ -174,9 +214,9 @@ class Monitor:
                         title = re.sub(r'[\x00-\x1f\x7f]', ' ', item['title'])[:500]
                         message = f'{title}\n{item["url"]}\n台北發佈時間：{date}'
                         # Persist uncertainty BEFORE network write: a lost reply never auto-resends.
-                        db.execute('INSERT INTO outbox VALUES (?,?,?)', (item['url'], item['guid'], 'uncertain' if self.live else 'verified-dry-run'))
+                        db.execute('INSERT INTO outbox VALUES (?,?,?)', (item['url'], item['guid'], 'uncertain' if self.delivering else 'verified-dry-run'))
                         db.commit()
-                        if self.live:
+                        if self.delivering:
                             self.send(message)
                             db.execute('UPDATE outbox SET status=? WHERE url=?', ('sent', item['url']))
                             db.commit()
@@ -198,12 +238,20 @@ def main():
     p.add_argument('--verify-url')
     p.add_argument('--revision')
     p.add_argument('--db')
-    p.add_argument('--live', action='store_true')
-    p.add_argument('--dry-run', action='store_true')
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument('--live', action='store_true')
+    mode.add_argument('--dry-run', action='store_true')
+    mode.add_argument('--test-delivery', action='store_true', help='Loopback-only mock API; no real Telegram credentials')
+    p.add_argument('--telegram-api', help='Explicit loopback mock API root; test-delivery only')
     p.add_argument('--status', action='store_true')
     args = p.parse_args()
-    if args.live and args.dry_run:
-        p.error('Choose live or dry-run')
+    if args.test_delivery:
+        if not args.db or not args.telegram_api or args.verify_url or args.revision:
+            p.error('Test delivery requires explicit --db and --telegram-api, without verification-only options')
+        validate_loopback(args.site)
+        validate_loopback(args.telegram_api, api=True)
+    elif args.telegram_api:
+        p.error('--telegram-api requires --test-delivery')
     validate_site(args.site, dry=not args.live)
     if args.verify_url:
         verify_public(args.verify_url, args.site, args.revision)
@@ -215,12 +263,14 @@ def main():
         p.error('Private Telegram configuration missing')
     suffix = 'live' if args.live else 'dry-run'
     db = args.db or str(Path.home()/'.local/state/gcake-rss'/f'{suffix}.sqlite')
-    m = Monitor(db, args.site, live=args.live)
+    sender = mock_telegram_sender(args.telegram_api) if args.test_delivery else telegram_send
+    m = Monitor(db, args.site, sender=sender, live=args.live, test_delivery=args.test_delivery)
     if args.status:
         print(json.dumps(m.statuses(), ensure_ascii=False, indent=2))
     else:
         for message in m.poll():
-            print(message if not args.live else 'Verified new article notification sent')
+            print('Verified test article notification sent to loopback mock API' if args.test_delivery
+                  else ('Verified new article notification sent' if args.live else message))
 
 if __name__ == '__main__':
     try:

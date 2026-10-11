@@ -36,6 +36,14 @@ class Tests(unittest.TestCase):
  def test_private_database_and_dry_run_isolation(self):
   self.monitor().poll(BASE+1000);self.assertEqual(os.stat(self.db).st_mode & 0o777,0o600)
   with self.assertRaises(ValueError):Monitor(self.db,SITE,self.fetch,self.messages.append,live=False).poll(BASE+4600)
+ def test_legacy_production_state_retains_deduplication(self):
+  import sqlite3
+  from contextlib import closing
+  self.items=[('old','Old','g1')];self.monitor().poll(BASE+1000)
+  with closing(sqlite3.connect(self.db)) as db,db:db.execute("DELETE FROM meta WHERE key='site'")
+  self.assertEqual(self.monitor().poll(BASE+4600),[])
+  self.items.append(('new','New','g2'));self.assertEqual(len(self.monitor().poll(BASE+8200)),1)
+  self.assertEqual(len(self.messages),1)
  def test_utf16_entities_and_url_controls_rejected(self):
   raw=('<?xml version="1.0" encoding="UTF-16"?><!DOCTYPE rss [<!ENTITY title "expanded">]><rss><channel/></rss>').encode('utf-16')
   with self.assertRaises(ValueError):parse_feed(raw,SITE)

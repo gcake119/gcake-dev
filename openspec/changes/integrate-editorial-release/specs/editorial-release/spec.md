@@ -61,3 +61,24 @@ Hermes SHALL initialize historical feed entries silently, verify new local canon
 - **GIVEN** a send was attempted but its response is lost
 - **WHEN** Hermes restarts
 - **THEN** it reports an uncertain delivery for manual reconciliation and does not automatically resend
+### Requirement: Controlled mock delivery
+The system SHALL provide an explicit isolated notification test mode accepting only HTTP sites and simulated Telegram endpoints on numeric IPv4 loopback 127.0.0.1. It SHALL use synthetic credentials, an explicit separate state path, and preserve production site, endpoint and activation restrictions. State SHALL be bound to notification mode and canonical site.
+#### Scenario: Isolated feed to simulated Telegram
+- **GIVEN** a controlled loopback RSS site, canonical article pages and a simulated Telegram API
+- **WHEN** the operator initializes a baseline, adds a new article and restarts the test monitor
+- **THEN** historical articles produce zero requests, the verified new article produces exactly one simulated sendMessage request with title, URL and Taipei time, and repeated checks or GUID changes produce no additional requests
+#### Scenario: Rejected page and lost simulated response
+- **GIVEN** a new test article has an unavailable or mismatched canonical page
+- **WHEN** the test monitor checks it
+- **THEN** no simulated message is sent and the check backs off until the page is valid
+- **GIVEN** the simulated API accepts a request but loses its response
+- **WHEN** the monitor restarts
+- **THEN** delivery remains uncertain and no automatic resend occurs
+#### Scenario: Unsafe test configuration
+- **GIVEN** a test configuration uses a non-loopback site or endpoint, mixes live delivery with testing, omits the explicit state path, or reuses state from another mode or site
+- **WHEN** the operator runs the monitor
+- **THEN** it fails without contacting an external Telegram API or enabling production delivery
+#### Scenario: Redirect outside test boundary
+- **GIVEN** the test site or simulated API returns a redirect
+- **WHEN** the monitor requests it
+- **THEN** the redirect is rejected without contacting the redirected destination
