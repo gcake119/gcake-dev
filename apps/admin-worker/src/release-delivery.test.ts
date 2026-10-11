@@ -250,3 +250,21 @@ test('wrong GUID, JSON-LD identity or release metadata never verifies publicatio
   }) as typeof fetch;
   assert.equal((await verifyPublicRelease(wrongGuid, base, 'one', '測試文章')).rssGuid, undefined);
 });
+
+test('public reverify never associates an unrelated Pages deployment with this release', async () => {
+  for (const observedSha of ['older-manual-sha', 'written']) {
+    const {queue,time}=setup();
+    const s=snapshot();
+    await queue.ingest(s);
+    time();
+    const d=new ReleaseDelivery(queue,{
+      snapshot:async()=>s,
+      save:async()=>({commitSha:'written',paths:[]}),
+      deployment:async()=>({state:'deployed',commitSha:observedSha,startedAt:'2026-10-11T23:06:00Z'}),
+    },true,publicFetch(),base);
+    const r=await d.execute();
+    const checked=await d.reverify(r!.id);
+    assert.equal(checked.state,'verified-public');
+    assert.equal(checked.deployment?.commitSha, observedSha==='written'?'written':undefined);
+  }
+});
