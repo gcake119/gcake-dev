@@ -116,3 +116,14 @@ Worker 已人工部署，版本 4b93b235-0810-4891-9813-b5a2379133df；RELEASE_W
 ### 使用者決定：隱藏第４篇、恢復原排序
 
 使用者明確選擇將第４篇隱藏，恢復原有排序。本次只把第４篇文章與 manifest 狀態恢復 ready 並移除提前發布日期；正文及六篇原序保留。沿用既定完整定稿／中途發布防護，不接受保留第４篇公開而跳過的政策變更。先以人工 Pages 部署驗證撤下頁面／RSS，再重新查核六篇排程，最後依先前正式啟用授權恢復 Actions gate。未完成 provider 驗證前仍不宣稱啟用完成。
+
+
+### 第４篇撤下及原序正式啟用完成（2026-10-12）
+
+使用者選擇「將第四篇隱藏，恢復原有排序」。PR #14 已合併為 d29466ce4c2a55d9fa29e92e04aefa26e198e05a；本機完整 234 Node／4 Python tests、check 145files零診斷、build:all、release:dry-run、diff check及三面向Spectra audit通過，必要CI 38161803064成功。正文六篇SHA-256与原manifest完全一致，未改閱讀順序。
+
+人工Pages run 38161908028成功且head為d29466c；真實第４篇網址HTTP404、RSS HTTP200且不含該篇。Computer Use確認六篇ready、0篇需處理，原序估算10/12、10/15、10/19、10/22、10/26、10/29，每週一／四07：00起，Asia/Taipei；第４篇仍在第四順位。未放寬中途發文防護。
+
+重新人工部署Worker，版本8a499d11-7bd3-4d73-b36f-6d2aa0466e5d，保留正式OAuth／preview設定及其他provider停用狀態；UI確認RELEASE_WRITE_ENABLED已啟用。Repository RELEASE_AUTOMATION_ENABLED=true；正式巡查38162097114成功，release成功、build/deploy skipped，結束後再次API確認Actions gate仍true，沒有巡查後自動關閉。此段取代上方最終阻塞狀態，Spectra7.3已完成。
+
+首次到時publication→Pages→公開page/RSS的完整生產結果仍待實際執行；空巡查成功不代表首篇已公開。Hermes／Telegram未啟用，仍須另行授權。既有CMS部署banner可能延遲，不以其顯示取代Actions run及公開頁面/RSS證據。證據截圖：production-original-order-enabled-20261012.png（本次Codex visualization）。
