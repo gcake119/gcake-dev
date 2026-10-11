@@ -142,3 +142,30 @@ The rehearsal SHALL remain independent of current manuscript publication status,
 - **GIVEN** the source series contains a published chapter
 - **WHEN** the local release rehearsal runs
 - **THEN** it exercises the fixed unpublished baseline and one new verified article in its disposable copy, without changing source files or contacting Telegram
+
+### Requirement: D1 sole release authority
+D1 SHALL be the only operational release queue. Git SHALL retain article/manifest authority. Legacy Git-journal publication paths SHALL fail closed regardless of legacy activation flags, and existing journal evidence SHALL require explicit reconciliation rather than automatic replay or deletion. All production publication and real notifications SHALL remain disabled during consolidation.
+#### Scenario: Retired writer and legacy evidence
+- **GIVEN** the legacy write flag is enabled or an old journal exists
+- **WHEN** an old release command or new D1 delivery is requested
+- **THEN** the old command makes no writes or network requests and an existing journal blocks new delivery for explicit reconciliation without deleting history
+#### Scenario: Continuous readiness and membership
+- **GIVEN** articles return from draft to ready between checks, or an unstarted complete series changes membership
+- **WHEN** D1 ingests the current Git revision
+- **THEN** renewed eligibility receives its new FIFO position, while body-only edits retain position and manifest reading order stays authoritative
+#### Scenario: Latest due window and late readiness
+- **GIVEN** D1 first observed eligible content before a release window and several windows were missed
+- **WHEN** recovery runs after the latest Monday or Thursday 07:00
+- **THEN** at most one article eligible at that latest window receives it, no older windows are backfilled, and articles arriving later wait for the next window
+#### Scenario: Started series reconciliation
+- **GIVEN** multiple series were manually started without a stored active choice, or the active series is deleted or inconsistent
+- **WHEN** D1 considers another release
+- **THEN** acquisition stops visibly for reconciliation without silently selecting another series or changing reading order
+#### Scenario: Public source and pending identity
+- **GIVEN** a release has a retained publication identity and its public page is stale or its pending Git source was changed
+- **WHEN** public confirmation runs
+- **THEN** the release stays unconfirmed and no second publication occurs; only matching source revision, canonical page, publication metadata and RSS can confirm it
+#### Scenario: D1 static rehearsal
+- **GIVEN** a disposable D1-compatible database, content copy and loopback site
+- **WHEN** build failure recovery and RSS notification rehearsal run
+- **THEN** the same release identity survives, six bodies and order remain unchanged, one verified new article is observed once across restart, and production receives no writes or messages

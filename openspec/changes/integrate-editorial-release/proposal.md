@@ -17,3 +17,6 @@ None.
 The owner requested an unattended operating plan without collaborators. Add scoped GitHub App authentication for release pushes, a read-only configuration audit, and owner setup/stop instructions; production stays disabled.
 
 Prepare a manual, exact-revision, read-only environment App Secret acceptance path independent of publication. Comparing D1 and Git journal is advisory; neither queue is retired or enabled by this change. Temporary environment branch access requires separate owner approval.
+
+## Owner-approved D1 consolidation — 2026-10-12
+The owner now selects D1 as the sole production queue. Align continuous readiness, membership, active-series recovery, latest due slot and public source verification before retiring the Git journal writer. Keep content/manifests in Git, preserve pending identities, main protections, manual deployment and read-only Secret acceptance. No merge, production deployment, activation or real Telegram is authorized.

@@ -354,3 +354,112 @@ test('legacy reservations use the Taipei weekday across UTC midnight', async () 
     { slug: 'b', releaseAt: '2026-10-19T07:00:00+08:00' },
   ]);
 });
+
+test('D1 continuous readiness renews FIFO after observed and between-poll draft cycles', async () => {
+  for (const observed of [true, false]) {
+    const {queue,time}=setup();
+    const s=snapshot(0);s.series=[];s.posts=[post('a'),post('b')];
+    let ready='2026-10-10T10:00:00Z';
+    s.firstReadyAt=async p=>p.slug==='a'?ready:'2026-10-11T09:00:00Z';
+    await queue.ingest(s);
+    time('2026-10-13T10:00:00Z');
+    if(observed){s.posts[0].status='draft';await queue.ingest(s);}
+    s.posts[0].status='ready';s.posts[0].sha='renewed';s.revision='renewed-head';ready='2026-10-13T09:00:00Z';
+    const v=await queue.ingest(s);
+    assert.deepEqual(v.plan.map(p=>p.slug),['b','a']);
+    assert.equal(v.items.find(p=>p.slug==='a')?.readyAt,ready);
+    s.posts[0].sha='body-edited';s.revision='body-edit-head';
+    assert.equal((await queue.ingest(s)).items.find(p=>p.slug==='a')?.readyAt,ready);
+  }
+});
+test('D1 incomplete/restored and changed unstarted membership renew whole-series eligibility', async()=>{
+  const {queue,time}=setup();const s=snapshot(2);
+  await queue.ingest(s);
+  time('2026-10-13T10:00:00Z');s.posts[1].status='draft';s.series[0].sections[0].posts[1].status='draft';
+  assert.equal((await queue.ingest(s)).seriesReadyAt.s,undefined);
+  time('2026-10-14T10:00:00Z');s.posts[1].status='ready';s.series[0].sections[0].posts[1].status='ready';
+  assert.equal((await queue.ingest(s)).seriesReadyAt.s,'2026-10-14T10:00:00Z');
+  time('2026-10-16T10:00:00Z');s.posts.push(post('p2'));s.series[0].sections[0].posts=[...s.series[0].sections[0].posts,{slug:'p2',status:'ready'}];
+  assert.equal((await queue.ingest(s)).seriesReadyAt.s,'2026-10-16T10:00:00Z');
+});
+test('D1 whole-series FIFO includes continuous manifest history before first observation',async()=>{
+  const {queue}=setup();const s=snapshot(2);
+  s.firstReadyAt=async()=> '2026-10-09T10:00:00Z';
+  (s as any).firstSeriesReadyAt=async()=> '2026-10-10T10:00:00Z';
+  assert.equal((await queue.ingest(s)).seriesReadyAt.s,'2026-10-10T10:00:00Z');
+});
+test('D1 recovery claims only latest due window on intervening days, never pre-observation or late readiness',async()=>{
+  const {queue,time}=setup();const s=snapshot(0);s.series=[];s.posts=[post('a')];
+  s.firstReadyAt=async()=> '2026-10-01T10:00:00Z';await queue.ingest(s);
+  assert.equal(await queue.acquire(s,true),undefined,'latest Thursday predates initial observation');
+  time('2026-10-16T01:00:00Z');
+  const r=await queue.acquire(s,true);
+  assert.equal(r?.slot,'2026-10-15T07:00:00+08:00');
+  assert.equal((await queue.view(s)).releases.length,1);
+  const late=setup();await late.queue.ingest({...s,posts:[]});late.time('2026-10-16T01:00:00Z');
+  const arriving={...s,firstReadyAt:async()=> '2026-10-15T01:00:00Z'};
+  assert.equal(await late.queue.acquire(arriving,true),undefined);
+});
+test('D1 refuses ambiguous manually started series rather than choosing snapshot order',async()=>{
+  const {queue}=setup();const s=snapshot(2);
+  s.posts[0].status='published';s.series[0].sections[0].posts[0].status='published';
+  s.posts.push(post('other-old','published'),post('other-new'));
+  s.series.push({...s.series[0],slug:'other-series',sections:[{posts:[{slug:'other-old',status:'published'},{slug:'other-new',status:'ready'}]}]});
+  await assert.rejects(()=>queue.ingest(s),/MULTIPLE_ACTIVE_SERIES/);
+});
+test('D1 remembers active identity and blocks deletion or future predecessors without consuming another series',async()=>{
+  for(const problem of ['deleted','future']){
+    const {queue,time}=setup();const s=snapshot(2);
+    s.posts[0].status='published';s.series[0].sections[0].posts[0].status='published';await queue.ingest(s);
+    time('2026-10-11T23:05:00Z');
+    if(problem==='deleted')s.series=[];
+    else s.posts[0].publishedAt='2026-10-19T07:00:00+08:00';
+    await assert.rejects(()=>queue.acquire(s,true),/ACTIVE_SERIES_RECONCILIATION_REQUIRED/);
+    assert.equal((await queue.store.read()).data.releases.length,0);
+  }
+});
+
+test('D1 manifest pause holds complete series and renews eligibility on resume',async()=>{
+  const {queue,time}=setup();const s=snapshot(2);await queue.ingest(s);
+  time('2026-10-13T10:00:00Z');(s.series[0] as any).paused=true;
+  assert.equal((await queue.ingest(s)).plan.length,0);
+  time('2026-10-14T10:00:00Z');(s.series[0] as any).paused=false;
+  assert.equal((await queue.ingest(s)).seriesReadyAt.s,'2026-10-14T10:00:00Z');
+});
+
+test('D1 detects between-poll draft cycle even when final ready blob is byte-identical',async()=>{
+  const {queue,time}=setup();const s=snapshot(0);s.series=[];s.posts=[post('a'),post('b')];
+  let ready='2026-10-10T10:00:00Z';s.firstReadyAt=async p=>p.slug==='a'?ready:'2026-10-11T09:00:00Z';
+  await queue.ingest(s);time('2026-10-13T10:00:00Z');
+  s.revision='same-blob-new-history';ready='2026-10-13T09:00:00Z';
+  assert.deepEqual((await queue.ingest(s)).plan.map(p=>p.slug),['b','a']);
+});
+
+test('D1 owner pause/resume renews uncommitted FIFO without moving a committed fixed date',async()=>{
+ const {queue,time}=setup();const s=snapshot(0);s.series=[];s.posts=[post('a'),post('b')];
+ s.firstReadyAt=async p=>p.slug==='a'?'2026-10-09T10:00:00Z':'2026-10-10T10:00:00Z';
+ await queue.ingest(s);await queue.control(s,{action:'pause',slug:'a'});
+ time('2026-10-13T10:00:00Z');await queue.control(s,{action:'resume',slug:'a'});
+ s.revision='later-body-edit';
+ assert.deepEqual((await queue.ingest(s)).plan.map(p=>p.slug),['b','a']);
+ const other=setup();const series=snapshot(2);await other.queue.ingest(series);
+ await other.queue.control(series,{action:'pause',scope:'series',slug:'s'});
+ other.time('2026-10-13T10:00:00Z');await other.queue.control(series,{action:'resume',scope:'series',slug:'s'});
+ assert.equal((await other.queue.ingest(series)).seriesReadyAt.s,'2026-10-13T10:00:00Z');
+ const preview=await other.queue.previewOverride(series,'p0','2026-10-15T07:00:00+08:00');
+ await other.queue.control(series,{action:'override',slug:'p0',releaseAt:preview.releaseAt,version:preview.version,revision:series.revision});
+ await other.queue.control(series,{action:'pause',scope:'series',slug:'s'});
+ await other.queue.control(series,{action:'resume',scope:'series',slug:'s'});
+ assert.equal((await other.queue.ingest(series)).plan.find(p=>p.slug==='p0')?.releaseAt,preview.releaseAt);
+});
+
+test('D1 finishing active series still rejects two newly discovered started series in the same ingestion',async()=>{
+ const {queue}=setup();const s=snapshot(2);
+ s.posts[0].status='published';s.series[0].sections[0].posts[0].status='published';await queue.ingest(s);
+ s.posts[1].status='published';s.series[0].sections[0].posts[1].status='published';
+ for(const slug of ['x','y']) {
+  s.posts.push(post(slug+'-old','published'),post(slug+'-new'));
+  s.series.push({...s.series[0],slug,sections:[{posts:[{slug:slug+'-old',status:'published'},{slug:slug+'-new',status:'ready'}]}]});
+ }
+ await assert.rejects(()=>queue.ingest(s),/MULTIPLE_ACTIVE_SERIES/);
+});

@@ -44,6 +44,14 @@ export function slotAtOrAfter(time: number): number {
     day++;
   }
 }
+export function slotAtOrBefore(time: number): number {
+  let day = Math.floor((time + 8 * HOUR_MS) / DAY_MS);
+  for (;; day--) {
+    const slot = day * DAY_MS - HOUR_MS;
+    const weekday = new Date(day * DAY_MS).getUTCDay();
+    if ((weekday === 1 || weekday === 4) && slot <= time) return slot;
+  }
+}
 export function formatTaipei(ms: number): string {
   const d = new Date(ms + 8 * HOUR_MS);
   return d.toISOString().slice(0, 19) + "+08:00";
