@@ -38,6 +38,8 @@ rehearse 只在暫存目錄建站，監聽 127.0.0.1，產生 dry-run SQLite；�
 
 ## 正式啟用前的人工設定與驗收
 
+逐項勾選並留存版本／執行人／證據，使用 [PR ＃7 人工驗收清單](editorial-release-acceptance.md)。新增的 Validate editorial release CI 只跑測試、建置與隔離演練，顯式停用兩個正式旗標；CI 成功不等於已完成下列人工設定或供應商驗收。
+
 1. 審閱 PR 並完成驗收，另行授權合併本候選至 main。GitHub 排程只使用 default branch，feature branch 不會啟動正式排程。
 2. 建立 GitHub environment editorial-release，限制 main，先保持人工 reviewer 保護。確認 repository ruleset／branch protection 允許所選 unattended GitHub token 的 contents write；若 GITHUB_TOKEN 無法直接推 main，須改用僅安裝此 repo、僅需 contents write 的 GitHub App 路徑，另做權限驗收，不能 force push、關掉保護或使用廣權限 PAT 繞過。當前程式使用 checkout 的短效 GITHUB_TOKEN，不依赖 Admin App secrets。
 3. 保持 repository variable EDITORIAL_RELEASE_ENABLED 未設或 false，先確認 feature CI、本機演練、實際候選預覽／部署與競爭情境。環境 reviewer 保護要如何在啟用後提供無人值守排程，須由擁有者決定。
