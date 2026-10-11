@@ -51,7 +51,7 @@ The queue SHALL allow only one article per Taipei release date and one public re
 - **THEN** it is estimated at the next unconsumed unlocked slot
 
 ### Requirement: Disabled atomic delivery
-Production release SHALL require an explicit server gate and authenticated orchestration. Delivery SHALL compare revision and blob identities, update only publication frontmatter and the matching manifest status in one atomic Git commit, preserve bodies/order, and stop on conflicts. Editorial Actions SHALL remain gated and target Monday/Thursday after 07:00 Taipei. Worker and Pages deployment SHALL require explicit manual dispatch on main; merging changes and hourly time passage SHALL NOT deploy or migrate production. Failed builds SHALL NOT consume slots.
+Production release SHALL require an explicit server gate and authenticated orchestration. Delivery SHALL compare revision and blob identities, update only publication frontmatter and the matching manifest status in one atomic Git commit, preserve bodies/order, and stop on conflicts. Editorial Actions SHALL remain gated and target Monday/Thursday after 07:00 Taipei. Worker deployment and ordinary Pages deployment SHALL require explicit manual dispatch on main; merging changes and hourly time passage alone SHALL NOT deploy or migrate production. Authorized editorial publication SHALL deploy only its newly committed publication revision through the gated editorial workflow. Failed builds SHALL NOT consume slots.
 
 #### Scenario: Disabled gate or stale Git revision
 - **GIVEN** a disabled gate or concurrent editorial change
@@ -116,3 +116,31 @@ The Hermes runner SHALL baseline historical RSS silently, verify canonical pages
 - **GIVEN** an unavailable feed or article page
 - **WHEN** polling runs
 - **THEN** no success notification is sent and retry backoff distinguishes feed failure from publication failure
+
+### Requirement: Publication conditioned Pages delivery
+After explicit production authorization, the editorial workflow SHALL build and deploy exactly the newly committed publication revision returned by authenticated release execution. An empty or failed release request SHALL NOT start a Pages deployment. Publication failure SHALL retain the same release identity and require retrying the failed delivery jobs or manual reconciliation; hourly checks SHALL NOT repeatedly deploy pending verification. Deployment success alone SHALL NOT count as page/RSS verification. Worker deployment, database migrations, ordinary merge deployment and Hermes installation remain outside the editorial workflow.
+
+#### Scenario: New publication revision
+- **GIVEN** authorized production automation and one due finalized article
+- **WHEN** release execution commits that article
+- **THEN** Pages builds that committed revision and deploys it, preserving the article body and series order
+
+#### Scenario: Empty hourly verification or ordinary merge
+- **GIVEN** no newly committed publication
+- **WHEN** an hourly check completes or an ordinary change is merged
+- **THEN** no Pages deployment or Worker migration starts
+
+#### Scenario: Failed or ambiguous delivery
+- **GIVEN** publication committed but its build failed or the Git write result is unknown
+- **WHEN** recovery runs
+- **THEN** the same release identity remains, a failed delivery can retry its original build/deploy jobs, and an unknown write requires reconciliation without a new publication
+
+#### Scenario: Disabled gate and invalid response
+- **GIVEN** either production gate is disabled or orchestration returns a malformed publication identity
+- **WHEN** the scheduled workflow attempts delivery
+- **THEN** no Pages deployment starts and malformed responses fail visibly without disclosing credentials
+
+#### Scenario: Unrelated manual deployment
+- **GIVEN** a new editorial publication and an older manual Pages deployment for another revision
+- **WHEN** public verification runs
+- **THEN** the older deployment is not attached to this publication, and public page/RSS evidence remains independent

@@ -39,3 +39,13 @@ Pages build 失敗不算已公開；目前 Worker／Pages 僅允許 main 分支�
 先關閉 Worker release gate，再關閉 Actions automation gate；Worker gate 停用會阻止正式寫入；Actions gate 停用只停止 Actions 排程觸發，不能取代 Worker 的寫入保護。保留 D1 runtime／release id／事件與 Hermes state，未知結果繼續查核而非刪除記錄。不要用改正文、改 manifest 順序或重新建立文章來復原。
 
 D1 單一 CAS 文件適合個人 CMS 的發文量；每篇事件保留最近 100 筆，文章 release 身分長期保留。若未來資料量或併發量大幅增加，須另外規劃分表遷移、事件封存與負載驗證，不能宣稱目前已通過大量壓力測試。
+
+## 2026-10-12 已授權的正式啟用延伸
+
+使用者已授權補齊條件式 Pages 部署、共用 automation 憑證、完整驗證後合併／人工 rollout／啟用。此授權不涵蓋 Hermes 安裝或 Telegram 寄送。先前 manual-only 決策仍適用一般 Worker／Pages workflow；editorial workflow 只有取得新發文 commit 時，才能建置該 SHA 並部署，沒有新發文的每小時巡查不部署。
+
+Actions editorial-release environment 僅允許 main。設定 RELEASE_WORKER_URL 與 RELEASE_AUTOMATION_SECRET，Worker 使用同一 secret。憑證只透過私有輸入設定；不要貼到聊天、命令參數或 log。Worker secret put 會立即建立版本並部署，因此須在 review 完成且已有部署授權後執行。Production gate 透過 Cloudflare 變數明確設為 true，之後再啟用 repository RELEASE_AUTOMATION_ENABLED=true。版本控制中的 gate 保留 false，日後依該設定重新部署會安全停用，必須重新查核啟用状态。
+
+恢復：若 editorial workflow 的 build／deploy 失敗，先從該次 run 選擇 Re-run failed jobs，沿用成功 release job 的 SHA 輸出。不要重跑整個 workflow 來期待重新發文；每小時巡查不會再次部署舊 release。另一條既有人工 Pages workflow 需取得授權後使用，並確認它所建置的版本包含原發文提交。未知 Git 結果先查核，不重建 release identity。
+
+CMS 的自動部署觀察限制：目前 GitHub reader 只取得 manual deploy-pages 的觀察。reverify 僅接受與 release SHA 相符的觀察；editorial run 的部署成功／失敗請查看該次 Actions build／deploy job。不可把舊人工部署當成本次發文證據。CMS 的公開頁與 RSS 驗證仍独立執行；兩者成功才標記 verified-public，單靠 workflow 綠燈不代表已公開。

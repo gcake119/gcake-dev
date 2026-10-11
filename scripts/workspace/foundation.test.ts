@@ -65,6 +65,7 @@ test('main pull requests receive full local gates without deployment authority',
     .map(async (name) => YAML.parse(await readFile(new URL(name, directory), 'utf8'))));
   const validation = workflows.filter((workflow) => workflow.on?.pull_request?.branches?.includes('main'));
   assert.ok(validation.length > 0, 'main pull requests require a validation workflow');
+  assert.ok(validation.some((workflow) => Object.entries(workflow.jobs).some(([id, job]: [string, any]) => (job.name ?? id) === 'validate')), 'protected main requires the validate check context');
   const commands = validation.flatMap((workflow) => Object.values(workflow.jobs).flatMap((job: any) => job.steps.map((step: any) => step.run ?? ''))).join('\n');
   for (const gate of ['pnpm test', 'pnpm check', 'pnpm build:all', 'pnpm release:dry-run'])
     assert.ok(commands.split('\n').includes(gate), `PR validation must run ${gate}`);
@@ -100,4 +101,27 @@ test('production and preview deployment retain verified OAuth client and owner c
     assert.match(section, /GITHUB_OWNER_USER_IDS\s*=\s*"\d+(,\d+)*"/);
     assert.match(section, /RELEASE_WRITE_ENABLED\s*=\s*"false"/);
   }
+});
+
+test('editorial release deploys only newly committed revisions with isolated Pages permissions', async () => {
+  const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/editorial-release.yml',import.meta.url),'utf8'));
+  assert.deepEqual(Object.keys(workflow.on).sort(),['schedule','workflow_dispatch']);
+  assert.equal(workflow.jobs.release.if,"github.ref == 'refs/heads/main' && vars.RELEASE_AUTOMATION_ENABLED == 'true'");
+  assert.equal(workflow.jobs.release.outputs.release_sha,'${{ steps.release.outputs.release_sha }}');
+  assert.equal(workflow.jobs.build.if,"needs.release.outputs.release_sha != ''");
+  assert.equal(workflow.jobs.build.needs,'release');
+  const checkout=workflow.jobs.build.steps.find((s:any)=>s.uses?.startsWith('actions/checkout@'));
+  assert.equal(checkout.with.ref,'${{ needs.release.outputs.release_sha }}');
+  assert.equal(checkout.with['persist-credentials'],false);
+  assert.ok(workflow.jobs.build.steps.some((s:any)=>s.run==='pnpm install --frozen-lockfile'));
+  assert.ok(workflow.jobs.build.steps.some((s:any)=>s.run==='pnpm build'));
+  assert.doesNotMatch(JSON.stringify(workflow.jobs.build),/content:sync|wrangler|--remote/);
+  assert.deepEqual(workflow.permissions,{contents:'read'});
+  assert.equal(workflow.jobs.release.permissions,undefined);
+  assert.equal(workflow.jobs.build.permissions,undefined);
+  assert.deepEqual(workflow.jobs.deploy.permissions,{pages:'write','id-token':'write'});
+  assert.deepEqual(workflow.jobs.deploy.needs,['release','build']);
+  assert.equal(workflow.jobs.deploy.if,"needs.release.outputs.release_sha != ''");
+  assert.equal(workflow.jobs.deploy.environment.name,'github-pages');
+  assert.deepEqual(workflow.jobs.deploy.concurrency,{group:'pages','cancel-in-progress':false});
 });

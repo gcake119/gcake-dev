@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Tests, checks and builds
+    name: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

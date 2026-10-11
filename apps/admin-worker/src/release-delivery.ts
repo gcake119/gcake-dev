@@ -186,7 +186,7 @@ export class ReleaseDelivery {
         rssGuid: result.rssGuid,
         verifiedAt: result.page && result.rssGuid ? this.queue.now() : undefined,
         error: result.error,
-        deployment,
+        deployment: deployment?.commitSha === r.commitSha ? deployment : r.deployment,
         nextRetryAt: result.page && result.rssGuid ? undefined : new Date(Date.parse(this.queue.now()) + 3600000).toISOString(),
       },
       'public-verification',
