@@ -37,7 +37,7 @@ function ownerIds(value: string | undefined): ReadonlySet<string> {
   );
 }
 
-function githubOAuth(env: WorkerEnv, fetcher: typeof fetch = fetch): OAuthClient | undefined {
+function githubOAuth(env: WorkerEnv, fetcher: typeof fetch, callbackUrl: string): OAuthClient | undefined {
   const clientId = env.GITHUB_OAUTH_CLIENT_ID;
   const clientSecret = env.GITHUB_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) return undefined;
@@ -45,6 +45,7 @@ function githubOAuth(env: WorkerEnv, fetcher: typeof fetch = fetch): OAuthClient
     authorizationUrl(state) {
       const url = new URL('https://github.com/login/oauth/authorize');
       url.searchParams.set('client_id', clientId);
+      url.searchParams.set('redirect_uri', callbackUrl);
       url.searchParams.set('state', state);
       return url.toString();
     },
@@ -58,6 +59,7 @@ function githubOAuth(env: WorkerEnv, fetcher: typeof fetch = fetch): OAuthClient
         body: JSON.stringify({
           client_id: clientId,
           client_secret: clientSecret,
+          redirect_uri: callbackUrl,
           code,
         }),
       });
@@ -114,7 +116,7 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
     }
     if (!env.CMS_DB) return runtimeNotConfigured('CMS 執行資料庫尚未設定。');
 
-    const oauth = githubOAuth(env, fetcher);
+    const oauth = githubOAuth(env, fetcher, new URL('/api/v1/auth/callback', url.origin).href);
     const owners = ownerIds(env.GITHUB_OWNER_USER_IDS);
     const installationTokens =
       env.GITHUB_APP_ID && env.GITHUB_APP_INSTALLATION_ID && env.GITHUB_APP_PRIVATE_KEY

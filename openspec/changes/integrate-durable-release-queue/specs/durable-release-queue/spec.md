@@ -94,6 +94,16 @@ Authenticated owner routes SHALL expose estimates, history, intervention, detail
 - **WHEN** publication retry, unlock or queue mutation is requested
 - **THEN** unsafe writes are refused with an observable reason
 
+#### Scenario: Owner login returns to the initiating environment
+- **GIVEN** the owner opens the production or preview CMS with configured login credentials
+- **WHEN** GitHub authentication completes
+- **THEN** the owner returns to the same CMS environment and production publication remains disabled
+
+#### Scenario: Missing production login configuration
+- **GIVEN** required owner login configuration is missing
+- **WHEN** the owner requests login
+- **THEN** login fails closed without issuing a CMS session
+
 ### Requirement: Restart-safe external monitoring
 The Hermes runner SHALL baseline historical RSS silently, verify canonical pages before notification, persist canonical-article deduplication outside Git, use bounded backoff and a single process lock, and retain uncertain sends for manual resolution. CMS SHALL show external monitoring without claiming Telegram delivery until a verified report channel exists.
 
