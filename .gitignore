@@ -13,4 +13,6 @@ dist/
 .playwright-cli/
 openspec/.vector-search.db*
 
+output/playwright/
 __pycache__/
+output/release-verification/
