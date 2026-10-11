@@ -16,3 +16,18 @@ test('workflow gates all editorial writers and retains recovery without push res
  assert.match(workflow.jobs.deploy.steps[0].run,/test "\$current" = "\$SOURCE_REVISION"/);
  assert.deepEqual(workflow.jobs.build.permissions,{contents:'read',pages:'read'});
 });
+test('PR CI validates the candidate without deployment credentials or production writes',async()=>{
+ const workflow=YAML.parse(await fs.readFile('.github/workflows/validate-editorial.yml','utf8'));
+ assert.deepEqual(workflow.on.pull_request.branches,['main']);
+ assert.equal(workflow.on.pull_request_target,undefined);
+ assert.deepEqual(workflow.permissions,{contents:'read'});
+ assert.equal(workflow.env.EDITORIAL_RELEASE_ENABLED,'false');
+ assert.equal(workflow.env.HERMES_RSS_NOTIFY_ENABLED,'false');
+ assert.deepEqual(Object.keys(workflow.jobs),['validate']);
+ assert.equal(workflow.jobs.validate.environment,undefined);
+ const checkout=workflow.jobs.validate.steps.find((step:any)=>step.uses?.startsWith('actions/checkout@'));
+ assert.equal(checkout.with['persist-credentials'],false);
+ const run=workflow.jobs.validate.steps.map((step:any)=>step.run??'').join('\n');
+ for(const command of ['pnpm test','pnpm check','pnpm build','pnpm editorial:rehearse'])assert.ok(run.includes(command));
+ assert.doesNotMatch(JSON.stringify(workflow),/secrets\.|deploy-pages@|wrangler|git push|--live/);
+});
