@@ -19,6 +19,6 @@
 
 ## 7. Read-only Actions Secret acceptance
 - [x] 7.1 Implement Read-only Actions Secret acceptance with manual mode, exact revision and disabled-flag preflight, scoped read-only App checks and publication-job exclusion; verify RED/GREEN workflow and shell acceptance tests, full local gates and CI.
-- [ ] 7.2 Perform Read-only Actions Secret acceptance after owner approval of temporary feature-branch environment access; verify exact run, revoked token, main-only restoration and disabled production.
+- [x] 7.2 Perform Read-only Actions Secret acceptance after owner approval of temporary feature-branch environment access; verify exact run, revoked token, main-only restoration and disabled production.
 - [x] 7.3 Verify Reproducible isolated rehearsal against latest published source content with observed RED/GREEN, unchanged bodies/order and full gates.
-- [ ] 7.4 Fix Read-only Actions Secret acceptance for installation repository schema, prove local RED/GREEN and full gates/CI before a separately approved retry.
+- [x] 7.4 Fix Read-only Actions Secret acceptance for installation repository schema, prove local RED/GREEN and full gates/CI before a separately approved retry.

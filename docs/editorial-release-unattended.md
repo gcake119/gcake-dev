@@ -98,3 +98,13 @@ GitHub installation repositories 官方回應不保證 user-style permissions �
 API 格式修正後完整本機：282 Node／31 Python 通過，check 153 檔零錯誤／警告／提示、build:all、兩套隔離演練、Spectra validate 通過。actionlint 原生平行 ShellCheck 在本機掛起，改用只序列化呼叫的暫存 wrapper（仍同一 ShellCheck binary／完整參數與 script），所有 workflow 完整檢查 exit 0；不略過 shell 檢查。正式內容／DB 沒有寫入、Pages 沒有部署，Telegram 呼叫零。
 
 擁有者另核准 45e0282 的單次重驗，run 38163326113 的 preflight／token mint 通過，但 permission metadata 未提供 pull=true，仍在代理的判讀條件失敗；不能推定 Secret 或 token 失效，也沒有取得完整內容 GET 證據。撤銷步驟 success，policy 62710931 立即移除，main-only 已確認。進一步修正不要求 pull 欄位：可選 metadata 只作拒絕明顯寫入值的附加護欄；唯讀權限來源是 pinned 官方 action 的明確 token 建立請求，測試嚴格限制 permission-* 只能為 permission-contents:read。保留 App／installation／唯一 repo／固定內容 GET／正式 gate／精確 SHA 驗證。mock 包含無 permissions 與 contents:read／metadata:read 格式，不宣稱已保留真實回應形狀。這兩次是有限供應商驗收，不是新文章發布；各單次授權均已消耗，未自行重跑。
+
+## 最新結論：唯讀 Secret 接法通過
+
+擁有者另行核准精確 `3a51b9f53dd567df712d2bcc7307a8a9ec96f0bc` 的單次驗收。[run 38163808235](https://github.com/gcake119/gcake-dev/actions/runs/38163808235) completed success：無 Secret preflight、停用旗標複查、限定 Contents read token 建立、App／installation／唯一 repo 核對與固定 package.json GET 均通過；post token revocation success。prepare／build／deploy／confirm 全 skipped，沒有文章、D1、Pages 或 Telegram 寫入。
+
+驗收結束立即移除臨時 policy `62711458`，API 與 Computer Use 確認 editorial-release 只剩 main policy `62703748`。Repository EDITORIAL_RELEASE_ENABLED=false、RELEASE_AUTOMATION_ENABLED=false；CMS 重新載入顯示「正式發布尚未啟用」。PR ＃7 保持 OPEN、不合併。前述「尚待 Secret 重驗」為歷史紀錄，由本段結果取代；沒有授權新一輪驗收或正式啟用。
+
+這證明 environment 私鑰可建立預期 App 的限定讀取 token，並完成實際內容讀取，不代表 Actions protected-main 寫入或正式 prepare→deploy→confirm 通過。RELEASE_AUTOMATION_SECRET／D1 正式接法未由此次驗收測試；私鑰本身仍可 mint 安裝範圍內的寫入 token。建議 D1 作單一佇列尚未完成遷移，正式運作仍需對齊兩套佇列語意、公開版本／競爭／停止／恢復演練、內容與畫面簽核，以及 Hermes 自動 dry-run 紀錄；真實私人 Telegram 收訊需另行授權。
+
+此次受驗程式的完整本機 282 Node／31 Python、check、build:all、兩套隔離演練、workflow 與 Spectra 驗證已通過，精確 3a51b9f 的三個 CI 均成功。本次驗收後只更新證據與 task 狀態，不修改程式、workflow、正文或章序。
