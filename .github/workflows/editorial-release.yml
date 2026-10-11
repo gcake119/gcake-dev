@@ -1,0 +1,30 @@
+name: Editorial release queue
+on:
+  schedule:
+    - cron: '0 23 * * 0,3'
+    - cron: '7 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: editorial-release-queue
+  cancel-in-progress: false
+jobs:
+  release:
+    if: vars.RELEASE_AUTOMATION_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    environment: editorial-release
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.17.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - name: Request fenced release and public verification
+        env:
+          RELEASE_WORKER_URL: ${{ vars.RELEASE_WORKER_URL }}
+          RELEASE_AUTOMATION_SECRET: ${{ secrets.RELEASE_AUTOMATION_SECRET }}
+        run: node --import tsx scripts/publishing/release-orchestrate.ts
