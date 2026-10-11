@@ -12,3 +12,6 @@ dist/
 # Local browser QA artifacts
 .playwright-cli/
 openspec/.vector-search.db*
+
+# Local cross-platform publishing handoff
+.distribution-handoff/
