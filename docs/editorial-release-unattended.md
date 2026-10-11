@@ -66,3 +66,5 @@ hermes 帳號、Python `/Users/hermes/.hermes/hermes-agent/venv/bin/python3` 3.1
 整合 RED：10 項中 4 項失敗，涵蓋人工 Pages 觸發、非法日期、非法保留時段及既有 active series；修正後 10 項通過。另以 foundation 整合檢查修復新增 job 的 main 限制，保留全部部署 job 都不能在其他分支執行。完整驗證與精確候選 CI 結果見 PR 說明。受控 CMS／App 寫入驗收只使用可回復的驗收草稿／標記，不使用六篇正文，不設定 published，不觸發 Pages 或 Telegram。
 
 同步後完整本機：272 項 Node 測試執行及 31 項 Python 全部通過，check 152 檔零錯誤／警告／提示，build:all（Astro＋全部 workspace）、editorial:rehearse、release:dry-run、Worker production deploy --dry-run、actionlint 與兩份 active Spectra validate 通過。隔離演練六篇正文／閱讀順序保持，真實 Telegram 呼叫零；以上不代表正式部署或供應商寫入驗收。
+
+CMS 真實 protected-main 寫入已驗收：Computer Use 新增 draft cms-write-acceptance-20261012，CMS bot commit 9dde9ab57f3260864c5f1767c2a58a764456ca3e 僅新增草稿。擁有者親自完成瀏覽器刪除確認；CMS bot commit 6204d60620120e885e1aa0d633f35bd42a346040 僅移除草稿。GitHub compare 與驗收前 f9e8d461 的檔案差異為空，六篇正文及章序保持；未觸發本次正式 Pages 部署。App 私鑰驗收仍待擁有者執行；代理提供本機固定 docs/acceptance 標記的單次操作工具，語法、無寫入 plan 及 synthetic API 全流程通過，尚未 mint 真實 token。工具不是正式佇列介面，不修改其啟用開關，不可用於文章發佈；結果未知時停止並保留 receipt，不重跑。
