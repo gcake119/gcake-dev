@@ -34,3 +34,7 @@ D1 Pages 部署前以唯讀 token 再核對 main SHA；這不能提供跨 GitHub
 - 查核 Hermes hourly dry-run 的自動執行紀錄、帳號／腳本權限；私人 Telegram 收訊須另外明確授權。
 
 PR 維持未合併；EDITORIAL_RELEASE_ENABLED=false、RELEASE_AUTOMATION_ENABLED=false，editorial-release environment 維持 main-only，正式 Worker RELEASE_WRITE_ENABLED=false，Telegram 正式推播維持停用。
+
+## 候選 CI 證據
+
+完整功能候選 `c737d4685fefb7b997b2fecacab7d19b4002d610` 的三個 CI 均 completed success：[editorial push](https://github.com/gcake119/gcake-dev/actions/runs/38167121681)、[editorial PR](https://github.com/gcake119/gcake-dev/actions/runs/38167124534)、[PR validation](https://github.com/gcake119/gcake-dev/actions/runs/38167124537)。後續只補上此結果與 task 完成記錄，沒有修改受驗程式。

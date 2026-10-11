@@ -27,4 +27,4 @@
 - [x] 8.1 Align continuous readiness/history, complete membership, active-series reconciliation and latest due slots using observable D1 acceptance RED/GREEN tests. Preserve commitments and six bodies/order.
 - [x] 8.2 Persist and verify expected publication source SHA before Git write; reject stale public source and changed/missing pending Git content with RED/GREEN delivery tests.
 - [x] 8.3 Retire callable Git journal writer and Actions write jobs, block legacy journal evidence, and move isolated static/Hermes rehearsal to D1 with RED/GREEN integration coverage.
-- [ ] 8.4 Complete full local tests/check/build/rehearsals/workflow/Worker dry-run/security review, document remaining provider gates, split functional commits, push PR 7 and confirm exact-head CI while production remains disabled.
+- [x] 8.4 Complete full local tests/check/build/rehearsals/workflow/Worker dry-run/security review, document remaining provider gates, split functional commits, push PR 7 and confirm exact-head CI while production remains disabled.
