@@ -1,16 +1,16 @@
 # PR ＃7：無人值守準備與驗收
 
-2026／10／12。擁有者沒有協作者，要求推進無人值守方案；這不是正式啟用授權。PR 不合併、正式 Pages 候選不部署、兩個正式開關不啟用。專用 App 接法已加入候選，實際 App 安裝／授權、main 保護／environment 修改與真實寫入尚未執行。決策來源為 `integrate-editorial-release` 的 Unattended release preparation；repo 沒有 docs/decisions 索引，使用現有 Spectra 決策，不另建平行追蹤。
+2026／10／12。擁有者沒有協作者，要求推進無人值守方案；這不是正式啟用授權。PR 不合併、正式 Pages 候選不部署、兩個正式開關不啟用。擁有者已授權透過 Computer Use 建立私人專用 App，並選擇保留 CMS 直接儲存方案。已建立 gcake-editorial-release（App ID 5276010）、main-only editorial-release 環境及 active main integrity；私鑰、限定安裝與 main review 尚待完成。真實寫入尚未執行。決策來源為 `integrate-editorial-release` 的 Unattended release preparation；repo 沒有 docs/decisions 索引，使用現有 Spectra 決策，不另建平行追蹤。
 
 ## 一次設定、後續不逐次核准
 
 1. `editorial-release` 只允許 Branch `main`，沒有 required reviewer、wait timer 或自訂核准規則。先保持 `EDITORIAL_RELEASE_ENABLED` repository variable 未設定／false。移除 reviewer 是正式運作策略變更，不在此次代做。
-2. 建立**專用** GitHub App，只安裝到 `gcake119/gcake-dev`，Repository Contents：read/write、Metadata：read。不要共用 CMS App，不給 Workflows、Administration、Actions、Secrets 或其他額外寫入權限。選 private App／僅自己可安裝、關閉未使用的 webhook，不需要 user OAuth。註冊 App、產生／存入私鑰及授權必須由擁有者完成；不把私鑰貼給代理。
+2. 建立**專用** GitHub App，只安裝到 `gcake119/gcake-dev`，Repository Contents：read/write、Metadata：read。不要共用 CMS App，不給 Workflows、Administration、Actions、Secrets 或其他額外寫入權限。選 private App／僅自己可安裝、關閉未使用的 webhook，不需要 user OAuth。代理可在擁有者確認後註冊與限定安裝；私鑰產生與存入由擁有者親自操作，不把私鑰貼給代理。
 3. Repository variables：`EDITORIAL_APP_CLIENT_ID`（App Client ID，不是數字 App ID）、`EDITORIAL_APP_SLUG`（網址中的 slug，供唯讀盤點）。只有 `editorial-release` environment secret 放 `EDITORIAL_APP_PRIVATE_KEY`。不要放 repository secret、Git、Telegram 或 Hermes 提示詞。App 私鑰可以 mint 安裝權限範圍的 token，不等同短期 token；它是持久敏感憑證。
 4. 建立兩組**active branch ruleset**，target 精確 `refs/heads/main`，沒有排除條件：
    - main integrity：Block force pushes、Restrict deletions，bypass list 為空。專用 App 也不能 bypass 這組。
-   - main review：Require a pull request、Require status checks（`validate`，選 GitHub Actions 作為來源）。只列專用 App，bypass mode 為 Always，以允許既有原子 release commit 直接推 main；不要加入 repository role、所有 App 或其他廣泛 bypass。要求真人 approval 不適合目前無協作者的本人 PR，普通 PR 仍須完整 CI 與本人合併。
-5. 確認其他 inherited rules／classic protection 不會衝突。CMS 既有直接寫 main 的接法也會受 main review 阻擋：不可偷偷給 CMS 廣泛 bypass。首次正式切換前必須核對並決定 CMS 改為 PR 或另行審查其專用例外；目前沒有代改 CMS 寫入流程。
+   - main review：Require a pull request、Require status checks（`validate`，選 GitHub Actions 作為來源）。只列 gcake-editorial-release 與既有 gcake-publishing-cms-2026（App ID 5109954），bypass mode 均為 Always；不要加入 repository role、其他 App 或其他廣泛 bypass。兩個 App 會同時略過此組 PR 與 CI 要求，但均不能略過 main integrity。要求真人 approval 不適合目前無協作者的本人 PR，普通 PR 仍須完整 CI 與本人合併。
+5. CMS 相容性：擁有者選擇保留直接儲存，不修改 CMS 寫入流程。程式建立單一 commit 並以 non-force PATCH 推進 default branch main；production 與 preview 使用相同 App ID 5109954／installation 165836027。GitHub 安裝畫面已確認僅 gcake-dev、Contents read/write、Actions／Metadata read。此例外無法由 GitHub 限到文章路徑；真實受保護 main 的 CMS 寫入仍待受控驗收。也須確認其他 inherited rules／classic protection 不會衝突。
 6. Actions 中只有 prepare／confirm mint 短期 App token，限目前 repository 與 contents write；內建 GITHUB_TOKEN 全部只讀 content。checkout 不保存憑證，依賴安裝、完整 pnpm test／pnpm check（測試旗標強制 false）通過後才 mint token；token 不繼承到 Git 讀取／commit 或公開頁面驗證子程序，只有 release CLI 的 push 子程序收到臨時 HTTP header；push 介面另檢查啟用旗標、main 與所有 push URL，不傳到 build、Hermes 或 Telegram，沒有 GITHUB_TOKEN fallback。App token 使用官方 v3 action，pin `bcd2ba49218906704ab6c1aa796996da409d3eb1`，正常 job 結束預設撤銷。
 
 App 的 contents write 是 repository 級權限，不能由 GitHub 限到文章／journal 路徑。程式路徑白名單只能限制正常 writer；私鑰或可信 main 程式遭改動仍可能修改其他內容。接受此風險或另行採用保護機制是正式授權前提。App commit 保留 `[skip ci]`，避免其 push 再啟動部署／CI，當次 prepare→build→deploy→confirm 及 scheduled/manual recovery 接續處理；不能把人寫 PR 的 CI 當作新 release commit 已跑過 CI。[GitHub token 事件說明](https://docs.github.com/en/actions/concepts/security/github_token)、[App token action](https://github.com/actions/create-github-app-token)、[跳過 workflow](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs)。
@@ -24,6 +24,8 @@ pnpm editorial:unattended:check
 ```
 
 自動讀取所有 API 分頁，只用 gh api GET 讀 environment、branch policies、repository variables、environment secret **名稱**、rulesets 與公開 App metadata；不讀私鑰、不 mint token、不改 GitHub 設定、不發文／推播。配置缺項／無讀取權限退出 1。配置齊全退出 0 只代表 `configurationReady`，`activationReady` 永遠為 false，列出供應商／人工驗收項目。工具不驗證 App installation 的 repo selection、私鑰有效性、真實 protected-main push、其他保護相容性或 CI 來源；這些仍需受控供應商驗收。盤點採保守的精確 main 規則，不宣稱能分析所有 glob/inherited 組合。
+
+私人 App 的 metadata 可能對目前 gh owner session 回傳 HTTP 404，既有 CMS App 已實際遇到此情況。工具將 metadata 視為缺失，繼續列出其他設定並退出 1；不能為了得到綠燈改成公開 App、使用不明身份或自行 mint token。App 識別／權限須另保留 owner UI 驗收證據，CLI 未就緒不等同 UI 設定錯誤。
 
 ## 停止與恢復
 
@@ -52,3 +54,5 @@ hermes 帳號、Python `/Users/hermes/.hermes/hermes-agent/venv/bin/python3` 3.1
 新行為先觀察失敗再修正：App push 憑證／目的地／錯誤保密、子程序 token 隔離、push URL override、直接介面的正式開關與 main、token mint 前完整來源驗證、配置未就緒及跨頁正式旗標。模擬 git／gh 的測試不 mint 真實 token、不對 GitHub 寫入。完整本機 219 項 Node、27 項 Python 通過；check 133 檔零錯誤／警告／提示、build 32 頁、actionlint、Spectra validate 及隔離部署演練通過。六篇正文／章序不變，真實 Telegram 呼叫零。Spectra analyze 僅保留原有四項已完成 task 名稱 coverage 警告，沒有新增一致性／歧義／缺口問題。
 
 實際 gh 唯讀盤點：production disabled 通過，environment／App 身份／main rulesets 六項尚未通過，退出 1 為預期未就緒，不是測試失敗。後續精確 commit 與 CI 以 PR 說明為準。
+
+後續 CMS 相容性補強：先觀察兩個新測試失敗，再修正精確雙 App 例外；完整本機 222 項 Node、27 項 Python 通過，check 133 檔零錯誤／警告／提示，build 32 頁，Spectra validate 通過。沙箱首次禁止 loopback 監聽而造成整合測試環境失敗；允許本機模擬伺服器後完整測試成功，不是真實 Telegram 測試。唯讀 provider 盤點確認正式停用、環境無逐次人工核准、僅 Branch main、禁止強推／刪除四項通過；私鑰／安裝、main review 與私人 App metadata 仍不完整。

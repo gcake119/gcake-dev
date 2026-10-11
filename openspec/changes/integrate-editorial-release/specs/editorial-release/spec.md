@@ -112,3 +112,11 @@ The system SHALL support release writes using a dedicated repository-scoped GitH
 - **GIVEN** configuration requirements have been satisfied
 - **WHEN** the audit completes
 - **THEN** provider-write, Pages, content and Telegram acceptance remain explicit separate gates, and production remains disabled
+#### Scenario: Preserve the approved CMS save workflow
+- **GIVEN** the owner approved retaining direct CMS saves and a separate editorial release App
+- **WHEN** the main protection configuration is inspected
+- **THEN** only the identified CMS App and editorial App may bypass the PR and CI rule, while neither may bypass force-push or branch-deletion protection
+#### Scenario: Missing or additional writer exceptions
+- **GIVEN** either approved App exception is missing, an App identity differs, or another actor has a bypass
+- **WHEN** the main protection configuration is inspected
+- **THEN** configuration is reported incomplete and production stays disabled

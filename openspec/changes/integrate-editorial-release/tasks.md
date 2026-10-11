@@ -15,3 +15,4 @@
 ## 6. Unattended release preparation
 - [x] 6.1 Test-first Unattended release preparation: missing token/wrong remote cause no authenticated push, credentials stay out of Git config/arguments, App writer scopes remain constrained; verify editorial tests and workflow validation.
 - [x] 6.2 Provide read-only Unattended release preparation audit and owner App/ruleset/stop instructions; verify simulated gh responses, actual disabled configuration and full local gates before pushing PR updates. Provider/human acceptance stays incomplete.
+- [x] 6.3 Unattended release preparation: preserve the owner-approved CMS direct-save exception with failing acceptance tests, reject missing/extra identities and integrity bypass, retain unavailable private metadata as incomplete, and run full local verification before pushing. Provider installation/key/review rules remain pending.

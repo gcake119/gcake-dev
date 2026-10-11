@@ -10,12 +10,35 @@ function configured():Configuration{return {
  variables:{variables:[{name:'EDITORIAL_APP_CLIENT_ID',value:'Iv1.synthetic'},{name:'EDITORIAL_APP_SLUG',value:'editorial-test'}]},
  secrets:{secrets:[{name:'EDITORIAL_APP_PRIVATE_KEY'}]},
  app:{id:123,client_id:'Iv1.synthetic',permissions:{contents:'write',metadata:'read'}},
+ cmsApp:{id:5109954,slug:'gcake-publishing-cms-2026',permissions:{contents:'write',metadata:'read',actions:'read'}},
  rulesets:[
  {target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/main'],exclude:[]}},bypass_actors:[],rules:[{type:'non_fast_forward'},{type:'deletion'}]},
- {target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/main'],exclude:[]}},bypass_actors:[{actor_type:'Integration',actor_id:123,bypass_mode:'always'}],rules:[{type:'pull_request'},{type:'required_status_checks',parameters:{required_status_checks:[{context:'validate'}]}}]}
+ {target:'branch',enforcement:'active',conditions:{ref_name:{include:['refs/heads/main'],exclude:[]}},bypass_actors:[{actor_type:'Integration',actor_id:123,bypass_mode:'always'},{actor_type:'Integration',actor_id:5109954,bypass_mode:'always'}],rules:[{type:'pull_request'},{type:'required_status_checks',parameters:{required_status_checks:[{context:'validate'}]}}]}
  ]};}
 test('configured unattended policy is reported separately from production acceptance',()=>{
  const report=inspectConfiguration(configured());assert.equal(report.configurationReady,true);assert.equal(report.activationReady,false);
+});
+function cmsCompatible():Configuration {
+ return configured();
+}
+test('approved CMS and dedicated release exceptions preserve configuration without activation',()=>{
+ const report=inspectConfiguration(cmsCompatible());
+ assert.equal(report.configurationReady,true);assert.equal(report.activationReady,false);
+});
+test('CMS compatibility requires both named identities and rejects extra exceptions',()=>{
+ for(const change of [
+  (c:any)=>c.rulesets[1].bypass_actors.pop(),
+  (c:any)=>c.cmsApp.id=42,
+  (c:any)=>c.cmsApp.permissions.administration='write',
+  (c:any)=>c.rulesets[1].bypass_actors.push({actor_type:'Integration',actor_id:42,bypass_mode:'always'}),
+  (c:any)=>c.rulesets[1].bypass_actors[1].bypass_mode='pull_request',
+  (c:any)=>c.rulesets[0].bypass_actors.push(c.rulesets[1].bypass_actors[1])
+ ]){const c=cmsCompatible();change(c);assert.equal(inspectConfiguration(c).configurationReady,false);}
+});
+test('private App metadata unavailable to owner CLI remains incomplete',()=>{
+ const c=cmsCompatible();c.app=null;c.cmsApp=null;
+ const report=inspectConfiguration(c);
+ assert.equal(report.configurationReady,false);assert.equal(report.activationReady,false);
 });
 test('missing environment, credentials or main protection cannot be called ready',()=>{
  const report=inspectConfiguration({environment:null,variables:{variables:[]},secrets:null,rulesets:[],app:null});
