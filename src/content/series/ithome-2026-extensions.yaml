@@ -26,7 +26,7 @@ sections:
         status: ready
         workingTitle: 當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？
       - slug: ithome-2026-publishing-in-production
-        status: published
+        status: ready
         workingTitle: 正式開賽後，我怎麼知道自動發文真的完成了？
       - slug: ithome-2026-template-hardening
         status: ready
