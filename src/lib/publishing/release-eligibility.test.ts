@@ -45,6 +45,6 @@ test('duplicate cross-series reference fails closed', () => {
     [{ slug:'a',status:'ready',readyAt:time }],
     [{ slug:'first',sections:[{posts:[{slug:'a',status:'ready'}]}]},{slug:'second',sections:[{posts:[{slug:'a',status:'ready'}]}]}],
   );
-  assert.equal(r.blockedSeries.length,1);
-  assert.equal(r.blockedSeries[0]?.seriesSlug,'second');
+  assert.equal(r.blockedSeries.length,2);
+  assert.deepEqual(r.articles, []);
 });
