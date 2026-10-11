@@ -4,8 +4,8 @@ description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動
 status: active
 featured: true
 editorial:
-  currentPost: ithome-2026-publishing-in-production
-  nextPost: ithome-2026-template-hardening
+  currentPost: ithome-2026-template-hardening
+  nextPost: ithome-2026-tech-blog-boundary
 source:
   type: local
 canonical:
@@ -29,8 +29,8 @@ sections:
         status: ready
         workingTitle: 正式開賽後，我怎麼知道自動發文真的完成了？
       - slug: ithome-2026-template-hardening
-        status: planned
-        workingTitle: 一開始就做成模板，正式使用後為什麼還要一直補
+        status: ready
+        workingTitle: 從「可以 fork」到「真的能接手」，模板還缺哪些東西？
       - slug: ithome-2026-tech-blog-boundary
         status: planned
         workingTitle: 鐵人賽網站已有延伸閱讀，為什麼還要另外做技術部落格
