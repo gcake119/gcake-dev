@@ -218,7 +218,10 @@ export class ReleaseQueue {
           const a = eligible.articles.find((x) => x.slug === p.slug);
           const r = releases.find((x) => x.slug === p.slug && !x.unlockedAt);
           const membership = snapshot.series.find((x) => x.sections.some((s) => s.posts.some((x) => x.slug === p.slug)));
-          const why = reason(p.slug, membership?.slug) ?? (!a && p.status === 'ready' ? 'INCOMPLETE_SERIES' : undefined);
+          const candidateReason = reason(p.slug, membership?.slug) ?? (!a && p.status === 'ready' ? 'INCOMPLETE_SERIES' : undefined);
+          // A retained public release is complete, not a legacy-date candidate awaiting adoption.
+          const why = p.status === 'published' && r?.state === 'verified-public' && candidateReason === 'LEGACY_SCHEDULE_REQUIRES_ADOPTION'
+            ? undefined : candidateReason;
           return {
             slug: p.slug,
             title: p.title,

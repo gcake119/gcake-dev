@@ -501,3 +501,70 @@ test('manual publication cannot treat a legacy published intent as a publicly ve
   await assert.rejects(()=>s.queue.previewManual(snap,'p1'),/MANUAL_PREDECESSOR_NOT_PUBLIC/);
   assert.equal((await s.store.read()).data.releases.length,0);
 });
+
+test('verified published chapter has no legacy attention warning and viewing preserves records and next slot', async () => {
+  for (const mode of ['manual', 'scheduled'] as const) {
+    const s = setup(); s.time('2026-10-12T03:56:38Z'); const snap = snapshot();
+    let record;
+    if (mode === 'manual') {
+      const preview = await s.queue.previewManual(snap, 'p0');
+      record = (await s.queue.acquireManual(snap, 'p0', preview.version, preview.revision, 'owner', true)).record;
+    } else {
+      s.time('2026-10-11T10:00:00Z'); await s.queue.ingest(snap);
+      s.time('2026-10-11T23:05:00Z'); record = (await s.queue.acquire(snap, true))!;
+    }
+    s.time('2026-10-12T03:56:38Z');
+    await s.queue.record(record.id, record.lease, { state: 'verified-public', mode, verifiedAt: '2026-10-12T04:08:06Z', rssGuid: 'https://fixture.invalid/posts/p0/' }, 'public-confirmed');
+    snap.posts[0].status = 'published'; snap.posts[0].publishedAt = record.slot;
+    snap.series[0].sections[0].posts[0].status = 'published';
+    const before = await s.store.read();
+    const view = await s.queue.view(snap);
+    const completed = view.items.find(p => p.slug === 'p0')!;
+    assert.equal(completed.state, 'verified-public');
+    assert.equal(completed.reason, undefined);
+    assert.equal(completed.estimatedAt, record.slot);
+    assert.equal(view.items.filter(p => p.reason || ['failed', 'verification-unknown'].includes(p.state)).length, 0);
+    assert.equal(view.plan[0].slug, 'p1');
+    assert.equal(view.plan[0].releaseAt, '2026-10-15T07:00:00+08:00');
+    assert.deepEqual(await s.store.read(), before);
+  }
+});
+
+test('legacy attention is retained for unresolved, unlocked or ready-again release records', async () => {
+  for (const variant of ['awaiting-verification', 'verification-unknown', 'failed', 'unlocked', 'ready-again'] as const) {
+    const s = setup(); s.time('2026-10-12T03:56:38Z'); const snap = snapshot();
+    const preview = await s.queue.previewManual(snap, 'p0');
+    const intent = await s.queue.acquireManual(snap, 'p0', preview.version, preview.revision, 'owner', true);
+    await s.queue.record(intent.record.id, intent.record.lease, {
+      state: ['unlocked', 'ready-again'].includes(variant) ? 'verified-public' : variant as 'awaiting-verification' | 'verification-unknown' | 'failed',
+      error: 'fixture-reconcile', ...(variant === 'unlocked' ? { unlockedAt: '2026-10-12T04:00:00Z' } : {}),
+    }, 'fixture-state');
+    const status = variant === 'ready-again' ? 'ready' : 'published';
+    snap.posts[0].status = status;
+    snap.posts[0].publishedAt = intent.record.slot;
+    snap.series[0].sections[0].posts[0].status = status;
+    const before = await s.store.read();
+    const view = await s.queue.view(snap);
+    assert.equal(view.items.find(p => p.slug === 'p0')?.reason, 'LEGACY_SCHEDULE_REQUIRES_ADOPTION', variant);
+    assert.equal(view.releases[0].error, 'fixture-reconcile');
+    assert.deepEqual(await s.store.read(), before);
+  }
+});
+
+test('verified-public does not hide unrelated pause or missed fixed-slot reasons', async () => {
+  for (const reason of ['PAUSED', 'MISSED_FIXED_SLOT']) {
+    const s = setup(); s.time('2026-10-12T03:56:38Z'); const snap = snapshot();
+    const preview = await s.queue.previewManual(snap, 'p0');
+    const intent = await s.queue.acquireManual(snap, 'p0', preview.version, preview.revision, 'owner', true);
+    await s.queue.record(intent.record.id, intent.record.lease, { state: 'verified-public' }, 'public-confirmed');
+    snap.posts[0].status = 'published'; snap.posts[0].publishedAt = intent.record.slot;
+    snap.series[0].sections[0].posts[0].status = 'published';
+    const local = await s.store.read();
+    if (reason === 'PAUSED') local.data.paused.push('post:p0');
+    else local.data.overrides.p0 = '2026-10-08T07:00:00+08:00';
+    await s.store.write(local);
+    const before = await s.store.read();
+    assert.equal((await s.queue.view(snap)).items.find(p => p.slug === 'p0')?.reason, reason);
+    assert.deepEqual(await s.store.read(), before);
+  }
+});
