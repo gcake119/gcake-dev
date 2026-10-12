@@ -178,7 +178,11 @@ export class GitHubAppReadClient {
     if (!response.ok) throw new Error(`GITHUB_API_FAILED: GitHub returned HTTP ${response.status}`);
     return response.json();
   }
-  async getRepository(): Promise<GitHubRepository> {
+  private repositoryRead?: Promise<GitHubRepository>;
+  private treeReads=new Map<string,Promise<GitTreeEntry[]>>();
+  private blobReads=new Map<string,Promise<string>>();
+  async getRepository():Promise<GitHubRepository> {return this.repositoryRead??=this.readRepository();}
+  private async readRepository(): Promise<GitHubRepository> {
     const value = (await this.#get(repositoryPath)) as {
       full_name?: unknown;
       default_branch?: unknown;
@@ -203,24 +207,29 @@ export class GitHubAppReadClient {
     if (typeof commitSha !== 'string' || typeof treeSha !== 'string') {
       throw new Error('GITHUB_API_FAILED: Unexpected branch response');
     }
-    const tree = (await this.#get(`${repositoryPath}/git/trees/${treeSha}?recursive=1`)) as { tree?: unknown; truncated?: boolean };
-    if (tree.truncated || !Array.isArray(tree.tree)) throw new Error('GITHUB_API_FAILED: Unexpected tree response');
-    const entries = tree.tree.filter((entry): entry is GitTreeEntry => {
-      if (!entry || typeof entry !== 'object') return false;
-      const value = entry as Record<string, unknown>;
-      return typeof value.path === 'string' && typeof value.type === 'string' && typeof value.sha === 'string';
-    });
-    return { commitSha, tree: entries };
-  }
-  async #readBlob(sha: string): Promise<string> {
-    const blob = (await this.#get(`${repositoryPath}/git/blobs/${sha}`)) as {
-      content?: unknown;
-      encoding?: unknown;
-    };
-    if (blob.encoding !== 'base64' || typeof blob.content !== 'string') {
-      throw new Error('GITHUB_API_FAILED: Unexpected blob response');
+    let treeRead=this.treeReads.get(treeSha);
+    if(!treeRead) {
+      treeRead=(async()=> {
+        const tree=await this.#get(`${repositoryPath}/git/trees/${treeSha}?recursive=1`) as {tree?:unknown;truncated?:boolean};
+        if(tree.truncated || !Array.isArray(tree.tree))throw new Error('GITHUB_API_FAILED: Unexpected tree response');
+        return tree.tree.filter((entry):entry is GitTreeEntry=> {
+          if(!entry || typeof entry!=='object')return false;const value=entry as Record<string,unknown>;
+          return typeof value.path==='string' && typeof value.type==='string' && typeof value.sha==='string';
+        });
+      })();this.treeReads.set(treeSha,treeRead);
     }
-    return decodeBase64(blob.content);
+    return {commitSha,tree:await treeRead};
+  }
+  async #readBlob(sha:string):Promise<string> {
+    let pending=this.blobReads.get(sha);
+    if(!pending) {
+      pending=(async()=> {
+        const blob=await this.#get(`${repositoryPath}/git/blobs/${sha}`) as {content?:unknown;encoding?:unknown};
+        if(blob.encoding!=='base64' || typeof blob.content!=='string')throw new Error('GITHUB_API_FAILED: Unexpected blob response');
+        return decodeBase64(blob.content);
+      })();this.blobReads.set(sha,pending);
+    }
+    return pending;
   }
   async #seriesMemberships(snapshot: RepositorySnapshot): Promise<Map<string, SeriesMembership[]>> {
     const memberships = new Map<string, SeriesMembership[]>();
@@ -251,6 +260,67 @@ export class GitHubAppReadClient {
     );
     return memberships;
   }
+  private historyPaths: string[] = [];
+  private batchHistory = new Map<string, {date:string; parent?:string; files:Map<string,string|undefined>}>();
+  /** One read-only query returns 10 exact first-parent snapshots for all eligible files. */
+  private async historyBatch(sha:string) {
+    const fields=this.historyPaths.map((path,i)=>`f${i}: file(path:${JSON.stringify(path)}) { object { __typename ... on Blob { text } } }`).join(' ');
+    let selection='oid';
+    for(let i=0;i<10;i++) selection=`oid committedDate ${fields} parents(first:1) { nodes { ${selection} } }`;
+    const token=await this.#installationTokens.create();
+    const response=await this.#fetch('https://api.github.com/graphql',{
+      method:'POST',redirect:'error',signal:AbortSignal.timeout(20000),
+      headers:{authorization:`Bearer ${token}`,'content-type':'application/json','user-agent':'gcake-admin-worker'},
+      body:JSON.stringify({query:`query($oid:GitObjectID!) { repository(owner:"gcake119",name:"gcake-dev") { object(oid:$oid) { ... on Commit { ${selection} } } } }`,variables:{oid:sha}}),
+    });
+    if(!response.ok) throw new Error(`GITHUB_API_FAILED: GitHub returned HTTP ${response.status}`);
+    const reader=response.body?.getReader(); if(!reader) throw new Error('INVALID_READY_HISTORY');
+    const chunks:Uint8Array[]=[];let size=0;
+    for(;;) {const part=await reader.read();if(part.done)break;size+=part.value.length;
+      if(size>2*1024*1024) {await reader.cancel();throw new Error('READY_HISTORY_RESPONSE_LIMIT');} chunks.push(part.value);}
+    const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
+    const payload=JSON.parse(new TextDecoder().decode(bytes));
+    const absentFileError=(error:any)=> {
+      const path=error.path;
+      if(error.type!=='NOT_FOUND' || !Array.isArray(path) || path[0]!=='repository' || path[1]!=='object' ||
+        !this.historyPaths.some((_p,i)=>path.at(-1)===`f${i}`))return false;
+      const ancestry=path.slice(2,-1);
+      if(ancestry.length%3 || ancestry.some((part:any,i:number)=>part!==['parents','nodes',0][i%3]))return false;
+      return path.reduce((value:any,key:any)=>value?.[key],payload.data)===null;
+    };
+    if(!payload.data?.repository?.object || (payload.errors && (!Array.isArray(payload.errors) || !payload.errors.every(absentFileError))))
+      throw new Error('INVALID_READY_HISTORY');
+    let node=payload.data.repository.object;const pending=new Map<string,{date:string;parent?:string;files:Map<string,string|undefined>}>();
+    if(node.oid!==sha) throw new Error('INVALID_READY_HISTORY');
+    for(let i=0;node && i<10;i++) {
+      if(typeof node.oid!=='string' || !node.oid || pending.has(node.oid) || typeof node.committedDate!=='string' ||
+        !Number.isFinite(Date.parse(node.committedDate)) || !Array.isArray(node.parents?.nodes) || node.parents.nodes.length>1)
+        throw new Error('INVALID_READY_HISTORY');
+      const files=new Map<string,string|undefined>();
+      for(const [j,path] of this.historyPaths.entries()) {
+        if(!Object.hasOwn(node,`f${j}`)) throw new Error('INVALID_READY_HISTORY');
+        const file=node[`f${j}`];
+        if(file!==null && (file.object?.__typename!=='Blob' || typeof file.object.text!=='string')) throw new Error('INVALID_READY_HISTORY');
+        files.set(path,file?.object.text);
+      }
+      const parent=node.parents.nodes[0];
+      if(parent && (typeof parent.oid!=='string' || !parent.oid)) throw new Error('INVALID_READY_HISTORY');
+      pending.set(node.oid,{date:node.committedDate,parent:parent?.oid,files});node=parent;
+    }
+    // Partial/error payloads never populate the request cache.
+    for(const [key,value] of pending)this.batchHistory.set(key,value);
+  }
+  private async batchedReadiness(path:string,revision:string,eligible:(source:string)=>boolean):Promise<string> {
+    let since:string|undefined,sha:string|undefined=revision;const seen=new Set<string>();
+    for(let depth=0;sha && depth<1000;depth++) {
+      if(seen.has(sha))throw new Error('INVALID_READY_HISTORY');seen.add(sha);
+      if(!this.batchHistory.get(sha)?.files.has(path))await this.historyBatch(sha);
+      const entry:{date:string;parent?:string;files:Map<string,string|undefined>}=this.batchHistory.get(sha)!;const source=entry.files.get(path);
+      if(source===undefined || !eligible(source)) {if(since)return since;throw new Error('READY_TRANSITION_NOT_FOUND');}
+      since=entry.date;sha=entry.parent;
+    }
+    if(sha)throw new Error('READY_HISTORY_LIMIT');if(since)return since;throw new Error('READY_TRANSITION_NOT_FOUND');
+  }
   /** Request-scoped cache; snapshots never mix revisions or credentials across requests. */
   private historyCommits = new Map<string, Promise<{date:string;parent?:string}>>();
   private historyCommit(sha:string) {
@@ -271,6 +341,7 @@ export class GitHubAppReadClient {
   }
   /** Walk main's visible first-parent snapshots, not feature-branch path history. */
   private async continuousReadiness(path: string, revision: string, eligible: (source: string) => boolean): Promise<string> {
+    if(this.historyPaths.includes(path))return this.batchedReadiness(path,revision,eligible);
     let since:string|undefined;
     let sha:string|undefined=revision;
     const seen=new Set<string>();
@@ -366,6 +437,7 @@ export class GitHubAppReadClient {
         });
       }
     }
+    this.historyPaths=[...posts.filter(p=>p.status==='ready').map(p=>p.path),...series.filter(s=>!s.paused && !s.external && s.sections.flatMap(x=>x.posts).every(ref=>['ready','published'].includes(ref.status) && posts.some(p=>p.slug===ref.slug && p.status===ref.status))).map(s=>s.path)];
     return { revision: snapshot.commitSha, posts, series, firstReadyAt: (post) => this.firstReadyAt(post.path, snapshot.commitSha),
       firstSeriesReadyAt: (series) => this.firstSeriesReadyAt(series.path, snapshot.commitSha, series.sections.flatMap(s=>s.posts.map(p=>p.slug))) };
   }
