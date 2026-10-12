@@ -34,7 +34,8 @@
     "editorial:rehearse": "node --import tsx scripts/publishing/rehearse-editorial.ts",
     "distribution:inventory": "node --import tsx scripts/publishing/distribution-inventory.ts",
     "distribution:all-plan": "node --import tsx scripts/publishing/plan-all-distribution.ts",
-    "distribution:snapshot": "node --import tsx scripts/publishing/snapshot-distribution.ts"
+    "distribution:snapshot": "node --import tsx scripts/publishing/snapshot-distribution.ts",
+    "distribution:handoff": "node --import tsx scripts/publishing/distribution-handoff.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",

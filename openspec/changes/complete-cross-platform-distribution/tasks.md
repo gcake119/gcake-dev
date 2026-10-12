@@ -39,3 +39,8 @@
 ## 12. Approved Substack date precision
 - [x] 12.1 Verify Explicit Substack minute precision: prove default exact dates, approved minute dates, wrong-minute rejection and precision-bound approvals with RED/GREEN.
 - [x] 12.2 Complete same-ID live metadata recovery, anonymous verification and single-writer schedule handover.
+
+## 13. Scripted workflow
+- [ ] 13.1 Implement Scripted synchronization round with acceptance RED/GREEN for unchanged verification, rate-limit isolation, lock/pin failure, uncertain prepare blocking and owned cleanup.
+- [x] 13.2 Implement Scripted side-browser handoff with acceptance RED/GREEN for exact source/intent identity, expired/malformed evidence, complete observed body and exclusive replies.
+- [ ] 13.3 Run full local gates and a fresh real read-only scripted round; document one-command use and preserve the installed runtime.

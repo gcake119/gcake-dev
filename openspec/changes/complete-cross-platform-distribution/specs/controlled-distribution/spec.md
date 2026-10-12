@@ -237,3 +237,14 @@ The user-approved full-mirror policy SHALL permit Substack alone to display the 
 - **GIVEN** an interrupted date restoration on an existing public article
 - **WHEN** the approved minute policy finalizes the same durable attempt
 - **THEN** only that article is updated with email and App delivery disabled
+
+### Requirement: Scripted side-browser handoff
+A reusable command SHALL inspect an exact live request and submit complete observed evidence without exporting authentication or driving a background browser. It SHALL bind request identity, configured source commit, current source body, remote identity, expiry and matching durable write intent, prove Pages before each requested write, and create a reply exclusively with private permissions. Full text SHALL be compared directly; an expected body SHALL NOT be substituted for missing observed text. Existing zero email, App and scheduling constraints SHALL remain mandatory.
+#### Scenario: Valid saved draft
+- **GIVEN** an unexpired request matching the fixed source and durable intent
+- **WHEN** complete saved browser evidence is submitted
+- **THEN** one bound reply is saved and the original coordinator continues
+#### Scenario: Stale or incomplete evidence
+- **GIVEN** an expired request, changed source, wrong remote identity or incomplete observed body
+- **WHEN** a reply is submitted
+- **THEN** submission fails without a reply or repeated browser action

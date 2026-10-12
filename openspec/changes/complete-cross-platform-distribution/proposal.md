@@ -26,3 +26,6 @@ The user corrected the premature Pages publication and selected Pages-first unat
 
 ## Superseding all-article scope, 2026-10-12
 The latest user request extends Pages-first synchronization to every formal gcake-dev Markdown article, including first-time backfill and later revisions. Earlier single-article and repeated approval restrictions are superseded. Inventory every local Markdown/MDX candidate and external aggregate entry; report nonportable and non-authoritative sources without substituting summaries. Reuse existing platform services, D1 identity and side-browser exchange. No original deployment, PR merge, historical bulk publication or concurrent writer activation.
+
+## Scripted workflow continuation
+The user requested reusable scripts for the synchronization flow. Replace per-round temporary controller programs with one pinned round CLI and a source/intent-bound side-browser handoff CLI. Retain existing providers, D1 coordinator, zero notifications and current live runtime until the scripted candidate is validated.
