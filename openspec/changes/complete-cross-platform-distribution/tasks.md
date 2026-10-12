@@ -43,4 +43,4 @@
 ## 13. Scripted workflow
 - [x] 13.1 Implement Scripted synchronization round with acceptance RED/GREEN for unchanged verification, rate-limit isolation, lock/pin failure, uncertain prepare blocking and owned cleanup.
 - [x] 13.2 Implement Scripted side-browser handoff with acceptance RED/GREEN for exact source/intent identity, expired/malformed evidence, complete observed body and exclusive replies.
-- [ ] 13.3 Run full local gates and a fresh real read-only scripted round; document one-command use and preserve the installed runtime.
+- [x] 13.3 Run full local gates and a fresh real read-only scripted round; document one-command use and preserve the installed runtime.

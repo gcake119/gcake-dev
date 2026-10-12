@@ -1,3 +1,5 @@
+> 本腳本化 checkout 的新入口與目前切換程序請讀 `docs/distribution-scripted-runbook.md`。以下保留前版發布與日期驗收紀錄。
+
 
 ## 最新有效政策：2026／10／12 分鐘精度核准
 
