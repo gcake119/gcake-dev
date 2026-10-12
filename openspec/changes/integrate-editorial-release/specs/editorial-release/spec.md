@@ -195,3 +195,18 @@ Authenticated operators SHALL receive stable release failure categories and prov
 - **GIVEN** history cannot be safely resolved
 - **WHEN** the queue read stops
 - **THEN** the operator can distinguish history rejection from ordinary eligibility while no credential or raw private response is disclosed and no publication is performed
+
+### Requirement: Verified release attention
+The CMS SHALL distinguish completed public releases from unresolved candidate date commitments. Suppressing a completed article's old-date prompt SHALL preserve its actual publication time, release evidence, next chapter estimate and existing operational records.
+#### Scenario: Verified public chapter is not a legacy candidate
+- **GIVEN** a chapter is marked published and its retained release has been publicly verified
+- **WHEN** the owner views its queue and Needs attention tab
+- **THEN** it is absent from the old-date attention list, its verified timeline remains available, and the next chapter retains its original estimate without a new publication or record change
+#### Scenario: Real legacy date still needs adoption
+- **GIVEN** a ready article retains a legacy date without adoption or an override
+- **WHEN** the owner views Needs attention
+- **THEN** the old-date prompt remains visible and the article is not silently scheduled
+#### Scenario: Incomplete verification remains visible
+- **GIVEN** a published article has an awaiting, unknown, failed or unlocked release, or the article is ready again
+- **WHEN** the owner reviews the queue
+- **THEN** the repair does not hide its unresolved date warning or clear existing failure evidence
