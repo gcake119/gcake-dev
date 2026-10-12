@@ -269,7 +269,7 @@ export class GitHubAppReadClient {
     for(let i=0;i<10;i++) selection=`oid committedDate ${fields} parents(first:1) { nodes { ${selection} } }`;
     const token=await this.#installationTokens.create();
     const response=await this.#fetch('https://api.github.com/graphql',{
-      method:'POST',redirect:'error',signal:AbortSignal.timeout(20000),
+      method:'POST',redirect:'manual',signal:AbortSignal.timeout(20000),
       headers:{authorization:`Bearer ${token}`,'content-type':'application/json','user-agent':'gcake-admin-worker'},
       body:JSON.stringify({query:`query($oid:GitObjectID!) { repository(owner:"gcake119",name:"gcake-dev") { object(oid:$oid) { ... on Commit { ${selection} } } } }`,variables:{oid:sha}}),
     });
