@@ -50,3 +50,9 @@ Deployment observation safety: reverify SHALL attach manual Pages observation on
 ## Consolidation boundary — current PR 7 owner instruction
 
 D1 is the sole operational authority. The integrate-editorial-release extension aligns continuous main-visible readiness, active series, latest due slot, public source digest and retired Git journal behavior. It adds no current activation/merge/deploy authorization; historical activation evidence above does not override the present request to keep production disabled. Existing D1 records stay intact; missing digest and legacy journal need explicit reconciliation.
+
+## 2026-10-12 authorized activation and provider readiness repair
+
+The owner subsequently explicitly authorized PR 7 merge and production Worker deployment, followed by publication and existing private Hermes DM notifications after live baseline. PR 7 merged at 4a54cf211b16b4e475caa183136a92d2a8883936; D1 was backed up without modifying its records. GitHub automation remains disabled while production CMS readiness is repaired. This supersedes the previous disabled-only instruction for the authorized activation scope, not unresolved provider evidence.
+
+Production readiness queries use read-only GraphQL batches of ten exact first-parent snapshots for eligible paths. Request-local immutable blob/tree caches reduce repeated reads; the main branch is always refreshed. The existing 1000-commit semantic bound stays in effect. Partial payloads, non-file NOT_FOUND errors and oversized replies stop ingestion. Confirmed nullable historical file errors only terminate a previously observed ready period. No readiness timestamps are backfilled and no database is reset.
