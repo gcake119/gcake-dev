@@ -42,4 +42,14 @@ pnpm test:observability 會建置啟用／停用量測的真實 HTML，檢查全
 
 ## 2026-10-13 設定進度
 
-已建立 Cloudflare 網站資源、儲存 Beacon repository variable，並建立 Google URL Prefix 未驗證資源。程式碼已在隔離候選版本整合。正式部署、Google 驗證、Sitemap 提交、Cloudflare 收到流量及索引檢查仍待完成；以下進度以 Spectra change 的 tasks.md 為準。
+- [PR #22](https://github.com/gcake119/gcake-dev/pull/22) 已合併；[正式 Pages 部署](https://github.com/gcake119/gcake-dev/actions/runs/38289819202) 成功，版本為 ffb058c4c89418b83591ea47634ec03d9fb89033。
+- pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run 均通過，兩項必要 PR CI 也通過。
+- 正式首頁、新文章與舊系列文章均只載入一個官方 Beacon；腳本回傳 200，量測回傳端點成功回應 204。Cloudflare Dashboard 已觀察到 6 次測試瀏覽，包含首頁（3 次）、新文章（2 次）與舊系列 Day 30（1 次）。這些是設定驗證流量，不代表一般讀者人數。
+- Google URL Prefix 資源已透過 HTML 標記完成擁有權驗證；公開驗證值使用 repository variable，本文不記錄實際值。
+- Sitemap 已提交，報表仍顯示「無法擷取」。公開 XML 回傳 200、格式有效、含 10 個正式網址；Google 即時測試也已確認允許檢索且擷取成功。依成功擷取證據重提同一網址一次後仍待報表更新，不能宣稱 Sitemap 處理成功。
+- 首頁與新文章的 Google 索引查詢目前均為「Google 無法辨識的網址／未編入索引」。兩個網址的即時測試均已確認可編入索引、擷取成功且宣告 canonical 為各自的 gcake-dev 正式網址；Google 所選 canonical 尚待建立索引後判定。
+- 搜尋成效與索引報表目前顯示資料處理中。Google 官方說明指出，Sitemap 擷取失敗後會在數日內重試；待狀態改為成功再關閉最後的驗收項目，不持續重複提交。
+
+Sitemap 狀態說明與診斷流程：https://support.google.com/webmasters/answer/7451001
+
+詳細進度以 openspec/changes/add-website-observability/tasks.md 為準；尚未達成的第三方結果保持未完成。
