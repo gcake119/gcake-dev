@@ -1,6 +1,6 @@
 # Publishing CMS 長期排程操作與啟用清單
 
-狀態：程式可供本機驗收，正式發布停用。這份文件不是生產啟用授權。
+文件包含早期停用／啟用交接證據。現行連載排程已存在；2026-10-13 修補仍只完成本機實作，不構成新版推送或部署授權。下方歷史啟用清單不代表目前 gate 值。
 
 ## 日常操作
 
@@ -48,4 +48,15 @@ Actions editorial-release environment 僅允許 main。設定 RELEASE_WORKER_URL
 
 恢復：若 editorial workflow 的 build／deploy 失敗，先從該次 run 選擇 Re-run failed jobs，沿用成功 release job 的 SHA 輸出。不要重跑整個 workflow 來期待重新發文；每小時巡查不會再次部署舊 release。另一條既有人工 Pages workflow 需取得授權後使用，並確認它所建置的版本包含原發文提交。未知 Git 結果先查核，不重建 release identity。
 
-CMS 的自動部署觀察限制：目前 GitHub reader 只取得 manual deploy-pages 的觀察。reverify 僅接受與 release SHA 相符的觀察；editorial run 的部署成功／失敗請查看該次 Actions build／deploy job。不可把舊人工部署當成本次發文證據。CMS 的公開頁與 RSS 驗證仍独立執行；兩者成功才標記 verified-public，單靠 workflow 綠燈不代表已公開。
+歷史觀察限制（2026-10-13 本機修補前）：GitHub reader 只取得 manual deploy-pages 的觀察。reverify 僅接受與 release SHA 相符的觀察；editorial run 的部署成功／失敗請查看該次 Actions build／deploy job。不可把舊人工部署當成本次發文證據。CMS 的公開頁與 RSS 驗證仍独立執行；兩者成功才標記 verified-public，單靠 workflow 綠燈不代表已公開。
+
+
+## 2026-10-13 建置與 CMS 觀察修補（本機，尚未部署）
+
+既有兩個 editorial cron、時段、D1 身分與篇序保持不變。普通 Pages 的 push／minute-37 本機候選撤回為 legacy，仍只接受手動；自動連載部署由 editorial workflow 單一負責，不新增重複排程。兩条建置都先核對部落格已保存的 completed 30 篇與獨立固定 revision／逐篇雜湊 manifest；不完整或核對失敗立即停止，不能退回 main 舊 19 篇。操作與歷史工具邊界見 [文章排程](article-scheduling.md)。
+
+新版 reader 同時查核 editorial 與普通 Pages，使用 `Build publication <SHA>`／`Deploy publication <SHA>` 的實際 artifact 身分。普通手動 checkout 固定該次 main SHA，editorial checkout 固定 Worker 回傳 SHA。查核只關聯對應 release commit，略過空巡查及 Secret-only run；只有 deploy job 成功才報告 deployed。各 workflow 最近 100 次 main run 以外、舊版沒有 artifact 身分的 run 或 API 缺少證據時，保持未知，人工查核原 run，不推測身份。舊失敗 run 不具新版 job 身分，仍由 owner 從原 Actions run 明確復原；本機修補不自動遷移歷史證據。
+
+新版重試在原 actions-write 授權與 Worker retry gate 下，重新核對同一 SHA 的失敗 run，再呼叫 `rerun-failed-jobs`。較新的其他 run、成功或未能證實的 run 不會被重試；不呼叫 workflow dispatch 或新的文章提交。手動全 workflow rerun 仍應避免。GitHub API 合約參考：[workflow jobs](https://docs.github.com/en/rest/actions/workflow-jobs)、[failed-job recovery](https://docs.github.com/en/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)。
+
+本機測試以假 GitHub／saved-site 回應驗證，不使用正式 token、不調整 production gates、不查寫 D1、不推送或部署。公開頁的 canonical、文章 SHA-256、發布時間與 RSS GUID 仍須通過既有獨立驗證，才能標示 verified-public。推送前核對修補範圍；正式 rollout 另需確認現有 D1、gate 與 Worker／workflow 版本，不能把本機通過視為 Production 驗收。

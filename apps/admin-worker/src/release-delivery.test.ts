@@ -226,11 +226,11 @@ test('build failure retry reuses release id without writing article again', asyn
         applyPublication(s,input.files);
         return { commitSha: 'written', paths: [] };
       },
-      deployment: async () => ({
+      deployment: async (sha) => { assert.equal(sha,'written'); return ({
         state: 'failed',
         commitSha: 'written',
         startedAt: '2026-10-11T23:06:00Z',
-      }),
+      }); },
       retryDeployment: async () => {
         retries++;
       },
@@ -274,7 +274,7 @@ test('public reverify never associates an unrelated Pages deployment with this r
     const d=new ReleaseDelivery(queue,{
       snapshot:async()=>s,
       save:async input=>{applyPublication(s,input.files);return {commitSha:'written',paths:[]};},
-      deployment:async()=>({state:'deployed',commitSha:observedSha,startedAt:'2026-10-11T23:06:00Z'}),
+      deployment:async(sha)=>{assert.equal(sha,'written');return {state:'deployed',commitSha:observedSha,startedAt:'2026-10-11T23:06:00Z'};},
     },true,publicFetch(),base);
     const r=await d.execute();
     const checked=await d.reverify(r!.id);

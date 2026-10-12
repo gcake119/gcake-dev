@@ -9,7 +9,7 @@ test('manual Pages has no queue writer, even when legacy flag is true',async()=>
  const workflow=YAML.parse(await fs.readFile('.github/workflows/deploy-pages.yml','utf8'));
  assert.equal(workflow.jobs.prepare,undefined);assert.equal(workflow.jobs.confirm,undefined);
  assert.equal(workflow.permissions.contents,'read');assert.equal(workflow.concurrency.group,'pages');
- assert.equal(workflow.on.schedule,undefined);assert.equal(workflow.on.push,undefined);
+ assert.deepEqual(Object.keys(workflow.on),['workflow_dispatch']);
  for(const name of ['build','deploy']) {
   assert.match(workflow.jobs[name].if,/inputs.mode != 'secret-check'/);
   assert.match(workflow.jobs[name].if,/refs\/heads\/main/);

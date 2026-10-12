@@ -84,9 +84,9 @@ test('main pull requests receive full local gates without deployment authority',
 
 
 for (const name of ['deploy-admin-worker.yml', 'deploy-pages.yml']) {
-  test(`${name} deploys only by manual dispatch on main, never on merge or hourly passage`, async () => {
+  test(`${name} preserves its approved triggers and deploys only on main`, async () => {
     const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/' + name, import.meta.url), 'utf8'));
-    assert.deepEqual(Object.keys(workflow.on), ['workflow_dispatch'], name);
+    assert.deepEqual(Object.keys(workflow.on).sort(), ['workflow_dispatch'], name);
     for (const [name, job] of Object.entries(workflow.jobs) as [string, any][]) {
       if (name === 'secret-check' || name === 'secret-check-preflight') {
         assert.equal(workflow.permissions.contents, 'read');
@@ -122,6 +122,7 @@ test('editorial release deploys only newly committed revisions with isolated Pag
   assert.equal(checkout.with['persist-credentials'],false);
   assert.ok(workflow.jobs.build.steps.some((s:any)=>s.run==='pnpm install --frozen-lockfile'));
   assert.ok(workflow.jobs.build.steps.some((s:any)=>s.run==='pnpm build'));
+  assert.ok(workflow.jobs.build.steps.some((s:any)=>s.run==='pnpm content:restore:ithome'));
   assert.doesNotMatch(JSON.stringify(workflow.jobs.build),/content:sync|wrangler|--remote/);
   assert.deepEqual(workflow.permissions,{contents:'read'});
   assert.equal(workflow.jobs.release.permissions,undefined);
