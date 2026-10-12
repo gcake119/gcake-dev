@@ -17,6 +17,11 @@ export const site = {
   },
 } as const;
 
+export const subscriptionLinks = [
+  { kind: 'newsletter', label: '電子報（Substack）', href: 'https://gcakedev.substack.com/subscribe' },
+  { kind: 'rss', label: 'RSS', href: `${site.basePath}/rss.xml` },
+] as const;
+
 export const socialLinks = [
   { name: 'Podcast《喂喂你還好不好》', href: 'https://open.firstory.fm/user/wwhowbuhow/platforms', icon: 'microphone' },
   { name: 'Threads', href: 'https://www.threads.com/@wwhowbuhow', icon: 'threads' },

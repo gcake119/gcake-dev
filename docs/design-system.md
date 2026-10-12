@@ -31,3 +31,8 @@ Series publication status is separate from editorial/archive status. Prepared ma
 Static full-text search indexes only the public reading catalog, with article title, series and summary results. Empty and failed searches retain a series-catalog entry. About uses the approved three-section copy and full service links; footer uses labeled SVG shortcuts. Comment discussion remains specification only.
 
 Search input lives in the global navigation. The standalone Search page displays results only. Mobile search occupies a second navigation row, with visible 搜尋文章 placeholder and an accessible submit icon.
+
+
+## 訂閱入口
+
+首頁最近文章後及兩種文章模板正文後共用 `src/components/Subscription.astro`。首頁與篇尾均以 SVG 圖示＋文字連結提供電子報與 RSS，兩者具有相同視覺層級，窄螢幕自然換行。篇尾使用 compact 模式縮小標題、簡化分隔。文案集中在元件，網址集中在 `src/data/site.ts` 的 subscriptionLinks；使用既有色彩、44px 操作目標與鍵盤焦點。主要入口不包含 Paragraph，也不新增 JavaScript、API 或寄信服務。

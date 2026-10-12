@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SeriesEntry from '@/components/SeriesEntry.astro';
+import Subscription from '@/components/Subscription.astro';
 import { loadReadingCatalog } from '@/lib/content/catalog';
 import { localCanonical } from '@/lib/seo/canonical';
 import { site } from '@/data/site';
@@ -20,6 +21,7 @@ const others = featured.filter(s => s.publicationState !== 'active');
       <p>{p.date && <time datetime={p.date.toISOString()}>{formatDate(p.date)}</time>}{p.series && <><span>・</span><a href={`${site.basePath}/series/${p.series}/`}>{series.find(s => s.slug === p.series)?.title}</a></>}</p>
     </li>)}</ul> : <p class="empty-state">文章正在整理中。</p>}
   </section>
+  <Subscription />
   {others.length > 0 && <section class="home-section" aria-labelledby="other-heading"><h2 id="other-heading">{active.length ? '其他系列' : '系列文章'}</h2>{others.map(s => <SeriesEntry series={s} />)}</section>}
   <a class="text-link" href={`${site.basePath}/series/`}>查看全部系列 →</a>
 </BaseLayout>
