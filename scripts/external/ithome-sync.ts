@@ -38,3 +38,19 @@ export async function resumeOrSync(previous: unknown, fetchText: (url: string) =
   const manifest = JSON.parse(await fetchText('https://gcake119.github.io/ithome-2026/blog-sync.json'));
   return collectSnapshot(manifest, fetchText);
 }
+
+/** Current delivery contract: an independent completed manifest is the trust anchor. */
+export async function restoreCompletedSnapshot(previous: unknown, pinned: unknown) {
+  const expected = manifestSchema.parse(pinned);
+  if (expected.publicationState !== 'completed') throw new Error('COMPLETED_MANIFEST_REQUIRED');
+  const candidate = z.object({
+    source: z.literal('gcake119/ithome-2026'), publicationState: z.literal('completed'),
+    revision: z.string(), posts: z.array(z.object({day:z.number(),slug:z.string(),sha256:z.string()})).length(30),
+  }).parse(previous);
+  if (candidate.revision !== expected.revision) throw new Error('COMPLETED_REVISION_MISMATCH');
+  for (const entry of expected.posts) {
+    const post = candidate.posts.find(p => p.day === entry.day && p.slug === entry.slug);
+    if (post?.sha256 !== entry.sha256) throw new Error(`Completed hash mismatch: ${entry.slug}`);
+  }
+  return resumeOrSync(previous, async () => { throw new Error('RETIRED_SOURCE_FORBIDDEN'); });
+}

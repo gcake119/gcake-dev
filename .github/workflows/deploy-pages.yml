@@ -22,18 +22,19 @@ concurrency:
 
 jobs:
   build:
+    name: Build publication ${{ github.sha }}
     permissions:
       contents: read
       pages: read
-    if: inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     outputs:
       revision: ${{ steps.source.outputs.revision }}
     steps:
-      - name: Checkout latest main for manual deployment
+      - name: Checkout requested main revision for deployment
         uses: actions/checkout@v7
         with:
-          ref: main
+          ref: ${{ github.sha }}
           persist-credentials: false
       - id: source
         run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -49,8 +50,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Validate editorial series
         run: pnpm content:validate
-      - name: Restore final snapshot or sync ongoing iThome series
-        run: pnpm content:sync:ithome
+      - name: Restore pinned completed iThome snapshot
+        run: pnpm content:restore:ithome
       - name: Build
         run: pnpm build
         env:
@@ -65,7 +66,8 @@ jobs:
           path: dist
 
   deploy:
-    if: inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
+    name: Deploy publication ${{ needs.build.outputs.revision }}
+    if: github.event_name == 'workflow_dispatch' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

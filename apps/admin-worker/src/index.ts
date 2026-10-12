@@ -136,7 +136,7 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
             {
               snapshot: () => github.releaseSnapshot(),
               save: (input) => githubWrites.save(input),
-              deployment: () => github.getPagesDeployment(),
+              deployment: (sha?: string) => github.getPagesDeployment(sha),
               ...(env.RELEASE_DEPLOY_RETRY_ENABLED === 'true'
                 ? {
                     retryDeployment: (sha: string) => github.retryPagesDeployment(sha),
