@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="gcake.dev pixel-style logo">
+<rect width="1024" height="1024" fill="#0c182b"/>
+<g shape-rendering="crispEdges">
+<path d="M278 165h468v20h20v20h20v442h-20v20H258v-20h-20V205h20v-20h20z" fill="#516787"/>
+<path d="M282 184h460v20h20v422h-20v20H282v-20h-20V204h20z" fill="#15263d"/>
+<rect x="281" y="223" width="463" height="66" fill="#253b54"/>
+<rect x="303" y="245" width="23" height="23" fill="#ff6b55"/>
+<rect x="347" y="245" width="23" height="23" fill="#ffc34c"/>
+<rect x="391" y="245" width="23" height="23" fill="#42c9a0"/>
+<rect x="281" y="290" width="463" height="336" fill="#fff8ec"/>
+<path d="M387 355h-20v20h-20v20h-20v40h20v20h20v20h20v-24h-16v-20h-20v-32h20v-20h16zM569 355h20v20h20v20h20v40h-20v20h-20v20h-20v-24h16v-20h20v-32h-20v-20h-16zM492 338h31l-62 152h-31z" fill="#10213a"/>
+<rect x="337" y="523" width="218" height="17" fill="#60748f"/>
+<rect x="337" y="557" width="182" height="17" fill="#60748f"/>
+<rect x="337" y="591" width="137" height="17" fill="#60748f"/>
+<path d="M684 332l67 42-167 254-65 25 10-72z" fill="#ffbd3c" stroke="#13243d" stroke-width="16"/>
+<path d="M529 581l54 47-65 25z" fill="#fff0c9"/>
+<path d="M519 653l17-37 23 19z" fill="#18283d"/>
+<path d="M687 333l24-38 67 42-27 37z" fill="#d3dce5" stroke="#14243a" stroke-width="10"/>
+<path d="M712 296l18-29 66 43-18 27z" fill="#f16e62"/>
+</g>
+<text x="512" y="792" fill="#fff8ec" font-size="99" font-family="monospace" font-weight="700" text-anchor="middle" letter-spacing="-4">gcake<tspan fill="#39c9e7">.dev</tspan></text>
+<rect x="383" y="831" width="258" height="14" fill="#ffb83d"/>
+</svg>
