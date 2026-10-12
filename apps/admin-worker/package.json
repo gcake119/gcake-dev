@@ -13,7 +13,8 @@
   "dependencies": {
     "@gcake/admin-contract": "workspace:*",
     "@gcake/publishing-contract": "workspace:*",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.1",
+    "marked": "^18.0.13"
   },
   "devDependencies": {
     "tsx": "^4.20.5",

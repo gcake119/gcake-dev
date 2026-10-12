@@ -137,7 +137,7 @@ test('verification requires private, public API, and public HTML canonical evide
   });
   const client = new FakeParagraphClient();
   const evidence = {
-    id: 'remote-1', slug: firstRevision.postSlug, status: 'published' as const,
+    id: 'remote-1', title: firstRevision.title, slug: firstRevision.postSlug, status: 'published' as const,
     publishedAt: '1790587800000',
     markdown: 'Production gate\n===============\n\nInitial controlled body.',
   };
@@ -151,4 +151,77 @@ test('verification requires private, public API, and public HTML canonical evide
 
   client.publicHtml = '<html><head></head></html>';
   await assert.rejects(() => service.verify(firstRevision), /PARAGRAPH_PUBLIC_CANONICAL_MISMATCH/);
+});
+
+test('lost create response cannot create again on retry', async () => {
+  const repository = new InMemoryPublicationRepository();
+  const client = new FakeParagraphClient();
+  let creates = 0;
+  client.createDraft = async () => { creates++; throw new Error('lost response with secret'); };
+  const service = new ParagraphProductionService(repository, client);
+  const receipt = await service.dryRun(firstRevision);
+  await assert.rejects(() => service.publish(firstRevision, receipt));
+  await assert.rejects(() => service.publish(firstRevision, receipt), /RECONCILIATION_REQUIRED/);
+  assert.equal(creates, 1);
+  assert.doesNotMatch(repository.states[0]?.lastErrorCode ?? '', /secret/);
+});
+
+test('Paragraph listing scans later pages before deciding to create', async () => {
+  const urls: string[] = [];
+  const client = new ParagraphRestClient('secret', async url => {
+    urls.push(String(url));
+    return Response.json(urls.length === 1 ? { items: [], pagination: { hasMore: true, cursor: 'page-2' } } : { items: [{ id: 'existing', slug: firstRevision.postSlug }], pagination: { hasMore: false } });
+  });
+  assert.deepEqual(await client.findOwnBySlug(firstRevision.postSlug), [{ id: 'existing' }]);
+  assert.match(urls[1]!, /cursor=page-2/);
+});
+
+test('Paragraph discovery finds an existing draft on a later page and completes every status', async () => {
+  const requests: URL[] = [];
+  const client = new ParagraphRestClient('secret', async url => {
+    const request = new URL(String(url));
+    requests.push(request);
+    if (request.searchParams.get('status') === 'draft') {
+      return Response.json(request.searchParams.has('cursor')
+        ? { items: [{ id: 'existing-draft', slug: firstRevision.postSlug }], pagination: { hasMore: false } }
+        : { items: [], pagination: { hasMore: true, cursor: 'draft-page-2' } });
+    }
+    return Response.json({ items: [], pagination: { hasMore: false } });
+  });
+  assert.deepEqual(await client.findOwnBySlug(firstRevision.postSlug), [{ id: 'existing-draft' }]);
+  assert.deepEqual([...new Set(requests.map(url => url.searchParams.get('status')))], ['published', 'draft', 'scheduled', 'archived']);
+  assert.equal(requests.find(url => url.searchParams.get('cursor') === 'draft-page-2')?.searchParams.get('status'), 'draft');
+});
+
+test('empty gate does not enable Paragraph writes', async () => {
+  const client = new FakeParagraphClient(), repository = new InMemoryPublicationRepository();
+  const service = new ParagraphProductionService(repository, client, undefined, {} as never);
+  const receipt = await service.dryRun(firstRevision);
+  await assert.rejects(() => service.publish(firstRevision, receipt), /GATE_BLOCKED/);
+  assert.equal(client.calls.length, 0);
+});
+
+test('verification rejects changed title and extra stale body even when source lines remain', async () => {
+  const repository = new InMemoryPublicationRepository();
+  await repository.putState({ postSlug: firstRevision.postSlug, target: 'paragraph', sourceRevision: firstRevision.sourceRevision, status: 'verified', remoteId: 'remote-1', updatedAt: 'now' });
+  const client = new FakeParagraphClient();
+  client.privateEvidence = { id: 'remote-1', slug: firstRevision.postSlug, title: 'wrong title', status: 'published', publishedAt: 1790587800000, markdown: firstRevision.markdown + '\nStale trailing content.' } as ParagraphPostEvidence;
+  client.publicEvidence = client.privateEvidence;
+  client.publicHtml = `<link rel="canonical" href="${firstRevision.canonicalUrl}">`;
+  const service = new ParagraphProductionService(repository, client);
+  await assert.rejects(() => service.verify(firstRevision), /EVIDENCE_MISMATCH/);
+  assert.notEqual(repository.states[0]?.status, 'verified');
+});
+
+ test('untrusted existing Paragraph article is never retained for a later overwrite', async () => {
+  const repository = new InMemoryPublicationRepository(), client = new FakeParagraphClient();
+  client.remoteId = 'unrelated';
+  client.privateEvidence = { id: 'unrelated', slug: firstRevision.postSlug, title: 'other article', markdown: 'other body' };
+  const service = new ParagraphProductionService(repository, client);
+  const awaitReceipt = await service.dryRun(firstRevision);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await assert.rejects(() => service.publish(firstRevision, awaitReceipt), /RECONCILIATION/);
+  }
+  assert.equal(repository.states[0]?.remoteId, undefined);
+  assert.equal(client.calls.filter(c => c.method === 'update').length, 0);
 });

@@ -1,0 +1,86 @@
+{
+  "paragraph": {
+    "publicationSlug": "gcake",
+    "writeEnabled": false,
+    "openapiCommit": "56c2fd279cfad810dab400236773406e41080d65",
+    "gate": {
+      "userApproved": false,
+      "supportedInterfacePinned": false,
+      "createVerified": false,
+      "updateVerified": false,
+      "publishAndCanonicalDateVerified": false,
+      "retryProtectionVerified": false,
+      "publicReadVerified": false
+    }
+  },
+  "substack": {
+    "writeEnabled": false,
+    "profile": "/outside/git/substack-profile",
+    "ui": {
+      "version": 1,
+      "origin": "https://gcakedev.substack.com",
+      "reviewedAt": "2026-10-11",
+      "publishingCapabilitiesVerified": false,
+      "discoveryVerified": false,
+      "homePath": "/publish/home",
+      "postsPath": "/publish/posts",
+      "editPath": "/publish/post/{id}",
+      "createMenu": {
+        "role": "button",
+        "name": "建立"
+      },
+      "create": {
+        "role": "menuitem",
+        "name": "文章"
+      },
+      "title": {
+        "role": "textbox",
+        "name": "title"
+      },
+      "body": {
+        "role": "textbox",
+        "name": "開始寫作……"
+      },
+      "saved": {
+        "role": "button",
+        "name": "已儲存"
+      },
+      "settings": {
+        "role": "button",
+        "name": "設定"
+      },
+      "continue": {
+        "role": "button",
+        "name": "繼續"
+      },
+      "email": {
+        "role": "checkbox",
+        "name": "透過電子郵件和 Substack App 傳送"
+      },
+      "confirmPublish": {
+        "role": "button",
+        "name": "立即發佈"
+      },
+      "draftLinks": "UNVERIFIED",
+      "scanComplete": {
+        "role": "tab",
+        "name": "UNVERIFIED"
+      },
+      "publicBody": "UNVERIFIED",
+      "publicTitle": "UNVERIFIED",
+      "publicDate": "UNVERIFIED",
+      "publicationPolicy": "full-mirror",
+      "displayedDateFormat": "datetime-local",
+      "displayedDateOffsetMinutes": 480
+    }
+  },
+  "unattended": {
+    "enabled": false,
+    "slug": "ithome-2026-publishing-in-production",
+    "policy": "pages-first-no-newsletter",
+    "targets": [
+      "paragraph",
+      "substack"
+    ]
+  }
+}

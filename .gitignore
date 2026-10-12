@@ -16,3 +16,6 @@ openspec/.vector-search.db*
 output/playwright/
 __pycache__/
 output/release-verification/
+
+# Private distribution receipts and live acceptance artifacts
+.distribution-handoff/
