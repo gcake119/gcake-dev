@@ -520,22 +520,55 @@ export class GitHubAppReadClient {
       baseCommitSha: snapshot.commitSha,
     };
   }
-  async retryPagesDeployment(commitSha: string): Promise<void> {
+  /** Observe artifact identity, not the pre-publication workflow trigger SHA. */
+  private async pagesDelivery(commitSha?: string): Promise<{observation: DeploymentObservation; runId: number; conclusion: unknown} | undefined> {
+    if (commitSha !== undefined && !/^[a-f0-9]{40}$/.test(commitSha)) throw new Error('INVALID_PUBLICATION_SHA');
     const repository = await this.getRepository();
-    const payload = (await this.#get(
-      `${repositoryPath}/actions/workflows/deploy-pages.yml/runs?branch=${encodeURIComponent(repository.defaultBranch)}&per_page=1`,
-    )) as {
-      workflow_runs?: Array<{
-        id: number;
-        head_sha: string;
-        conclusion: string;
-      }>;
-    };
-    const run = payload.workflow_runs?.[0];
-    if (!run || run.head_sha !== commitSha || run.conclusion !== 'failure' || !Number.isSafeInteger(run.id))
+    const payloads = await Promise.all(['deploy-pages.yml', 'editorial-release.yml'].map(async workflow => {
+      const payload = await this.#get(`${repositoryPath}/actions/workflows/${workflow}/runs?branch=${encodeURIComponent(repository.defaultBranch)}&per_page=100`) as {workflow_runs?: unknown};
+      if (!Array.isArray(payload.workflow_runs)) throw new Error('GITHUB_API_FAILED: Unexpected Actions response');
+      return payload.workflow_runs as Record<string, unknown>[];
+    }));
+    const runs = payloads.flat().filter(run => run.status !== 'completed' || !['skipped','cancelled'].includes(String(run.conclusion)))
+      .sort((a,b)=>Date.parse(String(b.run_started_at))-Date.parse(String(a.run_started_at)));
+    // Bounded history: absent proof stays unknown rather than substituting a different run.
+    for (const run of runs) {
+      if (!Number.isSafeInteger(run.id) || typeof run.run_started_at !== 'string' || !Number.isFinite(Date.parse(run.run_started_at)))
+        throw new Error('GITHUB_API_FAILED: Unexpected Actions response');
+      const payload = await this.#get(`${repositoryPath}/actions/runs/${run.id}/jobs?per_page=100`) as {jobs?:unknown};
+      if (!Array.isArray(payload.jobs)) throw new Error('GITHUB_API_FAILED: Unexpected Actions jobs');
+      const jobs = payload.jobs as Record<string,unknown>[];
+      for (const job of jobs) {
+        const match = /^(Build|Deploy) publication ([a-f0-9]{40})$/.exec(String(job.name));
+        if (!match || (commitSha !== undefined && match[2] !== commitSha)) continue;
+        const sha = match[2];
+        const build = jobs.find(j=>j.name === `Build publication ${sha}`);
+        const deploy = jobs.find(j=>j.name === `Deploy publication ${sha}`);
+        // A successful release/no-op tick or Secret-only run has no delivery evidence.
+        const failed = [build,deploy].some(j=>j && ['failure','timed_out','cancelled'].includes(String(j.conclusion)));
+        const live = [build,deploy].find(j=>j && j.status !== 'completed' && j.conclusion !== 'skipped');
+        const success = deploy?.status === 'completed' && deploy.conclusion === 'success';
+        if (!failed && !live && !success) continue;
+        const state: DeploymentObservation['state'] = success ? 'deployed' : failed ? 'failed' :
+          live?.status === 'queued' || live?.status === 'waiting' || live?.status === 'pending' ? 'pending' : 'building';
+        return {
+          runId: run.id as number, conclusion: run.conclusion,
+          observation: {
+            state, commitSha: sha, startedAt: run.run_started_at,
+            ...(typeof run.updated_at === 'string' && run.status === 'completed' ? {completedAt:run.updated_at} : {}),
+            ...(typeof run.html_url === 'string' ? {url:run.html_url} : {}),
+          },
+        };
+      }
+    }
+    return undefined;
+  }
+  async retryPagesDeployment(commitSha: string): Promise<void> {
+    const delivery = await this.pagesDelivery(commitSha);
+    if (!delivery || delivery.observation.state !== 'failed' || delivery.conclusion !== 'failure')
       throw new Error('REVERIFY_REQUIRED');
     const token = await this.#installationTokens.create();
-    const response = await this.#fetch(`https://api.github.com${repositoryPath}/actions/runs/${run.id}/rerun-failed-jobs`, {
+    const response = await this.#fetch(`https://api.github.com${repositoryPath}/actions/runs/${delivery.runId}/rerun-failed-jobs`, {
       method: 'POST',
       headers: {
         accept: 'application/vnd.github+json',
@@ -546,8 +579,8 @@ export class GitHubAppReadClient {
     });
     if (!response.ok) throw new Error('DEPLOYMENT_RETRY_FAILED');
   }
-  async getPagesDeployment(): Promise<DeploymentObservation | undefined> {
-    return this.#deployment(true);
+  async getPagesDeployment(commitSha?: string): Promise<DeploymentObservation | undefined> {
+    return (await this.pagesDelivery(commitSha))?.observation;
   }
   async getLatestDeployment(): Promise<DeploymentObservation | undefined> {
     return this.#deployment(false);

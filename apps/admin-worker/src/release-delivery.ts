@@ -5,7 +5,7 @@ import { RepositoryConflictError } from './git-writes.js';
 export interface ReleaseGit {
   snapshot(): Promise<ReleaseSnapshot>;
   save(request: SaveContentRequest): Promise<{ commitSha: string; paths: readonly string[] }>;
-  deployment?(): Promise<DeploymentObservation | undefined>;
+  deployment?(sha?: string): Promise<DeploymentObservation | undefined>;
   retryDeployment?(sha: string): Promise<void>;
 }
 function frontmatter(source: string, status: 'ready' | 'published', publishedAt?: string): string {
@@ -200,7 +200,7 @@ export class ReleaseDelivery {
         ? 'PENDING_SOURCE_CHANGED' : undefined;
     if(mismatch) return this.queue.record(r.id,r.lease,{state:'verification-unknown',error:mismatch},'source-reconciliation-required');
     const result = await verifyPublicRelease(this.fetcher, this.base, r.slug, post.title, r.slot, r.publicationDigest);
-    const deployment = await this.git.deployment?.();
+    const deployment = await this.git.deployment?.(r.commitSha);
     return this.queue.record(
       r.id,
       r.lease,
@@ -228,7 +228,7 @@ export class ReleaseDelivery {
       return this.write({ ...next, sourceRevision: snapshot.revision }, snapshot);
     }
     if (r.commitSha) {
-      const deployment = await this.git.deployment?.();
+      const deployment = await this.git.deployment?.(r.commitSha);
       if (deployment?.commitSha !== r.commitSha || deployment.state !== 'failed') throw new Error('REVERIFY_REQUIRED');
       if (!this.git.retryDeployment) throw new Error('DEPLOYMENT_RETRY_NOT_CONFIGURED');
       await this.git.retryDeployment(r.commitSha);

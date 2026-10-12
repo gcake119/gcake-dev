@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "source": "gcake119/ithome-2026",
+  "revision": "bad9d573e90b068abbd87e63e58969694dee2053",
+  "builtAt": "2026-10-07T21:18:41.697Z",
+  "publicationState": "completed",
+  "posts": [
+    {
+      "day": 1,
+      "slug": "day-01",
+      "sha256": "f88f5d843ba3177da31640af2715ba1400b706f384a7d593c94bff87ce9200e4"
+    },
+    {
+      "day": 2,
+      "slug": "day-02",
+      "sha256": "b9522bad469351c8881bcede3d81ecafcc1dff1d36c4b7b84747514a2cc9ad05"
+    },
+    {
+      "day": 3,
+      "slug": "day-03",
+      "sha256": "baff7bae5be874ed775c4be3e841fb87e7db68874d9c9335f2a7bfb2b8ba3b6b"
+    },
+    {
+      "day": 4,
+      "slug": "day-04",
+      "sha256": "3474e6905dced63f75864989cfdf695b21ea3b6d153ced7e07422fab4a4a9d18"
+    },
+    {
+      "day": 5,
+      "slug": "day-05",
+      "sha256": "1bb81f3ee5a3da1fa6fdc956315a21c14bc39da91501aa21f10d9c9aa1748749"
+    },
+    {
+      "day": 6,
+      "slug": "day-06",
+      "sha256": "cf68c1669d1ba7e95df4569f5a159ac51e74908bc5f0cc7f78f4a980520639be"
+    },
+    {
+      "day": 7,
+      "slug": "day-07",
+      "sha256": "8fd014d7936d20f97f8b3952b65ecba4439d9eb51d4cc8859febadb755e4f4d9"
+    },
+    {
+      "day": 8,
+      "slug": "day-08",
+      "sha256": "c5c323939b7d88cac80af2fe2f13804193200919dd02948936d437823d304295"
+    },
+    {
+      "day": 9,
+      "slug": "day-09",
+      "sha256": "b9928ca08a28ae99514552adfb226ed16dd7b13ca50ee89f72c4b4dd21ef8779"
+    },
+    {
+      "day": 10,
+      "slug": "day-10",
+      "sha256": "1ebf34003ac4aeadadc95f64b62f653a4bc958637caf255622b8d329f812279f"
+    },
+    {
+      "day": 11,
+      "slug": "day-11",
+      "sha256": "2a3a0cad6adfd805a142a94a9ba77848e7376027fc21a0b2010d2313d21569cc"
+    },
+    {
+      "day": 12,
+      "slug": "day-12",
+      "sha256": "cbb526ee840ef82402ced7a8757e22768cfe47a287144386001f92d6547a2cea"
+    },
+    {
+      "day": 13,
+      "slug": "day-13",
+      "sha256": "f729ff8d474fb6c713487aafbddf3c37161ab5a8eeb53aee54d96179e8392a33"
+    },
+    {
+      "day": 14,
+      "slug": "day-14",
+      "sha256": "e51f3af7e6c88c92674d42654df2ea497520e07b9cdae203c2522ac941992396"
+    },
+    {
+      "day": 15,
+      "slug": "day-15",
+      "sha256": "82d84c4f637367e9ff136cff4b0b1dd84f4f5c5c5fdade5e2f1d0b244e8121db"
+    },
+    {
+      "day": 16,
+      "slug": "day-16",
+      "sha256": "eced8997939e88b63c152fb703ef63c6f945181c004b6723b811ec01ed636d21"
+    },
+    {
+      "day": 17,
+      "slug": "day-17",
+      "sha256": "b9f00645c5b2a175cd9bc5a9e26605a64513e687a647e17fdfb17ad70ce59131"
+    },
+    {
+      "day": 18,
+      "slug": "day-18",
+      "sha256": "fed6f50e011a15cffd03971051dd59904bed929ac1c3d250b3509d990220be98"
+    },
+    {
+      "day": 19,
+      "slug": "day-19",
+      "sha256": "db7c19986b5559c29d05404040a326f6f60372c4e2285cd5634d7843ea61befb"
+    },
+    {
+      "day": 20,
+      "slug": "day-20",
+      "sha256": "5b59491189ebc63427bcdea6a1b8a5dad3e549033669e2c11b55f1c935163a3e"
+    },
+    {
+      "day": 21,
+      "slug": "day-21",
+      "sha256": "f82a13e44610454ff29eaef94fb5fc0f947967d605f81dc888ae2c96a70233cc"
+    },
+    {
+      "day": 22,
+      "slug": "day-22",
+      "sha256": "0f564a3223bedc0891615fff87315677ff36101830951b69eb8ad3b9fa83db56"
+    },
+    {
+      "day": 23,
+      "slug": "day-23",
+      "sha256": "f6f0a7c944372605a9b8836e3d4ae0f5d010a87d0027c326c6c7469b0459ece3"
+    },
+    {
+      "day": 24,
+      "slug": "day-24",
+      "sha256": "2399c30452b66125b635257f62f7c4f01a3581c87fee06ef12059ecc06219e7c"
+    },
+    {
+      "day": 25,
+      "slug": "day-25",
+      "sha256": "f11ae3e75c803ce94fdbe7e9b8bde6631b2b1c8489d6b7c56c48d601df8aada6"
+    },
+    {
+      "day": 26,
+      "slug": "day-26",
+      "sha256": "d877d0ea23a900e7ea4f427a5b1ef47dfc96a6d521bb149d592b1e7f692ceaf7"
+    },
+    {
+      "day": 27,
+      "slug": "day-27",
+      "sha256": "c70d98e944a6e56d26917b8af9283e8ec20018090d2f4b8e7bb1bcd8d966410a"
+    },
+    {
+      "day": 28,
+      "slug": "day-28",
+      "sha256": "b8a3fe3886d4b7c2973bfd7b73a596c1d5ee011b29dcd9bca972e169da4e8023"
+    },
+    {
+      "day": 29,
+      "slug": "day-29",
+      "sha256": "f0675d1bc339142083c6a367e0e8cac58a0787fccc26184fd166cf9a9e117ff9"
+    },
+    {
+      "day": 30,
+      "slug": "day-30",
+      "sha256": "4897759d698adede2bc9ef29c43a24b1568315a94d71b96b815a5659c4fafd32"
+    }
+  ]
+}
