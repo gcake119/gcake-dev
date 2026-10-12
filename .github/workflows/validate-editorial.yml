@@ -35,6 +35,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Install Chrome and Linux dependencies for distribution fixtures
+        run: pnpm exec playwright install --with-deps chrome
+
       - name: Run all tests including editorial and Hermes
         run: pnpm test
       - run: pnpm check
