@@ -251,35 +251,70 @@ export class GitHubAppReadClient {
     );
     return memberships;
   }
-  /** Resolve immutable readiness from successful commits reachable from this exact snapshot. */
-  async firstReadyAt(path: string, revision: string): Promise<string> {
-    const commits: { sha: string; commit: { committer: { date: string } } }[] = [];
-    for (let page = 1; page <= 10; page++) {
-      const batch = await this.#get(
-        `${repositoryPath}/commits?path=${encodeURIComponent(path)}&sha=${encodeURIComponent(revision)}&per_page=100&page=${page}`,
-      );
-      if (
-        !Array.isArray(batch) ||
-        batch.some((c) => typeof c?.sha !== 'string' || !Number.isFinite(Date.parse(c?.commit?.committer?.date)))
-      )
-        throw new Error('INVALID_READY_HISTORY');
-      commits.push(...batch);
-      if (batch.length < 100) break;
-      if (page === 10) throw new Error('READY_HISTORY_LIMIT');
+  /** Request-scoped cache; snapshots never mix revisions or credentials across requests. */
+  private historyCommits = new Map<string, Promise<{date:string;parent?:string}>>();
+  private historyCommit(sha:string) {
+    let pending=this.historyCommits.get(sha);
+    if(!pending) {
+      pending=(async()=> {
+        const commit=await this.#get(`${repositoryPath}/commits/${encodeURIComponent(sha)}`) as {
+          sha?:unknown;commit?:{committer?:{date?:unknown}};parents?:{sha?:unknown}[];
+        };
+        if(commit.sha!==sha || typeof commit.commit?.committer?.date!=='string' ||
+          !Number.isFinite(Date.parse(commit.commit.committer.date)) || !Array.isArray(commit.parents) ||
+          commit.parents.some(p=>typeof p.sha!=='string')) throw new Error('INVALID_READY_HISTORY');
+        return {date:commit.commit.committer.date,parent:commit.parents[0]?.sha as string|undefined};
+      })();
+      this.historyCommits.set(sha,pending);
     }
-    const encodedPath = path.split('/').map(encodeURIComponent).join('/');
-    for (const commit of commits.reverse()) {
-      const file = (await this.#get(`${repositoryPath}/contents/${encodedPath}?ref=${encodeURIComponent(commit.sha)}`)) as {
-        encoding?: string;
-        content?: string;
-      };
-      if (file.encoding !== 'base64' || typeof file.content !== 'string') throw new Error('INVALID_READY_HISTORY');
-      if (splitFrontmatter(decodeBase64(file.content)).frontmatter.status === 'ready') return commit.commit.committer.date;
+    return pending;
+  }
+  /** Walk main's visible first-parent snapshots, not feature-branch path history. */
+  private async continuousReadiness(path: string, revision: string, eligible: (source: string) => boolean): Promise<string> {
+    let since:string|undefined;
+    let sha:string|undefined=revision;
+    const seen=new Set<string>();
+    const encodedPath=path.split('/').map(encodeURIComponent).join('/');
+    for(let depth=0;sha && depth<1000;depth++) {
+      if(seen.has(sha)) throw new Error('INVALID_READY_HISTORY');
+      seen.add(sha);
+      const commit=await this.historyCommit(sha);
+      // A file first created on main terminates at its first absent parent.
+      let file:{encoding?:unknown;content?:unknown};
+      try {file=await this.#get(`${repositoryPath}/contents/${encodedPath}?ref=${encodeURIComponent(sha)}`) as typeof file;}
+      catch(error) {
+        if(since && error instanceof Error && /HTTP 404$/.test(error.message)) return since;
+        throw error;
+      }
+      if(file.encoding!=='base64' || typeof file.content!=='string') throw new Error('INVALID_READY_HISTORY');
+      if(!eligible(decodeBase64(file.content))) {
+        if(since) return since;
+        throw new Error('READY_TRANSITION_NOT_FOUND');
+      }
+      since=commit.date;sha=commit.parent;
     }
+    if(sha) throw new Error('READY_HISTORY_LIMIT');
+    if(since) return since;
     throw new Error('READY_TRANSITION_NOT_FOUND');
+  }
+  async firstReadyAt(path: string, revision: string): Promise<string> {
+    return this.continuousReadiness(path,revision,source=>splitFrontmatter(source).frontmatter.status==='ready');
+  }
+  async firstSeriesReadyAt(path: string, revision: string, order: string[]): Promise<string> {
+    return this.continuousReadiness(path,revision,source=> {
+      const document=YAML.parseDocument(source);
+      if(document.errors.length) throw new Error('INVALID_READY_HISTORY');
+      const manifest=document.toJS();
+      const refs=manifest?.sections?.flatMap((s:any)=>s.posts??[]);
+      return Array.isArray(refs) && refs.length>0 && manifest.publication?.status!=='paused' && manifest.status!=='paused' &&
+        JSON.stringify(refs.map((p:any)=>p.slug))===JSON.stringify(order) &&
+        refs.every((p:any)=>['ready','published'].includes(p.status));
+    });
   }
   async releaseSnapshot(): Promise<ReleaseSnapshot> {
     const snapshot = await this.#snapshot();
+    if (snapshot.tree.some(entry=>entry.path==='src/data/editorial-queue.json'))
+      throw new Error('LEGACY_JOURNAL_RECONCILIATION_REQUIRED');
     const entries = snapshot.tree.filter(
       (e) => e.type === 'blob' && (/^src\/content\/posts\/.+\.mdx?$/.test(e.path) || /^src\/content\/series\/[^/]+\.ya?ml$/.test(e.path)),
     );
@@ -326,10 +361,13 @@ export class GitHubAppReadClient {
           ...file,
           slug: manifest.slug,
           sections: manifest.sections,
+          paused: manifest.publication?.status === 'paused' || manifest.status === 'paused',
+          external: manifest.source?.type === 'external',
         });
       }
     }
-    return { revision: snapshot.commitSha, posts, series, firstReadyAt: (post) => this.firstReadyAt(post.path, snapshot.commitSha) };
+    return { revision: snapshot.commitSha, posts, series, firstReadyAt: (post) => this.firstReadyAt(post.path, snapshot.commitSha),
+      firstSeriesReadyAt: (series) => this.firstSeriesReadyAt(series.path, snapshot.commitSha, series.sections.flatMap(s=>s.posts.map(p=>p.slug))) };
   }
   async listPosts(): Promise<readonly PostSummary[]> {
     const snapshot = await this.#snapshot();

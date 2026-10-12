@@ -45,6 +45,10 @@ export function publicationFiles(snapshot: ReleaseSnapshot, slug: string, at: st
   }
   return files;
 }
+export async function publicationDigest(source: string): Promise<string> {
+  const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(source));
+  return [...new Uint8Array(hash)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+}
 function entities(s: string) {
   return s
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
@@ -64,6 +68,7 @@ export async function verifyPublicRelease(
   slug: string,
   title: string,
   expectedAt?: string,
+  expectedRevision?: string,
 ): Promise<{ page: boolean; rssGuid?: string; url: string; error?: string }> {
   const origin = new URL(base);
   if (origin.protocol !== 'https:' && !['127.0.0.1', 'localhost'].includes(origin.hostname)) throw new Error('INVALID_CANONICAL_ORIGIN');
@@ -95,6 +100,11 @@ export async function verifyPublicRelease(
       (!article.url || article.url === url) &&
       (!expectedAt || Date.parse(article.datePublished) === Date.parse(expectedAt));
     if (!page) return { page: false, url, error: 'PAGE_IDENTITY_MISMATCH' };
+    if (expectedRevision) {
+      const meta=[...html.matchAll(/<meta\b([^>]+)>/gi)].find(m=>/\bname=["']gcake-source-revision["']/i.test(m[1]));
+      const revision=/\bcontent=["']([a-f0-9]{64})["']/i.exec(meta?.[1]??'')?.[1];
+      if (revision!==expectedRevision) return {page:false,url,error:'PAGE_SOURCE_MISMATCH'};
+    }
     const rss = await get(new URL('rss.xml', base).href);
     const item = [...rss.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].find(
       (m) => tag(m[1], 'link') === url && tag(m[1], 'title') === title,
@@ -134,6 +144,8 @@ export class ReleaseDelivery {
     if (!item || item.reason || item.contentStatus !== 'ready')
       return this.queue.record(r.id, r.lease, { state: 'failed', error: 'ELIGIBILITY_CHANGED' }, 'eligibility-changed');
     const files = publicationFiles(latest, r.slug, r.slot);
+    // Persist expected public bytes before any external write; lost replies keep this evidence.
+    await this.queue.record(r.id,r.lease,{publicationDigest:await publicationDigest(files[0].source)},'publication-source');
     await this.queue.beginWrite(r.id, r.lease);
     try {
       const result = await this.git.save({
@@ -174,7 +186,14 @@ export class ReleaseDelivery {
     if (r.state === 'publishing' && Date.parse(r.leaseUntil) > Date.parse(this.queue.now())) throw new Error('LEASE_ACTIVE');
     const post = snapshot.posts.find((p) => p.slug === r.slug);
     if (!post) throw new Error('ARTICLE_NOT_FOUND');
-    const result = await verifyPublicRelease(this.fetcher, this.base, r.slug, post.title, r.slot);
+    const membership=snapshot.series.find(series=>series.slug===r.seriesSlug);
+    const mismatch=!r.publicationDigest ? 'PUBLICATION_DIGEST_REQUIRED' :
+      post.status!=='published' || Date.parse(post.publishedAt??'')!==Date.parse(r.slot) ||
+      await publicationDigest(post.source)!==r.publicationDigest ||
+      (r.seriesSlug && !membership?.sections.some(section=>section.posts.some(p=>p.slug===r.slug && p.status==='published')))
+        ? 'PENDING_SOURCE_CHANGED' : undefined;
+    if(mismatch) return this.queue.record(r.id,r.lease,{state:'verification-unknown',error:mismatch},'source-reconciliation-required');
+    const result = await verifyPublicRelease(this.fetcher, this.base, r.slug, post.title, r.slot, r.publicationDigest);
     const deployment = await this.git.deployment?.();
     return this.queue.record(
       r.id,

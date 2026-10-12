@@ -88,7 +88,14 @@ for (const name of ['deploy-admin-worker.yml', 'deploy-pages.yml']) {
     const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/' + name, import.meta.url), 'utf8'));
     assert.deepEqual(Object.keys(workflow.on), ['workflow_dispatch'], name);
     for (const [name, job] of Object.entries(workflow.jobs) as [string, any][]) {
-      assert.equal(job.if, "github.ref == 'refs/heads/main'", name);
+      if (name === 'secret-check' || name === 'secret-check-preflight') {
+        assert.equal(workflow.permissions.contents, 'read');
+        assert.match(job.if, /workflow_dispatch/);
+        assert.match(job.if, /inputs.mode == 'secret-check'/);
+        assert.match(job.if, /refs\/heads\/feat\/editorial-release-queue/);
+        continue;
+      }
+      assert.match(job.if, /(?:^| && )github.ref == 'refs\/heads\/main'$/, name);
     }
   });
 }
@@ -119,7 +126,7 @@ test('editorial release deploys only newly committed revisions with isolated Pag
   assert.deepEqual(workflow.permissions,{contents:'read'});
   assert.equal(workflow.jobs.release.permissions,undefined);
   assert.equal(workflow.jobs.build.permissions,undefined);
-  assert.deepEqual(workflow.jobs.deploy.permissions,{pages:'write','id-token':'write'});
+  assert.deepEqual(workflow.jobs.deploy.permissions,{contents:'read',pages:'write','id-token':'write'});
   assert.deepEqual(workflow.jobs.deploy.needs,['release','build']);
   assert.equal(workflow.jobs.deploy.if,"needs.release.outputs.release_sha != ''");
   assert.equal(workflow.jobs.deploy.environment.name,'github-pages');

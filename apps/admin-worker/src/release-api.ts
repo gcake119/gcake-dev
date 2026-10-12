@@ -60,6 +60,9 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
     const code = error instanceof Error ? error.message : 'RELEASE_FAILED';
     const messages: Record<string, string> = {
       RELEASE_DISABLED: '正式發布尚未啟用；目前僅提供排程與驗證。',
+      MULTIPLE_ACTIVE_SERIES: '有多個已開始系列，請先確認接續的系列；尚未新增發布。',
+      ACTIVE_SERIES_RECONCILIATION_REQUIRED: '接續系列已刪除或內容不一致，請先恢復並核對閱讀順序。',
+      LEGACY_JOURNAL_RECONCILIATION_REQUIRED: '發現舊 Git 佇列日誌，請先保留證據並人工對帳；不會自動重播。',
       QUEUE_CONFLICT: '佇列已變更，請重新載入並預覽。',
       SLOT_CONFLICT: '時段衝突，請重新選擇或檢查系列順序。',
       GIT_CONFLICT: 'Git 內容已更新，請重新載入。',

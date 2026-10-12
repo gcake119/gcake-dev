@@ -4,6 +4,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { ReleaseQueue, D1ReleaseStore, type ReleaseSnapshot } from './release-queue.js';
 import { ReleaseDelivery, publicationFiles, verifyPublicRelease } from './release-delivery.js';
+import YAML from 'yaml';
+import { createHash } from 'node:crypto';
 import { RepositoryConflictError } from './git-writes.js';
 const source = '---\ntitle: 測試文章\nstatus: ready\n---\n\n正文不可改\n';
 const manifest = 'slug: s\nsections:\n  - posts:\n      - slug: one\n        status: ready\n';
@@ -58,6 +60,15 @@ function setup() {
     },
   };
 }
+function applyPublication(s:ReleaseSnapshot,files:readonly {path:string;source:string}[]) {
+  for(const file of files) {
+    const p=s.posts.find(p=>p.path===file.path);
+    if(p){p.source=file.source;const fm=YAML.parse(/^---\n([\s\S]*?)\n---/.exec(file.source)![1]);p.status=fm.status;p.publishedAt=fm.publishedAt;}
+    const series=s.series.find(p=>p.path===file.path);
+    if(series){series.source=file.source;series.sections=YAML.parse(file.source).sections;}
+  }
+}
+const expectedDigest=createHash('sha256').update(publicationFiles(snapshot(),'one','2026-10-12T07:00:00+08:00')[0].source).digest('hex');
 const base = 'https://gcake119.github.io/gcake-dev/';
 function publicFetch(rss = true, canonical = true): typeof fetch {
   return (async (input: any) => {
@@ -80,7 +91,7 @@ function publicFetch(rss = true, canonical = true): typeof fetch {
             datePublished: '2026-10-12T07:00:00+08:00',
             url: base + 'posts/one/',
           }) +
-          '</script></html>',
+          '</script><meta name="gcake-source-revision" content="'+expectedDigest+'"></html>',
       { status: 200 },
     );
   }) as typeof fetch;
@@ -103,8 +114,9 @@ test('disabled execution and stale revisions never call Git writer', async () =>
     queue,
     {
       snapshot: async () => s,
-      save: async () => {
+      save: async input => {
         calls++;
+        applyPublication(s,input.files);
         return { commitSha: 'written', paths: [] };
       },
     },
@@ -123,8 +135,8 @@ test('lost Git write response remains unknown, reverify repairs public state wit
     queue,
     {
       snapshot: async () => s,
-      save: async () => {
-        writes++;
+      save: async input => {
+        writes++;applyPublication(s,input.files);
         throw new Error('network');
       },
     },
@@ -149,8 +161,9 @@ test('RSS delay and wrong canonical do not consume slot; conflict retries retain
     queue,
     {
       snapshot: async () => s,
-      save: async () => {
+      save: async input => {
         if (conflict) throw new RepositoryConflictError('ARTICLE_CONFLICT', 'p', 'a', 'b', 'new');
+        applyPublication(s,input.files);
         return { commitSha: 'written', paths: [] };
       },
     },
@@ -208,8 +221,9 @@ test('build failure retry reuses release id without writing article again', asyn
     queue,
     {
       snapshot: async () => s,
-      save: async () => {
+      save: async input => {
         writes++;
+        applyPublication(s,input.files);
         return { commitSha: 'written', paths: [] };
       },
       deployment: async () => ({
@@ -259,12 +273,42 @@ test('public reverify never associates an unrelated Pages deployment with this r
     time();
     const d=new ReleaseDelivery(queue,{
       snapshot:async()=>s,
-      save:async()=>({commitSha:'written',paths:[]}),
+      save:async input=>{applyPublication(s,input.files);return {commitSha:'written',paths:[]};},
       deployment:async()=>({state:'deployed',commitSha:observedSha,startedAt:'2026-10-11T23:06:00Z'}),
     },true,publicFetch(),base);
     const r=await d.execute();
     const checked=await d.reverify(r!.id);
     assert.equal(checked.state,'verified-public');
     assert.equal(checked.deployment?.commitSha, observedSha==='written'?'written':undefined);
+  }
+});
+
+test('D1 persists expected publication digest before Git write and rejects stale public source',async()=>{
+  const {queue,time}=setup();const s=snapshot();await queue.ingest(s);time();
+  let expected:string|undefined;
+  const d=new ReleaseDelivery(queue,{snapshot:async()=>s,save:async input=>{
+    expected=(await queue.view(s)).releases[0].publicationDigest;
+    applyPublication(s,input.files);
+    return {commitSha:'written',paths:[]};
+  }},true,(async(input:any,init:any)=> {
+    const response=await publicFetch()(input,init);
+    return new Response((await response.text()).replace(/name="gcake-source-revision" content="[a-f0-9]+"/,'name="gcake-source-revision" content="'+'0'.repeat(64)+'"'));
+  }) as typeof fetch,base);
+  const r=await d.execute();assert.match(expected??'',/^[a-f0-9]{64}$/);
+  const checked=await d.reverify(r!.id);
+  assert.notEqual(checked.state,'verified-public');assert.equal(checked.error,'PAGE_SOURCE_MISMATCH');
+  assert.equal(await d.execute(),undefined);
+});
+test('D1 pending source changes and missing legacy digest retain identity without another write',async()=>{
+  for(const changed of ['source','legacy']){
+    const {queue,time}=setup();const s=snapshot();await queue.ingest(s);time();let writes=0;
+    const d=new ReleaseDelivery(queue,{snapshot:async()=>s,save:async input=>{writes++;applyPublication(s,input.files);return {commitSha:'written',paths:[]};}},true,publicFetch(),base);
+    const r=await d.execute();
+    if(changed==='source')s.posts[0].source+='changed body';
+    else await queue.record(r!.id,r!.lease,{publicationDigest:undefined},'legacy-fixture');
+    const checked=await d.reverify(r!.id);
+    assert.equal(checked.id,r!.id);assert.notEqual(checked.state,'verified-public');
+    assert.equal(checked.error,changed==='source'?'PENDING_SOURCE_CHANGED':'PUBLICATION_DIGEST_REQUIRED');
+    assert.equal(await d.execute(),undefined);assert.equal(writes,1);
   }
 });

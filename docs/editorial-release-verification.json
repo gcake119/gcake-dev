@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-11",
+  "baseRevision": "2351b17",
+  "nodeTestsPassed": 206,
+  "hermesTestsPassed": 27,
+  "editorialTestsPassed": 26,
+  "check": {
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "build": {
+    "passed": true,
+    "pages": 32
+  },
+  "actionlint": "passed",
+  "spectraValidation": "passed",
+  "rehearsal": {
+    "result": "passed",
+    "buildFailureRetriedSameArticle": true,
+    "baselineReadyRoutesAbsent": 6,
+    "newRSSArticles": 1,
+    "otherReadyRoutesAbsent": 5,
+    "canonicalHTML": true,
+    "dryRunNotifications": 1,
+    "repeatNotifications": 0,
+    "sixBodiesUnchanged": true,
+    "readingOrderUnchanged": true,
+    "productionWrites": false,
+    "telegramNetworkCalls": 0
+  },
+  "sixBodies": [
+    {
+      "slug": "ithome-2026-astro-choice",
+      "bodySHA256": "da9ec0b3776a59d5a980c0a95d527e41dedf20beae7e661aa547327241b4535b",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-chatgpt-writing-workflow",
+      "bodySHA256": "ae9a06bc77cb04ba7b12d47d736135e5501c5c32eccf522fc2bfeea3863d93bf",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-in-production",
+      "bodySHA256": "ce934cc6e402a6a4cdb9bec0e4fd2a7571a4d20d96c0d89dd427579959adbc16",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-publishing-toolchain",
+      "bodySHA256": "c170c4567a7a1175fd926012a463d018cf4598d9431d879f2254ced590b27e63",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-tech-blog-boundary",
+      "bodySHA256": "634ec60faa4e64a61a3e0b7a6a13dda8a96aa2a8a1a61d421c08c1245b4ca74a",
+      "unchanged": true
+    },
+    {
+      "slug": "ithome-2026-template-hardening",
+      "bodySHA256": "ab1e3017c19c20b474ae97722f5aa1e097c5ffd11021a7a5b043af7dde2e171e",
+      "unchanged": true
+    }
+  ],
+  "productionRSS": {
+    "url": "https://gcake119.github.io/gcake-dev/rss.xml",
+    "HTTP": 200,
+    "localCanonicalArticles": 0
+  },
+  "productionCandidateDeployed": false,
+  "realTelegramSent": false,
+  "hermesAccountInstalled": false,
+  "activationChanged": false,
+  "mockDelivery": {
+    "featureRevision": "84d89c8c895a1f9140dcf7ada92e7958c935de00",
+    "acceptanceTestsPassed": 10,
+    "transport": "loopback HTTP CLI integration",
+    "baselinePosts": 0,
+    "verifiedNewArticlePosts": 1,
+    "restartOrGuidChangeAdditionalPosts": 0,
+    "uncertainAutomaticResends": 0,
+    "canonicalFailurePosts": 0,
+    "stateModeAndSiteIsolation": true,
+    "externalProxyBypassed": true,
+    "redirectsRejected": true,
+    "usesSyntheticCredentials": true,
+    "realTelegramNetworkCalls": 0,
+    "productionActivationChanged": false
+  },
+  "boundaryReview": {
+    "reviewedBase": "883ee22b563480200d75524c28b3033c7e6069a2",
+    "reviewedOriginalHead": "fea6aafe910b4d9cc878f1f51f0d80bdaf8a5e58",
+    "reviewedOriginalFiles": 35,
+    "regressionTestsPassed": 9,
+    "activationCheckedAtTransport": true,
+    "fixedMockSenderOnly": true,
+    "defaultLivePathReserved": true,
+    "incompatibleDatabaseUnmodified": true,
+    "statusReadOnly": true,
+    "realTelegramCalls": 0,
+    "productionChanges": false,
+    "fixRevision": "84d89c8c895a1f9140dcf7ada92e7958c935de00"
+  },
+  "unattendedPreparation": {
+    "date": "2026-10-12",
+    "featureRevision": "4d49f19",
+    "nodeTestsPassed": 219,
+    "hermesTestsPassed": 27,
+    "editorialTestsPassed": 39,
+    "checkFiles": 133,
+    "checkErrors": 0,
+    "checkWarnings": 0,
+    "checkHints": 0,
+    "buildPages": 32,
+    "actionlint": "passed",
+    "spectraValidation": "passed",
+    "rehearsal": "passed",
+    "configurationReady": false,
+    "activationReady": false,
+    "actualAuditReadOnly": true,
+    "appProvisioned": false,
+    "productionChanges": false,
+    "realTelegramCalls": 0,
+    "bodiesAndOrderUnchanged": true,
+    "ownerReportedHermes": {
+      "account": "hermes",
+      "version": "v0.21.4",
+      "python": "3.11.15",
+      "dryRunPasses": 2,
+      "initializationStable": true,
+      "failures": 0,
+      "articles": 0,
+      "jobId": "ea3c550669f1",
+      "deliver": "local",
+      "firstScheduledRun": "2026-10-12T01:03:00+08:00",
+      "scheduledCompletion": "not yet reported",
+      "independentlyInspected": false
+    }
+  }
+}

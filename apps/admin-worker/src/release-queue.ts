@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import { collectReleaseEligibility, type ReleaseSeriesSnapshot } from '@gcake/publishing-contract/release-eligibility';
-import { planReleaseQueue } from '@gcake/publishing-contract/release-queue';
+import { planReleaseQueue, instant, slotAtOrBefore, formatTaipei } from '@gcake/publishing-contract/release-queue';
 import type { QueueView, QueueControl, OverridePreview, ReleaseRecord } from '@gcake/admin-contract';
 export interface SnapshotFile {
   path: string;
@@ -13,16 +13,21 @@ export interface SnapshotPost extends SnapshotFile {
   status: string;
   publishedAt?: string;
 }
-export interface SnapshotSeries extends SnapshotFile, ReleaseSeriesSnapshot {}
+export interface SnapshotSeries extends SnapshotFile, ReleaseSeriesSnapshot { paused?: boolean; external?: boolean; }
 export interface ReleaseSnapshot {
   revision: string;
   posts: SnapshotPost[];
   series: SnapshotSeries[];
   firstReadyAt?: (post: SnapshotPost) => Promise<string>;
+  firstSeriesReadyAt?: (series: SnapshotSeries) => Promise<string>;
 }
 interface Runtime {
-  posts: Record<string, { firstReadyAt?: string }>;
+  posts: Record<string, { firstReadyAt?: string; eligibilityFloor?: string }>;
+  startedAt?: string;
+  observedRevision?: string;
+  activeSeries?: string;
   seriesReadyAt: Record<string, string>;
+  seriesEligibilityFloor?: Record<string,string>;
   seriesOrder: Record<string, string>;
   paused: string[];
   overrides: Record<string, string>;
@@ -91,6 +96,10 @@ export class ReleaseQueue {
     const result = collectReleaseEligibility(posts, snapshot.series);
     const heldSeries = new Set(result.blockedSeries.map((b) => b.seriesSlug));
     for (const series of snapshot.series) {
+      if (series.paused || series.external) {
+        heldSeries.add(series.slug);
+        result.blockedSeries.push({seriesSlug:series.slug,reasons:[series.paused?'MANIFEST_PAUSED':'EXTERNAL_SERIES']});
+      }
       const refs = series.sections.flatMap((x) => x.posts);
       const started = refs.some((x) => x.status === 'published') || s.data.releases.some((r) => r.seriesSlug === series.slug);
       const order = JSON.stringify(refs.map((x) => x.slug));
@@ -100,6 +109,14 @@ export class ReleaseQueue {
           seriesSlug: series.slug,
           reasons: ['STARTED_SERIES_ORDER_CHANGED'],
         });
+      }
+      if (refs.some(ref => {
+        const p = snapshot.posts.find(p => p.slug === ref.slug);
+        return ref.status === 'published' && p?.publishedAt &&
+          Date.parse(p.publishedAt.length === 10 ? p.publishedAt + 'T00:00:00+08:00' : p.publishedAt) > Date.parse(this.now());
+      })) {
+        heldSeries.add(series.slug);
+        result.blockedSeries.push({seriesSlug: series.slug, reasons: ['FUTURE_PREDECESSOR']});
       }
       let readySeen = false;
       if (
@@ -159,14 +176,12 @@ export class ReleaseQueue {
     const candidates = eligible.articles.filter(
       (p) => !reason(p.slug, p.seriesSlug) && !releases.some((r) => r.slug === p.slug && !r.unlockedAt),
     );
-    const active =
-      snapshot.series.find(
-        (series) =>
-          series.sections.some((x) => x.posts.some((p) => p.status === 'published')) &&
-          candidates.some((p) => p.seriesSlug === series.slug),
-      )?.slug ??
-      releases.find((r) => r.state === 'verified-public' && r.seriesSlug && candidates.some((p) => p.seriesSlug === r.seriesSlug))
-        ?.seriesSlug;
+    const active = s.data.activeSeries;
+    // A held active series cannot be replaced by another waiting series.
+    if (active && !candidates.some(p=>p.seriesSlug===active)) {
+      for (let i=candidates.length-1;i>=0;i--)
+        if (candidates[i].seriesSlug && candidates[i].seriesSlug !== active) candidates.splice(i,1);
+    }
     // Preserve the active series without changing its stored whole-series readyAt.
     const fixedSlots = Object.entries(s.data.overrides)
       .filter(([slug]) => candidates.some((p) => p.slug === slug))
@@ -222,27 +237,82 @@ export class ReleaseQueue {
       throw new Error('INVALID_SNAPSHOT');
     const stored = await this.store.read();
     const readiness = new Map<string, string>();
-    for (const p of snapshot.posts.filter((p) => p.status === 'ready' && !stored.data.posts[p.slug]?.firstReadyAt)) {
-      const value = snapshot.firstReadyAt ? await snapshot.firstReadyAt(p) : this.now();
-      if (!Number.isFinite(Date.parse(value)) || Date.parse(value) > Date.parse(this.now())) throw new Error('INVALID_READY_HISTORY');
-      readiness.set(p.slug, value);
+    const at = this.now();
+    instant(at);
+    for (const p of snapshot.posts.filter(p => p.status === 'ready')) {
+      const previous = stored.data.posts[p.slug];
+      const value = snapshot.firstReadyAt && (!previous?.firstReadyAt || stored.data.observedRevision !== snapshot.revision)
+        ? await snapshot.firstReadyAt(p) : previous?.firstReadyAt ?? at;
+      if (instant(value) > instant(at)) throw new Error('INVALID_READY_HISTORY');
+      const floor=previous?.eligibilityFloor;
+      readiness.set(p.slug,floor && instant(floor)>instant(value)?floor:value);
+    }
+    const seriesHistory = new Map<string,string>();
+    if (snapshot.firstSeriesReadyAt && stored.data.observedRevision !== snapshot.revision) {
+      for (const series of snapshot.series) {
+        const refs = series.sections.flatMap(s => s.posts);
+        if (!series.paused && !series.external && refs.length && refs.every(ref => ['ready','published'].includes(ref.status) &&
+          snapshot.posts.some(p => p.slug === ref.slug && p.status === ref.status))) {
+          const value = await snapshot.firstSeriesReadyAt(series);
+          if (instant(value) > instant(at)) throw new Error('INVALID_READY_HISTORY');
+          seriesHistory.set(series.slug, value);
+        }
+      }
     }
     await this.mutate((s) => {
+      if (s.version !== stored.version) throw new Error('QUEUE_CONFLICT');
+      s.data.startedAt ??= at;
+      s.data.observedRevision = snapshot.revision;
+      for (const slug of Object.keys(s.data.posts))
+        if (!snapshot.posts.some(p => p.slug === slug)) delete s.data.posts[slug];
       for (const p of snapshot.posts) {
         if (!['draft', 'ready', 'published'].includes(p.status)) throw new Error('INVALID_SNAPSHOT');
         const record = (s.data.posts[p.slug] ??= {});
-        if (p.status === 'ready' && !record.firstReadyAt) record.firstReadyAt = readiness.get(p.slug)!;
-        s.data.posts[p.slug] = record;
+        if (p.status === 'ready') record.firstReadyAt = readiness.get(p.slug)!;
+        else if (p.status !== 'published') delete record.firstReadyAt;
       }
       const eligible = this.eligible(s, snapshot);
-      for (const series of snapshot.series)
-        if (
-          !eligible.blockedSeries.some((b) => b.seriesSlug === series.slug) &&
-          series.sections.some((x) => x.posts.some((p) => p.status === 'ready'))
-        ) {
-          s.data.seriesReadyAt[series.slug] ??= this.now();
-          s.data.seriesOrder[series.slug] = JSON.stringify(series.sections.flatMap((x) => x.posts.map((p) => p.slug)));
+      const started = snapshot.series.filter(series => {
+        const refs = series.sections.flatMap(x => x.posts);
+        const unfinished = refs.some(p => p.status !== 'published') || refs.some(ref => {
+          const p=snapshot.posts.find(p=>p.slug===ref.slug);
+          return p?.publishedAt && Date.parse(p.publishedAt) > Date.parse(at);
+        });
+        return unfinished && (refs.some(p=>p.status==='published') ||
+          s.data.releases.some(r=>r.seriesSlug===series.slug && !r.unlockedAt));
+      });
+      if (s.data.activeSeries) {
+        const active = snapshot.series.find(x=>x.slug===s.data.activeSeries);
+        if (active && active.sections.flatMap(x=>x.posts).every(ref=> {
+          const p=snapshot.posts.find(p=>p.slug===ref.slug);
+          return ref.status==='published' && p?.status==='published' &&
+            (!p.publishedAt || Date.parse(p.publishedAt)<=Date.parse(at));
+        }) && !s.data.releases.some(r=>r.seriesSlug===active.slug && !r.unlockedAt && r.state!=='verified-public'))
+          delete s.data.activeSeries;
+      }
+      if (!s.data.activeSeries) {
+        if (started.length > 1) throw new Error('MULTIPLE_ACTIVE_SERIES');
+        s.data.activeSeries = started[0]?.slug;
+      }
+      for (const slug of Object.keys(s.data.seriesReadyAt))
+        if (!snapshot.series.some(p=>p.slug===slug)) delete s.data.seriesReadyAt[slug];
+      for (const series of snapshot.series) {
+        const refs=series.sections.flatMap(x=>x.posts);
+        const order=JSON.stringify(refs.map(p=>p.slug));
+        const hasStarted=refs.some(p=>p.status==='published') || s.data.releases.some(r=>r.seriesSlug===series.slug);
+        if (eligible.blockedSeries.some(b=>b.seriesSlug===series.slug)) {
+          if (!hasStarted) delete s.data.seriesReadyAt[series.slug];
+          continue;
         }
+        if (!refs.some(p=>p.status==='ready')) continue;
+        const changed=s.data.seriesOrder[series.slug] && s.data.seriesOrder[series.slug]!==order;
+        const evidence=[...refs.filter(p=>p.status==='ready').map(p=>s.data.posts[p.slug].firstReadyAt!),seriesHistory.get(series.slug),s.data.seriesEligibilityFloor?.[series.slug]].filter((x):x is string=>!!x);
+        const history=seriesHistory.has(series.slug) ? evidence.reduce((latest,value)=>instant(value)>instant(latest)?value:latest) : undefined;
+        const previous=s.data.seriesReadyAt[series.slug];
+        s.data.seriesReadyAt[series.slug]=changed && !hasStarted ? at :
+          history && (!previous || instant(history)>instant(previous)) ? history : previous ?? at;
+        s.data.seriesOrder[series.slug]=order;
+      }
       for (const r of s.data.releases)
         if (['publishing', 'committed-slot'].includes(r.state) && Date.parse(r.leaseUntil) <= Date.parse(this.now())) {
           r.state = 'verification-unknown';
@@ -260,9 +330,13 @@ export class ReleaseQueue {
     await this.ingest(snapshot);
     return this.mutate((s) => {
       const now = this.now();
-      const slot = currentSlot(now);
-      const day = new Date(Date.parse(slot) + 8 * 3600000).getUTCDay();
-      if ((day !== 1 && day !== 4) || Date.parse(now) < Date.parse(slot)) return undefined;
+      const slot = formatTaipei(slotAtOrBefore(instant(now)));
+      if (!s.data.startedAt || instant(s.data.startedAt) > instant(slot)) return undefined;
+      if (s.data.activeSeries) {
+        const active=snapshot.series.find(x=>x.slug===s.data.activeSeries);
+        if (!active || this.eligible(s,snapshot).blockedSeries.some(b=>b.seriesSlug===s.data.activeSeries))
+          throw new Error('ACTIVE_SERIES_RECONCILIATION_REQUIRED');
+      }
       if (s.data.releases.some((r) => !r.unlockedAt && (r.slot === slot || r.state !== 'verified-public'))) return undefined;
       // Plan as of the due slot while using already ingested durable readiness.
       const temporary = new ReleaseQueue(this.store, () => slot, this.enabled);
@@ -282,6 +356,7 @@ export class ReleaseQueue {
         attempts: s.data.releases.find((r) => r.slug === candidate.slug)?.attempts ?? 0,
         events: s.data.releases.find((r) => r.slug === candidate.slug)?.events ?? [],
       };
+      if (item.seriesSlug) s.data.activeSeries ??= item.seriesSlug;
       event(r, item.readyAt ?? now, 'first-ready');
       event(r, now, 'plan-version', String(s.version));
       event(r, now, 'slot-committed', slot);
@@ -370,7 +445,18 @@ export class ReleaseQueue {
       const key = (input.scope ?? 'post') + ':' + input.slug;
       if (input.action === 'pause') {
         if (!s.data.paused.includes(key)) s.data.paused.push(key);
-      } else if (input.action === 'resume') s.data.paused = s.data.paused.filter((k) => k !== key);
+      } else if (input.action === 'resume') {
+        if(s.data.paused.includes(key)) {
+          if(input.scope==='series') {
+            (s.data.seriesEligibilityFloor ??= {})[input.slug]=this.now();
+            s.data.seriesReadyAt[input.slug]=this.now();
+          } else {
+            const post=(s.data.posts[input.slug] ??= {});
+            post.eligibilityFloor=this.now();post.firstReadyAt=this.now();
+          }
+        }
+        s.data.paused=s.data.paused.filter(k=>k!==key);
+      }
       else if (input.action === 'adopt-auto') {
         if (!s.data.adopted.includes(input.slug)) s.data.adopted.push(input.slug);
       } else if (input.action === 'override') {
