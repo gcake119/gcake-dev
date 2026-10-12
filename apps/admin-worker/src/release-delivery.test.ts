@@ -312,3 +312,29 @@ test('D1 pending source changes and missing legacy digest retain identity withou
     assert.equal(await d.execute(),undefined);assert.equal(writes,1);
   }
 });
+
+test('manual delivery preserves one identity across duplicate confirmation and unknown write result without history fallback',async()=>{
+  for(const unknown of [false,true]) {
+    const s=setup();const current=snapshot();let writes=0;
+    current.firstReadyAt=async()=>{throw new Error('history must not be consulted for explicit manual authorization')};
+    const git:any={snapshot:async()=>current,save:async(input:any)=>{writes++;applyPublication(current,input.files);current.revision='sha2';if(unknown)throw new Error('reply lost');return {commitSha:'sha2'}}};
+    const runtime=new ReleaseDelivery(s.queue,git,true,publicFetch());
+    const preview=await (s.queue as any).previewManual(current,'one');
+    const r=await (runtime as any).publishNow('one',preview.version,preview.revision,'owner');
+    assert.equal(r.mode,'manual');assert.equal(r.state,unknown?'verification-unknown':'awaiting-verification');
+    assert.equal(r.publicationDigest,createHash('sha256').update(current.posts[0].source).digest('hex'));
+    const repeat=await (runtime as any).publishNow('one',preview.version,preview.revision,'owner');
+    assert.equal(repeat.id,r.id);assert.equal(writes,1);
+    assert.equal(current.posts[0].source.split(/\n---/)[1],source.split(/\n---/)[1]);
+  }
+});
+
+test('manual public confirmation requires the actual manual date, full source digest and canonical RSS',async()=>{
+  const s=setup();const current=snapshot();
+  const git:any={snapshot:async()=>current,save:async(input:any)=>{applyPublication(current,input.files);current.revision='sha2';return {commitSha:'sha2'}}};
+  const fetcher:any=async(input:any)=>new Response(String(input).endsWith('rss.xml')?
+    `<rss><channel><item><title>測試文章</title><link>${base}posts/one/</link><guid>${base}posts/one/</guid></item></channel></rss>`:
+    `<html><link rel="canonical" href="${base}posts/one/"><meta name="gcake-source-revision" content="${createHash('sha256').update(current.posts[0].source).digest('hex')}"><script type="application/ld+json">${JSON.stringify({'@type':'BlogPosting',headline:'測試文章',datePublished:current.posts[0].publishedAt,url:base+'posts/one/'})}</script></html>`);
+  const runtime=new ReleaseDelivery(s.queue,git,true,fetcher);const p=await s.queue.previewManual(current,'one');const r=await runtime.publishNow('one',p.version,p.revision,'owner');
+  const verified=await runtime.reverify(r.id);assert.equal(verified.id,r.id);assert.equal(verified.state,'verified-public');assert.equal(verified.mode,'manual');assert.equal(verified.slot,'2026-10-11T18:00:00+08:00');
+});

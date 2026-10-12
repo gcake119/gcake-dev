@@ -30,3 +30,6 @@
 - [x] 8.4 Complete full local tests/check/build/rehearsals/workflow/Worker dry-run/security review, document remaining provider gates, split functional commits, push PR 7 and confirm exact-head CI while production remains disabled.
 
 - [x] 8.5 Fix production readiness request budget with test-first batch reads and immutable per-request caches; retain first-parent readiness, refresh main and fail closed on ambiguous provider data. Run full local gates without publication.
+- [x] 8.6 Test-first owner manual preview/confirmation with retained D1 identity, source/version fences, full-series and predecessor guards, no backdating, atomic delivery and owner UI. Preserve body and later normal slots.
+- [x] 8.7 Test-first safe provider/runtime diagnostic categories and redaction; verify local native Workerd and provider boundaries and full local gates before pushing a reviewable candidate; provider acceptance remains separate.
+- [ ] 8.8 After explicit owner approval, deploy the reviewed manual/diagnostic candidate, reconcile D1 and public evidence, publish chapter one today once, verify full body/canonical/date/RSS/manifest, and activate normal automation only after its queue read succeeds. Preserve chapter four and notification identity.

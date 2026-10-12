@@ -463,3 +463,41 @@ test('D1 finishing active series still rejects two newly discovered started seri
  }
  await assert.rejects(()=>queue.ingest(s),/MULTIPLE_ACTIVE_SERIES/);
 });
+
+test('owner manual preview is read-only; confirmation records actual time without backdating and duplicate intent retains identity',async()=>{
+  const s=setup();s.time('2026-10-12T03:00:00Z');const snap=snapshot();
+  const preview=await (s.queue as any).previewManual(snap,'p0');
+  assert.equal((await s.store.read()).version,0);
+  const result=await (s.queue as any).acquireManual(snap,'p0',preview.version,preview.revision,'owner',true);
+  assert.equal(result.created,true);assert.equal(result.record.mode,'manual');assert.equal(result.record.slot,'2026-10-12T11:00:00+08:00');
+  const stored=await s.store.read();assert.equal(stored.data.startedAt,'2026-10-12T03:00:00Z');assert.equal(stored.data.releases.length,1);
+  const repeat=await (s.queue as any).acquireManual(snap,'p0',preview.version,preview.revision,'owner',true);
+  assert.equal(repeat.created,false);assert.equal(repeat.record.id,result.record.id);assert.equal((await s.store.read()).version,stored.version);
+});
+test('manual confirmation refuses out-of-order, stale version/source, disabled and held publications without identities',async()=>{
+  for(const variant of ['order','version','revision','disabled','held','incomplete']) {
+    const s=setup();const snap=snapshot();const preview=await (s.queue as any).previewManual(snap,'p0');
+    if(variant==='held'){const state=await s.store.read();state.data.paused.push('series:s');await s.store.write(state);}
+    if(variant==='incomplete')snap.series[0].sections[0].posts[2].status='planned';
+    await assert.rejects(()=>(s.queue as any).acquireManual(snap,variant==='order'?'p1':'p0',variant==='version'?99:preview.version,variant==='revision'?'stale':preview.revision,'owner',variant!=='disabled'));
+    assert.equal((await s.store.read()).data.releases.length,0);
+  }
+});
+
+test('verified Monday manual publication occupies its date without claiming 07:00 and Thursday resumes chapter two',async()=>{
+  const s=setup();s.time('2026-10-12T03:00:00Z');const snap=snapshot();const preview=await s.queue.previewManual(snap,'p0');
+  const manual=await s.queue.acquireManual(snap,'p0',preview.version,preview.revision,'owner',true);
+  await s.queue.record(manual.record.id,manual.record.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[0].status='published';snap.posts[0].publishedAt=manual.record.slot;snap.series[0].sections[0].posts[0].status='published';snap.revision='head-2';
+  assert.equal((await s.queue.view(snap)).plan[0].releaseAt,'2026-10-15T07:00:00+08:00');
+  assert.equal(await s.queue.acquire(snap,true),undefined);
+  s.time('2026-10-14T23:05:00Z');const next=await s.queue.acquire(snap,true);
+  assert.equal(next?.slug,'p1');assert.equal(next?.slot,'2026-10-15T07:00:00+08:00');
+  const stored=await s.store.read();assert.equal(stored.data.startedAt,'2026-10-12T03:00:00Z');assert.equal(stored.data.releases[0].slot,'2026-10-12T11:00:00+08:00');
+});
+
+test('manual publication cannot treat a legacy published intent as a publicly verified predecessor',async()=>{
+  const s=setup();const snap=snapshot();snap.posts[0].status='published';snap.posts[0].publishedAt='2026-10-10T07:00:00+08:00';snap.series[0].sections[0].posts[0].status='published';
+  await assert.rejects(()=>s.queue.previewManual(snap,'p1'),/MANUAL_PREDECESSOR_NOT_PUBLIC/);
+  assert.equal((await s.store.read()).data.releases.length,0);
+});

@@ -30,6 +30,12 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
     if (typeof body.slug !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(body.slug))
       return fail(400, 'VALIDATION_FAILED', '文章識別名稱無效。');
     const snapshot = await runtime.git.snapshot();
+    if(url.pathname===prefix+'/manual-preview')return Response.json(await runtime.queue.previewManual(snapshot,body.slug));
+    if(url.pathname===prefix+'/publish-now') {
+      if(body.confirmed!==true || typeof body.revision!=='string' || !Number.isInteger(body.version) || Number(body.version)<0)
+        return fail(400,'CONFIRMATION_REQUIRED','請先預覽並明確確認立即發布。');
+      return Response.json(await runtime.publishNow(body.slug,Number(body.version),body.revision,session.user.githubUserId));
+    }
     if (url.pathname === prefix + '/preview') {
       if (typeof body.releaseAt !== 'string') return fail(400, 'VALIDATION_FAILED', '請選擇週一或週四的時段。');
       return Response.json(await runtime.queue.previewOverride(snapshot, body.slug, body.releaseAt));
@@ -62,6 +68,13 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
       INVALID_READY_HISTORY: '主線歷史回應不完整，尚未更動發布；請查核安全診斷。',
       READY_HISTORY_LIMIT: '主線歷史超過查核上限，尚未更動發布。',
       READY_HISTORY_RESPONSE_LIMIT: '歷史回應超過大小上限，尚未更動發布。',
+      MANUAL_NOT_READY: '文章尚未定稿，不能立即發布。',
+      MANUAL_DATE_COMMITMENT_HELD: '文章已有日期承諾，請先核對並處理。',
+      MANUAL_INELIGIBLE: '文章或系列尚未符合立即發布資格。',
+      MANUAL_PREDECESSOR_NOT_PUBLIC: '前一篇尚未公開，不能跳過閱讀順序。',
+      PENDING_RELEASE_RECONCILIATION_REQUIRED: '尚有未確認發布，請先核對原紀錄。',
+      RELEASE_IDENTITY_LOCKED: '文章已有發布身分，請核對原紀錄，不會新增發布。',
+      CONFIRMATION_REQUIRED: '需要明確確認這次操作。',
       RELEASE_DISABLED: '正式發布尚未啟用；目前僅提供排程與驗證。',
       MULTIPLE_ACTIVE_SERIES: '有多個已開始系列，請先確認接續的系列；尚未新增發布。',
       ACTIVE_SERIES_RECONCILIATION_REQUIRED: '接續系列已刪除或內容不一致，請先恢復並核對閱讀順序。',
@@ -71,7 +84,6 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
       GIT_CONFLICT: 'Git 內容已更新，請重新載入。',
       REVERIFY_REQUIRED: '公開結果尚未確認，請先檢查公開狀態。',
       UNSAFE_UNLOCK: '無法安全解除此承諾，請先檢查公開狀態。',
-      CONFIRMATION_REQUIRED: '解除鎖定需要明確確認。',
       INVALID_RELEASE_SLOT: '請選擇未來週一或週四 07:00 的時段。',
       RELEASE_MIGRATION_REQUIRED: '發布佇列資料庫尚未完成遷移。',
       LEASE_ACTIVE: '發布仍在執行，請稍後檢查。',
