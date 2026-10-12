@@ -35,6 +35,7 @@
     "distribution:inventory": "node --import tsx scripts/publishing/distribution-inventory.ts",
     "distribution:all-plan": "node --import tsx scripts/publishing/plan-all-distribution.ts",
     "distribution:snapshot": "node --import tsx scripts/publishing/snapshot-distribution.ts",
+    "distribution:sync": "node --import tsx scripts/publishing/sync-distribution.ts",
     "distribution:handoff": "node --import tsx scripts/publishing/distribution-handoff.ts"
   },
   "dependencies": {

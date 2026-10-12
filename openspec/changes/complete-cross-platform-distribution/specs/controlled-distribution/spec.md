@@ -238,6 +238,25 @@ The user-approved full-mirror policy SHALL permit Substack alone to display the 
 - **WHEN** the approved minute policy finalizes the same durable attempt
 - **THEN** only that article is updated with email and App delivery disabled
 
+### Requirement: Scripted synchronization round
+One command SHALL verify the runtime pin and accepted policy, acquire an exclusive round lock, audit all durable intent, obtain one fresh fixed main snapshot, inventory sources and run the existing exact per-target plans. Planning SHALL perform zero article writes. Execution SHALL preserve independent target outcomes and never automatically replay a failed operation. Every round SHALL save secret-free evidence and remove only its owned source snapshot after all operations settle; unresolved side-browser requests SHALL preserve their source and identity. Locks SHALL NOT be stolen by age. No unchanged-state notification SHALL be generated.
+#### Scenario: Existing verified article
+- **GIVEN** one eligible unchanged article verified on both platforms
+- **WHEN** the execution command runs
+- **THEN** both mirrors are read back, zero articles or notifications are sent, evidence is saved and the owned snapshot is removed
+#### Scenario: Independent platform failure
+- **GIVEN** one eligible article and Paragraph returns a rate limit
+- **WHEN** the round executes
+- **THEN** Paragraph records a bounded failure once, Substack continues independently and no operation is automatically retried
+#### Scenario: Concurrent or changed runtime
+- **GIVEN** another round owns the lock or a pinned file changed
+- **WHEN** a round starts
+- **THEN** it stops before source or platform operations and does not rewrite the pin or steal the lock
+#### Scenario: Uncertain prepare
+- **GIVEN** preparation returns an uncertain outcome
+- **WHEN** the remaining plan includes publication
+- **THEN** publication is skipped and the original identity and durable intent are preserved
+
 ### Requirement: Scripted side-browser handoff
 A reusable command SHALL inspect an exact live request and submit complete observed evidence without exporting authentication or driving a background browser. It SHALL bind request identity, configured source commit, current source body, remote identity, expiry and matching durable write intent, prove Pages before each requested write, and create a reply exclusively with private permissions. Full text SHALL be compared directly; an expected body SHALL NOT be substituted for missing observed text. Existing zero email, App and scheduling constraints SHALL remain mandatory.
 #### Scenario: Valid saved draft
