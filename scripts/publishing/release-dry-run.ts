@@ -1,7 +1,7 @@
 /** Local only: copies source, writes ephemeral Git/SQLite and builds real Astro. */
 import { mkdtemp, cp, symlink, readFile, writeFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative, sep } from 'node:path';
 import { execFileSync, execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createServer } from 'node:http';
@@ -12,10 +12,11 @@ import { ReleaseQueue, D1ReleaseStore, type ReleaseSnapshot } from '../../apps/a
 import { ReleaseDelivery } from '../../apps/admin-worker/src/release-delivery';
 const root = resolve('.');
 const dir = await mkdtemp(join(tmpdir(), 'gcake-release-simulation-'));
+try {
 for (const path of ['src', 'scripts', 'packages', 'astro.config.mjs', 'tsconfig.json', 'package.json'])
   await cp(join(root, path), join(dir, path), {
     recursive: true,
-    filter: (p) => !p.includes('/node_modules') && !p.includes('/dist') && !p.includes('/__pycache__'),
+    filter: (p) => !relative(root, p).split(sep).some(segment => ['node_modules', 'dist', '__pycache__'].includes(segment)),
   });
 await symlink(join(root, 'node_modules'), join(dir, 'node_modules'), 'dir');
 // Fixture lifecycle belongs only to this copy. Preserve Markdown suffix byte-for-byte.
@@ -240,3 +241,5 @@ try {
   await new Promise<void>(resolve=>server.close(()=>resolve()));db.close();
   await rm(dir,{recursive:true,force:true});
 }
+
+} finally { await rm(dir, {recursive:true, force:true}); }

@@ -1,3 +1,4 @@
+import { D1DistributionRuntime, InMemoryDistributionRuntime } from './distribution-runtime.js';
 export type PublicationTarget = 'github_pages' | 'paragraph' | 'substack';
 export type PublicationOperation = 'prepare' | 'publish' | 'verify' | 'retry' | 'newsletter';
 export interface PublicationOperationRequest {
@@ -5,7 +6,7 @@ export interface PublicationOperationRequest {
   readonly operation: PublicationOperation; readonly newsletterIntentKey?: string;
   readonly explicitIrreversibleIntent?: true;
 }
-export type PublicationTargetStatus = 'not_configured' | 'prepare_ready' | 'pending' | 'published' | 'verified' | 'failed' | 'manual_required' | 'stale';
+export type PublicationTargetStatus = 'not_configured' | 'prepare_ready' | 'pending' | 'published' | 'verified' | 'failed' | 'manual_required' | 'stale' | 'uncertain';
 
 export interface PublicationTargetState {
   readonly postSlug: string; readonly target: PublicationTarget; readonly sourceRevision: string;
@@ -21,6 +22,7 @@ export interface PublicationRepository {
 }
 
 export class InMemoryPublicationRepository implements PublicationRepository {
+  readonly runtime = new InMemoryDistributionRuntime();
   readonly states: PublicationTargetState[] = [];
   readonly migrations = new Set<string>();
   async listStates(postSlug: string) { return this.states.filter((state) => state.postSlug === postSlug); }
@@ -48,7 +50,8 @@ function rowState(row: TargetRow): PublicationTargetState {
 }
 
 export class D1PublicationRepository implements PublicationRepository {
-  constructor(private readonly database: D1DatabaseLike) {}
+  readonly runtime: D1DistributionRuntime;
+  constructor(private readonly database: D1DatabaseLike) { this.runtime = new D1DistributionRuntime(database); }
   async listStates(postSlug: string): Promise<readonly PublicationTargetState[]> {
     const rows = await this.database.prepare('SELECT * FROM publication_target_states WHERE post_slug = ?').bind(postSlug).all<TargetRow>();
     return rows.results.map(rowState);
@@ -134,14 +137,16 @@ export class PublicationOperations {
     else if (input.target === 'paragraph' && input.operation === 'prepare') status = 'prepare_ready';
     else if (input.target === 'paragraph') { status = 'failed'; error = 'PARAGRAPH_PRODUCTION_GATE_BLOCKED'; }
     else status = input.operation === 'verify' ? 'verified' : 'pending';
-    const state = { ...input, status, lastErrorCode: error, updatedAt: this.now() };
+    const current = (await this.repository.listStates(input.postSlug)).find((state) => state.target === input.target);
+    const state = { ...current, ...input, sourceRevision: current?.sourceRevision ?? input.sourceRevision, status, lastErrorCode: error, updatedAt: this.now() };
     await this.repository.putState(state);
     return state;
   }
 
   async fail(postSlug: string, target: PublicationTarget, sourceRevision: string, errorCode: string): Promise<void> {
+    const current = (await this.repository.listStates(postSlug)).find((state) => state.target === target);
     await this.repository.putState({
-      postSlug, target, sourceRevision,
+      ...current, postSlug, target, sourceRevision: current?.sourceRevision ?? sourceRevision,
       status: target === 'substack' ? 'manual_required' : 'failed', lastErrorCode: errorCode, updatedAt: this.now(),
     });
   }

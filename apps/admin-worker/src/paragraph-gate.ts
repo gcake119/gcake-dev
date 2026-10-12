@@ -8,9 +8,15 @@ export interface ParagraphProductionGate {
   readonly publicReadVerified: boolean;
 }
 
+export interface ParagraphTrialAuthorization {
+  kind: 'controlled-trial'; approved: true; newsletter: 'skip';
+  postSlug: string; sourceRevision: string; publicationSlug: string;
+  operation: 'prepare' | 'publish';
+}
+
 export function assertParagraphProductionGate(gate: ParagraphProductionGate): void {
-  for (const prerequisite of Object.keys(gate) as (keyof ParagraphProductionGate)[]) {
-    if (!gate[prerequisite]) throw new Error(`PARAGRAPH_PRODUCTION_GATE_BLOCKED:${prerequisite}`);
+  for (const prerequisite of ['userApproved', 'supportedInterfacePinned', 'createVerified', 'updateVerified', 'publishAndCanonicalDateVerified', 'retryProtectionVerified', 'publicReadVerified'] as const) {
+    if (gate[prerequisite] !== true) throw new Error(`PARAGRAPH_PRODUCTION_GATE_BLOCKED:${prerequisite}`);
   }
 }
 

@@ -1,3 +1,5 @@
+import { D1DistributionRuntime } from '../../apps/admin-worker/src/distribution-runtime.js';
+import { SqliteD1Database } from './sqlite-d1.js';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -36,7 +38,8 @@ function flag(name: string): string | undefined {
 function hasFlag(name: string): boolean { return args.includes(name); }
 
 class SqlitePublicationRepository implements PublicationRepository {
-  constructor(private readonly database: DatabaseSync) {}
+  readonly runtime: D1DistributionRuntime;
+  constructor(private readonly database: DatabaseSync) { this.runtime = new D1DistributionRuntime(new SqliteD1Database(database)); }
 
   async listStates(postSlug: string): Promise<readonly PublicationTargetState[]> {
     const rows = this.database.prepare('SELECT * FROM publication_target_states WHERE post_slug = ?').all(postSlug) as Array<Record<string, unknown>>;
@@ -110,6 +113,7 @@ const input: ParagraphPublicationInput = {
 const stateDb = flag('--state-db') ?? '/private/tmp/gcake-paragraph-production-gate.sqlite';
 const database = new DatabaseSync(stateDb);
 database.exec(await readFile(new URL('../../apps/admin-worker/migrations/0003_publication_operations.sql', import.meta.url), 'utf8'));
+database.exec(await readFile(new URL('../../apps/admin-worker/migrations/0006_distribution_checkpoints.sql', import.meta.url), 'utf8'));
 const repository = new SqlitePublicationRepository(database);
 const client = command === 'dry-run'
   ? ({}) as ParagraphRestClient

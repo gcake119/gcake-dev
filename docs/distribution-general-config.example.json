@@ -1,0 +1,89 @@
+{
+  "paragraph": {
+    "publicationSlug": "gcake",
+    "writeEnabled": false,
+    "openapiCommit": "56c2fd279cfad810dab400236773406e41080d65",
+    "gate": {
+      "userApproved": false,
+      "supportedInterfacePinned": false,
+      "createVerified": false,
+      "updateVerified": false,
+      "publishAndCanonicalDateVerified": false,
+      "retryProtectionVerified": false,
+      "publicReadVerified": false
+    }
+  },
+  "substack": {
+    "writeEnabled": false,
+    "profile": "/outside/git/substack-profile",
+    "ui": {
+      "version": 1,
+      "origin": "https://gcakedev.substack.com",
+      "reviewedAt": "2026-10-11",
+      "publishingCapabilitiesVerified": false,
+      "discoveryVerified": false,
+      "homePath": "/publish/home",
+      "postsPath": "/publish/posts",
+      "editPath": "/publish/post/{id}",
+      "createMenu": {
+        "role": "button",
+        "name": "\u5efa\u7acb"
+      },
+      "create": {
+        "role": "menuitem",
+        "name": "\u6587\u7ae0"
+      },
+      "title": {
+        "role": "textbox",
+        "name": "title"
+      },
+      "body": {
+        "role": "textbox",
+        "name": "\u958b\u59cb\u5beb\u4f5c\u2026\u2026"
+      },
+      "saved": {
+        "role": "button",
+        "name": "\u5df2\u5132\u5b58"
+      },
+      "settings": {
+        "role": "button",
+        "name": "\u8a2d\u5b9a"
+      },
+      "continue": {
+        "role": "button",
+        "name": "\u7e7c\u7e8c"
+      },
+      "email": {
+        "role": "checkbox",
+        "name": "\u900f\u904e\u96fb\u5b50\u90f5\u4ef6\u548c Substack App \u50b3\u9001"
+      },
+      "confirmPublish": {
+        "role": "button",
+        "name": "\u7acb\u5373\u767c\u4f48"
+      },
+      "draftLinks": "UNVERIFIED",
+      "scanComplete": {
+        "role": "tab",
+        "name": "UNVERIFIED"
+      },
+      "publicBody": "div.body.markup",
+      "publicTitle": "h1.post-title",
+      "publicDate": "time[datetime]",
+      "publicationPolicy": "full-mirror",
+      "displayedDateFormat": "datetime-local",
+      "displayedDateOffsetMinutes": 480,
+      "displayedDatePrecision": "minute"
+    }
+  },
+  "unattended": {
+    "enabled": false,
+    "scope": "all-formal-markdown",
+    "repository": "gcake119/gcake-dev",
+    "branch": "main",
+    "policy": "pages-first-no-newsletter",
+    "targets": [
+      "paragraph",
+      "substack"
+    ]
+  }
+}

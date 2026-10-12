@@ -58,3 +58,13 @@ test('one target failure never rolls back another verified target', async () => 
   assert.equal(states.find((state) => state.target === 'github_pages')?.status, 'verified');
   assert.equal(states.find((state) => state.target === 'substack')?.status, 'manual_required');
 });
+
+test('prepare and failure preserve remote identity and newsletter history', async () => {
+  const repository = new InMemoryPublicationRepository();
+  await repository.putState({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'abc', status: 'verified', remoteId: 'remote', remoteUrl: 'https://paragraph.com/@gcake/demo', newsletterSentAt: 'sent', updatedAt: 'now' });
+  const operations = new PublicationOperations(repository);
+  await operations.operate({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'def', operation: 'prepare' });
+  await operations.fail('demo', 'paragraph', 'def', 'FAILED');
+  assert.equal(repository.states[0]?.remoteId, 'remote');
+  assert.equal(repository.states[0]?.newsletterSentAt, 'sent');
+});
