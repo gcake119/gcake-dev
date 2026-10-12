@@ -29,3 +29,20 @@ test('queue read requires owner; mutations require CSRF; automation requires sec
   });
   assert.equal((await releaseApi(invalid, runtime, session)).status, 400);
 });
+
+test('release errors emit only stable categories without raw secrets or provider messages',async()=>{
+  const saved=console.error;const logs:any[]=[];console.error=(...args:any[])=>logs.push(args);
+  try {
+    const bad:any={...runtime,git:{snapshot:async()=>{throw new Error('Bearer ghs_private_should_never_appear')}}};
+    const session:any={user:{githubUserId:'owner'},expiresAt:Date.now()+10000};
+    assert.equal((await releaseApi(new Request('https://cms.test/api/v1/releases'),bad,session)).status,400);
+    assert.equal(logs.length,1);assert.equal(JSON.stringify(logs).includes('ghs_private'),false);assert.equal(JSON.stringify(logs).includes('Bearer'),false);
+  } finally {console.error=saved;}
+});
+
+test('inherited object names cannot become release error categories',async()=>{
+  const bad:any={...runtime,git:{snapshot:async()=>{throw new Error('toString')}}};
+  const session:any={user:{githubUserId:'owner'},expiresAt:Date.now()+10000};
+  const response=await releaseApi(new Request('https://cms.test/api/v1/releases'),bad,session);const data=await response.json();
+  assert.equal(data.error.code,'RELEASE_FAILED');assert.equal(typeof data.error.message,'string');
+});

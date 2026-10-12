@@ -288,8 +288,14 @@ export class GitHubAppReadClient {
       if(ancestry.length%3 || ancestry.some((part:any,i:number)=>part!==['parents','nodes',0][i%3]))return false;
       return path.reduce((value:any,key:any)=>value?.[key],payload.data)===null;
     };
-    if(!payload.data?.repository?.object || (payload.errors && (!Array.isArray(payload.errors) || !payload.errors.every(absentFileError))))
+    if(!payload.data?.repository?.object || (payload.errors && (!Array.isArray(payload.errors) || !payload.errors.every(absentFileError)))) {
+      const errors=Array.isArray(payload.errors)?payload.errors:[];
+      const allowed=new Set(['NOT_FOUND','FORBIDDEN','RATE_LIMITED','RESOURCE_LIMITS_EXCEEDED']);
+      console.warn('release-history-rejected',{stage:'graphql',root:!!payload.data?.repository?.object,
+        types:[...new Set(errors.map((e:any)=>allowed.has(e.type)?e.type:'UNKNOWN'))],
+        depthRejected:errors.some((e:any)=>typeof e.message==='string' && e.message.startsWith('Query has depth of '))});
       throw new Error('INVALID_READY_HISTORY');
+    }
     let node=payload.data.repository.object;const pending=new Map<string,{date:string;parent?:string;files:Map<string,string|undefined>}>();
     if(node.oid!==sha) throw new Error('INVALID_READY_HISTORY');
     for(let i=0;node && i<10;i++) {
@@ -300,7 +306,7 @@ export class GitHubAppReadClient {
       for(const [j,path] of this.historyPaths.entries()) {
         if(!Object.hasOwn(node,`f${j}`)) throw new Error('INVALID_READY_HISTORY');
         const file=node[`f${j}`];
-        if(file!==null && (file.object?.__typename!=='Blob' || typeof file.object.text!=='string')) throw new Error('INVALID_READY_HISTORY');
+        if(file!==null && (!file || file.object?.__typename!=='Blob' || typeof file.object.text!=='string')) {console.warn('release-history-rejected',{stage:'blob',index:j});throw new Error('INVALID_READY_HISTORY');}
         files.set(path,file?.object.text);
       }
       const parent=node.parents.nodes[0];

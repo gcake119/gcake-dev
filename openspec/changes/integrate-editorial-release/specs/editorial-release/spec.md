@@ -169,3 +169,10 @@ D1 SHALL be the only operational release queue. Git SHALL retain article/manifes
 - **GIVEN** a disposable D1-compatible database, content copy and loopback site
 - **WHEN** build failure recovery and RSS notification rehearsal run
 - **THEN** the same release identity survives, six bodies and order remain unchanged, one verified new article is observed once across restart, and production receives no writes or messages
+
+### Requirement: Safe release failure diagnostics
+Authenticated operators SHALL receive stable release failure categories and provider/runtime diagnostics SHALL exclude credentials, article bodies and raw provider messages.
+#### Scenario: Provider history is rejected
+- **GIVEN** history cannot be safely resolved
+- **WHEN** the queue read stops
+- **THEN** the operator can distinguish history rejection from ordinary eligibility while no credential or raw private response is disclosed and no publication is performed

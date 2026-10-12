@@ -59,6 +59,9 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
   } catch (error) {
     const code = error instanceof Error ? error.message : 'RELEASE_FAILED';
     const messages: Record<string, string> = {
+      INVALID_READY_HISTORY: '主線歷史回應不完整，尚未更動發布；請查核安全診斷。',
+      READY_HISTORY_LIMIT: '主線歷史超過查核上限，尚未更動發布。',
+      READY_HISTORY_RESPONSE_LIMIT: '歷史回應超過大小上限，尚未更動發布。',
       RELEASE_DISABLED: '正式發布尚未啟用；目前僅提供排程與驗證。',
       MULTIPLE_ACTIVE_SERIES: '有多個已開始系列，請先確認接續的系列；尚未新增發布。',
       ACTIVE_SERIES_RECONCILIATION_REQUIRED: '接續系列已刪除或內容不一致，請先恢復並核對閱讀順序。',
@@ -73,10 +76,15 @@ export async function releaseApi(request: Request, runtime: ReleaseDelivery, ses
       RELEASE_MIGRATION_REQUIRED: '發布佇列資料庫尚未完成遷移。',
       LEASE_ACTIVE: '發布仍在執行，請稍後檢查。',
     };
+    const category=Object.hasOwn(messages,code)?code:code.startsWith('GITHUB_API_FAILED:')?'GITHUB_API_FAILED':'RELEASE_FAILED';
+    const kind=error instanceof TypeError?'TypeError':error instanceof SyntaxError?'SyntaxError':error instanceof Error?'Error':'Unknown';
+    const property=error instanceof TypeError?/reading '([^']+)'/.exec(error.message)?.[1]:undefined;
+    const safeProperty=property && ['object','files','firstReadyAt','seriesOrder','seriesReadyAt','parents','nodes','document','version'].includes(property)?property:undefined;
+    console.error('release-operation-failed',{category,kind,property:safeProperty});
     return fail(
       /CONFLICT|REQUIRED|DISABLED|ACTIVE/.test(code) ? 409 : 400,
-      code.startsWith('GITHUB') ? 'GITHUB_API_FAILED' : code in messages ? code : 'RELEASE_FAILED',
-      messages[code] ?? '發布操作失敗，請重新載入或檢查執行紀錄。',
+      code.startsWith('GITHUB') ? 'GITHUB_API_FAILED' : Object.hasOwn(messages,code) ? code : 'RELEASE_FAILED',
+      Object.hasOwn(messages,code)?messages[code]:'發布操作失敗，請重新載入或檢查執行紀錄。',
     );
   }
 }
