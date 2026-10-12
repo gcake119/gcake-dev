@@ -1,0 +1,27 @@
+---
+import { site } from '@/data/site';
+
+const enabled = import.meta.env.PROD && import.meta.env.WEBSITE_ANALYTICS_ENABLED === 'true';
+const token = import.meta.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN?.trim() ?? '';
+if (enabled && !/^[a-f0-9]{32}$/i.test(token)) {
+  throw new Error('CLOUDFLARE_WEB_ANALYTICS_TOKEN must be a 32-character hexadecimal token when WEBSITE_ANALYTICS_ENABLED=true');
+}
+---
+{enabled && (
+  <script is:inline type="module" id="gcake-web-analytics"
+    data-token={token} data-origin={new URL(site.url).origin} data-base-path={site.basePath}>
+    (() => {
+      const config = document.getElementById('gcake-web-analytics');
+      const basePath = config.dataset.basePath;
+      if (location.origin !== config.dataset.origin
+        || !(location.pathname === basePath || location.pathname.startsWith(`${basePath}/`))) return;
+      const src = 'https://static.cloudflareinsights.com/beacon.min.js';
+      if (document.querySelector(`script[src="${src}"]`)) return;
+      const beacon = document.createElement('script');
+      beacon.type = 'module';
+      beacon.src = src;
+      beacon.setAttribute('data-cf-beacon', JSON.stringify({ token: config.dataset.token }));
+      document.body.appendChild(beacon);
+    })();
+  </script>
+)}

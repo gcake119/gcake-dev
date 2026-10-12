@@ -3,6 +3,7 @@ import '@/styles/global.css';
 import { site } from '@/data/site';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
+import WebAnalytics from '@/components/WebAnalytics.astro';
 
 interface Props {
   title?: string;
@@ -31,6 +32,7 @@ const imageUrl = image
   ? (/^https?:\/\//.test(image) ? image : new URL(image.replace(/^\/+/, ''), `${site.url}/`).toString())
   : undefined;
 const structuredItems = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
+const googleVerification = import.meta.env.GOOGLE_SITE_VERIFICATION?.trim();
 ---
 <!doctype html>
 <html lang="zh-Hant">
@@ -38,6 +40,7 @@ const structuredItems = structuredData ? (Array.isArray(structuredData) ? struct
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
     <meta property="og:site_name" content={site.title} />
     <meta property="og:locale" content="zh_TW" />
     <meta property="og:type" content={type} />
@@ -73,6 +76,7 @@ const structuredItems = structuredData ? (Array.isArray(structuredData) ? struct
       <slot />
     </main>
     <SiteFooter />
+    <WebAnalytics />
     <script is:inline>
       document.querySelectorAll('.prose table').forEach((table) => {
         const labels = Array.from(table.querySelectorAll('thead th')).map((cell) => cell.textContent?.trim() ?? '');

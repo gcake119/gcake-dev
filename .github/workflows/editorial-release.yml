@@ -51,6 +51,10 @@ jobs:
           node-version: 22
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          WEBSITE_ANALYTICS_ENABLED: 'true'
+          CLOUDFLARE_WEB_ANALYTICS_TOKEN: ${{ vars.CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
+          GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
