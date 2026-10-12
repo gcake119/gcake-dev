@@ -7,6 +7,7 @@ export type ReleaseState =
   | 'verification-unknown';
 export interface ReleaseRecord {
   id: string;
+  mode?: 'scheduled' | 'manual';
   slug: string;
   seriesSlug?: string;
   slot: string;

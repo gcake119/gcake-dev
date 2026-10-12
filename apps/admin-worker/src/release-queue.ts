@@ -145,7 +145,11 @@ export class ReleaseQueue {
     const now = this.now();
     const eligible = this.eligible(s, snapshot);
     const releases = s.data.releases;
-    const reserved = new Set(releases.filter((r) => !r.unlockedAt).map((r) => r.slot));
+    const reserved = new Set(releases.filter((r) => !r.unlockedAt && r.mode!=='manual').map((r) => r.slot));
+    for(const r of releases.filter(r=>!r.unlockedAt && r.mode==='manual')) {
+      const date=dateOf(r.slot);const day=new Date(date+'T00:00:00Z').getUTCDay();
+      if(day===1 || day===4)reserved.add(date+'T07:00:00+08:00');
+    }
     for (const p of snapshot.posts)
       if (
         p.status === 'published' &&
@@ -324,6 +328,47 @@ export class ReleaseQueue {
   }
   async view(snapshot: ReleaseSnapshot) {
     return this.presentation(await this.store.read(), snapshot);
+  }
+  private manualCandidate(s:Stored,snapshot:ReleaseSnapshot,slug:string) {
+    const at=this.now();instant(at);
+    // A real observation at the manual time, not reconstructed historical readiness.
+    for(const p of snapshot.posts.filter(p=>p.status==='ready')) (s.data.posts[p.slug]??={}).firstReadyAt??=at;
+    const post=snapshot.posts.find(p=>p.slug===slug);
+    if(!post || post.status!=='ready')throw new Error('MANUAL_NOT_READY');
+    if(post.publishedAt || s.data.overrides[slug])throw new Error('MANUAL_DATE_COMMITMENT_HELD');
+    if(s.data.releases.some(r=>!r.unlockedAt && r.state!=='verified-public'))throw new Error('PENDING_RELEASE_RECONCILIATION_REQUIRED');
+    const view=this.presentation(s,snapshot);const item=view.items.find(p=>p.slug===slug);
+    if(!item || item.reason)throw new Error('MANUAL_INELIGIBLE');
+    const series=snapshot.series.find(x=>x.slug===item.seriesSlug);
+    if(series) {
+      const refs=series.sections.flatMap(s=>s.posts);const position=refs.findIndex(p=>p.slug===slug);
+      if(refs.slice(0,position).some(ref=>ref.status!=='published' || !s.data.releases.some(r=>r.slug===ref.slug && !r.unlockedAt && r.state==='verified-public') || !snapshot.posts.some(p=>p.slug===ref.slug && p.status==='published' && (!p.publishedAt || Date.parse(p.publishedAt)<=Date.parse(at)))))
+        throw new Error('MANUAL_PREDECESSOR_NOT_PUBLIC');
+      if(s.data.activeSeries && s.data.activeSeries!==series.slug)throw new Error('ACTIVE_SERIES_RECONCILIATION_REQUIRED');
+      const started=snapshot.series.filter(x=>x.sections.some(s=>s.posts.some(p=>p.status==='published')) && x.sections.some(s=>s.posts.some(p=>p.status!=='published')));
+      if(!s.data.activeSeries && started.length>1)throw new Error('MULTIPLE_ACTIVE_SERIES');
+    }
+    return {post,item,series};
+  }
+  async previewManual(snapshot:ReleaseSnapshot,slug:string) {
+    const s=await this.store.read();const {post,item}=this.manualCandidate(s,snapshot,slug);
+    return {slug,title:post.title,seriesSlug:item.seriesSlug,version:s.version,revision:snapshot.revision};
+  }
+  async acquireManual(snapshot:ReleaseSnapshot,slug:string,version:number,revision:string,actor:string,enabled:boolean) {
+    if(!enabled)throw new Error('RELEASE_DISABLED');
+    const s=await this.store.read();const prior=s.data.releases.find(r=>r.slug===slug && !r.unlockedAt);
+    if(prior) {
+      if(prior.mode==='manual' && prior.sourceRevision===revision)return {created:false,record:structuredClone(prior)};
+      throw new Error('RELEASE_IDENTITY_LOCKED');
+    }
+    if(s.version!==version || snapshot.revision!==revision)throw new Error('QUEUE_CONFLICT');
+    const {item,series}=this.manualCandidate(s,snapshot,slug);const now=this.now();
+    const record:ReleaseRecord={id:crypto.randomUUID(),mode:'manual',slug,seriesSlug:item.seriesSlug,slot:formatTaipei(instant(now)),
+      sourceRevision:revision,state:'committed-slot',lease:crypto.randomUUID(),leaseUntil:new Date(instant(now)+10*60000).toISOString(),attempts:0,events:[]};
+    s.data.startedAt??=now;
+    if(series){s.data.activeSeries??=series.slug;s.data.seriesOrder[series.slug]=JSON.stringify(series.sections.flatMap(s=>s.posts.map(p=>p.slug)));}
+    event(record,now,'manual-authorized',actor);s.data.releases.push(record);
+    await this.store.write(s);return {created:true,record:structuredClone(record)};
   }
   async acquire(snapshot: ReleaseSnapshot, enabled: boolean): Promise<ReleaseRecord | undefined> {
     if (!enabled) throw new Error('RELEASE_DISABLED');

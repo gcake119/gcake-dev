@@ -169,3 +169,29 @@ D1 SHALL be the only operational release queue. Git SHALL retain article/manifes
 - **GIVEN** a disposable D1-compatible database, content copy and loopback site
 - **WHEN** build failure recovery and RSS notification rehearsal run
 - **THEN** the same release identity survives, six bodies and order remain unchanged, one verified new article is observed once across restart, and production receives no writes or messages
+
+### Requirement: Owner-confirmed immediate publication
+An authenticated owner MAY preview and explicitly confirm an immediate publication after separate publication authorization. The operation SHALL use the same D1 release identities, unchanged current-main body, atomic article/manifest update and public verification as scheduled publication. It SHALL record the actual manual time and distinguish manual intent without backdating readiness or treating it as a missed scheduled window.
+#### Scenario: Preview then confirmed first chapter
+- **GIVEN** a complete ready series and no conflicting release or retained date commitment
+- **WHEN** the owner previews its next unread chapter and confirms that same source and queue version
+- **THEN** preview makes no writes and confirmation records one manual identity at the actual time, preserving body and reading order for subsequent scheduled chapters
+#### Scenario: Wrong chapter or incomplete eligibility
+- **GIVEN** an earlier chapter is not yet public, the series is incomplete or held, or a release remains unconfirmed
+- **WHEN** immediate publication is requested
+- **THEN** it stops without a Git write, new identity or change to existing commitments
+#### Scenario: Stale source or owner denial
+- **GIVEN** confirmation was denied, the source or queue changed, or owner security checks fail
+- **WHEN** immediate publication is submitted
+- **THEN** it makes no publication write and reports the conflict without overwriting current content
+#### Scenario: Lost response and retained manual identity
+- **GIVEN** a confirmed manual intent already has a release identity
+- **WHEN** the same intent is requested again or its delivery result is unknown
+- **THEN** it reports the retained identity without creating or sending another publication; public confirmation still requires matching source, page and RSS
+
+### Requirement: Safe release failure diagnostics
+Authenticated operators SHALL receive stable release failure categories and provider/runtime diagnostics SHALL exclude credentials, article bodies and raw provider messages.
+#### Scenario: Provider history is rejected
+- **GIVEN** history cannot be safely resolved
+- **WHEN** the queue read stops
+- **THEN** the operator can distinguish history rejection from ordinary eligibility while no credential or raw private response is disclosed and no publication is performed

@@ -20,3 +20,6 @@ Prepare a manual, exact-revision, read-only environment App Secret acceptance pa
 
 ## Owner-approved D1 consolidation — 2026-10-12
 The owner now selects D1 as the sole production queue. Align continuous readiness, membership, active-series recovery, latest due slot and public source verification before retiring the Git journal writer. Keep content/manifests in Git, preserve pending identities, main protections, manual deployment and read-only Secret acceptance. No merge, production deployment, activation or real Telegram is authorized.
+
+## Owner-authorized single manual first chapter — 2026-10-12
+The owner explicitly authorized the publishing task, through the verified source conversation, to publish chapter one today using the same D1 authority and latest main content, deploy Pages and verify full body/canonical/date/RSS/manifest. Do not backdate startedAt or masquerade as a scheduled 07:00 release; chapter four and other platforms remain out of scope. Add fenced owner-confirmed immediate publication where the existing interface cannot represent this operation, plus safe diagnostics for the currently failing production readiness read.

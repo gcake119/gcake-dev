@@ -128,6 +128,12 @@ export class ReleaseDelivery {
     readonly fetcher: typeof fetch = fetch,
     readonly base = 'https://gcake119.github.io/gcake-dev/',
   ) {}
+  async publishNow(slug:string,version:number,revision:string,actor:string) {
+    if(!this.enabled)throw new Error('RELEASE_DISABLED');
+    const snapshot=await this.git.snapshot();
+    const intent=await this.queue.acquireManual(snapshot,slug,version,revision,actor,true);
+    return intent.created?this.write(intent.record,snapshot):intent.record;
+  }
   async execute() {
     if (!this.enabled) throw new Error('RELEASE_DISABLED');
     const snapshot = await this.git.snapshot();

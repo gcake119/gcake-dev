@@ -33,6 +33,7 @@ import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePos
 import { requestSlugSuggestion } from './slug-suggestion';
 
 import ReleaseQueuePanel from './ReleaseQueuePanel.vue';
+import { reviewManualPublication } from './manual-release';
 import type { QueueView } from '@gcake/admin-contract';
 import { releaseEstimate, eligibilityReason, seriesProgress } from './release-presentation';
 
@@ -75,6 +76,7 @@ const editorView = ref<EditorView>('markdown');
 const splitRatio = ref(50);
 const syncScroll = ref(true);
 const editorMessage = ref('');
+const manualPublishing=ref(false);
 const formalPreview = ref<PreviewJob>();
 const formalPreviewMessage = ref('');
 const publicationStates = ref<readonly PublicationTargetState[]>([]);
@@ -567,6 +569,22 @@ async function requestFormalPreview(): Promise<void> {
   }
 }
 
+async function publishNow():Promise<void> {
+  if(!selectedPost.value || !session.value.authenticated || manualPublishing.value)return;
+  manualPublishing.value=true;
+  try {
+    const post=selectedPost.value;
+    const result=await reviewManualPublication({slug:post.slug,status:post.status,saved:!!post.baseBlobSha,revision:post.baseCommitSha,
+      dirty:editorSource.value!==post.source || editorTitle.value!==post.title},async(path,body)=>{
+      if(!session.value.authenticated)throw new Error('請先登入。');
+      const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-csrf-token':session.value.csrfToken},body:JSON.stringify(body)});
+      const data=await response.json();if(!response.ok)throw new Error(data.error?.message??'發布結果尚未確認，請核對原紀錄。');return data;
+    },async(message)=>window.confirm(message));
+    if(result){await openPost(post.slug);editorMessage.value=`${result.state==='awaiting-verification'?'已提交目前內容，等待網站部署與公開驗證。':result.state==='verified-public'?'原發布已確認公開。':'原發布結果仍需核對，請不要重新發布。'} 紀錄：${result.id}`;}
+  } catch(error){editorMessage.value=error instanceof Error?error.message:'發布結果尚未確認，請核對原紀錄。';}
+  finally {manualPublishing.value=false;}
+}
+
 async function finalizePost(): Promise<void> {
   if (!session.value.authenticated || !selectedPost.value?.baseBlobSha) return;
   try {
@@ -1035,6 +1053,7 @@ onMounted(() => {
               <button type="button" class="secondary-action" @click="openMediaLibrary">媒體庫</button>
               <button type="button" class="secondary-action danger-action" :disabled="!selectedPost.baseBlobSha" @click="requestDelete">刪除文章</button>
               <button type="button" class="secondary-action" @click="saveToGit">儲存至 Git</button>
+              <button v-if="selectedPost.status==='ready'" type="button" class="secondary-action" :disabled="manualPublishing || !selectedPost.baseBlobSha" @click="publishNow">{{ manualPublishing?'處理發布中…':'立即發布（單次人工）' }}</button>
               <button type="button" class="primary-action compact" @click="cycleEditorView">{{ nextViewLabel }}</button>
             </div>
           </div>
