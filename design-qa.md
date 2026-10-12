@@ -75,3 +75,13 @@ The current 30 archived articles contain headings and prose but no fenced code b
 ### Release preparation
 
 Integrated against latest main 8f5f0f6 in an isolated Git checkout. Preserved durable iThome snapshot endpoint, completion freeze logic, SHA-256 records and unpublished extension content. Final full checks run before push; original dirty workspace remains preserved.
+
+
+## 2026-10-13 訂閱入口推送候選
+
+- 以遠端 main `5ba6df274976d68c40ab31f6e0937a79dd1b3721` 為基底，在 `/private/tmp/gcake-subscription-push-20261013` 隔離整合。原 dirty checkout 及其他工作保留。保留遠端既有 SEO／結構化資料、內容可見性、發佈流程與 SVG 頁尾；只新增 mail 圖示與共用訂閱元件、設定、三個頁面接點、驗收及設計對照。
+- 首頁最近文章後、正式本地文章與外部 iThome 文章正文後均有具名訂閱區塊。電子報與 RSS 同為 SVG＋文字連結，具相同視覺層級；文案與網址集中維護，不新增客戶端 JavaScript、API 或寄信服務。
+- 電子報網址已於本次工作唯讀確認為 `https://gcakedev.substack.com/subscribe`；RSS 延續 `/gcake-dev/rss.xml`。Paragraph 同步及 Arweave 保存流程未修改。
+- 完整 `pnpm test` 通過（包含 Python Hermes、公開網站、workspace 與分發測試）；`pnpm check` 188 files、0 errors／warnings／hints；`pnpm build:all` 通過，公開網站 35 頁及所有 workspace build 成功；訂閱 HTML 驗收 2／2。`pnpm release:dry-run`、`pnpm editorial:rehearse` 皆 passed、productionWrites=false，沒有 provider 寫入或實際通知。`git diff --check` 通過。
+- 在本機靜態 server `http://127.0.0.1:4338/gcake-dev/` 檢查首頁、正式本地 `ithome-2026-chatgpt-writing-workflow` 與外部 Day 1，各涵蓋 1280／390／320px × 明暗主題。每頁只有一個訂閱入口，RSS 可用鍵盤到達；scrollWidth 1265／375／305px，無整頁水平溢出，canonical 保持正確來源。截圖為 `/private/tmp/gcake-subscription-qa/push-*.png`，已查看首頁 390px 明亮、本地文章 1280px 明亮及外部文章 320px 暗色。
+- 這些是整合候選的本機證據，不代表完整 WCAG 稽核、公開部署或人工驗收。Pages workflow 目前為手動部署；本次 commit／push 不執行部署。

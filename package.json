@@ -5,6 +5,7 @@
   "private": true,
   "packageManager": "pnpm@10.17.1",
   "scripts": {
+    "test:subscriptions": "pnpm build && node --import tsx --test test/subscription.test.ts",
     "dev": "astro dev",
     "build": "pnpm content:validate && astro build",
     "build:astro": "pnpm content:validate && astro build",
