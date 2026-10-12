@@ -1,11 +1,12 @@
 ---
 title: 我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的
 description: 30 篇文章放在同一個 ChatGPT Project、每篇各自開對話，我如何用企劃、銜接紀錄、多輪審稿與全系列整合，把 30 個獨立對話組成同一個系列。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - ai-assisted-development
   - technical-writing
+publishedAt: 2026-10-12T11:56:38+08:00
 ---
 
 今年準備 iThome 鐵人賽時，我先把 30 篇文章全部寫完，再等開賽後一天發一篇。

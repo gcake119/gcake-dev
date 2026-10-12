@@ -17,7 +17,7 @@ sections:
     status: active
     posts:
       - slug: ithome-2026-chatgpt-writing-workflow
-        status: ready
+        status: published
         workingTitle: 我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的
       - slug: ithome-2026-publishing-toolchain
         status: ready
