@@ -7,7 +7,6 @@ import http from 'node:http';
 import {DatabaseSync} from 'node:sqlite';
 import {chromium} from 'playwright';
 import {D1PublicationRepository} from '../../apps/admin-worker/src/publication-operations';
-import {ParagraphProductionService} from '../../apps/admin-worker/src/paragraph-provider';
 import {DistributionCoordinator} from '../../apps/admin-worker/src/distribution-coordinator';
 import {SqliteD1Database} from './sqlite-d1';
 import {AttendedSubstackAdapter,FileAttendedExchange,anonymousSubstackReader} from './substack-attended';
@@ -57,7 +56,7 @@ test('file handoff → real Chrome saved editor → SQLite state → anonymous p
   });
   const ui={publicBody:'article',publicTitle:'.post-title',publicDate:'time'} as SubstackUiContract;
   const publicReader=anonymousSubstackReader(ui,((url,init)=>fetch(local+new URL(String(url)).pathname,init)) as typeof fetch);
-  const coordinator=(op:'prepare'|'publish')=>new DistributionCoordinator(repository,new ParagraphProductionService(repository,{} as never),new AttendedSubstackAdapter(article,op,repository.runtime,session.exchange,publicReader),'gcake');
+  const coordinator=(op:'prepare'|'publish')=>new DistributionCoordinator(repository,new AttendedSubstackAdapter(article,op,repository.runtime,session.exchange,publicReader));
   assert.equal((await coordinator('prepare').run(article,'substack','prepare',approval)).status,'prepare_ready');
   assert.equal(publishes,0);
   assert.equal((await coordinator('publish').run(article,'substack','publish',approval)).status,'verified');

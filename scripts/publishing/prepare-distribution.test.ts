@@ -14,17 +14,17 @@ publishedAt: 2026-09-28
 Hello distribution.
 `;
 
-test('prepares both platforms with identical canonical source and writes disabled', async () => {
+test('prepares Substack with canonical source and writes disabled', async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'gcake-distribution-'));
   try {
     await fs.writeFile(path.join(dir, 'example.md'), valid);
-    const bundle = await buildDistributionBundle('example', dir, { paragraph: 'remote-123' }, () => '2026-10-11T00:00:00Z');
+    const bundle = await buildDistributionBundle('example', dir, { substack: 'remote-123' }, () => '2026-10-11T00:00:00Z');
     assert.equal(bundle.newsletter, 'skip');
     assert.equal(bundle.mode, 'dry-run');
-    assert.equal(bundle.targets.paragraph.operation, 'update-draft');
-    assert.equal(bundle.targets.substack.operation, 'create-draft');
+    assert.equal(bundle.targets.substack.operation, 'update-draft');
+    assert.equal((await buildDistributionBundle('example', dir, {}, () => '2026-10-11T00:00:00Z')).targets.substack.operation, 'create-draft');
     assert.equal(bundle.targets.substack.externalWriteEnabled, false);
-    assert.equal(bundle.targets.paragraph.remoteId, 'remote-123');
+    assert.equal(bundle.targets.substack.remoteId, 'remote-123');
     assert.match(bundle.article.markdown, /Hello distribution/);
     assert.match(bundle.article.markdown, /原文與最新版本/);
     assert.ok(bundle.sourceRevision.startsWith('sha256:'));

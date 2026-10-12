@@ -32,8 +32,8 @@ export async function openFixedSnapshot(root:string):Promise<string>{
 export function assertGeneralPolicy(config:DistributionConfig):void{
  const p=config.unattended;
  if(p?.enabled!==true||p.scope!=='all-formal-markdown'||p.repository!=='gcake119/gcake-dev'||p.branch!=='main'
-  ||p.policy!=='pages-first-no-newsletter'||!Array.isArray(p.targets)||!p.targets.length||new Set(p.targets).size!==p.targets.length||p.targets.some(t=>!['paragraph','substack'].includes(t))
-  ||config.paragraph.publicationSlug!=='gcake'||config.substack.ui.origin!=='https://gcakedev.substack.com'||config.substack.ui.publicationPolicy!=='full-mirror')throw Error('UNATTENDED_POLICY_REQUIRED');
+  ||p.policy!=='pages-first-no-newsletter'||!Array.isArray(p.targets)||!p.targets.length||new Set(p.targets).size!==p.targets.length||p.targets.some(t=>!['substack'].includes(t))
+  ||config.substack.ui.origin!=='https://gcakedev.substack.com'||config.substack.ui.publicationPolicy!=='full-mirror')throw Error('UNATTENDED_POLICY_REQUIRED');
 }
 export function planTarget(revision:string,state?:PublicationTargetState,checkpoint?:WriteCheckpoint,locked=false):{operations:('prepare'|'publish'|'verify'|'retry')[];reason?:string;recovery?:'finalize'}{
  const blocked=(reason:string)=>({operations:[],reason});

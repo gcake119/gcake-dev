@@ -34,7 +34,6 @@ test('Worker entrypoint exposes the CMS session route without requiring provider
           async first() { return null; },
         }),
       },
-      PARAGRAPH_WRITE_ENABLED: 'false',
       SUBSTACK_WRITE_ENABLED: 'false',
     },
   );
@@ -54,7 +53,6 @@ test('Worker entrypoint fails closed before OAuth when required secrets are miss
           async first() { return null; },
         }),
       },
-      PARAGRAPH_WRITE_ENABLED: 'false',
       SUBSTACK_WRITE_ENABLED: 'false',
     },
   );
@@ -90,7 +88,6 @@ test('Worker entrypoint wires GitHub App installation credentials into repositor
       GITHUB_APP_ID: '12345',
       GITHUB_APP_INSTALLATION_ID: '67890',
       GITHUB_APP_PRIVATE_KEY: privateKey,
-      PARAGRAPH_WRITE_ENABLED: 'false',
       SUBSTACK_WRITE_ENABLED: 'false',
     },
     async (input) => {
@@ -146,7 +143,6 @@ test('Worker entrypoint wires GitHub App installation credentials into repositor
         }),
       },
       GITHUB_APP_ID: '12345', GITHUB_APP_INSTALLATION_ID: '67890', GITHUB_APP_PRIVATE_KEY: privateKey,
-      PARAGRAPH_WRITE_ENABLED: 'false', SUBSTACK_WRITE_ENABLED: 'false',
     },
     async (input, init) => {
       const url = new URL(String(input));
@@ -210,7 +206,6 @@ test('Cloudflare execution context is not mistaken for the outbound fetch functi
         GITHUB_APP_ID: '12345',
         GITHUB_APP_INSTALLATION_ID: '67890',
         GITHUB_APP_PRIVATE_KEY: privateKey,
-        PARAGRAPH_WRITE_ENABLED: 'false',
         SUBSTACK_WRITE_ENABLED: 'false',
       },
       { waitUntil() {}, passThroughOnException() {} } as never,

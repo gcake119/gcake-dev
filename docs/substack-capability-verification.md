@@ -30,7 +30,6 @@
 
 ## 方案與決策
 
-1. **嚴格維持外部 canonical（原預設；2026-10-12 已選方案 3）**：Substack 保留草稿、不全文發布；Paragraph 依既有受控流程繼續。待 Substack 提供受支援 canonical 控制與證據再解鎖。可由使用者自行向 Substack 支援詢問逐篇外部 canonical；這次沒有替使用者傳訊。
 2. **Substack 改成摘要與原文連結（建議作為分發方案）**：GitHub Pages 保持完整原文與 canonical；從同一 Markdown 產生摘要，含原文日期與閱讀全文連結。Substack 摘要的頁面可有自己的 canonical，須明確變更驗收範圍，不可宣稱 canonical 指回 Pages。Substack 可使用摘要發布當日作平台日期，原文日期寫在正文；若仍要平台日期一致，另外選擇兩階段日期流程。需使用者確認摘要規則及日期政策後才修改規格與工具。
 3. **接受 Substack 全文鏡像例外**：保留 Markdown 唯一來源與正文來源連結，但放寬 Substack HTML canonical 的要求。不能保證搜尋引擎選 Pages 為 canonical；兩階段日期仍需接受短暫差異與真實驗收。此方案不符合現行外部 canonical 驗收，未獲明確變更前不能實作或發布。
 

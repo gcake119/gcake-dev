@@ -1,5 +1,6 @@
 import { D1DistributionRuntime, InMemoryDistributionRuntime } from './distribution-runtime.js';
-export type PublicationTarget = 'github_pages' | 'paragraph' | 'substack';
+export type PublicationTarget = 'github_pages' | 'substack';
+export type StoredPublicationTarget = PublicationTarget | 'paragraph';
 export type PublicationOperation = 'prepare' | 'publish' | 'verify' | 'retry' | 'newsletter';
 export interface PublicationOperationRequest {
   readonly postSlug: string; readonly sourceRevision: string; readonly target: PublicationTarget;
@@ -9,7 +10,7 @@ export interface PublicationOperationRequest {
 export type PublicationTargetStatus = 'not_configured' | 'prepare_ready' | 'pending' | 'published' | 'verified' | 'failed' | 'manual_required' | 'stale' | 'uncertain';
 
 export interface PublicationTargetState {
-  readonly postSlug: string; readonly target: PublicationTarget; readonly sourceRevision: string;
+  readonly postSlug: string; readonly target: StoredPublicationTarget; readonly sourceRevision: string;
   readonly status: PublicationTargetStatus; readonly remoteId?: string; readonly remoteUrl?: string;
   readonly verifiedAt?: string; readonly newsletterSentAt?: string; readonly lastErrorCode?: string; readonly updatedAt: string;
 }
@@ -35,7 +36,7 @@ export class InMemoryPublicationRepository implements PublicationRepository {
 }
 
 type TargetRow = {
-  post_slug: string; target: PublicationTarget; source_revision: string; status: PublicationTargetStatus;
+  post_slug: string; target: StoredPublicationTarget; source_revision: string; status: PublicationTargetStatus;
   remote_id: string | null; remote_url: string | null; verified_at: string | null;
   newsletter_sent_at: string | null; last_error_code: string | null; updated_at: string;
 };
@@ -122,20 +123,19 @@ export class PublicationOperations {
   ) {}
 
   async readStates(postSlug: string, currentRevision: string): Promise<readonly PublicationTargetState[]> {
-    return (await this.repository.listStates(postSlug)).map((state) => state.sourceRevision !== currentRevision
+    return (await this.repository.listStates(postSlug)).filter(state => state.target === 'github_pages' || state.target === 'substack').map((state) => state.sourceRevision !== currentRevision
       ? { ...state, status: 'stale' as const }
       : state);
   }
 
   async operate(input: PublicationOperationRequest): Promise<PublicationTargetState> {
+    if (!['github_pages', 'substack'].includes(input.target)) throw new Error('PUBLICATION_TARGET_UNSUPPORTED');
     if (input.operation === 'newsletter' && (!input.newsletterIntentKey || input.explicitIrreversibleIntent !== true)) {
       throw new Error('NEWSLETTER_EXPLICIT_INTENT_REQUIRED');
     }
     let status: PublicationTargetStatus;
     let error: string | undefined;
     if (input.target === 'substack') { status = 'manual_required'; error = 'SUBSTACK_NOT_CONFIGURED'; }
-    else if (input.target === 'paragraph' && input.operation === 'prepare') status = 'prepare_ready';
-    else if (input.target === 'paragraph') { status = 'failed'; error = 'PARAGRAPH_PRODUCTION_GATE_BLOCKED'; }
     else status = input.operation === 'verify' ? 'verified' : 'pending';
     const current = (await this.repository.listStates(input.postSlug)).find((state) => state.target === input.target);
     const state = { ...current, ...input, sourceRevision: current?.sourceRevision ?? input.sourceRevision, status, lastErrorCode: error, updatedAt: this.now() };
@@ -144,6 +144,7 @@ export class PublicationOperations {
   }
 
   async fail(postSlug: string, target: PublicationTarget, sourceRevision: string, errorCode: string): Promise<void> {
+    if (!['github_pages', 'substack'].includes(target)) throw new Error('PUBLICATION_TARGET_UNSUPPORTED');
     const current = (await this.repository.listStates(postSlug)).find((state) => state.target === target);
     await this.repository.putState({
       ...current, postSlug, target, sourceRevision: current?.sourceRevision ?? sourceRevision,

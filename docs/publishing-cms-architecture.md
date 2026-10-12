@@ -1,3 +1,5 @@
+> 現行分發目標只有 Substack，本文中早期階段與驗收紀錄依日期解讀；正式操作以 distribution-scripted-runbook.md 為準。
+
 # Publishing CMS Architecture
 
 ## Status
@@ -22,7 +24,7 @@ Primary goals:
 - paste, drag, upload, and manage article images
 - preview rendered output while editing
 - manage article metadata, series, status, and scheduled publication
-- inspect GitHub Pages / Paragraph / Substack publication state
+- inspect GitHub Pages / Substack publication state
 - preserve Git history
 - prevent silent overwrites when Codex or another writer changes the repository
 - make image, layout, scheduling, preview, and publication operations convenient from a browser
@@ -140,7 +142,6 @@ Cloudflare Workers
         │             ↓
         │       GitHub Actions
         │        ├─ GitHub Pages
-        │        ├─ Paragraph
         │        └─ Substack
         │
         ├──────── R2
@@ -311,7 +312,7 @@ It should show:
 - draft / ready counts
 - failed publication attempts
 - latest GitHub Pages deployment
-- Paragraph / Substack state
+- Substack state
 - recently edited articles
 
 Example:
@@ -364,7 +365,6 @@ Article rows should expose:
 - scheduled date/time
 - current Git revision
 - GitHub Pages state
-- Paragraph state
 - Substack state
 
 ---
@@ -699,7 +699,6 @@ Example:
 | Target | State |
 | --- | --- |
 | GitHub Pages | Published |
-| Paragraph | Published |
 | Substack | Pending |
 
 Target detail may show:
@@ -724,9 +723,8 @@ prepare
 
 Targets remain failure-isolated.
 
-A failure in Paragraph or Substack must not invalidate the canonical GitHub Pages publication.
+A failure in Substack must not invalidate the canonical GitHub Pages publication.
 
-Paragraph should evolve from the existing shared transform / adapter design.
 
 Substack remains replaceable and may stay disabled or require manual fallback until a sufficiently reliable integration exists.
 
@@ -824,7 +822,6 @@ The first complete version should include:
 16. Conflict detection
 17. GitHub Pages deployment state
 18. Publishing Center
-19. Paragraph adapter integration
 20. Substack disabled/manual fallback
 21. Retry and error states
 22. Responsive Admin UI using the existing gcake-dev design system

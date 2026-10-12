@@ -63,7 +63,7 @@ Read in this order:
 ## Original handoff baseline — findings
 
 - The existing pure planner is not production-connected, nor can it validate omitted series posts.
-- The old CMS has editable per-post schedule UI and Paragraph/Substack target-state display, but no durable aggregate release queue.
+- The old CMS has editable per-post schedule UI and Substack target-state display, but no durable aggregate release queue.
 - Git is editorial SSOT; D1 is runtime SSOT; R2 is media SSOT.
 - The hourly Pages deploy does not promote `ready` to `published`; GitHub Actions write permissions require a safe, explicit solution.
 - Hermes runs in a separate local user; Telegram delivery is not proof of page publication.

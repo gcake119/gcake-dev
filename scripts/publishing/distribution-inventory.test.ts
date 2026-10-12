@@ -36,9 +36,9 @@ test('target plans preserve independent versions, original intent and same-ID up
  assert.equal(planTarget(revision,{...state,status:'uncertain'}).reason,'DISTRIBUTION_RECONCILIATION_REQUIRED');
 });
 test('general policy is explicitly bounded to repository branch publications and zero delivery',()=>{
- const config={unattended:{enabled:true,scope:'all-formal-markdown',repository:'gcake119/gcake-dev',branch:'main',policy:'pages-first-no-newsletter',targets:['paragraph','substack']},paragraph:{publicationSlug:'gcake'},substack:{ui:{origin:'https://gcakedev.substack.com',publicationPolicy:'full-mirror'}}};
+ const config={unattended:{enabled:true,scope:'all-formal-markdown',repository:'gcake119/gcake-dev',branch:'main',policy:'pages-first-no-newsletter',targets:['substack']},substack:{ui:{origin:'https://gcakedev.substack.com',publicationPolicy:'full-mirror'}}};
  assert.doesNotThrow(()=>assertGeneralPolicy(config as never));
- for(const unattended of [{...config.unattended,repository:'other/repo'},{...config.unattended,branch:'develop'},{...config.unattended,enabled:false},{...config.unattended,targets:['paragraph','paragraph']}])assert.throws(()=>assertGeneralPolicy({...config,unattended} as never),/UNATTENDED_POLICY/);
+ for(const unattended of [{...config.unattended,repository:'other/repo'},{...config.unattended,branch:'develop'},{...config.unattended,enabled:false},{...config.unattended,targets:[]},{...config.unattended,targets:['paragraph','substack']},{...config.unattended,targets:['substack','substack']}])assert.throws(()=>assertGeneralPolicy({...config,unattended} as never),/UNATTENDED_POLICY/);
 });
 
 test('malformed and nonportable formal bodies are explicit source blockers before Pages or provider calls',async()=>{

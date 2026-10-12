@@ -1,3 +1,5 @@
+> 歷史規格：此已完成變更的分發目標已由 remove-paragraph-sync 取代。不得依此文件啟動舊目標；現行操作以 Substack-only 同步文件及新規格為準。
+
 ## 1. Baseline and regression
 - [x] 1.1 Run full tests/check/build, fix invalid topic and preserve operational identity with RED/GREEN evidence.
 ## 2. Durable checkpoints and locks

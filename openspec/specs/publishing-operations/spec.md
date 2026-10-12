@@ -2,7 +2,7 @@
 
 ## Purpose
 
-TBD - created by archiving change 'publishing-cms'. Update Purpose after archive.
+Define current Git-owned editorial data and D1-owned publication operations for Pages and Substack, preserving historical destination evidence without execution.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ The migration SHALL import non-empty `src/data/publishing/publication-state.json
 
 ---
 ### Requirement: Revision-aware independent target states
-Each Paragraph or Substack target SHALL retain its own state and source revision; a newer Git source SHALL mark older remote state stale without automatically publishing it.
+Each Substack target SHALL retain its own state and source revision; a newer Git source SHALL mark older remote state stale without automatically publishing it.
 
 #### Scenario: Article changes after verification
 - **WHEN** a target is verified for revision `abc123` and the current article becomes `def456`
@@ -35,15 +35,16 @@ Prepare, publish, verify, retry, and newsletter intent SHALL be explicit operati
 
 #### Scenario: Save article only
 - **WHEN** the owner commits an article from the Editor
-- **THEN** no Paragraph/Substack publish, email, or newsletter operation starts automatically
+- **THEN** no Substack publish, email, or newsletter operation starts automatically
 
 ---
 ### Requirement: Failure isolation
-A failure for GitHub Pages observation, Paragraph, or Substack SHALL NOT corrupt article content or roll back a successful independent target.
+A failure for GitHub Pages observation or Substack SHALL NOT corrupt article content or roll back a successful independent target.
 
 #### Scenario: Substack unavailable
-- **WHEN** GitHub Pages and Paragraph are verified while Substack is unavailable
-- **THEN** the first two states remain successful and Substack reports `manual_required` or its own failure state
+- **GIVEN** GitHub Pages is verified
+- **WHEN** Substack is unavailable
+- **THEN** Pages remains verified and Substack reports its own failure state
 
 ---
 ### Requirement: Disabled Substack production path
@@ -52,14 +53,6 @@ The first complete version SHALL represent Substack as `manual_required` or `not
 #### Scenario: User requests Substack publish
 - **WHEN** no separately approved stable write integration exists
 - **THEN** the CMS provides manual recovery guidance and performs no external Substack write
-
----
-### Requirement: Paragraph production gate
-Paragraph write operations SHALL remain disabled until explicit approval, a pinned supported interface, verified create/update/publish/canonical/date behavior, retry protection, and public verification are recorded.
-
-#### Scenario: Gate not approved
-- **WHEN** any Paragraph production-gate condition is missing
-- **THEN** prepare/dry-run remains available but publish and newsletter delivery fail closed without a provider write
 
 ---
 ### Requirement: Newsletter idempotency boundary

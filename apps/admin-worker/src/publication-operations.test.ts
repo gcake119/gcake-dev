@@ -35,18 +35,17 @@ test('targets remain independent and verified old revision becomes stale without
   await repository.putState({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'abc', status: 'verified', remoteId: 'p', updatedAt: 'now' });
   await repository.putState({ postSlug: 'demo', target: 'github_pages', sourceRevision: 'def', status: 'verified', updatedAt: 'now' });
   const states = await new PublicationOperations(repository).readStates('demo', 'def');
-  assert.equal(states.find((state) => state.target === 'paragraph')?.status, 'stale');
+  assert.equal(states.find((state) => state.target === 'paragraph'), undefined);
   assert.equal(states.find((state) => state.target === 'github_pages')?.status, 'verified');
 });
 
-test('explicit prepare keeps Paragraph dry-run and Substack manual without writes', async () => {
+test('unsupported destinations fail closed while Substack remains manual', async () => {
   const repository = new InMemoryPublicationRepository();
   const operations = new PublicationOperations(repository);
-  const paragraph = await operations.operate({ postSlug: 'demo', sourceRevision: 'abc', target: 'paragraph', operation: 'prepare' });
+  await assert.rejects(operations.operate({ postSlug: 'demo', sourceRevision: 'abc', target: 'paragraph' as never, operation: 'prepare' }), /TARGET_UNSUPPORTED/);
   const substack = await operations.operate({ postSlug: 'demo', sourceRevision: 'abc', target: 'substack', operation: 'publish' });
-  assert.equal(paragraph.status, 'prepare_ready');
   assert.equal(substack.status, 'manual_required');
-  assert.equal(repository.states.length, 2);
+  assert.equal(repository.states.length, 1);
 });
 
 test('one target failure never rolls back another verified target', async () => {
@@ -63,8 +62,8 @@ test('prepare and failure preserve remote identity and newsletter history', asyn
   const repository = new InMemoryPublicationRepository();
   await repository.putState({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'abc', status: 'verified', remoteId: 'remote', remoteUrl: 'https://paragraph.com/@gcake/demo', newsletterSentAt: 'sent', updatedAt: 'now' });
   const operations = new PublicationOperations(repository);
-  await operations.operate({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'def', operation: 'prepare' });
-  await operations.fail('demo', 'paragraph', 'def', 'FAILED');
+  await assert.rejects(operations.operate({ postSlug: 'demo', target: 'paragraph' as never, sourceRevision: 'def', operation: 'prepare' }), /TARGET_UNSUPPORTED/);
+  await assert.rejects(operations.fail('demo', 'paragraph' as never, 'def', 'FAILED'), /TARGET_UNSUPPORTED/);
   assert.equal(repository.states[0]?.remoteId, 'remote');
   assert.equal(repository.states[0]?.newsletterSentAt, 'sent');
 });

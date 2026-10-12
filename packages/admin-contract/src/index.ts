@@ -149,7 +149,7 @@ export interface PreviewJob {
   readonly expiresAt: string;
 }
 
-export type PublicationTarget = 'github_pages' | 'paragraph' | 'substack';
+export type PublicationTarget = 'github_pages' | 'substack';
 export type PublicationOperation = 'prepare' | 'publish' | 'verify' | 'retry' | 'newsletter';
 export interface PublicationOperationRequest {
   readonly postSlug: string;

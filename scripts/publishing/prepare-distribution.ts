@@ -5,9 +5,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPortablePublication } from '../../src/lib/publishing/publication-transform';
 import { resolveLocalPostFile } from '../../src/lib/content/local-posts';
-import { paragraphDryRunAdapter, substackDryRunAdapter } from '../../src/lib/publishing/dry-run-adapters';
+import { substackDryRunAdapter } from '../../src/lib/publishing/dry-run-adapters';
 
-export type DistributionTarget = 'paragraph' | 'substack';
+export type DistributionTarget = 'substack';
 export interface DistributionBundle {
   schemaVersion: 1;
   slug: string;
@@ -58,12 +58,9 @@ export async function buildDistributionBundle(
   const createdAt = now();
   if (!Number.isFinite(Date.parse(createdAt))) throw new Error('INVALID_PREPARATION_TIME');
   if (Date.parse(publication.publishedAt) > Date.parse(createdAt)) throw new Error('FUTURE_POST_NOT_DISTRIBUTABLE');
-  const [paragraph, substack] = await Promise.all([
-    paragraphDryRunAdapter.prepare({ publication, newsletter: 'skip', remoteId: remoteIds.paragraph }),
-    substackDryRunAdapter.prepare({ publication, newsletter: 'skip', remoteId: remoteIds.substack }),
-  ]);
-  if (paragraph.externalWriteEnabled || substack.externalWriteEnabled) throw new Error('DRY_RUN_REQUIRED');
-  const target = (prepared: typeof paragraph, remoteId?: string) => ({
+  const substack = await substackDryRunAdapter.prepare({ publication, newsletter: 'skip', remoteId: remoteIds.substack });
+  if (substack.externalWriteEnabled) throw new Error('DRY_RUN_REQUIRED');
+  const target = (prepared: typeof substack, remoteId?: string) => ({
     operation: prepared.operation,
     externalWriteEnabled: false as const,
     status: 'prepared' as const,
@@ -81,7 +78,6 @@ export async function buildDistributionBundle(
     newsletter: 'skip',
     mode: 'dry-run',
     targets: {
-      paragraph: target(paragraph, remoteIds.paragraph),
       substack: target(substack, remoteIds.substack),
     },
     article: {

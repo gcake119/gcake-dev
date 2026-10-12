@@ -1,3 +1,5 @@
+> 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
+
 # Paragraph Phase 7 production evidence
 
 Recorded on 2026-09-28 for the controlled `gcake` publication cohort.

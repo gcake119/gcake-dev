@@ -8,7 +8,7 @@ Approved product direction. Phase 1 is implemented locally with provider writes 
 
 - gcake-dev remains the only editable source for new article bodies.
 - GitHub Pages remains the canonical reading surface.
-- New articles distribute to Paragraph and Substack.
+- New articles distribute to Substack.
 - Plain articles publish as full text by default.
 - Articles that materially depend on interactive Vue/MDX content publish a compact external version with static fallback and a canonical link.
 - Publication targets never write content changes back into gcake-dev.
@@ -23,8 +23,8 @@ publication transform
         ↓
 portable publication
         ↓
-Paragraph adapter      Substack adapter
-        ↓                    ↓
+Substack adapter
+        ↓
 independent verification + publication state
 ~~~
 
@@ -85,30 +85,6 @@ For interactive-summary mode, do not serialize Vue components to external platfo
 
 The current transform rejects `interactive-summary` without `distribution.fallback`. It also rejects source-only MDX constructs in `full` mode instead of delegating unsupported content decisions to an adapter.
 
-## Paragraph adapter
-
-Paragraph is the reliable automated publication target.
-
-Use the current official Paragraph API, SDK, or CLI after verifying supported behavior for:
-
-- create/update draft
-- publish
-- newsletter delivery
-- canonical/original URL
-- publication date/update behavior
-- resulting remote article ID/URL
-- public verification
-- Arweave persistence confirmation
-- retry/idempotency behavior
-
-Existing implementation starting points:
-
-- scripts/publishing/prepare-paragraph.ts
-- .github/workflows/sync-paragraph.yml
-- D1 `publication_target_states`、`publication_runs` 與 `publication_attempts`
-
-Evolve the current prepare-only workflow instead of creating an unrelated path.
-
 ## Substack adapter
 
 Substack is a distribution target for a different reader network and newsletter audience.
@@ -117,7 +93,7 @@ Any automation that is not based on a stable official public publishing API must
 
 Requirements:
 
-- never make Substack a prerequisite for GitHub Pages or Paragraph publication
+- never make Substack a prerequisite for GitHub Pages publication
 - keep authentication/runtime details outside article content
 - fail independently
 - record enough diagnostic state for manual recovery
@@ -163,23 +139,20 @@ Example:
 
 ~~~text
 GitHub Pages succeeds
-Paragraph succeeds
 Substack fails
 ~~~
 
 Expected result:
 
 - canonical article remains published
-- Paragraph remains published
 - Substack is marked failed
 - Substack can be retried or manually recovered
 - the whole publication is not rolled back
 
-The same independence applies to Paragraph failure.
 
 ## Newsletter behavior
 
-- Paragraph and Substack are both newsletter surfaces.
+- Substack is a newsletter surface.
 - Newsletter sending must be an explicit adapter capability.
 - Use dry-run/test behavior where supported.
 - Prevent duplicate newsletter sends during retries or article updates.
@@ -193,7 +166,7 @@ New local articles use:
 https://gcake119.github.io/gcake-dev/posts/<slug>/
 ~~~
 
-Paragraph and Substack copies must link back to the canonical article.
+Substack copies must link back to the canonical article.
 
 Use a platform-supported canonical/original URL field where available. If a platform cannot reliably declare an external canonical, keep a visible canonical link and document the SEO limitation.
 
@@ -211,25 +184,8 @@ Adapters expose separate `prepare`, `publish` and `verify` operations. Newslette
 
 Current adapters are dry-run only:
 
-- `paragraphDryRunAdapter` validates a provider plan, always sets provider newsletter delivery to false and rejects publish/verify calls.
 - `substackDryRunAdapter` keeps the portable publication at its boundary, does not encode reverse-engineered Substack requests and rejects publish/verify calls.
 
-`prepare-paragraph.ts` and the existing manual workflow remain the only Paragraph path. The workflow does not call a remote provider.
-
-## Paragraph interface research（verified 2026-09-27）
-
-Official surfaces exist: REST API, `@paragraph-com/sdk`, `@paragraph-com/cli`, MCP server and agent skills. The developer documentation labels the API alpha and rate-limited. API keys are created in the Paragraph app; REST uses a Bearer token. The CLI can use `PARAGRAPH_API_KEY` or a local `~/.paragraph/config.json` login.
-
-The CLI documents draft create/update, separate publish, publish dry-run, public get/list and draft-only test email. Publishing with `--newsletter` emails subscribers, so ordinary article updates and newsletter delivery must remain separate operations and state transitions.
-
-Remaining production gates:
-
-- Older create documentation says publish-by-default while the current CLI says draft-by-default. Pin and verify one SDK/CLI version against a non-production publication.
-- The editor supports canonical URL, but the reviewed long-form create fields did not expose it. The portable body therefore retains a visible canonical link until the pinned interface is verified.
-- Confirm original publication-date and update-date behavior.
-- No explicit idempotency key was confirmed. Persist remote ID plus source revision and never retry create blindly.
-- Paragraph documents public reads and optional Arweave lookup through GraphQL and the Arweave SDK. Define an exact post-to-transaction confirmation rule before claiming persistence.
-- Newsletter send is irreversible fan-out. Never couple it to ordinary update retries.
 
 ## Substack interface research（verified 2026-09-27）
 
@@ -237,7 +193,7 @@ Substack has official Developer API terms and an official MCP server, but the do
 
 Native web/mobile publishing can create, update, schedule and optionally notify subscribers, but that UI is not a supported automation contract. RSS import is an ingestion/migration feature, not a reliable per-post publishing API.
 
-Therefore publishing remains unavailable in the production adapter. Any future browser or internal-endpoint implementation must stay behind the replaceable Substack adapter, keep credentials/session state outside the repository, and never become a prerequisite for GitHub Pages or Paragraph.
+Therefore publishing remains unavailable in the production adapter. Any future browser or internal-endpoint implementation must stay behind the replaceable Substack adapter, keep credentials/session state outside the repository, and never become a prerequisite for GitHub Pages.
 
 ## Phase 1 implementation status
 
@@ -247,15 +203,14 @@ Completed locally:
 - provider-neutral portable publication transform
 - explicit source-controlled `interactive-summary` fallback
 - Markdown and MDX fixtures and tests
-- disabled Paragraph and Substack adapter contracts
-- Paragraph prepare workflow routed through the shared transform
+- disabled Substack adapter contracts
 - target-independent publication state
 
 No production credential, remote write, public publish, test email or newsletter send is present.
 
 ## First production cohort
 
-There is no external publishing planned yet. The publishing system may be implemented and tested locally before the series begins, but no Paragraph/Substack production write or newsletter send should occur during the current iThome competition.
+There is no external publishing planned yet. The publishing system may be implemented and tested locally before the series begins, but no Substack production write or newsletter send should occur during the current iThome competition.
 
 After the iThome competition ends and the six-post 2026 behind-the-scenes extension series begins serial publication, use that series as the first production cohort.
 
@@ -281,15 +236,6 @@ If none of the six posts naturally requires interaction, test interactive-summar
 - add MD and MDX fixtures/tests
 - keep site rendering unchanged
 
-### Phase 2 — Paragraph production adapter
-
-- evolve prepare-paragraph.ts around the shared transform
-- integrate the supported official Paragraph automation surface
-- implement create/update/publish/newsletter semantics
-- verify the public result
-- persist publication state
-- add dry-run behavior
-
 ### Phase 3 — Substack isolated adapter
 
 - confirm the current automation surface before implementation
@@ -297,7 +243,7 @@ If none of the six posts naturally requires interaction, test interactive-summar
 - support draft/update/publish/newsletter as safely as the current interface allows
 - verify the public result
 - persist success/failure state independently
-- ensure Substack failure cannot fail canonical/Paragraph publication
+- ensure Substack failure cannot fail canonical publication
 
 ### Phase 4 — orchestration
 
@@ -313,11 +259,11 @@ Until the iThome competition has ended and the behind-the-scenes series is ready
 ## Out of scope for first implementation
 
 - backfilling all 30 original iThome posts to Substack
-- making Paragraph or Substack an editing source
+- making Substack an editing source
 - automatically generating fallback prose with an LLM
 - reproducing Vue interaction inside external platforms
 - treating Substack automation as equally stable as an official API
-- adding more platforms before Paragraph and Substack are proven
+- adding more platforms before Substack is proven
 
 ## Implementation gate
 
@@ -331,5 +277,3 @@ Before enabling external writes, Codex must verify and document for each platfor
 6. retry/idempotency behavior
 7. canonical/original URL support
 8. known stability limitations
-
-For Paragraph, prefer official documentation and supported tooling. For Substack, clearly label any non-official integration and keep it replaceable.

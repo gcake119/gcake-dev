@@ -1,3 +1,5 @@
+> 歷史規格：此已完成變更的分發目標已由 remove-paragraph-sync 取代。不得依此文件啟動舊目標；現行操作以 Substack-only 同步文件及新規格為準。
+
 ## Context
 PR #8 provides portable preparation. D1 owns target state; Paragraph has a pinned REST service; Substack requires a dedicated Node browser runtime. The current request authorizes implementation and local dry runs, not production writes.
 ## Goals / Non-Goals

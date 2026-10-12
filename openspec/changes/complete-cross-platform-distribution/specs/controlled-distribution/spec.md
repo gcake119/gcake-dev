@@ -1,3 +1,5 @@
+> 歷史規格：此已完成變更的分發目標已由 remove-paragraph-sync 取代。不得依此文件啟動舊目標；現行操作以 Substack-only 同步文件及新規格為準。
+
 ## Purpose
 Provide explicitly authorized, revision-bound cross-platform article distribution with safe recovery and public verification.
 ## ADDED Requirements

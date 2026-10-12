@@ -19,7 +19,6 @@ The Worker SHALL expose `GET /health` with a shared contract that returns HTTP 2
 
 #### Scenario: Local health check
 - **WHEN** the local Worker receives `GET /health`
-- **THEN** it returns the typed healthy payload without GitHub, R2, D1 production, Paragraph, or Substack credentials
 
 ---
 ### Requirement: Safe development bindings
@@ -31,7 +30,7 @@ Cloudflare development configuration SHALL bind local or preview resources separ
 
 #### Scenario: Production environment selected
 - **WHEN** an operator deploys the Worker with the production environment
-- **THEN** Wrangler selects dedicated production D1 and R2 bindings while Paragraph and Substack writes remain disabled
+- **THEN** Wrangler selects dedicated production D1 and R2 bindings while Substack writes remain disabled
 
 ---
 ### Requirement: Public-site regression boundary

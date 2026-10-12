@@ -1,3 +1,5 @@
+> 現行分發目標只有 Substack，本文中早期階段與驗收紀錄依日期解讀；正式操作以 distribution-scripted-runbook.md 為準。
+
 # Publishing CMS Implementation Design
 
 ## Status
@@ -449,7 +451,7 @@ Production uses the dedicated `gcake-cms-production` D1 database and
 committed D1 migrations before publishing `gcake-admin-worker-production`, then
 verifies its `/health` endpoint. Cloudflare CI credentials remain in GitHub
 Actions secrets; GitHub App and OAuth secrets remain Cloudflare Worker secrets.
-Paragraph and Substack writes remain disabled unless separately authorized.
+Substack writes remain disabled unless separately authorized.
 
 Exact SQL may vary, but the logical schema is fixed.
 
@@ -540,7 +542,7 @@ overall_status
 ```text
 id
 run_id
-target                  # paragraph | substack
+target                  # substack
 operation               # prepare | publish | verify | newsletter
 status                  # pending | running | succeeded | failed
 remote_id
@@ -961,43 +963,6 @@ When article source revision changes:
 
 ---
 
-## 20. Paragraph workflow
-
-Keep existing shared transform and adapter boundary.
-
-Production implementation sequence:
-
-```text
-current source revision
-↓
-createPortablePublication
-↓
-Paragraph prepare
-↓
-explicit publish/update action
-↓
-verify public result
-↓
-write D1 publication state
-```
-
-Requirements before enabling production write:
-
-- pin supported Paragraph interface/tool version
-- verify create/update draft behavior
-- verify publish behavior
-- verify canonical/original URL handling
-- verify update behavior
-- verify newsletter behavior separately
-- verify retry/idempotency strategy
-- verify public result
-
-Newsletter delivery is a separate irreversible intent.
-
-Never send newsletter as an implicit result of an article update retry.
-
----
-
 ## 21. Substack workflow
 
 First complete version does not require automated production writes.
@@ -1239,7 +1204,6 @@ Acceptance:
 - D1 publication state
 - migrate/remove JSON publication state
 - GitHub Pages observation
-- Paragraph prepare integration
 - retry/error UI
 - Substack manual/disabled state
 
@@ -1249,23 +1213,6 @@ Acceptance:
 - no JSON/D1 dual-write
 - GitHub Pages failure does not corrupt article content
 - Substack limitation clearly represented
-
-### Phase 7 — Paragraph production gate
-
-Only after explicit approval and provider verification:
-
-- enable Paragraph write
-- update/create
-- verify
-- newsletter opt-in handling
-
-Acceptance:
-- dry run first
-- remote ID persisted
-- retries do not duplicate posts/newsletters
-- public result verified
-
----
 
 ## 28. Testing strategy
 
@@ -1287,7 +1234,6 @@ Follow existing SDD/TDD workflow.
 - GitHub content read/write against mocked/fake GitHub boundary
 - D1 migrations/repositories
 - R2 media metadata/object flow
-- Paragraph adapter boundary
 - preview orchestration state
 
 ### E2E
@@ -1343,7 +1289,6 @@ The CMS is considered complete for first personal production use when the user c
 14. receive a conflict instead of silent overwrite
 15. observe GitHub Pages deployment state
 16. inspect publication state per target
-17. prepare/retry Paragraph operations safely
 18. see Substack represented as disabled/manual when automation is unavailable
 19. use the Admin on desktop and mobile with the existing `gcake-dev` design language
 20. recover from browser refresh without losing an uncommitted working draft
