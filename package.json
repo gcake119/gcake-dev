@@ -22,7 +22,7 @@
     "slug:dev": "pnpm --filter @gcake/slug-generator dev",
     "test:public": "node --import tsx --test src/data/external/ithome-2026-topics.test.ts src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/seo/structured-data.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/paragraph-prepare.test.ts scripts/publishing/release-orchestrate.test.ts scripts/external/ithome-sync.test.ts src/lib/publishing/release-queue.test.ts src/lib/publishing/release-eligibility.test.ts scripts/publishing/prepare-distribution.test.ts",
     "test:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
-    "test": "pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution",
+    "test": "pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution && pnpm test:observability",
     "test:hermes": "python3 -m unittest discover -s scripts/hermes -p \"test_*.py\"",
     "release:dry-run": "node --import tsx scripts/publishing/release-dry-run.ts",
     "distribution:run": "node --import tsx scripts/publishing/run-distribution.ts",
@@ -36,7 +36,8 @@
     "distribution:all-plan": "node --import tsx scripts/publishing/plan-all-distribution.ts",
     "distribution:snapshot": "node --import tsx scripts/publishing/snapshot-distribution.ts",
     "distribution:sync": "node --import tsx scripts/publishing/sync-distribution.ts",
-    "distribution:handoff": "node --import tsx scripts/publishing/distribution-handoff.ts"
+    "distribution:handoff": "node --import tsx scripts/publishing/distribution-handoff.ts",
+    "test:observability": "node --import tsx --test test/website-observability.test.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
