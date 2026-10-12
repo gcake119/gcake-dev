@@ -1,3 +1,5 @@
+> 歷史規格：此已完成變更的分發目標已由 remove-paragraph-sync 取代。不得依此文件啟動舊目標；現行操作以 Substack-only 同步文件及新規格為準。
+
 ## MODIFIED Requirements
 ### Requirement: Disabled Substack production path
 Substack SHALL remain write-disabled by default. The separately requested attended Playwright integration SHALL require a reviewed UI contract, exact article-level approval, no-newsletter confirmation, and durable recovery before external writes. Unattended publishing SHALL remain disabled.

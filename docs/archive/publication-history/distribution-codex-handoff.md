@@ -1,3 +1,5 @@
+> 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
+
 > 本 checkout 的最新範圍已改為所有正式 Markdown。請先讀 [通用同步交接](distribution-all-articles-handoff.md)；下方單篇敘述保留為先前執行版本紀錄。舊釘選 runtime 位於另一份 checkout，沒有改動。
 
 # 跨平台發布接手紀錄：2026-10-12 最終狀態

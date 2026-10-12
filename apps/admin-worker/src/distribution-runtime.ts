@@ -75,5 +75,5 @@ export function boundedDistributionError(error: unknown): string {
   if (code === 'UNPUBLISHED_POST_NOT_DISTRIBUTABLE') return 'DISTRIBUTION_SOURCE_NOT_PUBLISHED';
   if (code === 'FUTURE_POST_NOT_DISTRIBUTABLE') return 'DISTRIBUTION_SOURCE_FUTURE';
   if (['UNATTENDED_POLICY_REQUIRED', 'UNATTENDED_OUTPUT_OUTSIDE_GIT'].includes(code)) return code;
-  return /^(PARAGRAPH|SUBSTACK|DISTRIBUTION|PAGES_PUBLIC)_[A-Z0-9_]+$/.test(code) ? code : 'DISTRIBUTION_PROVIDER_FAILED';
+  return /^(SUBSTACK|DISTRIBUTION|PAGES_PUBLIC)_[A-Z0-9_]+$/.test(code) ? code : 'DISTRIBUTION_PROVIDER_FAILED';
 }

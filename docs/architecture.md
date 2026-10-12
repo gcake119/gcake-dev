@@ -17,7 +17,7 @@ Local Markdown ───── External immutable sources
                                       ↓
                                 GitHub Pages
                                       ↓
-                         Paragraph / Substack adapters
+                         Substack adapters
 ```
 
 ### Editorial
@@ -68,4 +68,4 @@ Astro renders static HTML. Vue is reserved for interactive islands.
 
 ### Publication
 
-GitHub Pages is the canonical reading surface for new posts. A shared transform produces a provider-neutral portable publication before Paragraph or Substack sees the content. Both are independent distribution targets and never editing sources.
+GitHub Pages is the canonical reading surface for new posts. A shared transform produces a provider-neutral portable publication before Substack sees the content. Substack remains an independent distribution target and never an editing source.

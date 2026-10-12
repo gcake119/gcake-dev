@@ -444,9 +444,7 @@ async function publicationOperation(target: PublicationTarget, operation: Public
   }
   const next = result as PublicationTargetState;
   publicationStates.value = [...publicationStates.value.filter((stateValue) => stateValue.target !== target), next];
-  publicationMessage.value = target === 'paragraph' && operation === 'prepare'
-    ? 'Paragraph 準備資料已產生；沒有呼叫外部寫入。'
-    : target === 'substack' ? 'Substack 尚未設定穩定寫入，請使用人工流程。' : '操作狀態已更新。';
+  publicationMessage.value = target === 'substack' ? 'Substack 尚未設定穩定寫入，請使用人工流程。' : '操作狀態已更新。';
 }
 
 async function openSeries(slug: string): Promise<void> {
@@ -1164,12 +1162,6 @@ onMounted(() => {
               <article>
                 <strong>GitHub Pages</strong><span class="badge">{{ targetState('github_pages')?.status || 'not_configured' }}</span>
                 <small>僅觀察部署與公開驗證。</small>
-              </article>
-              <article>
-                <strong>Paragraph</strong><span class="badge">{{ targetState('paragraph')?.status || 'not_configured' }}</span>
-                <small>Phase 7 受控 cohort 已完成建立、更新、公開與 canonical 驗證；其他文章仍預設只允許準備。電子報未獲核准。</small>
-                <button type="button" class="secondary-action" @click="publicationOperation('paragraph', 'prepare')">準備 Paragraph 資料</button>
-                <a class="secondary-action" href="https://paragraph.com/@gcake/gcake-cms-production-gate-20260928" target="_blank" rel="noreferrer">查看受控驗證文章</a>
               </article>
               <article>
                 <strong>Substack</strong><span class="badge">{{ targetState('substack')?.status || 'manual_required' }}</span>

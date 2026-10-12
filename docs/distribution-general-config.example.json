@@ -1,18 +1,4 @@
 {
-  "paragraph": {
-    "publicationSlug": "gcake",
-    "writeEnabled": false,
-    "openapiCommit": "56c2fd279cfad810dab400236773406e41080d65",
-    "gate": {
-      "userApproved": false,
-      "supportedInterfacePinned": false,
-      "createVerified": false,
-      "updateVerified": false,
-      "publishAndCanonicalDateVerified": false,
-      "retryProtectionVerified": false,
-      "publicReadVerified": false
-    }
-  },
   "substack": {
     "writeEnabled": false,
     "profile": "/outside/git/substack-profile",
@@ -27,11 +13,11 @@
       "editPath": "/publish/post/{id}",
       "createMenu": {
         "role": "button",
-        "name": "\u5efa\u7acb"
+        "name": "建立"
       },
       "create": {
         "role": "menuitem",
-        "name": "\u6587\u7ae0"
+        "name": "文章"
       },
       "title": {
         "role": "textbox",
@@ -39,27 +25,27 @@
       },
       "body": {
         "role": "textbox",
-        "name": "\u958b\u59cb\u5beb\u4f5c\u2026\u2026"
+        "name": "開始寫作……"
       },
       "saved": {
         "role": "button",
-        "name": "\u5df2\u5132\u5b58"
+        "name": "已儲存"
       },
       "settings": {
         "role": "button",
-        "name": "\u8a2d\u5b9a"
+        "name": "設定"
       },
       "continue": {
         "role": "button",
-        "name": "\u7e7c\u7e8c"
+        "name": "繼續"
       },
       "email": {
         "role": "checkbox",
-        "name": "\u900f\u904e\u96fb\u5b50\u90f5\u4ef6\u548c Substack App \u50b3\u9001"
+        "name": "透過電子郵件和 Substack App 傳送"
       },
       "confirmPublish": {
         "role": "button",
-        "name": "\u7acb\u5373\u767c\u4f48"
+        "name": "立即發佈"
       },
       "draftLinks": "UNVERIFIED",
       "scanComplete": {
@@ -82,7 +68,6 @@
     "branch": "main",
     "policy": "pages-first-no-newsletter",
     "targets": [
-      "paragraph",
       "substack"
     ]
   }

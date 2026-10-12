@@ -1,3 +1,5 @@
+> 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
+
 > 本腳本化 checkout 的新入口與目前切換程序請讀 `docs/distribution-scripted-runbook.md`。以下保留前版發布與日期驗收紀錄。
 
 

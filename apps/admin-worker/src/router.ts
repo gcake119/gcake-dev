@@ -342,7 +342,7 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
           newsletterIntentKey?: unknown;
           explicitIrreversibleIntent?: unknown;
         };
-        const targets = new Set(['github_pages', 'paragraph', 'substack']);
+        const targets = new Set(['github_pages', 'substack']);
         const operations = new Set(['prepare', 'publish', 'verify', 'retry', 'newsletter']);
         if (
           typeof payload.sourceRevision !== 'string' ||
@@ -355,7 +355,7 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
         }
         if (
           payload.operation === 'newsletter' &&
-          (payload.target !== 'paragraph' ||
+          (payload.target !== 'substack' ||
             typeof payload.newsletterIntentKey !== 'string' ||
             !SAFE_NEWSLETTER_INTENT_KEY.test(payload.newsletterIntentKey) ||
             payload.explicitIrreversibleIntent !== true)

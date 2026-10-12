@@ -11,30 +11,22 @@ import { articleFromBundle } from './run-distribution';
 import { SqliteD1Database } from './sqlite-d1';
 import { D1PublicationRepository } from '../../apps/admin-worker/src/publication-operations';
 import { DistributionCoordinator } from '../../apps/admin-worker/src/distribution-coordinator';
-import { ParagraphProductionService, ParagraphRestClient } from '../../apps/admin-worker/src/paragraph-provider';
 import { PlaywrightSubstackAdapter, type SubstackUiContract } from './substack-browser';
 
 const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-const gate = { userApproved: true, supportedInterfacePinned: true, createVerified: true, updateVerified: true, publishAndCanonicalDateVerified: true, retryProtectionVerified: true, publicReadVerified: true };
 const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=', 'base64');
 
-test('Markdown → both providers → D1 → public readback with browser draft updates, images and failure recovery', { timeout: 120_000 }, async () => {
+test('Markdown → Substack → D1 → public readback with browser draft updates, images and failure recovery', { timeout: 120_000 }, async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'gcake-distribution-e2e-'));
   const db = new DatabaseSync(path.join(dir, 'runtime.sqlite'));
   let state = { title: '', html: '', canonical: '', date: '', published: false };
-  let creates = 0, publishes = 0, sends = 0, dateSaves = 0, dateSaveFails = true, paragraphCreates = 0, paragraphPublishes = 0, canonicalMismatch = false, wrongEditorLink = false, loginExpired = false;
-  let paragraphPost: Record<string, unknown> | undefined;
+  let creates = 0, publishes = 0, sends = 0, dateSaves = 0, dateSaveFails = true, canonicalMismatch = false, wrongEditorLink = false, loginExpired = false;
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url!, 'http://localhost');
     const data = async () => { let body = ''; for await (const chunk of req) body += chunk; return JSON.parse(body); };
     const json = (value: unknown) => { res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(value)); };
     const html = (value: string) => { res.setHeader('content-type', 'text/html; charset=utf-8'); res.end(value); };
     if (url.pathname === '/image.png') { res.setHeader('content-type', 'image/png'); res.end(pixel); return; }
-    if (url.pathname === '/api/v1/posts' && req.method === 'GET') return json({ items: paragraphPost ? [paragraphPost] : [], pagination: { hasMore: false } });
-    if (url.pathname === '/api/v1/posts' && req.method === 'POST') { paragraphCreates++; paragraphPost = { ...await data(), id: 'paragraph-1' }; return json(paragraphPost); }
-    if (url.pathname === '/api/v1/posts/paragraph-1' && req.method === 'PUT') { const body = await data(); assert.equal(body.sendNewsletter, false); if (body.status === 'published') paragraphPublishes++; paragraphPost = { ...paragraphPost, ...body }; return json(paragraphPost); }
-    if (url.pathname.startsWith('/api/v1/posts/paragraph-1') || url.pathname.includes('/api/v1/publications/slug/')) return json(paragraphPost);
-    if (url.pathname === '/paragraph-public') return html(`<link rel="canonical" href="${paragraphPost?.canonicalUrl}">`);
     if (url.pathname === '/save') { const body = await data(); await new Promise(resolve => setTimeout(resolve, body.html === state.html ? 50 : 300)); state = { ...state, ...body }; return json({ ok: true }); }
     if (url.pathname === '/save-date') { dateSaves++; const body = await data(); if (dateSaveFails) { res.writeHead(500); res.end('date save failed'); return; } state.date = body.date; return json({ ok: true }); }
     if (url.pathname === '/publish') { const body = await data(); publishes++; if (body.email) sends++; state.published = true; state.date = new Date().toISOString(); return json({ ok: true }); }
@@ -61,15 +53,11 @@ test('Markdown → both providers → D1 → public readback with browser draft 
     const repository = new D1PublicationRepository(new SqliteD1Database(db));
     const ui: SubstackUiContract = { version: 1, origin, reviewedAt: '2026-10-11T00:00:00Z', publishingCapabilitiesVerified: true, discoveryVerified: true, homePath: '/publish/home', postsPath: '/publish/posts', editPath: '/publish/post/{id}', create: { role: 'button', name: 'Create' }, title: { role: 'textbox', name: 'Title' }, body: { role: 'textbox', name: 'Body' }, saved: { role: 'button', name: 'Saved' }, publicationPolicy: 'full-mirror', displayedDateFormat: 'iso', settings: { role: 'button', name: 'Settings' }, settingsDone: { role: 'button', name: 'Save date' }, publishedAt: { role: 'textbox', name: 'Date' }, continue: { role: 'button', name: 'Continue' }, email: { role: 'checkbox', name: 'Send email' }, confirmPublish: { role: 'button', name: 'Publish now' }, publicLink: { role: 'link', name: 'Public article' }, draftLinks: 'a[href^="/publish/post/"]', scanComplete: { role: 'heading', name: 'Posts' }, publicBody: 'article', publicTitle: 'body > h1', publicDate: 'time' };
     const adapter = new PlaywrightSubstackAdapter(await context.newPage(), ui, true);
-    const fetcher: typeof fetch = (url, init) => fetch(String(url).startsWith('https://paragraph.com/') ? origin + '/paragraph-public' : url, init);
-    const service = new ParagraphProductionService(repository, new ParagraphRestClient('fixture-token', fetcher, origin + '/api'), undefined, gate);
-    const coordinator = new DistributionCoordinator(repository, service, adapter, 'gcake');
+    const coordinator = new DistributionCoordinator(repository, adapter);
     const source = `---\ntitle: Demo\nstatus: published\npublishedAt: 2026-09-28\n---\n# Article\n\nHello **world** [link](https://example.com/).\n\n![Photo](${origin}/image.png)\n`;
     await fs.writeFile(path.join(dir, 'demo.md'), source);
     let article = articleFromBundle(await buildDistributionBundle('demo', dir));
-    const approve = (target: 'paragraph' | 'substack') => ({ target, slug: 'demo', sourceRevision: article.sourceRevision, approved: true as const, newsletter: 'skip' as const, ...(target === 'substack' ? { substackPolicy: 'full-mirror' as const } : {}) });
-    const p = await coordinator.run(article, 'paragraph', 'publish', approve('paragraph'));
-    assert.equal(p.status, 'verified');
+    const approve = (target: 'substack') => ({ target, slug: 'demo', sourceRevision: article.sourceRevision, approved: true as const, newsletter: 'skip' as const, ...(target === 'substack' ? { substackPolicy: 'full-mirror' as const } : {}) });
     const prepared = await coordinator.run(article, 'substack', 'prepare', approve('substack'));
     assert.equal(prepared.status, 'prepare_ready', JSON.stringify({ prepared, state, dom: await context.pages()[0].locator('#body').evaluate(element => ({ text: (element as HTMLElement).innerText, images: Array.from(element.querySelectorAll('img')).map(i => ({src:i.src,alt:i.alt,loaded:i.complete,width:i.naturalWidth})) })) }));
     assert.equal(creates, 1); assert.equal(publishes, 0);
@@ -86,7 +74,7 @@ test('Markdown → both providers → D1 → public readback with browser draft 
     assert.equal(state.canonical, '');
     // New coordinator/repository model process restart; only anonymous public readback occurs.
     const restartedRepository = new D1PublicationRepository(new SqliteD1Database(db));
-    const restarted = new DistributionCoordinator(restartedRepository, service, adapter, 'gcake');
+    const restarted = new DistributionCoordinator(restartedRepository, adapter);
     const readOnly = await restarted.run(article, 'substack', 'retry');
     assert.equal(readOnly.status, 'uncertain'); assert.equal(dateSaves, 1); assert.equal(publishes, 1);
     dateSaveFails = false;
@@ -104,8 +92,6 @@ test('Markdown → both providers → D1 → public readback with browser draft 
     assert.equal(recovered.status, 'verified', JSON.stringify(recovered));
     await restarted.run(article, 'substack', 'publish', approve('substack'));
     assert.equal(publishes, 1); assert.equal(creates, 1); assert.equal(sends, 0);
-    assert.equal((await repository.listStates('demo')).find(s => s.target === 'paragraph')?.status, 'verified');
-    assert.equal(paragraphCreates, 1); assert.equal(paragraphPublishes, 1);
     loginExpired = true;
     await assert.rejects(() => adapter.preflight(), /SUBSTACK_LOGIN_REQUIRED/);
     const missingCapability = new PlaywrightSubstackAdapter(await context.newPage(), { ...ui, publishingCapabilitiesVerified: false }, true);

@@ -26,6 +26,6 @@ test('public origin must match full Markdown, canonical, title, date, links and 
 }));
 test('withdrawn current Markdown prevents historical dry run and no platform or D1 is opened',async()=>fixture(async (_bundle,dir)=>{
  await fs.writeFile(path.join(dir,'src/content/posts/trial.md'),source.replace('status: published','status: ready'));
- await assert.rejects(main(['dry-run','trial','paragraph','--mode','controlled-trial','--source-root',dir,'--out',path.join(dir,'review.json')]),/UNPUBLISHED_POST/);
+ await assert.rejects(main(['dry-run','trial','substack','--mode','controlled-trial','--source-root',dir,'--out',path.join(dir,'review.json')]),/UNPUBLISHED_POST/);
  await assert.rejects(fs.access(path.join(dir,'review.json')));
 }));

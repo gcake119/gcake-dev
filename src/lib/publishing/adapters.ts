@@ -1,6 +1,6 @@
 import type { PortablePublication } from './publication-transform';
 
-export type PublicationTarget = 'paragraph' | 'substack';
+export type PublicationTarget = 'substack';
 export type NewsletterIntent = 'skip' | 'send';
 export type PublicationOperation = 'create-draft' | 'update-draft';
 
@@ -15,7 +15,7 @@ export interface PreparedPublication {
   operation: PublicationOperation;
   newsletter: NewsletterIntent;
   externalWriteEnabled: false;
-  interfaceStability: 'official-alpha' | 'no-official-publishing-api';
+  interfaceStability: 'no-official-publishing-api';
   payload: unknown;
 }
 

@@ -9,12 +9,10 @@ run_worker_first = ["/api/*", "/health"]
 
 [vars]
 RELEASE_WRITE_ENABLED = "false"
-PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
 [env.development.vars]
 RELEASE_WRITE_ENABLED = "false"
-PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
 [[env.development.d1_databases]]
@@ -30,7 +28,6 @@ bucket_name = "gcake-media-development"
 GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
 GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
-PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 GITHUB_APP_ID = "5109954"
 GITHUB_APP_INSTALLATION_ID = "165836027"
@@ -48,7 +45,6 @@ bucket_name = "gcake-media-preview"
 GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
 GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
-PARAGRAPH_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 GITHUB_APP_ID = "5109954"
 GITHUB_APP_INSTALLATION_ID = "165836027"

@@ -5,8 +5,6 @@ import { fileURLToPath } from 'node:url';
 import { buildDistributionBundle, type DistributionTarget } from './prepare-distribution';
 import { DistributionCoordinator, type DistributionApproval, type SubstackBrowserAdapter } from '../../apps/admin-worker/src/distribution-coordinator';
 import { D1PublicationRepository } from '../../apps/admin-worker/src/publication-operations';
-import { ParagraphProductionService, ParagraphRestClient, PARAGRAPH_OPENAPI_COMMIT } from '../../apps/admin-worker/src/paragraph-provider';
-import { assertParagraphProductionGate, type ParagraphProductionGate, type ParagraphTrialAuthorization } from '../../apps/admin-worker/src/paragraph-gate';
 import { boundedDistributionError } from '../../apps/admin-worker/src/distribution-runtime';
 import { CloudflareD1Database } from './d1-api';
 import { openSubstackProfile, PlaywrightSubstackAdapter, type SubstackUiContract } from './substack-browser';
@@ -15,15 +13,13 @@ import { AttendedSubstackAdapter, FileAttendedExchange, anonymousSubstackReader 
 import { assertPagesPublication } from './pages-publication';
 
 export interface DistributionConfig {
-  paragraph: { publicationSlug: string; writeEnabled: boolean; openapiCommit: string; gate: ParagraphProductionGate };
   substack: { writeEnabled: boolean; profile: string; ui: SubstackUiContract };
-  trial?: { sourceCommit?: string; writeEnabled: boolean; slug: string; sourceRevision: string; paragraphPublicationSlug: string; substackOrigin: string; digests: Record<DistributionTarget, string>; sessionDirectory: string };
+  trial?: { sourceCommit?: string; writeEnabled: boolean; slug: string; sourceRevision: string; substackOrigin: string; digests: Record<DistributionTarget, string>; sessionDirectory: string };
   unattended?: { enabled: boolean; slug?: string; scope?: 'all-formal-markdown'; repository?: 'gcake119/gcake-dev'; branch?: 'main'; policy: 'pages-first-no-newsletter'; targets: DistributionTarget[] };
 }
 export function assertTrialScope(config: DistributionConfig, article: ReturnType<typeof articleFromBundle>, target: DistributionTarget, digest: string) {
   const trial = config.trial;
   if (!trial || trial.slug !== article.slug || trial.sourceRevision !== article.sourceRevision
-    || trial.paragraphPublicationSlug !== config.paragraph.publicationSlug || trial.paragraphPublicationSlug !== 'gcake'
     || trial.substackOrigin !== 'https://gcakedev.substack.com' || config.substack.ui.origin !== trial.substackOrigin
     || trial.digests?.[target] !== digest) throw new Error('DISTRIBUTION_TRIAL_SCOPE_MISMATCH');
 }
@@ -39,7 +35,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
   const [operation, slug, target] = cleanArgs;
   const flags = cleanArgs.slice(operation === 'login' ? 2 : 3);
   if (operation === 'login' && slug !== 'substack') throw new Error('DISTRIBUTION_LOGIN_SUBSTACK_ONLY');
-  if (!['dry-run', 'prepare', 'publish', 'verify', 'retry', 'finalize', 'login'].includes(operation) || !slug || (operation !== 'login' && !['paragraph', 'substack'].includes(target))) throw new Error('DISTRIBUTION_USAGE: distribution:run login substack --config path OR distribution:run <dry-run|prepare|publish|verify|retry|finalize> <slug> <paragraph|substack> [--config path] [--receipt path] [--approval path] [--out path]');
+  if (!['dry-run', 'prepare', 'publish', 'verify', 'retry', 'finalize', 'login'].includes(operation) || !slug || (operation !== 'login' && !['substack'].includes(target))) throw new Error('DISTRIBUTION_USAGE: distribution:run login substack --config path OR distribution:run <dry-run|prepare|publish|verify|retry|finalize> <slug> <substack> [--config path] [--receipt path] [--approval path] [--out path]');
   if (operation === 'finalize' && target !== 'substack') throw new Error('DISTRIBUTION_FINALIZE_SUBSTACK_ONLY');
   const parsed = new Map<string, string>();
   for (let i = 0; i < flags.length; i += 2) {
@@ -92,10 +88,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
     assertDistributionApproval(article, namedTarget, approval);
     if (namedTarget === 'substack' && (reviewed.substackPolicy !== 'full-mirror' || reviewed.canonicalPolicy !== 'platform-article' || reviewed.datePolicy !== (article.substackDatePrecision === 'minute' ? 'after-publish-original-minute' : 'after-publish-original') || authorized.substackPolicy !== 'full-mirror' || config.substack.ui.publicationPolicy !== 'full-mirror')) throw new Error('SUBSTACK_POLICY_APPROVAL_REQUIRED');
     if ((trialMode ? config.trial?.writeEnabled : config[namedTarget].writeEnabled) !== true) throw new Error('DISTRIBUTION_WRITE_DISABLED');
-    if (namedTarget === 'paragraph') {
-      if (config.paragraph.openapiCommit !== PARAGRAPH_OPENAPI_COMMIT) throw new Error('PARAGRAPH_INTERFACE_PIN_MISMATCH');
-      if (!trialMode) assertParagraphProductionGate(config.paragraph.gate);
-    }
+
   }
   if (trialMode) {
     assertTrialScope(config, article, namedTarget, digest);
@@ -130,11 +123,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
         substack = new PlaywrightSubstackAdapter(await context.newPage(), config.substack.ui);
       }
     }
-    const client = new ParagraphRestClient(namedTarget === 'paragraph' ? process.env.PARAGRAPH_API_KEY ?? '' : 'unused');
-    const trial: ParagraphTrialAuthorization | undefined = trialMode && namedTarget === 'paragraph' && approval && (operation === 'prepare' || operation === 'publish')
-      ? { kind: 'controlled-trial' as const, approved: true as const, newsletter: 'skip' as const, postSlug: slug, sourceRevision: article.sourceRevision, publicationSlug: config.paragraph.publicationSlug, operation } : undefined;
-    const service = new ParagraphProductionService(repository, client, undefined, config.paragraph.gate, repository.runtime, trial, () => assertPagesPublication(bundle));
-    const coordinator = new DistributionCoordinator(repository, service, substack, config.paragraph.publicationSlug);
+    const coordinator = new DistributionCoordinator(repository, substack);
     const state = await coordinator.run(article, namedTarget, operation as 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval);
     console.log(JSON.stringify({ operation, ...(namedTarget === 'substack' ? { substackPolicy: config.substack.ui.publicationPolicy ?? 'strict-source' } : {}), state }));
     if (['failed', 'manual_required', 'uncertain'].includes(state.status)) process.exitCode = 1;

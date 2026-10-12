@@ -14,15 +14,10 @@ test('Publishing ownership remains explicit across GitHub, R2, and D1', () => {
   });
 });
 
-test('Provider writes default off and fail closed for Paragraph and Substack', () => {
+test('Provider writes default off and fail closed for Substack', () => {
   assert.deepEqual(DEFAULT_PROVIDER_WRITE_FLAGS, {
-    paragraph: false,
     substack: false,
   });
-  assert.throws(
-    () => assertProviderWriteEnabled('paragraph', DEFAULT_PROVIDER_WRITE_FLAGS),
-    /explicitly enabled/,
-  );
   assert.throws(
     () => assertProviderWriteEnabled('substack', DEFAULT_PROVIDER_WRITE_FLAGS),
     /explicitly enabled/,

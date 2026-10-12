@@ -13,18 +13,18 @@ test('D1 locks and checkpoints survive restart, serialize one target, and retain
     db.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/0006_distribution_checkpoints.sql', import.meta.url), 'utf8'));
     const first = new D1PublicationRepository(new SqliteD1Database(db));
     const next = new D1PublicationRepository(new SqliteD1Database(db));
-    assert.equal(await first.runtime.acquire('demo', 'paragraph', 'owner-1', 'now'), true);
-    assert.equal(await next.runtime.acquire('demo', 'paragraph', 'owner-2', 'later'), false);
+    assert.equal(await first.runtime.acquire('demo', 'github_pages', 'owner-1', 'now'), true);
+    assert.equal(await next.runtime.acquire('demo', 'github_pages', 'owner-2', 'later'), false);
     assert.equal(await next.runtime.acquire('demo', 'substack', 'owner-2', 'later'), true);
-    await first.runtime.record({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'r1', operation: 'publish', createdAt: 'now' });
-    assert.equal((await next.runtime.checkpoint('demo', 'paragraph'))?.sourceRevision, 'r1');
+    await first.runtime.record({ postSlug: 'demo', target: 'github_pages', sourceRevision: 'r1', operation: 'publish', createdAt: 'now' });
+    assert.equal((await next.runtime.checkpoint('demo', 'github_pages'))?.sourceRevision, 'r1');
     await first.runtime.record({ postSlug: 'demo', target: 'substack', sourceRevision: 'r1', operation: 'metadata', substackPolicy: 'full-mirror', createdAt: 'now' });
     assert.equal((await next.runtime.checkpoint('demo', 'substack'))?.operation, 'metadata');
     assert.equal((await next.runtime.checkpoint('demo', 'substack'))?.substackPolicy, 'full-mirror');
-    await next.runtime.release('demo', 'paragraph', 'owner-2');
-    assert.equal(await next.runtime.acquire('demo', 'paragraph', 'owner-3', 'future'), false);
-    await first.runtime.release('demo', 'paragraph', 'owner-1');
-    assert.equal(await next.runtime.acquire('demo', 'paragraph', 'owner-3', 'future'), true);
+    await next.runtime.release('demo', 'github_pages', 'owner-2');
+    assert.equal(await next.runtime.acquire('demo', 'github_pages', 'owner-3', 'future'), false);
+    await first.runtime.release('demo', 'github_pages', 'owner-1');
+    assert.equal(await next.runtime.acquire('demo', 'github_pages', 'owner-3', 'future'), true);
   } finally { db.close(); }
 });
 test('D1 HTTP failure never retries SQL and does not expose credentials/provider body', async () => {

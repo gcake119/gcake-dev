@@ -7,12 +7,12 @@ import {main as distribution,reviewDigest,articleFromBundle,type DistributionCon
 import {assertGeneralPolicy,openFixedSnapshot} from './distribution-inventory';
 import {boundedDistributionError} from '../../apps/admin-worker/src/distribution-runtime';
 /** Generate one-version execution files under the user's Pages-first unattended policy. */
-export async function prepareScheduledDistribution(slug:string,root:string,config:DistributionConfig,out:string,prove=assertPagesPublication,selection?:Partial<Record<'paragraph'|'substack',('prepare'|'publish'|'verify'|'retry')[]>>,finalizeTargets:('substack')[]=[]){
+export async function prepareScheduledDistribution(slug:string,root:string,config:DistributionConfig,out:string,prove=assertPagesPublication,selection?:Partial<Record<'substack',('prepare'|'publish'|'verify'|'retry')[]>>,finalizeTargets:('substack')[]=[]){
  const policy=config.unattended;
  let sourceCommit:string|undefined;
  if(policy?.scope==='all-formal-markdown'){assertGeneralPolicy(config);sourceCommit=await openFixedSnapshot(root);}
- if(policy?.enabled!==true||policy.scope!=='all-formal-markdown'&&policy.slug!==slug||policy.policy!=='pages-first-no-newsletter'||!policy.targets.length||new Set(policy.targets).size!==policy.targets.length||policy.targets.some(target=>!['paragraph','substack'].includes(target))
-  ||config.paragraph.publicationSlug!=='gcake'||config.substack.ui.origin!=='https://gcakedev.substack.com'||config.substack.ui.publicationPolicy!=='full-mirror')throw Error('UNATTENDED_POLICY_REQUIRED');
+ if(policy?.enabled!==true||policy.scope!=='all-formal-markdown'&&policy.slug!==slug||policy.policy!=='pages-first-no-newsletter'||!policy.targets.length||new Set(policy.targets).size!==policy.targets.length||policy.targets.some(target=>!['substack'].includes(target))
+  ||config.substack.ui.origin!=='https://gcakedev.substack.com'||config.substack.ui.publicationPolicy!=='full-mirror')throw Error('UNATTENDED_POLICY_REQUIRED');
  const relative=path.relative(path.resolve(root),path.resolve(out));
  if(relative!== '..'&&!relative.startsWith('..'+path.sep)&&!path.isAbsolute(relative))throw Error('UNATTENDED_OUTPUT_OUTSIDE_GIT');
  const bundle=await buildDistributionBundle(slug,path.join(root,'src/content/posts'));
@@ -23,9 +23,9 @@ export async function prepareScheduledDistribution(slug:string,root:string,confi
  if(physicalRelative!=='..'&&!physicalRelative.startsWith('..'+path.sep)&&!path.isAbsolute(physicalRelative))throw Error('UNATTENDED_OUTPUT_OUTSIDE_GIT');
  const directory=await fs.mkdtemp(path.join(out,'run-'));await fs.chmod(directory,0o700);
  const article=articleFromBundle(bundle,config.substack.ui.displayedDatePrecision),configFile=path.join(directory,'config.json');
- const scoped={...config,trial:{...(sourceCommit?{sourceCommit}:{}),writeEnabled:!selection||finalizeTargets.includes('substack')||Object.values(selection).some(operations=>operations?.some(op=>op==='prepare'||op==='publish')),slug,sourceRevision:article.sourceRevision,paragraphPublicationSlug:config.paragraph.publicationSlug,substackOrigin:config.substack.ui.origin,digests:{paragraph:reviewDigest(article,'paragraph'),substack:reviewDigest(article,'substack')},sessionDirectory:path.join(directory,'handoffs')}};
+ const scoped={...config,trial:{...(sourceCommit?{sourceCommit}:{}),writeEnabled:!selection||finalizeTargets.includes('substack')||Object.values(selection).some(operations=>operations?.some(op=>op==='prepare'||op==='publish')),slug,sourceRevision:article.sourceRevision,substackOrigin:config.substack.ui.origin,digests:{substack:reviewDigest(article,'substack')},sessionDirectory:path.join(directory,'handoffs')}};
  await fs.writeFile(configFile,JSON.stringify(scoped,null,2)+'\n',{flag:'wx',mode:0o600});
- const commands:{target:'paragraph'|'substack';operation:'prepare'|'publish'|'verify'|'retry';receiptFile:string;approvalFile:string}[]=[];
+ const commands:{target:'substack';operation:'prepare'|'publish'|'verify'|'retry';receiptFile:string;approvalFile:string}[]=[];
  const recoveries:{target:'substack';operation:'finalize';receiptFile:string;approvalFile:string}[]=[];
  for(const target of policy.targets){
   const receiptFile=path.join(directory,`${target}-review.json`);

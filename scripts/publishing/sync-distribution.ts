@@ -54,7 +54,7 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
  try{
   await save(path.join(options.lock,'owner.json'),{owner,pid:process.pid,createdAt:new Date().toISOString()});
   await fs.mkdir(options.output,{recursive:true,mode:0o700});await outside(options.runtime,options.output);
-  directory=await fs.mkdtemp(path.join(options.output,'round-'));await fs.chmod(directory,0o700);await save(path.join(directory,'ownership.json'),{owner,automation:'pages-paragraph-substack',runtime:options.runtime});
+  directory=await fs.mkdtemp(path.join(options.output,'round-'));await fs.chmod(directory,0o700);await save(path.join(directory,'ownership.json'),{owner,automation:'pages-substack',runtime:options.runtime});
   const preflight=await deps.audit();await save(path.join(directory,'preflight-d1.json'),preflight);if(preflight.locks.length)throw Error('DISTRIBUTION_ACTIVE_WRITER');
   const snapshot=await deps.snapshot(path.join(directory,'source'));source='retained';await save(path.join(directory,'snapshot.json'),snapshot);
   const plan=await deps.plan(snapshot.sourceRoot,options.configFile,path.join(directory,'plans'));await save(path.join(directory,'all-plan.json'),plan);
@@ -103,7 +103,7 @@ export function productionDependencies(runtime:string):SyncDependencies{
  const db=new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
  const query=async(sql:string)=>(await db.prepare(sql).all()).results;
  return {
-  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));if(accepted.status!=='passed'||!Array.isArray(accepted.providerStates)||!['paragraph','substack'].every(t=>accepted.providerStates.some((s:{target:string;status:string})=>s.target===t&&s.status==='verified')))throw Error('DISTRIBUTION_LIVE_ACCEPTANCE_REQUIRED');},
+  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));if(accepted.status!=='passed'||!Array.isArray(accepted.providerStates)||!['substack'].every(t=>accepted.providerStates.some((s:{target:string;status:string})=>s.target===t&&s.status==='verified')))throw Error('DISTRIBUTION_LIVE_ACCEPTANCE_REQUIRED');},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   snapshot:destination=>snapshotDistribution(destination,runtime),
   plan:async(source,configFile,out)=>prepareAllDistribution(source,JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig,out,async(slug,target)=>({state:(await repo.listStates(slug)).find(s=>s.target===target),checkpoint:await repo.runtime.checkpoint(slug,target),locked:!!await db.prepare('SELECT owner FROM publication_locks WHERE post_slug = ? AND target = ?').bind(slug,target).first()})),

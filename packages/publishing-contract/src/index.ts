@@ -26,15 +26,13 @@ export interface D1RuntimeAdapter {
   readonly source: 'd1';
 }
 
-export type ProviderTarget = 'paragraph' | 'substack';
+export type ProviderTarget = 'substack';
 
 export interface ProviderWriteFlags {
-  readonly paragraph: boolean;
   readonly substack: boolean;
 }
 
 export const DEFAULT_PROVIDER_WRITE_FLAGS: Readonly<ProviderWriteFlags> = Object.freeze({
-  paragraph: false,
   substack: false,
 });
 
@@ -42,6 +40,7 @@ export function assertProviderWriteEnabled(
   target: ProviderTarget,
   flags: Readonly<ProviderWriteFlags>,
 ): void {
+  if (target !== 'substack') throw new Error('PUBLICATION_TARGET_UNSUPPORTED');
   if (flags[target] !== true) {
     throw new Error(`${target} production write is disabled until explicitly enabled`);
   }

@@ -5,7 +5,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { DistributionCoordinator } from '../../apps/admin-worker/src/distribution-coordinator';
 import { InMemoryPublicationRepository } from '../../apps/admin-worker/src/publication-operations';
-import { ParagraphProductionService } from '../../apps/admin-worker/src/paragraph-provider';
 import { AttendedSubstackAdapter, FileAttendedExchange } from './substack-attended';
 import { renderedArticle } from './substack-browser';
 const article={slug:'trial',sourceRevision:'r1',title:'Trial',body:'# Complete\n\n[Original](https://example.com/original)',canonicalUrl:'https://example.com/original',publishedAt:'2026-10-11T16:00:00Z',assets:[]};
@@ -29,7 +28,7 @@ function fixture(operation:'prepare'|'publish'|'retry'='prepare',badReply=false)
     if (request.action==='publish') return {...publicRemote,emailDisabled:true,scheduleDisabled:true};
     throw new Error('SUBSTACK_TEST_UNEXPECTED_ACTION');
   },async()=>publicEvidence());
-  const coordinator=new DistributionCoordinator(repository,new ParagraphProductionService(repository,{} as never),adapter,'gcake');
+  const coordinator=new DistributionCoordinator(repository,adapter);
   return {repository,adapter,coordinator,actions};
 }
 test('attended draft uses coordinator intent before writes and records exact saved evidence',async()=>{

@@ -1,8 +1,7 @@
 import type { PublicationTargetState } from './publication-operations.js';
 import { boundedDistributionError, type RuntimePublicationRepository } from './distribution-runtime.js';
-import { ParagraphProductionService, type ParagraphPublicationInput } from './paragraph-provider.js';
 
-export type DistributionTarget = 'paragraph' | 'substack';
+export type DistributionTarget = 'substack';
 export interface DistributionArticle {
   slug: string; sourceRevision: string; title: string; description?: string; body: string;
   substackDatePrecision?: 'minute'; canonicalUrl: string; publishedAt?: string; assets: { source: string; alt: string }[];
@@ -31,34 +30,22 @@ export function assertDistributionApproval(article: DistributionArticle, target:
 export class DistributionCoordinator {
   constructor(
     private readonly repository: RuntimePublicationRepository,
-    private readonly paragraph: ParagraphProductionService,
     private readonly substack: SubstackBrowserAdapter | undefined,
-    private readonly publicationSlug: string,
     private readonly now: () => string = () => new Date().toISOString(),
   ) {}
   async dryRun(article: DistributionArticle, target: DistributionTarget) {
+    if (target !== 'substack') throw new Error('DISTRIBUTION_TARGET_UNSUPPORTED');
     const current = (await this.repository.listStates(article.slug)).find(s => s.target === target);
     return { target, slug: article.slug, sourceRevision: article.sourceRevision, newsletter: 'skip', externalWriteEnabled: false, operation: current?.remoteId ? 'update-draft' : 'create-draft', remoteId: current?.remoteId, canonicalUrl: article.canonicalUrl, publishedAt: article.publishedAt };
   }
-  private paragraphInput(article: DistributionArticle): ParagraphPublicationInput {
-    if (!article.publishedAt) throw new Error('DISTRIBUTION_PUBLISHED_AT_REQUIRED');
-    return { postSlug: article.slug, sourceRevision: article.sourceRevision, title: article.title, subtitle: article.description, markdown: article.body, canonicalUrl: article.canonicalUrl, publishedAt: article.publishedAt, publicationSlug: this.publicationSlug };
-  }
   async run(article: DistributionArticle, target: DistributionTarget, operation: 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval?: DistributionApproval): Promise<PublicationTargetState> {
+    if (target !== 'substack') throw new Error('DISTRIBUTION_TARGET_UNSUPPORTED');
     if (!article.publishedAt || !Number.isFinite(Date.parse(article.publishedAt)) || Date.parse(article.publishedAt) > Date.now()) throw new Error('DISTRIBUTION_PUBLISHED_AT_INVALID');
     if (operation === 'prepare' || operation === 'publish' || operation === 'finalize') {
       assertDistributionApproval(article, target, approval);
       if (target === 'substack' && approval?.substackPolicy !== this.substack?.publicationPolicy) throw new Error('SUBSTACK_POLICY_APPROVAL_REQUIRED');
     }
     if (operation === 'finalize' && target !== 'substack') throw new Error('DISTRIBUTION_FINALIZE_SUBSTACK_ONLY');
-    if (target === 'paragraph') {
-      const input = this.paragraphInput(article);
-      if (operation === 'verify') return this.paragraph.verify(input);
-      if (operation === 'retry') return this.paragraph.reconcile(input);
-      if (operation === 'prepare') return this.paragraph.prepareDraft(input, await this.paragraph.dryRun(input));
-      await this.paragraph.publish(input, await this.paragraph.dryRun(input));
-      return this.paragraph.verify(input);
-    }
     const owner = crypto.randomUUID();
     const runtime = this.repository.runtime;
     const isPublic = (item: RemoteArticle | undefined) => !!item && /^\/p\/[^/]+\/?$/.test(new URL(item.url).pathname);

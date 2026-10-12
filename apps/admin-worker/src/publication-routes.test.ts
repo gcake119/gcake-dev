@@ -19,9 +19,9 @@ test('saving content never invokes publication operations and explicit operation
   });
   await handle(new Request('https://admin.test/api/v1/posts/demo', { method: 'POST', headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' }, body: JSON.stringify({ expectedBaseCommitSha: 'base', message: 'save', files: [] }) }));
   assert.equal(operations.length, 0);
-  const response = await handle(new Request('https://admin.test/api/v1/publications/demo/operations', { method: 'POST', headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' }, body: JSON.stringify({ sourceRevision: 'base', target: 'paragraph', operation: 'prepare' }) }));
+  const response = await handle(new Request('https://admin.test/api/v1/publications/demo/operations', { method: 'POST', headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' }, body: JSON.stringify({ sourceRevision: 'base', target: 'substack', operation: 'prepare' }) }));
   assert.equal(response.status, 200);
-  assert.deepEqual(operations, [{ postSlug: 'demo', sourceRevision: 'base', target: 'paragraph', operation: 'prepare' }]);
+  assert.deepEqual(operations, [{ postSlug: 'demo', sourceRevision: 'base', target: 'substack', operation: 'prepare' }]);
 });
 
 test('newsletter route requires a separate irreversible intent key before reaching operations', async () => {
@@ -38,7 +38,7 @@ test('newsletter route requires a separate irreversible intent key before reachi
   const headers = { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' };
   const missingIntent = await handle(new Request('https://admin.test/api/v1/publications/demo/operations', {
     method: 'POST', headers,
-    body: JSON.stringify({ sourceRevision: 'base', target: 'paragraph', operation: 'newsletter' }),
+    body: JSON.stringify({ sourceRevision: 'base', target: 'substack', operation: 'newsletter' }),
   }));
   assert.equal(missingIntent.status, 400);
   assert.equal(operations.length, 0);
@@ -46,13 +46,13 @@ test('newsletter route requires a separate irreversible intent key before reachi
   const explicitIntent = await handle(new Request('https://admin.test/api/v1/publications/demo/operations', {
     method: 'POST', headers,
     body: JSON.stringify({
-      sourceRevision: 'base', target: 'paragraph', operation: 'newsletter',
+      sourceRevision: 'base', target: 'substack', operation: 'newsletter',
       newsletterIntentKey: 'newsletter-demo-base', explicitIrreversibleIntent: true,
     }),
   }));
   assert.equal(explicitIntent.status, 200);
   assert.deepEqual(operations, [{
-    postSlug: 'demo', sourceRevision: 'base', target: 'paragraph', operation: 'newsletter',
+    postSlug: 'demo', sourceRevision: 'base', target: 'substack', operation: 'newsletter',
     newsletterIntentKey: 'newsletter-demo-base', explicitIrreversibleIntent: true,
   }]);
 });
