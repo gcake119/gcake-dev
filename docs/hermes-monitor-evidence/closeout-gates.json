@@ -1,0 +1,29 @@
+{
+  "base_sha": "179cd3953d00c39d7477027af20636b60ed213f3",
+  "production_evidence": "production-live-owner.json",
+  "python_version": "3.11.15",
+  "complete_pnpm_test": true,
+  "python_tests": 153,
+  "node_test_executions": 396,
+  "node_counts_are_not_deduplicated": true,
+  "build_all": true,
+  "astro_check": {
+    "files": 198,
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "spectra_validate": true,
+  "spectra_findings": [],
+  "source_recovered_from_conversation": true,
+  "installed_monitor_sha256": "5ad29051540b97578588315714a1da241b0ca4e02ad0373ca94aba14e005efea",
+  "release_dry_run": true,
+  "current_selection_evidence": "current-selection-closeout.json",
+  "remote_source_head": "373299fae570884c3efb58d21a1a3be884b02a43",
+  "branch": "codex/hermes-production-closeout-20261013",
+  "code_commits": [
+    "972368f",
+    "373299f"
+  ],
+  "remote_source_head_verified": true
+}

@@ -1,0 +1,28 @@
+{
+  "evidence_source": "summary of owner-supplied read-only Terminal JSON",
+  "audit_utc": "2026-10-12T21:22:24.281593+00:00",
+  "audit_euid": 0,
+  "credential_files_opened": false,
+  "database_opened": false,
+  "gateway_control_commands_executed": false,
+  "network_used": false,
+  "source_package_version": "0.21.4",
+  "source_git_head": "7ce190446e548e2e1c0ae6ba0225be0490d12fc2",
+  "tested_original_hashes_match": true,
+  "summary_env_exists": false,
+  "publication_monitor_installed": false,
+  "gateway": {
+    "label": "ai.hermes.gateway.boot",
+    "domain": "system",
+    "loaded": true,
+    "pid": 19971,
+    "user": "hermes",
+    "python": "3.11.15",
+    "processes": 1,
+    "plist_sha256": "b9d3da9f92783db78c67f78d715b0eb75725ca61da9fddc5548b6966dbc5e5a9"
+  },
+  "updater_plist_sha256": "a2a0bc4defecb53cb4ae68706f4230baa8773d1143db147cdb4bddb9ba6dca00",
+  "gui_gateway_query_exit": 125,
+  "gui_gateway_loaded": false,
+  "gui_domain_absence_is_not_persistent_disable_proof": true
+}

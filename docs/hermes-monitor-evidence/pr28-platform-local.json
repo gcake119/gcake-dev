@@ -1,0 +1,38 @@
+{
+  "ci_failures": [
+    "https://github.com/gcake119/gcake-dev/actions/runs/38379988061",
+    "https://github.com/gcake119/gcake-dev/actions/runs/38379988093"
+  ],
+  "causes": [
+    "missing fixed /private/tmp test namespace on disposable Linux runner",
+    "Darwin-only ditto and libproc assertions"
+  ],
+  "production_code_changed": false,
+  "production_operations": false,
+  "job_changes": false,
+  "macos_complete_pnpm_test": true,
+  "macos_python_tests": 153,
+  "macos_native_tests_executed": true,
+  "linux": {
+    "task": "gcake-hermes-pr28-linux",
+    "owner": 501,
+    "source": "/Users/caiyijun/project/gcake-dev/.spectra/hermes-delivery-20261013/scripts/hermes",
+    "production_operations": false,
+    "network_during_tests": false,
+    "exit_code": 0,
+    "mode": "green",
+    "container_removed": true,
+    "owned_image_removed": true,
+    "purpose": "Local Linux reproduction and full Python regression for PR #28",
+    "python_image": "python:3.11-slim-bookworm",
+    "test_count": 153,
+    "passed_count": 150,
+    "macos_native_skips": 3,
+    "volumes_created": false,
+    "cleanup": "exact owned task label and unique container/image name; no global prune"
+  },
+  "build_all": true,
+  "astro_check": true,
+  "release_dry_run": true,
+  "new_ci_status": "pending after push"
+}

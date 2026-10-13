@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "release_id": "hermes-0214-gcake-context-20261013",
+  "source_sha": "7ce190446e548e2e1c0ae6ba0225be0490d12fc2",
+  "patch_sha": "40bb13ac6af53cc0271f688522fe04f2e708fd8d2f7e2c73600ac03b28ada408",
+  "lock_sha": "b9c587446a3b1409d33e77563f600f0e22ef3bf2447476acf000496423d81761",
+  "python_version": "3.11.15",
+  "verification": {
+    "evidence_sha": "9a2e0bf0790ededa988adc87137ffa1aa4cf7e7ca531680b7c7239e66c57efa0",
+    "passed": true
+  },
+  "bundle_digest": "8e285697719b62295eae5bd8db23ed52b8da6f6dbe585eabef91b835462f9f2e",
+  "provenance": "read-only installed public manifest",
+  "tools": {
+    "production_entry.py": "aa3c4c0447a478d4241b592263df95a98aa60358d0c9aab5d3695a94d2ab7e45",
+    "updater_guard.py": "9be0a5e7f4229bf171c388eca022c915be156f845a1a949d1729e9784f260ff3",
+    "production_monitor_dispatch.py": "1f31201f67b750e3350e7d507c5f93a2989482e6422bf42f2d269c4b56e37f9f",
+    "production_install.py": "6c6002f1a413834aff78366710f15eb441578ee371ee4627d3412948d561a288",
+    "update_entry.py": "eece665bfe29aea328e3222133d4c80031b1a48a1713b82ba058cb0ad497f279",
+    "production_owner.py": "5f289d3343887db43db2ef8814e2fef1184606d1d1958f9071b33cd845cbde8d",
+    "monitor_wrapper.py": "2aa34397771bd9eb88814d2fa8594d79aa31937a3ced8d58b0a1ff6b2f309e7e"
+  },
+  "monitor_source_sha256": "5ad29051540b97578588315714a1da241b0ca4e02ad0373ca94aba14e005efea"
+}

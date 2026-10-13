@@ -1,0 +1,22 @@
+{
+  "evidence_source": "owner-supplied terminal result",
+  "schema": 1,
+  "test_kind": "combined-real-root-hermes-launchd-full-hermes",
+  "production_operations": false,
+  "production_credentials_read": false,
+  "telegram_connections": false,
+  "account_changes": false,
+  "tcp_used": false,
+  "checks": {},
+  "rounds": [],
+  "recoveries": [],
+  "passed": false,
+  "error_type": "OperationalError",
+  "error": "unable to open database file",
+  "daemon_stops": [{"pid": 91448, "exited": true}],
+  "cleanup": {
+    "test_service_removed": true,
+    "owned_root_removed": true,
+    "errors": []
+  }
+}

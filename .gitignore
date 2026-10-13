@@ -19,3 +19,10 @@ output/release-verification/
 
 # Private distribution receipts and live acceptance artifacts
 .distribution-handoff/
+
+# Hermes owner exports, disposable runtime and private rollout inputs
+hermes-core-local/
+hermes-gateway-source/
+hermes-gateway-env311/
+combined-gateway-inputs/
+production-rollout-inputs/

@@ -1,0 +1,22 @@
+{
+  "evidence_source": "summary of owner-supplied terminal JSON",
+  "test_kind": "combined-real-root-hermes-launchd-full-hermes",
+  "passed": false,
+  "production_operations": false,
+  "production_credentials_read": false,
+  "telegram_connections": false,
+  "account_changes": false,
+  "tcp_used": false,
+  "verified_rounds": [
+    {"pid": 54291, "uid": 502, "python": "3.11.15", "release_id": "old", "context_matches_occurrence": true, "dry_run": true, "state_unchanged": true},
+    {"pid": 54291, "uid": 502, "python": "3.11.15", "release_id": "old", "context_matches_occurrence": true, "dry_run": false, "state_unchanged": false},
+    {"pid": 65733, "uid": 502, "python": "3.11.15", "release_id": "new", "context_matches_occurrence": true, "dry_run": true, "state_unchanged": true},
+    {"pid": 65733, "uid": 502, "python": "3.11.15", "release_id": "new", "context_matches_occurrence": true, "dry_run": false, "state_unchanged": false}
+  ],
+  "recoveries": [],
+  "error_type": "AssertionError",
+  "error_location": "verify_combined_gateway.py:254; counts[-1]==0 and service.snapshot()==preserved",
+  "delivery_count_at_failure": null,
+  "daemon_stops": [{"pid": 54291, "exited": true}, {"pid": 65733, "exited": true}],
+  "cleanup": {"test_service_removed": true, "owned_root_removed": true, "errors": []}
+}

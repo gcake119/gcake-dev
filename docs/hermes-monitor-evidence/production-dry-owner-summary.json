@@ -1,0 +1,15 @@
+{
+  "source": "owner-audit-2026-10-13T08:20:54.568334+00:00",
+  "digest": "8e285697719b62295eae5bd8db23ed52b8da6f6dbe585eabef91b835462f9f2e",
+  "first_install_phase": "verified",
+  "qualification_verified": true,
+  "qualified_execution_id": "6aa09dbb806c462f93468e7c01bcb680",
+  "last_execution_id": "90b7a9ea90e14a17a1cc17194f84a309",
+  "uid": 502,
+  "mode": "dry-run",
+  "exit_code": 0,
+  "complete_backup": true,
+  "gateway_pid": 824,
+  "live_activation": false,
+  "commit_push": false
+}

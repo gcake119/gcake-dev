@@ -40,7 +40,11 @@ jobs:
         run: pnpm exec playwright install --with-deps chrome
 
       - name: Full tests including Hermes
-        run: pnpm test
+        # The isolated update harness deliberately accepts only this namespace.
+        # Creating it on the disposable Linux runner preserves that restriction.
+        run: |
+          sudo install -d -m 1777 /private/tmp
+          pnpm test
 
       - name: Astro and TypeScript checks
         run: pnpm check

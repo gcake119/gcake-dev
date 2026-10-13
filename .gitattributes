@@ -1,0 +1,2 @@
+# Unified patch context lines contain a required single space.
+scripts/hermes/hermes-cron-context.patch -whitespace

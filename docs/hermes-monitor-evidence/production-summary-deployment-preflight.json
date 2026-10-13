@@ -1,0 +1,17 @@
+{
+  "read_only": true,
+  "credential_values_read": false,
+  "worker": "gcake-admin-worker-production",
+  "deployed_version": "864a61b6-c7e9-4bbe-b92d-7f1275b83cc9",
+  "deployed_tag": "pr25-581299ca",
+  "deployed_at_utc": "2026-10-12T21:00:39.90563Z",
+  "monitor_read_secret_present": false,
+  "release_write_enabled": true,
+  "substack_write_enabled": false,
+  "github_main": "ba08bccf308f99b4d22f7aa84ee95592c7239e88",
+  "github_main_verified_directly": true,
+  "isolation_clone_origin_is_local_primary_checkout": true,
+  "candidate_base_was": "bb241cb375c9d0b05c8301eba6e0d2cae2bab409",
+  "candidate_reconciliation_required": true,
+  "production_changes_performed": false
+}

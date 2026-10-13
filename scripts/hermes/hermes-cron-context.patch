@@ -1,0 +1,79 @@
+--- a/cron/scheduler_script.py
++++ b/cron/scheduler_script.py
+@@ -320,9 +320,35 @@
+     return [python_exe, str(path)], env_overlay, None
+ 
+ 
++def _script_cron_context(job: dict) -> dict[str, str]:
++    """Trusted immutable dispatch metadata; no clock or mutable jobs-file lookup."""
++    from datetime import datetime, timezone
++    import re
++
++    context = {}
++    for key, field in (("HERMES_CRON_JOB_ID", "id"),
++                       ("HERMES_CRON_EXECUTION_ID", "execution_id")):
++        value = job.get(field)
++        if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", value):
++            raise ValueError("Invalid cron invocation identity")
++        context[key] = value
++    scheduled = job.get("_scheduled_instant")
++    value = ""
++    if scheduled is not None:
++        if not isinstance(scheduled, str):
++            raise ValueError("Invalid cron scheduled instant")
++        parsed = datetime.fromisoformat(scheduled.replace("Z", "+00:00"))
++        if parsed.tzinfo is None:
++            raise ValueError("Cron scheduled instant requires timezone")
++        value = parsed.astimezone(timezone.utc).isoformat()
++    context["HERMES_CRON_SCHEDULED_INSTANT"] = value
++    return context
++
++
+ def _run_job_script(
+     script_path: str, workdir: Optional[str] = None,
+     cancel_event: Optional[_CancelEventLike] = None,
++    *, cron_context: Optional[dict[str, str]] = None,
+ ) -> tuple[bool, str]:
+     """Execute a cron job's script and return ``(success, output)``; on failure *output* is the
+     error message for the LLM to report. Env goes through ``build_subprocess_env`` (SECURITY.md
+@@ -370,6 +396,11 @@
+         # process env itself — no raw copy at the spawn site (test_subprocess_env_guard).
+         env = build_subprocess_env(strip_launch_profile=True)
+         env.update(env_overlay)
++        # Runtime context is scheduler-owned, not inherited or user passthrough.
++        for key in ("HERMES_CRON_JOB_ID", "HERMES_CRON_EXECUTION_ID", "HERMES_CRON_SCHEDULED_INSTANT"):
++            env.pop(key, None)
++        if cron_context is not None:
++            env.update(cron_context)
+         # Subprocess cwd only (default: scripts-dir parent). NEVER os.chdir() the process.
+         # Use the job's workdir as the subprocess cwd when configured, otherwise default to the scripts-dir
+         # parent (back-compat). NEVER mutate the Python process cwd — that would leak into concurrent
+@@ -448,11 +479,12 @@
+     the stale-claim TTL; without a heartbeat another scheduler would re-dispatch the one-shot.
+     Recurring/unclaimed runs have no durable claim → no thread. The owner is captured from the
+     dispatched job, never re-read, so a stale runner cannot extend a replacement owner's claim."""
++    cron_context = _script_cron_context(job)
+     schedule = job.get("schedule")
+     claim = job.get("run_claim")
+     owner = str(claim.get("by") or "") if isinstance(claim, dict) else ""
+     if not (isinstance(schedule, dict) and schedule.get("kind") == "once" and owner):
+-        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event)
++        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event, cron_context=cron_context)
+ 
+     job_id = str(job.get("id") or "")
+     stop = threading.Event()
+@@ -470,10 +502,10 @@
+             "Job '%s': could not start script run_claim heartbeat", job_id, exc_info=True),
+     )
+     if heartbeat_thread is None:
+-        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event)
+-
+-    try:
+-        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event)
++        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event, cron_context=cron_context)
++
++    try:
++        return _run_job_script(script_path, workdir=workdir, cancel_event=cancel_event, cron_context=cron_context)
+     finally:
+         stop.set()
+         # Bounded join: the heartbeat may be blocked on another process's jobs-file lock.

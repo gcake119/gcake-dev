@@ -1,3 +1,4 @@
+import { PUBLICATION_MONITOR_PATH, monitorAuthorized, publicationSummary, type PublicationCatalogue } from './publication-monitor-summary.js';
 import { HEALTH_CONTRACT_VERSION, type HealthResponse } from '@gcake/admin-contract';
 import { D1SessionStore, type SessionDatabase } from './auth.js';
 import { readProviderWriteFlags, type WorkerBindings } from './bindings.js';
@@ -22,6 +23,7 @@ export interface WorkerEnv extends WorkerBindings {
   readonly RELEASE_WRITE_ENABLED?: string;
   readonly RELEASE_AUTOMATION_SECRET?: string;
   readonly RELEASE_DEPLOY_RETRY_ENABLED?: string;
+  readonly MONITOR_READ_SECRET?: string;
 }
 
 function runtimeNotConfigured(message: string): Response {
@@ -95,8 +97,27 @@ function githubOAuth(env: WorkerEnv, fetcher: typeof fetch, callbackUrl: string)
   };
 }
 
-export async function handleRequest(request: Request, env: WorkerEnv, fetcher: typeof fetch = fetch): Promise<Response> {
+export async function handleRequest(request: Request, env: WorkerEnv, fetcher: typeof fetch = fetch, monitorCatalogue?: PublicationCatalogue): Promise<Response> {
   const url = new URL(request.url);
+
+  if (url.pathname === PUBLICATION_MONITOR_PATH) {
+    const headers = { 'Cache-Control': 'no-store' };
+    if (!await monitorAuthorized(request, env.MONITOR_READ_SECRET))
+      return Response.json({ error: { code: 'FORBIDDEN' } }, { status: 403, headers });
+    if (request.method !== 'GET') return new Response(null, { status: 405, headers });
+    const requestId = request.headers.get('X-Gcake-Observation-Id') ?? undefined;
+    if (requestId !== undefined && !/^[a-f0-9]{32}$/.test(requestId))
+      return Response.json({ error: { code: 'INVALID_REQUEST_ID' } }, { status: 400, headers });
+    if (!env.CMS_DB) return Response.json({ error: { code: 'OBSERVATION_UNAVAILABLE' } }, { status: 503, headers });
+    if (!monitorCatalogue) {
+      if (!env.GITHUB_APP_ID || !env.GITHUB_APP_INSTALLATION_ID || !env.GITHUB_APP_PRIVATE_KEY)
+        return Response.json({ error: { code: 'OBSERVATION_UNAVAILABLE' } }, { status: 503, headers });
+      const tokens = new GitHubAppInstallationTokenProvider({ appId: env.GITHUB_APP_ID, installationId: env.GITHUB_APP_INSTALLATION_ID, privateKey: env.GITHUB_APP_PRIVATE_KEY, fetch: fetcher });
+      const reader = new GitHubAppReadClient({ installationTokens: tokens, fetch: fetcher });
+      monitorCatalogue = { snapshot: () => reader.releaseSnapshot(), revision: () => reader.releaseRevision() };
+    }
+    return publicationSummary(env.CMS_DB, monitorCatalogue, requestId);
+  }
 
   if (request.method === 'GET' && url.pathname === '/health') {
     const payload: HealthResponse = {
