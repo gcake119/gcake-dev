@@ -269,3 +269,82 @@ A reusable command SHALL inspect an exact live request and submit complete obser
 - **GIVEN** an expired request, changed source, wrong remote identity or incomplete observed body
 - **WHEN** a reply is submitted
 - **THEN** submission fails without a reply or repeated browser action
+
+### Requirement: Independent dedicated browser transport
+When explicitly selected, the optional profile transport SHALL replace the Codex side-browser dependency with a dedicated persistent browser profile outside Git. The current selected transport is Existing Chrome system transport. The owner SHALL sign in directly; authentication SHALL NOT be exported from Codex or another browser. The profile transport SHALL remain bound to current-source trial authorization, zero delivery and existing D1 identity/recovery. The approved transport SHALL be part of the review digest. Missing login, ambiguous UI, incomplete discovery or expired controls SHALL stop that platform without replay.
+#### Scenario: Owner profile is ready
+- **GIVEN** a directly authenticated dedicated profile and one eligible source
+- **WHEN** standalone synchronization runs
+- **THEN** it completes without an attended file request or Codex session, preserving remote identity and zero delivery
+#### Scenario: Authentication expires
+- **GIVEN** the dedicated profile requires sign-in
+- **WHEN** a write is considered
+- **THEN** the platform stops with an actionable login error and no creation or publication
+#### Scenario: Transport changes
+- **GIVEN** a receipt for the previous side-browser transport
+- **WHEN** a dedicated-profile write is requested
+- **THEN** the stale receipt is rejected before any write
+
+### Requirement: macOS scheduled script cutover
+A user LaunchAgent SHALL invoke the pinned synchronization script every 15 minutes using absolute executable, runtime and private policy paths, without Codex or inherited shell initialization. Credentials SHALL only be loaded from the existing private environment file. Installer output SHALL contain no secret values and private logs SHALL remain outside Git. Cutover SHALL require local gates, approved browser transport readiness, a real same-version read-only round and zero in-flight writers; the old heartbeat SHALL be disabled before activating the system scheduler. Rollback SHALL stop the scheduler and preserve all identities and configuration.
+#### Scenario: Scheduled unchanged round
+- **GIVEN** an installed agent and unchanged verified articles
+- **WHEN** the system starts the job
+- **THEN** Substack is verified with no article or notification writes and owned source cleanup
+#### Scenario: Preflight is incomplete
+- **GIVEN** the selected transport or runtime acceptance is missing
+- **WHEN** installation or activation is requested
+- **THEN** activation is rejected and the working heartbeat is preserved
+#### Scenario: Cutover has succeeded
+- **GIVEN** the standalone Substack verification and all runtime gates passed with no active writer
+- **WHEN** the LaunchAgent is activated
+- **THEN** the Codex heartbeat is disabled and only the system scheduler owns execution
+
+### Requirement: Existing Chrome system transport
+The accepted macOS transport SHALL use Chrome's Apple Events interface on one uniquely identified tab of gcakedev.substack.com. Every operation SHALL check the bound tab identity and origin; unexpected navigation, multiple candidates, missing permissions or changed source SHALL stop without browser writes. It SHALL preserve exact revision authorization, D1 intent, same-ID updates, zero delivery and independent anonymous public verification. It SHALL NOT export authentication, use remote debugging, close unrelated tabs or enable permissions automatically.
+#### Scenario: Existing authenticated tab
+- **GIVEN** one authorized authenticated Chrome tab and owner-enabled automation permissions
+- **WHEN** the system performs an exact approved operation
+- **THEN** the existing login is reused without Codex or authentication export and the same durable identity is retained
+#### Scenario: Ambiguous or unauthorized tab
+- **GIVEN** multiple matching tabs or the bound tab navigated outside the authorized publication
+- **WHEN** an operation is considered
+- **THEN** execution stops before any page write and other tabs remain untouched
+#### Scenario: Permissions missing
+- **GIVEN** Chrome or macOS denies automation
+- **WHEN** preflight runs
+- **THEN** it reports a bounded permission error without enabling settings, requesting login or publishing
+#### Scenario: Source changes before a write
+- **GIVEN** a bound authorized tab and a source whose Pages content changed
+- **WHEN** a page mutation is requested
+- **THEN** it stops before the mutation and preserves the original intent
+
+### Requirement: Anonymous Substack post identity
+For the explicit native identity policy, the system SHALL match the bound editor article ID, durable original ID, anonymous public article ID, configured publication ID and exact platform canonical before an existing article mutation. It SHALL parse public HTML data without executing scripts or using authenticated APIs. Newly published IDs SHALL resolve through the public archive and independent article readback. Missing, conflicting, malformed or off-publication evidence SHALL stop before a write and preserve the original identity. Full text, original link, images, date and zero delivery checks SHALL remain required.
+#### Scenario: Editor has no public link
+- **GIVEN** the original published ID and an editor without a public href
+- **WHEN** anonymous public identity and the bound editor identify the same article
+- **THEN** a precisely approved same-ID update can proceed with delivery off and full anonymous readback
+#### Scenario: Public identity conflicts
+- **GIVEN** anonymous evidence identifies a different article or publication
+- **WHEN** an update is requested
+- **THEN** no draft content changes and the original ID remains preserved
+#### Scenario: Publication result is not discoverable
+- **GIVEN** a website publication was attempted on the original ID
+- **WHEN** the anonymous archive lacks one unambiguous matching public article
+- **THEN** the outcome remains unresolved and no second publication or replacement article is created
+#### Scenario: Public script data is invalid
+- **GIVEN** missing, malformed or multiple public identity records
+- **WHEN** identity verification runs
+- **THEN** it stops without executing page scripts or trusting a title match
+
+### Requirement: Revoked platform authorization
+The active system entry SHALL execute only targets allowed by the current policy. After Paragraph authorization is revoked, its existing articles, remote IDs and durable in-flight identity SHALL be retained without replay or platform calls. Historical approvals SHALL NOT override current target authorization.
+#### Scenario: Old approval targets revoked platform
+- **GIVEN** current policy allows only Substack and an older approval allows Paragraph
+- **WHEN** execution is requested
+- **THEN** it stops before provider access and preserves existing identity
+#### Scenario: Substack-only scheduled round
+- **GIVEN** current policy allows only Substack and no in-flight operations exist
+- **WHEN** the independent schedule runs
+- **THEN** only Substack is verified or synchronized and Paragraph remains untouched

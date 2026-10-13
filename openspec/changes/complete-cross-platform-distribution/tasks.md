@@ -46,3 +46,24 @@
 - [x] 13.1 Implement Scripted synchronization round with acceptance RED/GREEN for unchanged verification, rate-limit isolation, lock/pin failure, uncertain prepare blocking and owned cleanup.
 - [x] 13.2 Implement Scripted side-browser handoff with acceptance RED/GREEN for exact source/intent identity, expired/malformed evidence, complete observed body and exclusive replies.
 - [x] 13.3 Run full local gates and a fresh real read-only scripted round; document one-command use and preserve the installed runtime.
+
+## 14. Independent system scheduler
+- [ ] 14.1 Implement Independent dedicated browser transport with policy-bound review digest, no attended requests, login failure stops, complete discovery and same-ID web-only update regression tests.
+- [x] 14.2 Implement macOS scheduled script cutover with secret-free private plist, absolute runtime paths, 15-minute cadence, readiness/pin gate and explicit rollback tests.
+- [ ] 14.3 Run complete local gates, owner profile login and real standalone same-version verification, then disable old heartbeat and activate the verified LaunchAgent with no concurrent writer.
+
+## 15. Existing Chrome macOS transport
+- [x] 15.1 Implement Existing Chrome system transport using origin/tab-bound Apple Events bridge and DOM page adapter with ambiguity, off-origin, denied permission, before-write source failure and once-only async tests.
+- [x] 15.2 Integrate transport-bound approvals and anonymous public verification into the existing coordinator and LaunchAgent readiness policy; pass complete local gates.
+- [x] 15.3 Obtain owner-confirmed automation permissions, observe live controls, run real standalone same-version acceptance and perform single-writer scheduler cutover.
+
+## 16. Actual public identity verification
+- [x] 16.1 Implement Anonymous Substack post identity with acceptance RED/GREEN for missing editor href, wrong original ID/publication/canonical, malformed/multiple public data and unresolved post-publication archive identity without replay.
+- [x] 16.2 Verify actual native UI selectors and checkbox label handling with real DOM regressions; preserve same-ID, source proof, zero delivery and independent full anonymous readback.
+- [x] 16.3 Run full local and actual native/system read-only qualification, install a fresh independent version pin and perform single-writer LaunchAgent cutover only after all observed contract gates pass.
+
+## 17. Revoked Paragraph authorization
+- [x] 17.1 Implement Revoked platform authorization: reject revoked targets before provider access, even with historical matching approval; bind acceptance to current targets.
+- [x] 17.2 Install only Substack policy, audit all preserved in-flight identities and disable the superseded heartbeat after independent qualification.
+
+14.1／14.3 的專用 profile 登入方案已由使用者改選 macOS 現有 Chrome transport；未宣稱該 profile 登入通過。生效替代驗收為 15.3／16.3／17.2，僅 Substack。
