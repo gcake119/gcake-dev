@@ -1,0 +1,26 @@
+{
+  "source": "read-only public selector and manifest at closeout",
+  "active": {
+    "digest": "f98d49207288ae81f1cad0ece146489c1631700f946ea9146663cfab32eab66e",
+    "mode": "live"
+  },
+  "gate": {
+    "digest": "f98d49207288ae81f1cad0ece146489c1631700f946ea9146663cfab32eab66e",
+    "mode": "live",
+    "status": "ready"
+  },
+  "release_id": "hermes-0214-telegram-repair-20261013",
+  "python_version": "3.11.15",
+  "monitor_source_matches": true,
+  "cron_kernel_matches_qualified_runtime": true,
+  "tools_match": {
+    "production_entry.py": true,
+    "updater_guard.py": true,
+    "production_monitor_dispatch.py": true,
+    "production_install.py": true,
+    "update_entry.py": true,
+    "production_owner.py": true,
+    "monitor_wrapper.py": true
+  },
+  "other_runtime_changes_not_deployed_by_this_closeout": true
+}

@@ -1,0 +1,25 @@
+{
+  "source": "owner Terminal result received in this conversation",
+  "passed": true,
+  "telegram_test_messages": false,
+  "manual_job_execution": false,
+  "commit_push": false,
+  "status": "activated-live",
+  "digest": "8e285697719b62295eae5bd8db23ed52b8da6f6dbe585eabef91b835462f9f2e",
+  "old_dry_job_paused": true,
+  "managed_job_id": "550aaf17723d",
+  "managed_schedule_preserved": true,
+  "notification_state_unchanged": true,
+  "production_operations": true,
+  "next_step": "scoped-commit-and-push",
+  "natural_live_verified": true,
+  "round": {
+    "digest": "8e285697719b62295eae5bd8db23ed52b8da6f6dbe585eabef91b835462f9f2e",
+    "execution_id": "679af7551f7a43ad9c140c1f1d461955",
+    "exit_code": 0,
+    "job_id": "550aaf17723d",
+    "mode": "live",
+    "scheduled_instant": "2026-10-13T09:06:11.414883+00:00",
+    "uid": 502
+  }
+}
