@@ -31,3 +31,15 @@ The latest user request extends Pages-first synchronization to every formal gcak
 
 ## Scripted workflow continuation
 The user requested reusable scripts for the synchronization flow. Replace per-round temporary controller programs with one pinned round CLI and a source/intent-bound side-browser handoff CLI. Retain existing providers, D1 coordinator, zero notifications and current live runtime until the scripted candidate is validated.
+
+## Independent system scheduler continuation
+The user explicitly approved replacing the Codex heartbeat and side browser with a script-controlled dedicated browser profile, signed in by the owner, while retaining both platforms. Implement a macOS user LaunchAgent and source-bound profile transport; preserve the old runtime until real standalone read-only acceptance and single-writer cutover pass.
+
+## Accepted macOS existing-Chrome continuation
+The owner selected macOS automation of the manually authenticated existing Chrome, replacing the separate-profile transport for system scheduling. Use Chrome Apple Events with a single bound authorized tab; no CDP, profile copying, authentication export or private provider API. Permission activation remains a separately confirmed step.
+
+## Public identity repair continuation
+Use the anonymous public article HTML's explicit post ID, publication ID and canonical URL together with the bound editor post path. This replaces the absent editor href for the explicit native policy; no private API or popup permission change. Newly published IDs resolve through the public archive HTML; absence or ambiguity retains the original intent, never republication.
+
+## Current target boundary, 2026-10-13
+Paragraph authorization was revoked and its executable implementation removed in main. This continuation targets Substack only and does not restore retired provider code, routes or commands. Preserve historical IDs and unknown intent; maintain all-target read-only D1 reconciliation. Commit and PR preparation are authorized; merging and deployment are not.

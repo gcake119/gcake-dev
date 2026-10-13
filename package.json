@@ -37,7 +37,9 @@
     "distribution:sync": "node --import tsx scripts/publishing/sync-distribution.ts",
     "distribution:handoff": "node --import tsx scripts/publishing/distribution-handoff.ts",
     "test:observability": "node --import tsx --test test/website-observability.test.ts",
-    "content:restore:ithome": "node --import tsx scripts/external/restore-completed-ithome-2026.ts"
+    "content:restore:ithome": "node --import tsx scripts/external/restore-completed-ithome-2026.ts",
+    "distribution:native-preflight": "node --import tsx scripts/publishing/native-chrome-preflight.ts",
+    "distribution:launchd": "node --import tsx scripts/publishing/distribution-launchd.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
