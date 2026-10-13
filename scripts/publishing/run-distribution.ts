@@ -8,16 +8,19 @@ import { D1PublicationRepository } from '../../apps/admin-worker/src/publication
 import { boundedDistributionError } from '../../apps/admin-worker/src/distribution-runtime';
 import { CloudflareD1Database } from './d1-api';
 import { openSubstackProfile, PlaywrightSubstackAdapter, type SubstackUiContract } from './substack-browser';
-import type { BrowserContext } from 'playwright';
 import { AttendedSubstackAdapter, FileAttendedExchange, anonymousSubstackReader } from './substack-attended';
 import { assertPagesPublication } from './pages-publication';
 
 export interface DistributionConfig {
-  substack: { writeEnabled: boolean; profile: string; ui: SubstackUiContract };
+  substack: { transport?: 'profile' | 'macos-chrome'; profileContractReviewed?: boolean; macosChrome?: {processId?:number;windowId:number;tabId:number;automationApproved:boolean;contractReviewed:boolean}; writeEnabled: boolean; profile: string; ui: SubstackUiContract };
   trial?: { sourceCommit?: string; writeEnabled: boolean; slug: string; sourceRevision: string; substackOrigin: string; digests: Record<DistributionTarget, string>; sessionDirectory: string };
   unattended?: { enabled: boolean; slug?: string; scope?: 'all-formal-markdown'; repository?: 'gcake119/gcake-dev'; branch?: 'main'; policy: 'pages-first-no-newsletter'; targets: DistributionTarget[] };
 }
+export function assertCurrentTargetPolicy(config: DistributionConfig, target: DistributionTarget) {
+  if (config.unattended && !config.unattended.targets.includes(target)) throw new Error('DISTRIBUTION_TARGET_AUTHORIZATION_REVOKED');
+}
 export function assertTrialScope(config: DistributionConfig, article: ReturnType<typeof articleFromBundle>, target: DistributionTarget, digest: string) {
+  assertCurrentTargetPolicy(config, target);
   const trial = config.trial;
   if (!trial || trial.slug !== article.slug || trial.sourceRevision !== article.sourceRevision
     || trial.substackOrigin !== 'https://gcakedev.substack.com' || config.substack.ui.origin !== trial.substackOrigin
@@ -63,12 +66,13 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
   const bundle = await buildDistributionBundle(slug, path.join(root, 'src/content/posts'));
   const configPath = parsed.get('--config');
   const config = configPath ? await json<DistributionConfig>(configPath) : undefined;
+  if (config) assertCurrentTargetPolicy(config, namedTarget);
   const article = articleFromBundle(bundle, config?.substack.ui.displayedDatePrecision);
-  const digest = reviewDigest(article, namedTarget, undefined, config?.substack.ui.publicIdentity);
+  const digest = reviewDigest(article, namedTarget, config?.substack.transport,config?.substack.ui.publicIdentity);
   if (operation === 'dry-run') {
     const out = path.resolve(parsed.get('--out') ?? `.distribution-handoff/${slug}-${target}-review.json`);
     await fs.mkdir(path.dirname(out), { recursive: true, mode: 0o700 });
-    const policy = namedTarget === 'substack' ? { substackPolicy: 'full-mirror', canonicalPolicy: 'platform-article', datePolicy: article.substackDatePrecision === 'minute' ? 'after-publish-original-minute' : 'after-publish-original' } : {};
+    const policy = namedTarget === 'substack' ? { ...(config?.substack.transport ? {substackTransport:config.substack.transport} : {}), substackPolicy: 'full-mirror', canonicalPolicy: 'platform-article', datePolicy: article.substackDatePrecision === 'minute' ? 'after-publish-original-minute' : 'after-publish-original' } : {};
     await fs.writeFile(out, JSON.stringify({ version: 1, digest, article, target, ...policy, ...(trialMode ? { executionMode: 'controlled-trial' } : {}), pagesVerificationRequired: true, newsletter: 'skip', externalWriteEnabled: false, approvalTemplate: { slug, target, sourceRevision: article.sourceRevision, digest, approved: false, newsletter: 'skip', operation: 'prepare', approvedAt: null, ...(trialMode ? { mode: 'controlled-trial' } : {}), ...(namedTarget === 'substack' ? { substackPolicy: 'full-mirror', ...(article.substackDatePrecision ? {substackDatePrecision:article.substackDatePrecision} : {}) } : {}) } }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     console.log(JSON.stringify({ operation, slug, target, digest, reviewFile: out, externalWriteEnabled: false })); return;
   }
@@ -79,7 +83,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
     if (!approvalFile || !receiptFile) throw new Error('DISTRIBUTION_REVIEW_AND_APPROVAL_REQUIRED');
     const reviewed = await json<{ version: number; digest: string; article: typeof article; target: DistributionTarget; executionMode?: string; substackPolicy?: string; canonicalPolicy?: string; datePolicy?: string }>(receiptFile);
     const authorized = await json<DistributionApproval & { digest: string; operation: string; mode?: string; approvedAt: string }>(approvalFile);
-    if (reviewed.version !== 1 || reviewed.target !== namedTarget || reviewed.digest !== digest || reviewDigest(reviewed.article, namedTarget, undefined, config.substack.ui.publicIdentity) !== digest
+    if (reviewed.version !== 1 || reviewed.target !== namedTarget || reviewed.digest !== digest || reviewDigest(reviewed.article, namedTarget, config.substack.transport,config.substack.ui.publicIdentity) !== digest
       || authorized.digest !== digest || authorized.operation !== operation || !Number.isFinite(Date.parse(authorized.approvedAt))
       || reviewed.executionMode !== (trialMode ? 'controlled-trial' : undefined) || authorized.mode !== (trialMode ? 'controlled-trial' : undefined)) throw new Error('DISTRIBUTION_REVIEW_OR_APPROVAL_STALE');
     approval = authorized;
@@ -99,12 +103,20 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
     }
   }
   if (['prepare', 'publish', 'finalize'].includes(operation)) await assertPagesPublication(bundle);
-  let context: BrowserContext | undefined;
+  let context: {close():Promise<void>} | undefined;
   try {
     const repository = new D1PublicationRepository(new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID ?? '', process.env.DISTRIBUTION_D1_DATABASE_ID ?? '', process.env.CLOUDFLARE_API_TOKEN ?? ''));
     let substack: SubstackBrowserAdapter | undefined;
     if (namedTarget === 'substack') {
-      if (trialMode) {
+      if (trialMode && ['profile','macos-chrome'].includes(config.substack.transport??'')) {
+        if (operation === 'publish') {
+          const state=(await repository.listStates(slug)).find(s=>s.target==='substack');
+          if(!state?.remoteId||state.sourceRevision!==article.sourceRevision||!['prepare_ready','verified'].includes(state.status))throw Error('SUBSTACK_TRIAL_PREPARED_DRAFT_REQUIRED');
+        }
+        const {createProfileTransport}=await import('./substack-profile');
+        const selected=await createProfileTransport(article,operation as 'prepare'|'publish'|'verify'|'retry'|'finalize',repository,config,root,profileOpener,()=>assertPagesPublication(bundle));
+        substack=selected.adapter;context=selected.context;
+      } else if (trialMode) {
         if (operation === 'publish') {
           const state = (await repository.listStates(slug)).find(state => state.target === 'substack');
           if (!state?.remoteId || state.sourceRevision !== article.sourceRevision || !['prepare_ready', 'verified'].includes(state.status)) throw new Error('SUBSTACK_TRIAL_PREPARED_DRAFT_REQUIRED');
@@ -119,8 +131,8 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
         };
         substack = new AttendedSubstackAdapter(article, operation as 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', repository.runtime, session.exchange, publicReader, () => assertPagesPublication(bundle));
       } else {
-        context = await profileOpener(config.substack.profile, root);
-        substack = new PlaywrightSubstackAdapter(await context.newPage(), config.substack.ui);
+        const browserContext = await profileOpener(config.substack.profile, root);context=browserContext;
+        substack = new PlaywrightSubstackAdapter(await browserContext.newPage(), config.substack.ui);
       }
     }
     const coordinator = new DistributionCoordinator(repository, substack);

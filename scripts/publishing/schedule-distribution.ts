@@ -23,7 +23,7 @@ export async function prepareScheduledDistribution(slug:string,root:string,confi
  if(physicalRelative!=='..'&&!physicalRelative.startsWith('..'+path.sep)&&!path.isAbsolute(physicalRelative))throw Error('UNATTENDED_OUTPUT_OUTSIDE_GIT');
  const directory=await fs.mkdtemp(path.join(out,'run-'));await fs.chmod(directory,0o700);
  const article=articleFromBundle(bundle,config.substack.ui.displayedDatePrecision),configFile=path.join(directory,'config.json');
- const scoped={...config,trial:{...(sourceCommit?{sourceCommit}:{}),writeEnabled:!selection||finalizeTargets.includes('substack')||Object.values(selection).some(operations=>operations?.some(op=>op==='prepare'||op==='publish')),slug,sourceRevision:article.sourceRevision,substackOrigin:config.substack.ui.origin,digests:{substack:reviewDigest(article,'substack',undefined,config.substack.ui.publicIdentity)},sessionDirectory:path.join(directory,'handoffs')}};
+ const scoped={...config,trial:{...(sourceCommit?{sourceCommit}:{}),writeEnabled:!selection||finalizeTargets.includes('substack')||Object.values(selection).some(operations=>operations?.some(op=>op==='prepare'||op==='publish')),slug,sourceRevision:article.sourceRevision,substackOrigin:config.substack.ui.origin,digests:{substack:reviewDigest(article,'substack',config.substack.transport,config.substack.ui.publicIdentity)},sessionDirectory:path.join(directory,'handoffs')}};
  await fs.writeFile(configFile,JSON.stringify(scoped,null,2)+'\n',{flag:'wx',mode:0o600});
  const commands:{target:'substack';operation:'prepare'|'publish'|'verify'|'retry';receiptFile:string;approvalFile:string}[]=[];
  const recoveries:{target:'substack';operation:'finalize';receiptFile:string;approvalFile:string}[]=[];
