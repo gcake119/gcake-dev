@@ -1,3 +1,4 @@
+import {parsePublicPostIdentity} from './substack-public-identity';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -126,9 +127,12 @@ export function anonymousSubstackReader(ui:SubstackUiContract,fetcher:typeof fet
     remoteArticle(remote,remote.id,true);
     if ([ui.publicBody,ui.publicTitle,ui.publicDate].some(selector=>!selector||selector==='UNVERIFIED')) throw Error('SUBSTACK_PUBLIC_CONTROLS_UNVERIFIED');
     const readUrl=new URL(remote.url); readUrl.searchParams.set('verification',`${Date.now()}-${randomUUID()}`);
-    const response=await fetcher(readUrl.href,{redirect:'error',signal:AbortSignal.timeout(30_000)});
+    const response=await fetcher(readUrl.href,{credentials:'omit',redirect:'error',signal:AbortSignal.timeout(30_000)});
     if (!response.ok) throw Error('SUBSTACK_PUBLIC_HTTP_FAILED');
-    const {document}=parseHTML(await response.text());
+    const html=await response.text();
+    const identity=ui.publicIdentity?parsePublicPostIdentity(html,remote.url,ui.publicIdentity.publicationId):undefined;
+    if(identity&&identity.id!==remote.id)throw Error('SUBSTACK_PUBLIC_IDENTITY_MISMATCH');
+    const {document}=parseHTML(html);
     const unique=(selector:string)=>{const nodes=document.querySelectorAll(selector);if (nodes.length!==1) throw Error('SUBSTACK_PUBLIC_CONTROLS_AMBIGUOUS');return nodes[0];};
     const body=unique(ui.publicBody),date=unique(ui.publicDate);
     // Match the block boundaries used by the existing browser evidence verifier.
@@ -139,6 +143,6 @@ export function anonymousSubstackReader(ui:SubstackUiContract,fetcher:typeof fet
       const loaded=await fetcher(src,{signal:AbortSignal.timeout(30_000)});
       return {src,alt:image.getAttribute('alt')??'',loaded:loaded.ok&&(loaded.headers.get('content-type')??'').startsWith('image/')};
     }));
-    return {title:unique(ui.publicTitle).textContent??'',text:body.textContent??'',canonical:unique('link[rel="canonical"]').getAttribute('href')??'',publishedAt:date.getAttribute('datetime')??date.getAttribute('content')??date.textContent??'',links:[...body.querySelectorAll('a')].map(link=>new URL(link.getAttribute('href')??'',remote.url).href),images};
+    return {...(identity?{postId:identity.id,publicationId:ui.publicIdentity!.publicationId}:{}),title:unique(ui.publicTitle).textContent??'',text:body.textContent??'',canonical:unique('link[rel="canonical"]').getAttribute('href')??'',publishedAt:date.getAttribute('datetime')??date.getAttribute('content')??date.textContent??'',links:[...body.querySelectorAll('a')].map(link=>new URL(link.getAttribute('href')??'',remote.url).href),images};
   };
 }

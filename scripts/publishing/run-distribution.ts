@@ -26,8 +26,8 @@ export function assertTrialScope(config: DistributionConfig, article: ReturnType
 export function articleFromBundle(bundle: Awaited<ReturnType<typeof buildDistributionBundle>>, precision?: 'minute') {
   return { ...(precision ? {substackDatePrecision: precision} : {}), slug: bundle.slug, sourceRevision: bundle.sourceRevision, title: bundle.article.title, description: bundle.article.description, body: bundle.article.markdown, assets: bundle.article.assets, canonicalUrl: bundle.canonicalUrl, publishedAt: bundle.publishedAt };
 }
-export function reviewDigest(article: ReturnType<typeof articleFromBundle>, target: DistributionTarget): string {
-  return 'sha256:' + createHash('sha256').update(JSON.stringify({ article, target, newsletter: 'skip', ...(target === 'substack' ? { substackPolicy: 'full-mirror', canonicalPolicy: 'platform-article', datePolicy: article.substackDatePrecision === 'minute' ? 'after-publish-original-minute' : 'after-publish-original' } : {}) })).digest('hex');
+export function reviewDigest(article: ReturnType<typeof articleFromBundle>, target: DistributionTarget, transport?: 'profile' | 'macos-chrome', publicIdentity?:SubstackUiContract['publicIdentity']): string {
+  return 'sha256:' + createHash('sha256').update(JSON.stringify({ article, target, newsletter: 'skip', ...(target === 'substack' ? { ...(transport ? {substackTransport:transport} : {}), ...(publicIdentity?{substackPublicIdentity:publicIdentity}:{}), substackPolicy: 'full-mirror', canonicalPolicy: 'platform-article', datePolicy: article.substackDatePrecision === 'minute' ? 'after-publish-original-minute' : 'after-publish-original' } : {}) })).digest('hex');
 }
 async function json<T>(file: string): Promise<T> { return JSON.parse(await fs.readFile(path.resolve(file), 'utf8')) as T; }
 export async function main(args = process.argv.slice(2), profileOpener = openSubstackProfile, root = process.cwd()) {
@@ -64,7 +64,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
   const configPath = parsed.get('--config');
   const config = configPath ? await json<DistributionConfig>(configPath) : undefined;
   const article = articleFromBundle(bundle, config?.substack.ui.displayedDatePrecision);
-  const digest = reviewDigest(article, namedTarget);
+  const digest = reviewDigest(article, namedTarget, undefined, config?.substack.ui.publicIdentity);
   if (operation === 'dry-run') {
     const out = path.resolve(parsed.get('--out') ?? `.distribution-handoff/${slug}-${target}-review.json`);
     await fs.mkdir(path.dirname(out), { recursive: true, mode: 0o700 });
@@ -79,7 +79,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
     if (!approvalFile || !receiptFile) throw new Error('DISTRIBUTION_REVIEW_AND_APPROVAL_REQUIRED');
     const reviewed = await json<{ version: number; digest: string; article: typeof article; target: DistributionTarget; executionMode?: string; substackPolicy?: string; canonicalPolicy?: string; datePolicy?: string }>(receiptFile);
     const authorized = await json<DistributionApproval & { digest: string; operation: string; mode?: string; approvedAt: string }>(approvalFile);
-    if (reviewed.version !== 1 || reviewed.target !== namedTarget || reviewed.digest !== digest || reviewDigest(reviewed.article, namedTarget) !== digest
+    if (reviewed.version !== 1 || reviewed.target !== namedTarget || reviewed.digest !== digest || reviewDigest(reviewed.article, namedTarget, undefined, config.substack.ui.publicIdentity) !== digest
       || authorized.digest !== digest || authorized.operation !== operation || !Number.isFinite(Date.parse(authorized.approvedAt))
       || reviewed.executionMode !== (trialMode ? 'controlled-trial' : undefined) || authorized.mode !== (trialMode ? 'controlled-trial' : undefined)) throw new Error('DISTRIBUTION_REVIEW_OR_APPROVAL_STALE');
     approval = authorized;

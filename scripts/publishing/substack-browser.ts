@@ -16,12 +16,16 @@ export interface SubstackUiContract {
   displayedDatePrecision?: 'minute';
   displayedDateFormat?: 'iso' | 'datetime-local'; displayedDateOffsetMinutes?: number;
   continue: UiLocator; email: UiLocator; confirmPublish: UiLocator;
+  appNotification?: UiLocator; schedule?: UiLocator; immediateUpdate?: UiLocator; websiteOnlyConfirm?: UiLocator;
   draftLinks: string; nextPage?: UiLocator; scanComplete: UiLocator;
   publicLink?: UiLocator;
+  publicIdentity?: {source:'anonymous-post-data';publicationId:number};
+  discoveryScopes?: {state:'published'|'draft'|'scheduled';tab:UiLocator;items:string;titleSelector?:string;complete:UiLocator;next?:UiLocator;total?:UiLocator;empty?:UiLocator}[];
   publicBody: string; publicTitle: string; publicDate: string;
 }
 export interface PublicDomEvidence {
   title: string; text: string; canonical: string; publishedAt: string;
+  postId?:string; publicationId?:number;
   links: string[]; images: { src: string; alt: string; loaded: boolean }[];
 }
 const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
@@ -83,10 +87,11 @@ export function validateSubstackProfile(profile: string, repository: string): vo
 }
 export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
   get publicationPolicy() { return this.ui.publicationPolicy; }
-  constructor(private readonly page: Page, readonly ui: SubstackUiContract, fixture = false) {
+  constructor(private readonly page: Page, readonly ui: SubstackUiContract, fixture = false, private readonly beforeWrite?:()=>Promise<unknown>, private readonly anonymousReader?:(remote:RemoteArticle)=>Promise<PublicDomEvidence>, private readonly publicLocator?:(id:string)=>Promise<RemoteArticle>) {
     const origin = new URL(ui.origin);
     if ((!fixture && (origin.protocol !== 'https:' || origin.hostname !== 'gcakedev.substack.com'))
       || fixture && !['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname)
+      || ui.publicIdentity !== undefined && (ui.publicIdentity.source!=='anonymous-post-data'||!Number.isSafeInteger(ui.publicIdentity.publicationId)||ui.publicIdentity.publicationId<=0)
       || ui.version !== 1 || !Number.isFinite(Date.parse(ui.reviewedAt)) || !ui.homePath || !ui.postsPath || !ui.editPath.includes('{id}')
       || ui.publicationPolicy !== undefined && ui.publicationPolicy !== 'full-mirror'
       || !ui.create || !ui.title || !ui.body || !ui.saved || !ui.continue || !ui.email || !ui.confirmPublish) throw new Error('SUBSTACK_UI_CONTRACT_INVALID');
@@ -109,6 +114,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     const response = await this.page.goto(this.safeUrl(value), { waitUntil: 'domcontentloaded' });
     if (!response || !response.ok()) throw new Error('SUBSTACK_HTTP_FAILED');
     await this.assertSession();
+    if (/^\/publish\/post\//.test(new URL(this.page.url()).pathname)) await this.locator(this.ui.title).waitFor({state:'visible'});
   }
   private async assertSession() {
     const text = await this.page.locator('body').innerText();
@@ -120,26 +126,47 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
   async find(article: DistributionArticle): Promise<readonly RemoteArticle[]> {
     if (this.ui.discoveryVerified !== true) throw new Error('SUBSTACK_DISCOVERY_UNVERIFIED');
     await this.navigate(this.ui.postsPath);
-    const matches: RemoteArticle[] = [], visited = new Set<string>();
-    for (let pages = 0; pages < 100; pages++) {
-      if (visited.has(this.page.url())) throw new Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
-      visited.add(this.page.url());
-      await (await this.unique(this.ui.scanComplete)).waitFor({ state: 'visible' });
-      const links = await this.page.locator(this.ui.draftLinks).evaluateAll(nodes => nodes.map(n => ({ title: n.textContent?.trim(), href: n.getAttribute('href') })));
-      for (const link of links) {
-        if (link.title !== article.title || !link.href) continue;
-        const url = this.safeUrl(link.href), id = new URL(url).pathname.match(/\/publish\/post\/([a-zA-Z0-9-]+)$/)?.[1];
-        if (!id) throw new Error('SUBSTACK_REMOTE_ID_INVALID');
-        matches.push({ id, url });
+    const matches = new Map<string,RemoteArticle>();
+    const scopes = this.ui.discoveryScopes ?? [{tab:undefined,items:this.ui.draftLinks,complete:this.ui.scanComplete,next:this.ui.nextPage}];
+    for (const scope of scopes) {
+      await this.navigate(this.ui.postsPath);
+      if (scope.tab){await this.locator(scope.tab).waitFor({state:'visible'});await (await this.unique(scope.tab)).click();}
+      const totalSpec='total' in scope?scope.total:undefined;
+      let total:number|undefined;
+      if(totalSpec){const text=await (await this.unique(totalSpec)).innerText();const number=text.match(/[0-9][0-9,]*/)?.[0];total=number?Number(number.replace(/,/g,'')):0;if(!Number.isSafeInteger(total))throw Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
+        if(total===0){const empty='empty' in scope?scope.empty:undefined;if(!empty)throw Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');await this.locator(empty).waitFor({state:'visible'});}
+        else {const until=Date.now()+10000;while(await this.page.locator(scope.items).count()===0&&Date.now()<until)await new Promise(r=>setTimeout(r,100));if(await this.page.locator(scope.items).count()===0)throw Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');}
       }
-      if (!this.ui.nextPage || await this.locator(this.ui.nextPage).count() === 0) return matches;
-      const next = await this.unique(this.ui.nextPage);
-      if (!await next.isEnabled()) return matches;
-      await next.click(); await this.assertSession();
+      const scannedIds=new Set<string>();
+      const visited = new Set<string>();
+      let complete = false;
+      for (let pages = 0; pages < 100; pages++) {
+        await this.assertSession();
+        await (await this.unique(scope.complete)).waitFor({ state: 'visible' });
+        const links = await this.page.locator(scope.items).evaluateAll((nodes,titleSelector) => nodes.map(n => ({ title: (titleSelector?n.querySelector(titleSelector)?.textContent:n.textContent)?.trim(), href: n.getAttribute('href') })), 'titleSelector' in scope?scope.titleSelector:undefined);
+        const signature = JSON.stringify([this.page.url(),links]);
+        if (visited.has(signature)) throw new Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
+        visited.add(signature);
+        for(const link of links){if(!link.href)throw Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');const id=new URL(this.safeUrl(link.href)).pathname.match(/\/publish\/(?:post|posts\/detail)\/([a-zA-Z0-9-]+)$/)?.[1];if(!id)throw Error('SUBSTACK_REMOTE_ID_INVALID');scannedIds.add(id);}
+        for (const link of links) {
+          if (link.title !== article.title || !link.href) continue;
+          const url = this.safeUrl(link.href), id = new URL(url).pathname.match(/\/publish\/(?:post|posts\/detail)\/([a-zA-Z0-9-]+)$/)?.[1];
+          if (!id) throw new Error('SUBSTACK_REMOTE_ID_INVALID');
+          const editorUrl = this.editUrl({id,url});
+          if (matches.has(id) && matches.get(id)!.url !== editorUrl) throw new Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+          matches.set(id,{ id, url:editorUrl });
+        }
+        if (!scope.next || await this.locator(scope.next).count() === 0) {complete=true;break;}
+        const next = await this.unique(scope.next);
+        if (!await next.isEnabled()) {complete=true;break;}
+        await next.click();
+      }
+      if (!complete || total!==undefined&&scannedIds.size!==total) throw new Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
     }
-    throw new Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
+    return [...matches.values()];
   }
   async create(_article: DistributionArticle): Promise<RemoteArticle> {
+    await this.beforeWrite?.();
     await this.navigate(this.ui.homePath);
     if (this.ui.createMenu) await (await this.unique(this.ui.createMenu)).click();
     await (await this.unique(this.ui.create)).click();
@@ -152,17 +179,34 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     if (!/^[a-zA-Z0-9-]+$/.test(remote.id)) throw new Error('SUBSTACK_REMOTE_ID_INVALID');
     return this.safeUrl(this.ui.editPath.replace('{id}', encodeURIComponent(remote.id)));
   }
+  private async assertEditorPublicIdentity(remote:RemoteArticle) {
+    if(this.ui.publicIdentity){
+      if(this.ui.publicIdentity.source!=='anonymous-post-data'||!this.anonymousReader||new URL(this.page.url()).pathname!==new URL(this.editUrl(remote)).pathname)throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+      const data=await this.anonymousReader(remote);
+      if(data.postId!==remote.id||data.publicationId!==this.ui.publicIdentity.publicationId||data.canonical!==remote.url)throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+      return;
+    }
+    if (!this.ui.publicLink || this.safeUrl(await (await this.unique(this.ui.publicLink)).getAttribute('href') ?? '') !== this.safeUrl(remote.url)) throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+  }
+  async readIdentity(remote:RemoteArticle){await this.navigate(this.editUrl(remote));await this.assertEditorPublicIdentity(remote);return remote;}
   async update(remote: RemoteArticle, article: DistributionArticle) {
+    await this.beforeWrite?.();
     const rendered = renderedArticle(article);
     await this.navigate(this.editUrl(remote));
+    // Reject unsupported identity evidence before touching a persisted public draft.
+    if (this.ui.immediateUpdate && /^\/p\//.test(new URL(remote.url,this.ui.origin).pathname)) {
+      await this.assertEditorPublicIdentity(remote);
+    }
     const title = await this.unique(this.ui.title);
     if (await title.inputValue() !== article.title) {
+      await this.beforeWrite?.();
       await title.fill(article.title);
       // Finish the title autosave before the body edit; an earlier acknowledgement
       // must not masquerade as confirmation of the later content save.
       await this.locator(this.ui.saved).waitFor({ state: 'visible' });
     }
     const body = await this.unique(this.ui.body);
+    await this.beforeWrite?.();
     await body.click(); await body.press('ControlOrMeta+A');
     // Paste HTML through the editor's normal clipboard event, preserving links/images.
     await body.evaluate((element, html) => {
@@ -171,6 +215,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     }, rendered.html);
     if (this.ui.publicationPolicy !== 'full-mirror' && this.ui.canonical && this.ui.publishedAt) {
       if (this.ui.settings) await (await this.unique(this.ui.settings)).click();
+      await this.locator(this.ui.canonical).waitFor({state:'visible'});
       await (await this.unique(this.ui.canonical)).fill(article.canonicalUrl);
       await (await this.unique(this.ui.publishedAt)).fill(article.publishedAt!);
       if (this.ui.settingsDone) await (await this.unique(this.ui.settingsDone)).click();
@@ -179,6 +224,23 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     // Reload checks persisted draft rather than trusting a stale autosave indicator.
     await this.page.reload({ waitUntil: 'domcontentloaded' }); await this.assertSession();
     await this.verifyDraft(article);
+    if (this.ui.immediateUpdate && /^\/p\//.test(new URL(remote.url,this.ui.origin).pathname)) {
+      await this.assertEditorPublicIdentity(remote);
+      await (await this.unique(this.ui.continue)).click();
+      await this.disableDelivery();
+      await this.beforeWrite?.();
+      await (await this.unique(this.ui.immediateUpdate)).click();
+      await this.locator(this.ui.saved).waitFor({state:'visible'});
+      await this.page.reload({waitUntil:'domcontentloaded'});await this.assertSession();await this.verifyDraft(article);
+    }
+  }
+  private async disableDelivery() {
+    for (const spec of [this.ui.email,this.ui.appNotification,this.ui.schedule]) {
+      if (!spec) continue;
+      await this.locator(spec).waitFor({state:'visible'});
+      const control = await this.unique(spec);await control.uncheck();
+      if (await control.isChecked()) throw Error('SUBSTACK_NEWSLETTER_DISABLED_REQUIRED');
+    }
   }
   private async verifyDraft(article: DistributionArticle) {
     const title = await this.unique(this.ui.title);
@@ -192,7 +254,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
   }
   async readDraft(remote: RemoteArticle, article: DistributionArticle) { await this.navigate(this.editUrl(remote)); await this.verifyDraft(article); }
   async checkPublish(remote: RemoteArticle, article: DistributionArticle) {
-    if (!this.ui.publishingCapabilitiesVerified || !this.ui.publishedAt || (this.publicationPolicy === 'full-mirror' ? !this.ui.settings || !this.ui.settingsDone || !this.ui.publicLink || !this.ui.displayedDateFormat : !this.ui.canonical)) throw new Error('SUBSTACK_CANONICAL_DATE_CAPABILITY_UNVERIFIED');
+    if (!this.ui.publishingCapabilitiesVerified || !this.ui.publishedAt || (this.publicationPolicy === 'full-mirror' ? !this.ui.settings || !this.ui.settingsDone || !(this.ui.publicLink||this.ui.publicIdentity) || !this.ui.displayedDateFormat : !this.ui.canonical)) throw new Error('SUBSTACK_CANONICAL_DATE_CAPABILITY_UNVERIFIED');
     if (this.publicationPolicy === 'full-mirror') {
       displayedDateValue(article.publishedAt!, this.ui);
       if (!renderedArticle(article).links.includes(article.canonicalUrl)) throw new Error('SUBSTACK_ORIGINAL_LINK_REQUIRED');
@@ -201,16 +263,17 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     if (this.publicationPolicy === 'full-mirror') return;
     if (!this.ui.canonical) throw new Error('SUBSTACK_CANONICAL_DATE_CAPABILITY_UNVERIFIED');
     if (this.ui.settings) await (await this.unique(this.ui.settings)).click();
+    await this.locator(this.ui.canonical).waitFor({state:'visible'});
+    await this.locator(this.ui.publishedAt).waitFor({state:'visible'});
     if (await (await this.unique(this.ui.canonical)).inputValue() !== article.canonicalUrl
       || Date.parse(await (await this.unique(this.ui.publishedAt)).inputValue()) !== Date.parse(article.publishedAt!)) throw new Error('SUBSTACK_DRAFT_METADATA_MISMATCH');
     if (this.ui.settingsDone) await (await this.unique(this.ui.settingsDone)).click();
   }
   async publish(remote: RemoteArticle, article: DistributionArticle) {
+    await this.beforeWrite?.();
     await this.checkPublish(remote, article);
     await (await this.unique(this.ui.continue)).click();
-    const email = await this.unique(this.ui.email);
-    await email.uncheck();
-    if (await email.isChecked()) throw new Error('SUBSTACK_NEWSLETTER_DISABLED_REQUIRED');
+    await this.disableDelivery();
     const confirm = await this.unique(this.ui.confirmPublish);
     if (!await confirm.isEnabled()) throw new Error('SUBSTACK_PUBLISH_DISABLED');
     // Preserve the editor's article link before a successful click can navigate
@@ -219,7 +282,13 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     const candidateUrl = beforeLink && await beforeLink.count() === 1 && await beforeLink.isVisible()
       ? await beforeLink.getAttribute('href') : undefined;
     // Coordinator has already persisted intent. This click is never automatically repeated.
+    await this.beforeWrite?.();
     await confirm.click();
+    if (this.ui.websiteOnlyConfirm) {
+      await this.beforeWrite?.();
+      await (await this.unique(this.ui.websiteOnlyConfirm)).click();
+    }
+    if(this.ui.publicIdentity){if(!this.publicLocator)throw Error('SUBSTACK_PUBLIC_IDENTITY_RESOLVER_REQUIRED');return this.publicLocator(remote.id);}
     if (candidateUrl) return { id: remote.id, url: this.safeUrl(candidateUrl) };
     if (this.ui.publicLink) {
       if (/^\/p\/[a-z0-9-]+$/.test(new URL(this.page.url()).pathname)) return { id: remote.id, url: this.safeUrl(this.page.url()) };
@@ -231,7 +300,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     return { id: remote.id, url: this.safeUrl(this.page.url()) };
   }
   async finalizePublishedDate(remote: RemoteArticle, article: DistributionArticle) {
-    if (this.publicationPolicy !== 'full-mirror' || !this.ui.publishingCapabilitiesVerified || !this.ui.settings || !this.ui.publishedAt || !this.ui.settingsDone || !this.ui.publicLink) throw new Error('SUBSTACK_DATE_CAPABILITY_UNVERIFIED');
+    if (this.publicationPolicy !== 'full-mirror' || !this.ui.publishingCapabilitiesVerified || !this.ui.settings || !this.ui.publishedAt || !this.ui.settingsDone || !(this.ui.publicLink||this.ui.publicIdentity)) throw new Error('SUBSTACK_DATE_CAPABILITY_UNVERIFIED');
     const value = displayedDateValue(article.publishedAt!, this.ui);
     // Anonymous exact article readback must succeed before any metadata mutation.
     const evidence = await this.readPublicEvidence(remote, article, true);
@@ -239,9 +308,10 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     if ((article.substackDatePrecision === 'minute' ? Math.floor(Date.parse(evidence.publishedAt) / 60_000) * 60_000 : Date.parse(evidence.publishedAt)) === expectedSubstackDate(article)) return remote;
     await this.navigate(this.editUrl(remote));
     await this.verifyDraft(article);
-    const editorPublicUrl = this.safeUrl(await (await this.unique(this.ui.publicLink)).getAttribute('href') ?? '');
-    if (editorPublicUrl !== remote.url) throw new Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+    await this.assertEditorPublicIdentity(remote);
+    await this.beforeWrite?.();
     await (await this.unique(this.ui.settings)).click();
+    await this.locator(this.ui.publishedAt).waitFor({state:'visible'});
     await (await this.unique(this.ui.publishedAt)).fill(value);
     await (await this.unique(this.ui.settingsDone)).click();
     // Confirmation is public readback, not a save-button acknowledgement.
@@ -251,9 +321,13 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     return (await this.readPublicEvidence(remote, article)).remote;
   }
   private async readPublicEvidence(remote: RemoteArticle, article: DistributionArticle, ignoreDate = false) {
+    if(this.ui.publicIdentity&&!/^\/p\/[a-z0-9-]+$/.test(new URL(remote.url,this.ui.origin).pathname)){if(!this.publicLocator)throw Error('SUBSTACK_PUBLIC_IDENTITY_RESOLVER_REQUIRED');remote=await this.publicLocator(remote.id);}
     if (!/^\/p\/[a-z0-9-]+$/.test(new URL(remote.url, this.ui.origin).pathname) && this.ui.publicLink) {
       await this.navigate(this.editUrl(remote));
       remote = { id: remote.id, url: this.safeUrl(await (await this.unique(this.ui.publicLink)).getAttribute('href') ?? '') };
+    }
+    if (this.anonymousReader) {
+      const data=await this.anonymousReader(remote);if(this.ui.publicIdentity&&(data.postId!==remote.id||data.publicationId!==this.ui.publicIdentity.publicationId))throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');assertPublicDomEvidence(article,data,{policy:this.publicationPolicy,remoteUrl:remote.url,ignoreDate});return {remote,publishedAt:data.publishedAt};
     }
     // Always use a fresh unauthenticated context; a private preview is not public evidence.
     const browser = this.page.context().browser();
@@ -275,7 +349,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     } finally { await context.close(); }
   }
 }
-export async function openSubstackProfile(profile: string, repository: string): Promise<BrowserContext> {
+export async function openSubstackProfile(profile: string, repository: string, options: {headless?:boolean} = {}): Promise<BrowserContext> {
   validateSubstackProfile(profile, repository);
   await fs.mkdir(profile, { recursive: true, mode: 0o700 });
   const realProfile = await fs.realpath(profile), realRepository = await fs.realpath(repository);
@@ -286,5 +360,7 @@ export async function openSubstackProfile(profile: string, repository: string): 
     if (path.dirname(ancestor) === ancestor) break;
   }
   await fs.chmod(realProfile, 0o700);
-  return chromium.launchPersistentContext(realProfile, { headless: false, channel: 'chrome' });
+  // Use the same macOS Keychain as the owner's direct Chrome sign-in.
+  // Do not replace encrypted profile authentication with Playwright's mock keychain.
+  return chromium.launchPersistentContext(realProfile, { headless: options.headless ?? false, channel: 'chrome', ignoreDefaultArgs: process.platform === 'darwin' ? ['--use-mock-keychain','--password-store=basic'] : [] });
 }
