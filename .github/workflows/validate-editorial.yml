@@ -39,7 +39,10 @@ jobs:
         run: pnpm exec playwright install --with-deps chrome
 
       - name: Run all tests including editorial and Hermes
-        run: pnpm test
+        # Preserve the harness's fixed isolated namespace on Linux.
+        run: |
+          sudo install -d -m 1777 /private/tmp
+          pnpm test
       - run: pnpm check
       - run: pnpm build
       - name: Rehearse disposable static deployment and notification deduplication

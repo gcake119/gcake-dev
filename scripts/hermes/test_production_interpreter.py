@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import sys
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -45,6 +46,7 @@ class OriginalInterpreter(unittest.TestCase):
             home=Path(tmp).resolve();alias,target=self.fixture(home);target.chmod(0o777)
             with self.assertRaisesRegex(ValueError,'unsafe-original-base-runtime'):self.probe(home)
 
+    @unittest.skipUnless(sys.platform == 'darwin', 'Native runtime backup uses macOS ditto; identity policy remains tested on Linux')
     def test_backup_copies_real_runtime_and_preserves_original_alias(self):
         with tempfile.TemporaryDirectory() as tmp:
             home=Path(tmp).resolve();alias,target=self.fixture(home)
@@ -58,6 +60,7 @@ class OriginalInterpreter(unittest.TestCase):
             self.assertEqual(alias.resolve(),target)
             self.assertEqual((target/'runtime-marker').read_text(),'original-runtime')
 
+    @unittest.skipUnless(sys.platform == 'darwin', 'Native runtime backup uses macOS ditto; identity policy remains tested on Linux')
     def test_changed_alias_during_backup_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             home=Path(tmp).resolve();self.fixture(home)

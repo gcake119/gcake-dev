@@ -168,7 +168,9 @@ class EntryAcceptance(unittest.TestCase):
         with patch.dict(os.environ,{'TZ':'Asia/Taipei'}):taipei=entry.process_identity(os.getpid())
         with patch.dict(os.environ,{'TZ':'UTC'}):utc=entry.process_identity(os.getpid())
         self.assertEqual(taipei,utc)
+        self.assertEqual(utc['uid'],os.getuid())
 
+    @unittest.skipUnless(sys.platform == 'darwin', 'Darwin sandbox requires direct libproc metadata; Linux uses its supported ps path')
     def test_owner_identity_does_not_spawn_setuid_ps(self):
         with patch('update_entry.subprocess.run',side_effect=PermissionError('sandbox forbids setuid ps')):
             self.assertEqual(entry.process_identity(os.getpid())['uid'],os.getuid())
