@@ -33,3 +33,7 @@
 ## Closeout 時的其他 runtime 修復
 
 唯讀 selector 顯示目前為 `f98d49207288ae81f1cad0ece146489c1631700f946ea9146663cfab32eab66e`（`hermes-0214-telegram-repair-20261013`），mode live／gate ready。監控 library、cron kernel 及七個更新工具均與本輪已驗證程式相同。此 closeout 保留該後續 runtime；不回切、不重新部署，也不將原本 8e2856 的 owner 自然輪次結果當成這個新完整 runtime 的重新驗收。詳 `current-selection-closeout.json`。
+
+## 已提交與推送
+
+持久隔離分支 `codex/hermes-production-closeout-20261013` 已推送，遠端 source head `373299fae570884c3efb58d21a1a3be884b02a43` 與本機一致。`972368f` 為 Worker 純讀摘要；`373299f` 為 Hermes 排程上下文、監控、受控更新、測試與規格。完整 pnpm test（153 Python、396 Node 執行，Node 不是去重數）、build:all、check、release:dry-run、Spectra validate／analyze 與 diff check 通過。沒有秘密、runtime、備份或通知 DB 進 Git，主 checkout 原有修改保持。
