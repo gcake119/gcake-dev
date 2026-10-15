@@ -1,0 +1,266 @@
+{
+  "source_baseline": "4068a3695b484309bfc87c1b1ad68bee6d7eb327",
+  "installed_library_matches_baseline": true,
+  "local_hermes_tests": {
+    "passed": 160,
+    "command": "pnpm test:hermes"
+  },
+  "python311_repair_tests": {
+    "passed": 7
+  },
+  "cli_product_red": "handoff/cli-product-red.log",
+  "resend_first_run": "missing module was scaffolding failure, not product RED",
+  "production_state_inspected": false,
+  "production_runtime_installed": false,
+  "telegram_resend_attempted": "not established: local preflight versus Telegram rejection not recorded",
+  "blocker": "sudo requires owner password",
+  "commit_push": false,
+  "article": "https://gcake119.github.io/gcake-dev/posts/ithome-2026-publishing-toolchain/",
+  "production_reconciliation_owner_report": {
+    "status": "unknown",
+    "transport_status": "rejected",
+    "operation": "owner-confirmed-missing-toolchain-20261015",
+    "message_id": null,
+    "error_type": "DeliveryRejected",
+    "reason_type": null,
+    "human_received": false
+  },
+  "telegram_acknowledged": false,
+  "rejection_diagnostics": {
+    "local_tests_passed": 10,
+    "python311_tests_passed": 10,
+    "production_readonly_comparison": {
+      "source": "owner supplied JSON",
+      "legacy_env_only": {
+        "notify_enabled": true,
+        "bot_token_valid": true,
+        "chat_id_valid": true,
+        "rejection_reason": null
+      },
+      "legacy_and_summary_env_only": {
+        "notify_enabled": true,
+        "bot_token_valid": true,
+        "chat_id_valid": true,
+        "rejection_reason": null
+      },
+      "event": [
+        "unknown",
+        0
+      ],
+      "outbox": [
+        "uncertain"
+      ],
+      "gateway_inherited_environment_observed": false
+    },
+    "no_resend": true,
+    "full_hermes_passed": 163
+  },
+  "provider_readonly_probe": {
+    "owner_execution": "pending",
+    "local_six_tests_passed": true,
+    "python311_six_tests_passed": true,
+    "complete_hermes_tests_passed": 169,
+    "network_methods": [
+      "getMe",
+      "getChat"
+    ],
+    "max_requests": 2,
+    "message_sends": 0,
+    "state_writes": 0,
+    "owner_report": {
+      "scope": "telegram_provider_readonly",
+      "network_requests": 1,
+      "state_writes": 0,
+      "message_sends": 0,
+      "getMe": {
+        "ok": false,
+        "error_type": "TimeoutError"
+      }
+    }
+  },
+  "token_free_network_checks": {
+    "principal": "caiyijun",
+    "host": "api.telegram.org",
+    "dns": {
+      "ok": true,
+      "addresses": 2
+    },
+    "ipv4_tcp": {
+      "ok": true,
+      "seconds": 0.38
+    },
+    "ipv4_tls": {
+      "ok": true,
+      "seconds": 0.51,
+      "version": "TLSv1.3"
+    },
+    "ipv6": {
+      "ok": false,
+      "errno": 65
+    },
+    "curl_public_root_head": {
+      "http_status": 302,
+      "seconds": 0.86
+    },
+    "selected_python311_public_root_head": {
+      "http_status": 302,
+      "seconds": 1.4
+    },
+    "credential_used": false,
+    "hermes_principal_checked": false,
+    "historical_timeout_cause": "unknown",
+    "token_validity": "unconfirmed",
+    "send_permission": "unconfirmed"
+  },
+  "hermes_bot_switch": {
+    "authorization": "owner selected option 2: switch sender identity to Gateway/Hermes Bot",
+    "owner_current_notification_token": "401 unauthorized",
+    "owner_gateway_token": "getMe 200 and getChat 200",
+    "different_bot_identity": true,
+    "shared_source": "/Users/hermes/.hermes/.env",
+    "source_selector": "gateway",
+    "expected_bot_identity_pin": "required; owner configures locally after verification",
+    "local_hermes_tests_passed": 174,
+    "python311_focused_tests_passed": 5,
+    "original_operation": "owner-confirmed-missing-toolchain-20261015",
+    "new_authorized_continuation": "owner-approved-hermes-bot-switch-20261015",
+    "source_config_applied": true,
+    "production_runtime_installed": true,
+    "continuation_sent": true,
+    "owner_evidence": "owner-reported exact selected live runtime, pinned gateway source, Telegram acknowledgement message_id=40 and persistent DB readback; human receipt unconfirmed"
+  },
+  "owner_successor_delivery": {
+    "prepared": {
+      "bundle_digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "changed_files": [
+        "library/notification-repair-health.json",
+        "library/owner_continue.py",
+        "library/publication_monitor.py",
+        "library/reconcile_notification.py",
+        "library/successor_runner_probe.py",
+        "library/telegram-package-health.json",
+        "library/telegram_readonly_diagnostic.py"
+      ],
+      "control_sha256": "16ecd97d7d4089bfe431b1bb0edc46e3d7528363c1ae1074b19083a110c2c66a",
+      "gateway_code_runtime_unchanged": true,
+      "manifest_path": "/private/tmp/gcake-notification-repair-20261015/owner-successor/bundle/manifest.json",
+      "owner_command": "bash /private/tmp/gcake-notification-repair-20261015/owner-successor/owner_adopt.sh",
+      "owner_uid": 501,
+      "path": "/private/tmp/gcake-notification-repair-20261015/owner-successor",
+      "production_writes": false,
+      "proposal_path": "/usr/local/share/gcake-hermes-runtime/proposals/f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "purpose": "authorized owner notification repair successor",
+      "qualification": "pending owner native/root/launchd execution",
+      "receipt_path": "/usr/local/share/gcake-hermes-runtime/private/notification-successor-f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c.json",
+      "retention": "until production adoption and closeout; do not remove while owner operation runs",
+      "sdk_offline_passed": true
+    },
+    "local_hermes_tests_passed": 183,
+    "native_python311_owner_tests_passed": 9,
+    "installed_packaging_contract": "passed",
+    "gateway_code_runtime_unchanged": true,
+    "actual_sdk_requests": 0,
+    "model_calls": 0,
+    "root_proposal_approved": true,
+    "root_qualification": "owner-reported natural existing-job dry-run passed; exit_code=0",
+    "telegram_continuation_sent": true,
+    "production_receipt": {
+      "evidence_source": "owner-provided receipt",
+      "status": "active-live",
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "qualification": {
+        "job_id": "550aaf17723d",
+        "execution_id": "47fd8ffe84414153b5ff425c06433183",
+        "scheduled_instant": "2026-10-15T11:29:10.184450+00:00",
+        "uid": 502,
+        "mode": "dry-run",
+        "exit_code": 0
+      },
+      "notification_history_unchanged": true,
+      "job_unchanged": true,
+      "message_sends": 0,
+      "manual_job_execution": false,
+      "next_candidate_cleared": true,
+      "receipt_path": "/usr/local/share/gcake-hermes-runtime/private/notification-successor-f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c.json"
+    },
+    "public_runtime_verification": {
+      "evidence_source": "local read-only active.json, gate.json and monitor SHA-256",
+      "active_mode": "live",
+      "gate_status": "ready",
+      "gate_mode": "live",
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "monitor_sha256": "0301d3c3e3d16b52ddfbd5c4d27fbdd1aee7ea61601fa1a0acee12f2ff687cd5"
+    }
+  },
+  "notification_closeout": {
+    "evidence_source": "user-forwarded Hermes execution result and persistent state readback; no new provider call by Codex",
+    "exit_code": 0,
+    "status": "sent",
+    "transport_status": "sent",
+    "operation": "owner-approved-hermes-bot-switch-20261015",
+    "predecessor": "owner-confirmed-missing-toolchain-20261015",
+    "article_url": "https://gcake119.github.io/gcake-dev/posts/ithome-2026-publishing-toolchain/",
+    "message_id": 40,
+    "credential_source": "gateway",
+    "sender_identity_pinned": true,
+    "event_status": "sent",
+    "outbox_status": "sent",
+    "continuation_status": "sent",
+    "predecessor_status": "unknown",
+    "original_history_preserved": true,
+    "backup": "/Users/hermes/.local/state/gcake-rss/notification-repair-backups/owner-approved-hermes-bot-switch-20261015.sqlite",
+    "original_backup_exists": true,
+    "continuation_backup_exists": true,
+    "job_unchanged": true,
+    "job_id": "550aaf17723d",
+    "job_enabled": true,
+    "schedule": "every 60m",
+    "repeated": false,
+    "additional_operation_created": false,
+    "human_received": true,
+    "human_receipt": "confirmed by user and recorded in production per user-forwarded Hermes transaction result",
+    "further_resend_authorized": false,
+    "historical_reported_db_human_received": 0,
+    "human_confirmation": {
+      "date": "2026-10-15",
+      "source": "direct user statement in this conversation",
+      "statement": "我已確認收到 Telegram 通知，請把人工收件確認補進修復紀錄。",
+      "message_id": 40,
+      "production_db_updated": true
+    },
+    "production_human_receipt": {
+      "evidence_source": "user-forwarded Hermes transaction result and readback",
+      "status": "recorded",
+      "event_id": "article:https://gcake119.github.io/gcake-dev/posts/ithome-2026-publishing-toolchain/",
+      "operation": "owner-approved-hermes-bot-switch-20261015",
+      "predecessor": "owner-confirmed-missing-toolchain-20261015",
+      "message_id": 40,
+      "human_received": 1,
+      "recorded_at": "2026-10-15T13:33:58.880Z",
+      "confirmation_evidence_source": "user_explicit_confirmation_current_conversation",
+      "backup": "/Users/hermes/.local/state/gcake-rss/notification-repair-backups/human-received-owner-approved-hermes-bot-switch-20261015.sqlite",
+      "backup_properties": {
+        "owner": "hermes",
+        "mode": "0600",
+        "links": 1,
+        "type": "regular file"
+      },
+      "audit_database": "/Users/hermes/.local/state/gcake-rss/live.sqlite",
+      "audit_table": "monitor_human_receipts",
+      "event_status": "sent",
+      "outbox_status": "sent",
+      "continuation_status": "sent",
+      "transport_status": "sent",
+      "predecessor_status": "unknown",
+      "previous_backups_preserved": true,
+      "message_sends": 0,
+      "new_transmission_operation_created": false,
+      "job_manually_executed": false,
+      "job_unchanged": true,
+      "runtime_and_credentials_unchanged": true,
+      "recorded_at_semantics": "actual registration time; not inferred receipt time",
+      "read_status": "not asserted"
+    },
+    "closeout_status": "complete"
+  }
+}

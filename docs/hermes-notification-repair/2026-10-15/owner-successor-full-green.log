@@ -1,0 +1,54 @@
+
+> gcake-dev@0.1.0 test:hermes /private/tmp/gcake-notification-repair-20261015
+> python3 -m unittest discover -s scripts/hermes -p "test_*.py"
+
+............................................................................................................................./opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0ae30>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0ad40>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e089a0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0b010>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108cef100>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0a890>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108cef2e0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e09a80>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e08a90>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0a980>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0a3e0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0a7a0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e088b0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0b1f0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:504: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x108e0b3d0>
+  _safe_super(NonCallableMock, self).__init__(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..........................................................
+----------------------------------------------------------------------
+Ran 183 tests in 57.091s
+
+OK

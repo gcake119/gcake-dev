@@ -28,7 +28,7 @@ function slugify(value: string, index: number) {
 }
 
 export function ithomePublicationState(): 'active' | 'completed' {
-  if (!('publicationState' in snapshot)) throw new Error('Sync source manifest first');
+  if (!('publicationState' in snapshot)) throw new Error('Run content:sync:ithome with the deployed source manifest first');
   return snapshot.publicationState as 'active' | 'completed';
 }
 

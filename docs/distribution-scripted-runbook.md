@@ -13,3 +13,5 @@ Substack 操作使用使用者核准的 Chrome 與經驗收的介面契約。正
 歷史操作紀錄保存於 docs/archive/publication-history，不能作為重啟舊平台或舊雙平台計畫的授權。
 
 2026／10／13，獨立 LaunchAgent dev.gcake.distribution-sync 已啟用，每 900 秒執行；政策位於 Git 外 native-substack-final-20261013，目標只有 substack，舊 Codex heartbeat 已停用。正式 runtime 保持釘選；repo 清理不直接替換已驗收的安裝版本。Chrome 需保持開啟，重啟後重新綁定驗證。
+
+新文章首次發布最多寄送一次電子報的政策已確認，但正式寄信設定仍待啟用；既有關閉條件保持有效，普通更新、重試及既有文章不補寄，App 通知保持關閉。

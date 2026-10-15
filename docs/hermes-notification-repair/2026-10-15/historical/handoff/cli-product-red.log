@@ -1,0 +1,32 @@
+FFF
+======================================================================
+FAIL: test_cli_rejected_fails_then_acknowledgement_succeeds_without_human_receipt (test_notification_repair.DeliveryReporting.test_cli_rejected_fails_then_acknowledgement_succeeds_without_human_receipt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 40, in test_cli_rejected_fails_then_acknowledgement_succeeds_without_human_receipt
+    self.assertEqual(self.cli(0,rejected)[0],1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 1
+
+======================================================================
+FAIL: test_cli_timeout_fails_and_later_occurrences_remain_failed_without_resend (test_notification_repair.DeliveryReporting.test_cli_timeout_fails_and_later_occurrences_remain_failed_without_resend)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 27, in test_cli_timeout_fails_and_later_occurrences_remain_failed_without_resend
+    self.assertEqual(code,1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^
+AssertionError: None != 1
+
+======================================================================
+FAIL: test_wrapped_transport_reason_is_sanitized (test_notification_repair.DeliveryReporting.test_wrapped_transport_reason_is_sanitized)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 50, in test_wrapped_transport_reason_is_sanitized
+    self.assertEqual(self.cli(0,timeout)[0],1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 1
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.020s
+
+FAILED (failures=3)

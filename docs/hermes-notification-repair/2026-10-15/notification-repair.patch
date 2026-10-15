@@ -1,0 +1,1401 @@
+--- a/scripts/hermes/publication_monitor.py
++++ b/scripts/hermes/publication_monitor.py
+@@ -11,6 +11,7 @@
+ import secrets
+ from pathlib import Path
+ import sqlite3
++import stat
+ import tempfile
+ import time
+ import urllib.error
+@@ -21,6 +22,7 @@
+ HOUR = 3600
+ TAIPEI = timezone(timedelta(hours=8))
+ CRON_KEYS = ('HERMES_CRON_JOB_ID','HERMES_CRON_EXECUTION_ID','HERMES_CRON_SCHEDULED_INSTANT')
++GATEWAY_CREDENTIAL_FILE=Path('/Users/hermes/.hermes/.env')
+ 
+ 
+ def invocation_identity(value):
+@@ -46,6 +48,58 @@
+ 
+ class DeliveryRejected(Exception):
+     """Transport has positively confirmed non-delivery; a later round may retry."""
++    def __init__(self, rejection_reason='unspecified', error_code=None):
++        allowed=('unspecified','notify_disabled','invalid_bot_token','invalid_chat_id','telegram_rejected',
++                 'invalid_credential_source','gateway_credentials_unavailable','gateway_bot_identity_changed')
++        self.rejection_reason=rejection_reason if rejection_reason in allowed else 'unspecified'
++        self.error_code=error_code if type(error_code) is int else None
++        super().__init__(self.rejection_reason)
++
++
++def delivery_tables(db):
++    db.execute('''CREATE TABLE IF NOT EXISTS monitor_delivery_attempts(
++        attempt_id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,status TEXT NOT NULL,
++        attempted_at REAL NOT NULL,error_type TEXT,reason_type TEXT,
++        error_code INTEGER,message_id INTEGER)''')
++    if 'rejection_reason' not in {row[1] for row in db.execute('PRAGMA table_info(monitor_delivery_attempts)')}:
++        db.execute('ALTER TABLE monitor_delivery_attempts ADD COLUMN rejection_reason TEXT')
++
++
++def deliver_recorded(db, event_id, sender, message):
++    """Journal intent before transport; never persist exception text or URLs."""
++    delivery_tables(db)
++    attempt = db.execute('INSERT INTO monitor_delivery_attempts(event_id,status,attempted_at) VALUES(?,?,?)',
++                         (event_id,'intent',time.time())).lastrowid
++    db.commit()
++    error_type=reason_type=error_code=message_id=rejection_reason=None
++    try:
++        ack=sender(message) if sender is not None else None
++        message_id=ack if type(ack) is int else None
++        status='sent' if sender is not None else 'verified-dry-run'
++    except Exception as error:
++        status='rejected' if isinstance(error,DeliveryRejected) else 'unknown'
++        if isinstance(error,DeliveryRejected):rejection_reason=error.rejection_reason
++        # Fixed vocabulary: even custom exception class names can contain secrets.
++        allowed=('DeliveryRejected','TimeoutError','URLError','HTTPError','OSError',
++                 'ConnectionError','ConnectionResetError','BrokenPipeError',
++                 'JSONDecodeError','ValueError','UnicodeDecodeError')
++        error_type=type(error).__name__ if type(error).__name__ in allowed else 'Exception'
++        reason=getattr(error,'reason',None)
++        reason_type=type(reason).__name__ if type(reason).__name__ in allowed else None
++        code=error.error_code if isinstance(error,DeliveryRejected) else error.code if isinstance(error,urllib.error.HTTPError) else getattr(reason if isinstance(reason,OSError) else error,'errno',None)
++        error_code=code if type(code) is int else None
++    db.execute('UPDATE monitor_delivery_attempts SET status=?,error_type=?,reason_type=?,error_code=?,message_id=?,rejection_reason=? WHERE attempt_id=?',
++               (status,error_type,reason_type,error_code,message_id,rejection_reason,attempt))
++    # The caller updates event/outbox in this same completion transaction.
++    return status
++
++
++def delivery_health(path):
++    with closing(sqlite3.connect(Path(path).resolve().as_uri()+'?mode=ro',uri=True)) as db:
++        has_events=db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='monitor_events'").fetchone()
++        ids={row[0] for row in db.execute("SELECT event_id FROM monitor_events WHERE status IN ('intent','unknown','rejected')")} if has_events else set()
++        ids.update('article:'+row[0] for row in db.execute("SELECT url FROM outbox WHERE status='uncertain'"))
++        return len(ids)
+ 
+ 
+ def instant(value):
+@@ -326,14 +380,7 @@
+             if kind == 'article':
+                 db.execute('INSERT OR IGNORE INTO outbox VALUES(?,?,?)',(url,by_url[url]['guid'],'uncertain'))
+             db.commit()
+-            try:
+-                if self.sender is not None:
+-                    self.sender(message)
+-                status = 'sent' if self.sender is not None else 'verified-dry-run'
+-            except DeliveryRejected:
+-                status = 'rejected'
+-            except Exception:
+-                status = 'unknown'
++            status = deliver_recorded(db,key,self.sender,message)
+             db.execute('UPDATE monitor_events SET status=? WHERE event_id=?',(status,key))
+             if kind=='article' and status in ('sent','verified-dry-run'):
+                 db.execute('UPDATE outbox SET status=? WHERE url=?',(status,url))
+@@ -481,19 +528,67 @@
+     if len(raw)>65536:raise ValueError('Delivery response bound')
+     result=json.loads(raw)
+     if isinstance(result,dict) and result.get('ok') is False and type(result.get('error_code')) is int:
+-        raise DeliveryRejected()
++        raise DeliveryRejected('telegram_rejected',result['error_code'])
+     if not isinstance(result,dict) or result.get('ok') is not True or not isinstance(result.get('result'),dict) or type(result['result'].get('message_id')) is not int:
+         raise ValueError('Uncertain acknowledgement')
+     return result['result']['message_id']
+ 
+ 
+ def send_notification(message):
+-    if os.environ.get('HERMES_RSS_NOTIFY_ENABLED')!='true':
+-        raise DeliveryRejected()
++    readiness,token,chat=_notification_configuration()
++    if readiness['rejection_reason'] is not None:
++        raise DeliveryRejected(readiness['rejection_reason'])
++    return _send_delivery(message,'https://api.telegram.org/bot'+token+'/sendMessage',chat)
++
++
++def gateway_token():
++    """Read one unique literal credential; never execute/import other settings."""
++    try:
++        fd=os.open(GATEWAY_CREDENTIAL_FILE,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
++        with os.fdopen(fd,'rb') as stream:
++            info=os.fstat(stream.fileno())
++            if not stat.S_ISREG(info.st_mode) or info.st_nlink!=1 or info.st_uid not in (0,os.geteuid()) or info.st_mode&0o077:
++                raise ValueError('private-owner-source-required')
++            raw=stream.read(1024*1024+1)
++        if len(raw)>1024*1024:raise ValueError('source-too-large')
++        lines=re.findall(r'^[ \t]*(?:export[ \t]+)?TELEGRAM_BOT_TOKEN[ \t]*=[ \t]*(.*)$',raw.decode('utf-8-sig'),re.MULTILINE)
++        if len(lines)!=1:raise ValueError('unique-token-required')
++        token_pattern=r'(\d+:[A-Za-z0-9_-]+)'
++        value=re.fullmatch(r'(?:'+token_pattern+'|"'+token_pattern+'"|\''+token_pattern+r"\')[ \t]*(?:#.*)?",lines[0].rstrip('\r'))
++        if value is None:raise ValueError('literal-token-required')
++        return next(group for group in value.groups() if group is not None)
++    except (OSError,ValueError,UnicodeError):
++        raise DeliveryRejected('gateway_credentials_unavailable') from None
++
++
++def _notification_configuration():
++    enabled=os.environ.get('HERMES_RSS_NOTIFY_ENABLED')=='true'
+     token,chat=os.environ.get('TELEGRAM_BOT_TOKEN',''),os.environ.get('TELEGRAM_CHAT_ID','')
+-    if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+',token) or not re.fullmatch(r'-?\d+',chat):
+-        raise DeliveryRejected()
+-    return _send_delivery(message,'https://api.telegram.org/bot'+token+'/sendMessage',chat)
++    source=os.environ.get('HERMES_RSS_TELEGRAM_CREDENTIAL_SOURCE','legacy')
++    source_error=None
++    if source not in ('legacy','gateway'):
++        token='';source_error='invalid_credential_source'
++    elif source=='gateway':
++        token=''
++        if enabled:
++            try:
++                token=gateway_token()
++                expected=os.environ.get('HERMES_RSS_TELEGRAM_EXPECTED_BOT_ID','')
++                if not re.fullmatch(r'\d{1,20}',expected) or int(token.split(':',1)[0])!=int(expected):
++                    token='';source_error='gateway_bot_identity_changed'
++            except DeliveryRejected as error:source_error=error.rejection_reason
++    token_ok=bool(re.fullmatch(r'\d+:[A-Za-z0-9_-]+',token))
++    chat_ok=bool(re.fullmatch(r'-?\d+',chat))
++    reason='notify_disabled' if not enabled else 'invalid_bot_token' if not token_ok else 'invalid_chat_id' if not chat_ok else None
++    if enabled and source_error is not None:reason=source_error
++    report=dict(notify_enabled=enabled,bot_token_valid=token_ok,chat_id_valid=chat_ok,rejection_reason=reason)
++    if source!='legacy':report['credential_source']=source
++    return report,token,chat
++
++
++def notification_readiness():
++    """No transport calls; return no credential or recipient values."""
++    return _notification_configuration()[0]
+ 
+ 
+ def mock_delivery(api):
+@@ -512,12 +607,16 @@
+     observer=PublicationObserver(os.environ['PUBLICATION_MONITOR_SUMMARY_URL'],os.environ['PUBLICATION_MONITOR_READ_SECRET'])
+     monitor=PublicationMonitor(args.db,observer,sender=send_notification if args.live else None,mode='live' if args.live else 'dry-run')
+     result=monitor.run_round(round_at,now,job_id=job_id,execution_id=execution_id)
+-    print(json.dumps({'evaluated_messages':len(result),'mode':monitor.mode}))
++    unresolved=delivery_health(args.db) if args.live else 0
++    report={'evaluated_messages':len(result),'mode':monitor.mode}
++    if args.live:report['unresolved_notifications']=unresolved
++    print(json.dumps(report))
++    return 1 if unresolved else 0
+ 
+ 
+ if __name__=='__main__':
+     try:
+-        main()
++        raise SystemExit(main())
+     except Exception as error:
+         print(json.dumps({'error_type':type(error).__name__}))
+         raise SystemExit(1)
+--- /dev/null
++++ b/scripts/hermes/reconcile_notification.py
+@@ -0,0 +1,121 @@
++"""Explicit one-event resend; never run this from the hourly scheduler."""
++import argparse
++from contextlib import closing
++import fcntl
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import sqlite3
++import time
++from publication_monitor import deliver_recorded, send_notification
++
++
++def resend_once(path, event_id, operation, message_sha256, sender, backup_dir, *, predecessor=None):
++    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,99}',operation):
++        raise ValueError('Invalid reconciliation identity')
++    if predecessor is not None and (predecessor==operation or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,99}',predecessor)):
++        raise ValueError('Invalid predecessor identity')
++    original=Path(path)
++    for item in (original,Path(str(original)+'.lock')):
++        if item.is_symlink() or (item.exists() and item.stat().st_nlink!=1):
++            raise ValueError('Unsafe state path')
++    if not original.is_file():raise ValueError('Existing state required')
++    path=original.resolve()
++    with open(str(path)+'.lock','a') as lock:
++        os.chmod(str(path)+'.lock',0o600)
++        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
++        with closing(sqlite3.connect(path)) as db:
++            row=db.execute('SELECT kind,url,message,status,human_received FROM monitor_events WHERE event_id=?',(event_id,)).fetchone()
++            if not row or row[0]!='article' or event_id!='article:'+row[1] or row[3:]!=('unknown',0):
++                raise ValueError('Expected unreceived uncertain article')
++            if db.execute('SELECT status FROM outbox WHERE url=?',(row[1],)).fetchone()!=('uncertain',):
++                raise ValueError('Expected uncertain outbox')
++            if hashlib.sha256(row[2].encode()).hexdigest()!=message_sha256:
++                raise ValueError('Message changed')
++            has_journal=db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='monitor_reconciliations'").fetchone()
++            if predecessor is None:
++                if has_journal and db.execute('SELECT 1 FROM monitor_reconciliations WHERE operation=? OR event_id=?',(operation,event_id)).fetchone():
++                    raise ValueError('Reconciliation already consumed')
++            else:
++                old=db.execute('SELECT event_id,status FROM monitor_reconciliations WHERE operation=?',(predecessor,)).fetchone() if has_journal else None
++                if old!=(event_id,'unknown') or db.execute('SELECT 1 FROM monitor_reconciliations WHERE operation=?',(operation,)).fetchone():
++                    raise ValueError('Expected original failed reconciliation')
++                last=db.execute('SELECT status,error_type FROM monitor_delivery_attempts WHERE event_id=? ORDER BY attempt_id DESC LIMIT 1',(event_id,)).fetchone()
++                if last!=('rejected','DeliveryRejected'):
++                    raise ValueError('Predecessor was not definitely rejected')
++            has_continuation=db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='monitor_reconciliation_continuations'").fetchone()
++            if has_continuation and db.execute('SELECT 1 FROM monitor_reconciliation_continuations WHERE event_id=? OR operation=?',(event_id,operation)).fetchone():
++                raise ValueError('Continuation already consumed')
++            backups=Path(backup_dir)
++            if backups.is_symlink():raise ValueError('Unsafe backup directory')
++            backups.mkdir(mode=0o700,parents=True,exist_ok=True)
++            info=backups.stat()
++            if info.st_uid!=os.geteuid() or info.st_mode&0o077:
++                raise ValueError('Private backup directory required')
++            backup=backups/(operation+'.sqlite')
++            fd=os.open(backup,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
++            os.close(fd)
++            try:
++                with closing(sqlite3.connect(backup)) as copy:
++                    db.backup(copy)
++                    if copy.execute('PRAGMA integrity_check').fetchone()!=('ok',):
++                        raise ValueError('Backup verification failed')
++                with open(backup,'rb') as stream:os.fsync(stream.fileno())
++            except BaseException:
++                backup.unlink()
++                raise
++            if predecessor is None:
++                journal='monitor_reconciliations'
++                db.execute('''CREATE TABLE IF NOT EXISTS monitor_reconciliations(
++                    operation TEXT PRIMARY KEY,event_id TEXT UNIQUE NOT NULL,
++                    status TEXT NOT NULL,created_at REAL NOT NULL,backup TEXT NOT NULL)''')
++                db.execute('INSERT INTO monitor_reconciliations VALUES(?,?,?,?,?)',
++                           (operation,event_id,'intent',time.time(),str(backup)))
++            else:
++                journal='monitor_reconciliation_continuations'
++                db.execute('''CREATE TABLE IF NOT EXISTS monitor_reconciliation_continuations(
++                    operation TEXT PRIMARY KEY,event_id TEXT UNIQUE NOT NULL,
++                    predecessor TEXT UNIQUE NOT NULL,status TEXT NOT NULL,
++                    created_at REAL NOT NULL,backup TEXT NOT NULL)''')
++                db.execute('INSERT INTO monitor_reconciliation_continuations VALUES(?,?,?,?,?,?)',
++                           (operation,event_id,predecessor,'intent',time.time(),str(backup)))
++            db.commit()
++            def acknowledged(message):
++                ack=sender(message)
++                if type(ack) is not int:raise ValueError('Uncertain acknowledgement')
++                return ack
++            outcome=deliver_recorded(db,event_id,acknowledged,row[2])
++            # Even an explicit rejection consumes this authorization. Retain the
++            # original unknown event so the scheduler cannot retry the resend.
++            status='sent' if outcome=='sent' else 'unknown'
++            db.execute('UPDATE monitor_events SET status=? WHERE event_id=?',(status,event_id))
++            if status=='sent':db.execute("UPDATE outbox SET status='sent' WHERE url=?",(row[1],))
++            db.execute('UPDATE '+journal+' SET status=? WHERE operation=?',(status,operation))
++            db.commit()
++            attempt=db.execute('SELECT message_id,error_type,reason_type,rejection_reason,error_code FROM monitor_delivery_attempts WHERE event_id=? ORDER BY attempt_id DESC LIMIT 1',(event_id,)).fetchone()
++            return dict(status=status,transport_status=outcome,operation=operation,predecessor=predecessor,event_id=event_id,
++                        backup=str(backup),message_id=attempt[0],error_type=attempt[1],reason_type=attempt[2],
++                        rejection_reason=attempt[3],error_code=attempt[4],human_received=False)
++
++
++def main():
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--db',required=True)
++    parser.add_argument('--event-id',required=True)
++    parser.add_argument('--operation',required=True)
++    parser.add_argument('--message-sha256',required=True)
++    parser.add_argument('--backup-dir',required=True)
++    parser.add_argument('--predecessor',help='Explicit owner-authorized continuation of one definitely rejected operation')
++    args=parser.parse_args()
++    result=resend_once(args.db,args.event_id,args.operation,args.message_sha256,send_notification,args.backup_dir,predecessor=args.predecessor)
++    print(json.dumps(result))
++    return 0 if result['status']=='sent' else 1
++
++
++if __name__=='__main__':
++    try:raise SystemExit(main())
++    except Exception as error:
++        print(json.dumps(dict(status='blocked',error_type=type(error).__name__)))
++        raise SystemExit(1)
+--- /dev/null
++++ b/scripts/hermes/test_notification_repair.py
+@@ -0,0 +1,144 @@
++import contextlib
++import hashlib
++import io
++import json
++import os
++import sqlite3
++import sys
++import unittest
++from unittest.mock import patch
++import publication_monitor as product
++from test_publication_monitor_integration import Persistence
++from test_publication_monitor_acceptance import article, BASE
++
++
++class DeliveryReporting(Persistence):
++    def cli(self, hour, sender):
++        env={'HERMES_RSS_NOTIFY_ENABLED':'true','PUBLICATION_MONITOR_SUMMARY_URL':'https://fixture.invalid/api/v1/monitoring/publications','PUBLICATION_MONITOR_READ_SECRET':'fixture'}
++        output=io.StringIO()
++        with patch.dict(os.environ,env), patch.object(sys,'argv',['monitor','--db',str(self.db),'--live']), patch.object(product,'scheduled_context',return_value=(BASE+hour*3600,'job','exec-'+str(hour))), patch.object(product.time,'time',return_value=BASE+hour*3600), patch.object(product,'PublicationObserver',return_value=self.observe), patch.object(product,'send_notification',side_effect=sender), contextlib.redirect_stdout(output):
++            code=product.main()
++        return code,json.loads(output.getvalue())
++
++    def test_cli_timeout_fails_and_later_occurrences_remain_failed_without_resend(self):
++        self.initialize();self.articles=[article()];self.publish()
++        def timeout(message):raise TimeoutError('secret-token=https://private.invalid')
++        code,report=self.cli(0,timeout)
++        self.assertEqual(code,1)
++        self.assertEqual(report['unresolved_notifications'],1)
++        for hour in (0,1):
++            code,report=self.cli(hour,lambda message:self.fail('uncertain event resent'))
++            self.assertEqual(code,1)
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            diagnostics=db.execute('SELECT status,error_type,reason_type,message_id FROM monitor_delivery_attempts').fetchall()
++            self.assertEqual(diagnostics,[('unknown','TimeoutError',None,None)])
++            self.assertNotIn('secret-token','\n'.join(db.iterdump()))
++
++    def test_cli_rejected_fails_then_acknowledgement_succeeds_without_human_receipt(self):
++        self.initialize();self.articles=[article()];self.publish()
++        def rejected(message):raise product.DeliveryRejected()
++        self.assertEqual(self.cli(0,rejected)[0],1)
++        self.assertEqual(self.cli(1,lambda message:42)[0],0)
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            self.assertEqual(db.execute('SELECT status,human_received FROM monitor_events').fetchall(),[('sent',0)])
++            self.assertEqual(db.execute('SELECT message_id FROM monitor_delivery_attempts ORDER BY attempt_id DESC LIMIT 1').fetchone(),(42,))
++
++    def test_wrapped_transport_reason_is_sanitized(self):
++        self.initialize();self.articles=[article()];self.publish()
++        import urllib.error
++        def timeout(message):raise urllib.error.URLError(TimeoutError('bot-secret'))
++        self.assertEqual(self.cli(0,timeout)[0],1)
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            self.assertEqual(db.execute('SELECT error_type,reason_type FROM monitor_delivery_attempts').fetchone(),('URLError','TimeoutError'))
++            self.assertNotIn('bot-secret','\n'.join(db.iterdump()))
++
++
++class SingleResend(Persistence):
++    def prepare(self):
++        self.articles=[];self.feed=[];self.pages={}
++        self.initialize();self.articles=[article()];self.publish()
++        def lost(message):raise TimeoutError('lost')
++        self.step(0,monitor=self.monitor(lost))
++        self.key='article:'+article()['canonicalUrl']
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            message=db.execute('SELECT message FROM monitor_events WHERE event_id=?',(self.key,)).fetchone()[0]
++        self.digest=hashlib.sha256(message.encode()).hexdigest()
++
++    def resend(self, sender, operation='approved-once', digest=None):
++        from reconcile_notification import resend_once
++        return resend_once(self.db,self.key,operation,digest or self.digest,sender,self.db.parent/(self.db.stem+'-backups'))
++
++    def test_success_keeps_original_event_backup_and_human_evidence(self):
++        self.prepare();sent=[]
++        result=self.resend(lambda message:sent.append(message) or 77)
++        self.assertEqual(len(sent),1);self.assertEqual(result['status'],'sent')
++        with contextlib.closing(sqlite3.connect(result['backup'])) as backup:
++            self.assertEqual(backup.execute('SELECT status FROM monitor_events').fetchone(),('unknown',))
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            self.assertEqual(db.execute('SELECT event_id,status,human_received FROM monitor_events').fetchone(),(self.key,'sent',0))
++            self.assertEqual(db.execute('SELECT status FROM outbox').fetchone(),('sent',))
++            self.assertEqual(db.execute('SELECT message_id FROM monitor_delivery_attempts ORDER BY attempt_id DESC LIMIT 1').fetchone(),(77,))
++        for operation in ('another-operation','approved-once'):
++            with self.assertRaises(ValueError):self.resend(lambda message:self.fail('duplicate'),operation)
++
++    def test_timeout_or_rejection_consumes_authorization_without_automatic_retry(self):
++        for error in (TimeoutError('lost'),product.DeliveryRejected()):
++            self.db=self.db.with_name(type(error).__name__+'.sqlite');self.prepare()
++            result=self.resend(lambda message:(_ for _ in ()).throw(error))
++            self.assertEqual(result['status'],'unknown')
++            for operation in ('another-operation','approved-once'):
++                with self.assertRaises(ValueError):self.resend(lambda message:self.fail('duplicate'),operation)
++            self.step(1,monitor=self.monitor(lambda message:self.fail('automatic resend')))
++            with contextlib.closing(sqlite3.connect(self.db)) as db:
++                self.assertEqual(db.execute('SELECT status FROM monitor_events').fetchone(),('unknown',))
++
++    def test_crash_after_intent_cannot_replay(self):
++        self.prepare()
++        class Crash(BaseException):pass
++        def crash(message):raise Crash()
++        with self.assertRaises(Crash):self.resend(crash)
++        with self.assertRaises(ValueError):self.resend(lambda message:self.fail('duplicate'))
++
++    def test_drift_lock_and_backup_failure_do_not_send_or_consume_operation(self):
++        self.prepare()
++        with self.assertRaises(ValueError):self.resend(lambda message:self.fail('digest drift'),digest='0'*64)
++        import fcntl
++        with open(str(self.db)+'.lock','a') as lock:
++            fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
++            with self.assertRaises(BlockingIOError):self.resend(lambda message:self.fail('concurrent send'))
++        (self.db.parent/(self.db.stem+'-backups')).write_text('occupied')
++        with self.assertRaises(FileExistsError):self.resend(lambda message:self.fail('no backup'))
++        with contextlib.closing(sqlite3.connect(self.db)) as db:
++            self.assertEqual(db.execute('SELECT status FROM monitor_events').fetchone(),('unknown',))
++            self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='monitor_reconciliations'").fetchone())
++
++
++class RejectionDiagnostics(unittest.TestCase):
++    def test_local_refusals_identify_cause_without_network(self):
++        valid={'HERMES_RSS_NOTIFY_ENABLED':'true','TELEGRAM_BOT_TOKEN':'123:fixture_token','TELEGRAM_CHAT_ID':'-123'}
++        for changes,expected in [({'HERMES_RSS_NOTIFY_ENABLED':'false'},'notify_disabled'),({'TELEGRAM_BOT_TOKEN':''},'invalid_bot_token'),({'TELEGRAM_CHAT_ID':''},'invalid_chat_id')]:
++            with self.subTest(expected=expected),patch.dict(os.environ,dict(valid,**changes),clear=True),patch.object(product,'_send_delivery') as transport:
++                with self.assertRaises(product.DeliveryRejected) as caught:product.send_notification('fixture')
++                self.assertEqual(getattr(caught.exception,'rejection_reason',None),expected)
++                transport.assert_not_called()
++
++    def test_provider_rejection_retains_only_numeric_error_and_bounded_reason(self):
++        env={'HERMES_RSS_NOTIFY_ENABLED':'true','TELEGRAM_BOT_TOKEN':'123:fixture_token','TELEGRAM_CHAT_ID':'-123'}
++        response=io.BytesIO(json.dumps({'ok':False,'error_code':403,'description':'sensitive destination data'}).encode())
++        with patch.dict(os.environ,env,clear=True),patch.object(product.urllib.request.OpenerDirector,'open',return_value=response):
++            with self.assertRaises(product.DeliveryRejected) as caught:product.send_notification('fixture')
++        self.assertEqual(getattr(caught.exception,'rejection_reason',None),'telegram_rejected')
++        self.assertEqual(getattr(caught.exception,'error_code',None),403)
++        self.assertNotIn('sensitive',str(caught.exception))
++
++    def test_preflight_flags_do_not_disclose_secrets(self):
++        env={'HERMES_RSS_NOTIFY_ENABLED':'true','TELEGRAM_BOT_TOKEN':'123:fixture_token','TELEGRAM_CHAT_ID':'-123'}
++        with patch.dict(os.environ,env,clear=True),patch.object(product,'_send_delivery') as transport:
++            report=product.notification_readiness()
++            self.assertEqual(report,dict(notify_enabled=True,bot_token_valid=True,chat_id_valid=True,rejection_reason=None))
++            self.assertNotIn('fixture_token',json.dumps(report))
++            self.assertNotIn('-123',json.dumps(report))
++            transport.assert_not_called()
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/hermes/telegram_readonly_diagnostic.py
+@@ -0,0 +1,86 @@
++"""Bounded Telegram getMe/getChat probe. No sends, polling or state writes."""
++import json
++import os
++from pathlib import Path
++import pwd
++import re
++import urllib.error
++import urllib.request
++
++LIMIT=65536
++METHODS=frozenset(('getMe','getChat'))
++
++
++class NoRedirect(urllib.request.HTTPRedirectHandler):
++    def redirect_request(self,*args):raise ValueError('redirect-refused')
++
++
++def read_method(token,method,parameters,opener):
++    if method not in METHODS:raise ValueError('read-only-method-required')
++    url='https://api.telegram.org/bot'+token+'/'+method
++    request=urllib.request.Request(url,data=json.dumps(parameters).encode(),headers={'Content-Type':'application/json'},method='POST')
++    report=dict(method=method,ok=False)
++    try:
++        try:
++            response=opener(request,timeout=15)
++        except urllib.error.HTTPError as error:
++            response=error
++        with response:
++            if response.url!=url:raise ValueError('redirect-refused')
++            raw=response.read(LIMIT+1)
++            status=getattr(response,'status',None) or getattr(response,'code',None)
++            if type(status) is int:report['http_status']=status
++        if len(raw)>LIMIT:raise ValueError('response-too-large')
++        value=json.loads(raw)
++        if not isinstance(value,dict):raise ValueError('invalid-response')
++        if value.get('ok') is False:
++            code=value.get('error_code')
++            report['error_code']=code if type(code) is int else None
++            # Never expose free-form provider text, names, token or recipient.
++            reasons={'Unauthorized':'unauthorized','Not Found':'not_found',
++                     'Bad Request: chat not found':'chat_not_found',
++                     'Forbidden: bot was blocked by the user':'bot_blocked',
++                     'Forbidden: user is deactivated':'user_deactivated',
++                     'Forbidden: bot was kicked from the group chat':'bot_kicked',
++                     'Forbidden: bot is not a member of the channel chat':'bot_not_member',
++                     'Too Many Requests: retry after':'rate_limited'}
++            report['error_reason']=reasons.get(value.get('description'),'telegram_rejected')
++            return report,None
++        if value.get('ok') is not True or not isinstance(value.get('result'),dict):raise ValueError('invalid-response')
++        report['ok']=True
++        return report,value['result']
++    except Exception as error:
++        allowed=('TimeoutError','HTTPError','URLError','ValueError','JSONDecodeError','OSError')
++        report['error_type']=type(error).__name__ if type(error).__name__ in allowed else 'Exception'
++        return report,None
++
++
++def inspect_provider(token,chat,opener=None):
++    report=dict(scope='telegram_provider_readonly',state_writes=0,message_sends=0,
++                network_requests=0,send_permission_confirmed=False)
++    if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+',token) or not re.fullmatch(r'-?\d+',chat):
++        report['preflight']='invalid_configuration';return report
++    opener=opener or urllib.request.build_opener(NoRedirect,urllib.request.ProxyHandler({})).open
++    report['network_requests']+=1
++    report['getMe'],bot=read_method(token,'getMe',{},opener)
++    if bot is None:return report
++    report['bot_identity_matches_token']=type(bot.get('id')) is int and str(bot['id'])==str(int(token.split(':',1)[0])) and bot.get('is_bot') is True
++    if not report['bot_identity_matches_token']:return report
++    report['network_requests']+=1
++    report['getChat'],target=read_method(token,'getChat',{'chat_id':chat},opener)
++    if target is not None:
++        report['chat_identity_matches_configuration']=type(target.get('id')) is int and target['id']==int(chat)
++        if target.get('type') in ('private','group','supergroup','channel'):report['chat_type']=target['type']
++    return report
++
++
++def main():
++    if os.geteuid()!=pwd.getpwnam('hermes').pw_uid:raise PermissionError('hermes account required')
++    print(json.dumps(inspect_provider(os.environ.get('TELEGRAM_BOT_TOKEN',''),os.environ.get('TELEGRAM_CHAT_ID',''))))
++
++
++if __name__=='__main__':
++    try:main()
++    except Exception as error:
++        print(json.dumps(dict(status='blocked',error_type=type(error).__name__)))
++        raise SystemExit(1)
+--- /dev/null
++++ b/scripts/hermes/test_telegram_readonly_diagnostic.py
+@@ -0,0 +1,71 @@
++import io
++import json
++import unittest
++import urllib.error
++from telegram_readonly_diagnostic import inspect_provider,read_method
++
++TOKEN='123:fixture_secret'
++CHAT='456'
++
++
++class Response(io.BytesIO):
++    def __init__(self,url,value):
++        super().__init__(json.dumps(value).encode());self.url=url;self.status=200
++
++
++class ReadOnlyProbe(unittest.TestCase):
++    def test_only_identity_reads_and_no_disclosure_or_send_proof(self):
++        calls=[]
++        def opener(request,timeout):
++            calls.append(request.full_url.rsplit('/',1)[-1])
++            self.assertEqual(timeout,15)
++            if calls[-1]=='getMe':value={'id':123,'is_bot':True,'first_name':'PRIVATE_NAME'}
++            else:
++                self.assertEqual(json.loads(request.data),{'chat_id':CHAT})
++                value={'id':456,'type':'private','first_name':'PRIVATE_TARGET'}
++            return Response(request.full_url,dict(ok=True,result=value))
++        report=inspect_provider(TOKEN,CHAT,opener)
++        self.assertEqual(calls,['getMe','getChat'])
++        self.assertTrue(report['bot_identity_matches_token']);self.assertTrue(report['chat_identity_matches_configuration'])
++        self.assertFalse(report['send_permission_confirmed']);self.assertEqual(report['message_sends'],0)
++        for value in (TOKEN,CHAT,'PRIVATE_NAME','PRIVATE_TARGET'):self.assertNotIn(value,json.dumps(report))
++
++    def test_unauthorized_stops_after_one_call_and_preserves_numeric_error(self):
++        calls=[]
++        def opener(request,timeout):
++            calls.append(request)
++            raise urllib.error.HTTPError(request.full_url,401,'credential-secret',{},io.BytesIO(json.dumps(dict(ok=False,error_code=401,description='Unauthorized')).encode()))
++        report=inspect_provider(TOKEN,CHAT,opener)
++        self.assertEqual(len(calls),1);self.assertEqual(report['getMe']['error_code'],401)
++        self.assertEqual(report['getMe']['error_reason'],'unauthorized')
++        self.assertNotIn(TOKEN,json.dumps(report));self.assertNotIn('credential-secret',json.dumps(report))
++
++    def test_chat_rejection_discloses_only_bounded_reason(self):
++        def opener(request,timeout):
++            if request.full_url.endswith('/getMe'):return Response(request.full_url,dict(ok=True,result=dict(id=123,is_bot=True)))
++            return Response(request.full_url,dict(ok=False,error_code=400,description='Bad Request: private-target '+CHAT))
++        report=inspect_provider(TOKEN,CHAT,opener)
++        self.assertEqual(report['getChat']['error_reason'],'telegram_rejected')
++        self.assertNotIn(CHAT,json.dumps(report));self.assertNotIn('private-target',json.dumps(report))
++
++    def test_timeout_has_no_retry_or_secret_text(self):
++        calls=[]
++        def opener(request,timeout):calls.append(request);raise TimeoutError(request.full_url)
++        report=inspect_provider(TOKEN,CHAT,opener)
++        self.assertEqual(len(calls),1);self.assertEqual(report['getMe']['error_type'],'TimeoutError')
++        self.assertNotIn(TOKEN,json.dumps(report))
++
++    def test_invalid_config_and_mutating_methods_never_reach_network(self):
++        def forbidden(*args,**kwargs):self.fail('unexpected network')
++        self.assertEqual(inspect_provider('',CHAT,forbidden)['network_requests'],0)
++        for method in ('sendMessage','getUpdates','setWebhook'):
++            with self.assertRaises(ValueError):read_method(TOKEN,method,{},forbidden)
++
++    def test_redirect_cannot_leak_token_to_second_host(self):
++        def opener(request,timeout):return Response('https://other.invalid/',dict(ok=True,result=dict(id=123,is_bot=True)))
++        report=inspect_provider(TOKEN,CHAT,opener)
++        self.assertEqual(report['getMe']['error_type'],'ValueError')
++        self.assertEqual(report['network_requests'],1)
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/hermes/test_gateway_notification.py
+@@ -0,0 +1,96 @@
++from contextlib import closing
++import hashlib
++import os
++from pathlib import Path
++import sqlite3
++import tempfile
++import unittest
++from unittest.mock import patch
++import publication_monitor as product
++import test_notification_repair as fixtures
++
++
++class SharedGatewaySource(unittest.TestCase):
++    def setUp(self):
++        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
++        self.path=Path(self.temp.name)/'.env';self.write('123:fresh_token')
++        self.env=patch.dict(os.environ,{'HERMES_RSS_NOTIFY_ENABLED':'true','TELEGRAM_BOT_TOKEN':'999:retired_token','TELEGRAM_CHAT_ID':'456','HERMES_RSS_TELEGRAM_CREDENTIAL_SOURCE':'gateway','HERMES_RSS_TELEGRAM_EXPECTED_BOT_ID':'123'},clear=True);self.env.start();self.addCleanup(self.env.stop)
++        self.source=patch.object(product,'GATEWAY_CREDENTIAL_FILE',self.path,create=True);self.source.start();self.addCleanup(self.source.stop)
++
++    def write(self,token):
++        self.path.write_text('OTHER_SECRET=never-import\nTELEGRAM_BOT_TOKEN="'+token+'"\n');self.path.chmod(0o600)
++
++    def test_real_sender_uses_shared_source_then_fresh_same_bot_credential(self):
++        with patch.object(product,'_send_delivery',return_value=71) as transport:
++            product.send_notification('message')
++            self.assertIn('bot123:fresh_token/',transport.call_args.args[1])
++            self.assertEqual(transport.call_args.args[2],'456')
++            self.write('123:rotated_token');product.send_notification('next')
++            self.assertIn('bot123:rotated_token/',transport.call_args.args[1])
++        self.assertNotIn('OTHER_SECRET',os.environ)
++
++    def test_missing_unsafe_or_ambiguous_source_never_falls_back(self):
++        for case in ('missing','permission','duplicate','interpolation','symlink','identity'):
++            with self.subTest(case=case):
++                if self.path.is_symlink() or self.path.exists():self.path.unlink()
++                self.write('123:fresh_token')
++                if case=='missing':self.path.unlink()
++                elif case=='permission':self.path.chmod(0o644)
++                elif case=='duplicate':self.path.write_text('TELEGRAM_BOT_TOKEN=123:a\nTELEGRAM_BOT_TOKEN=123:b\n')
++                elif case=='interpolation':self.path.write_text('TELEGRAM_BOT_TOKEN=${OTHER}\n')
++                elif case=='symlink':
++                    self.path.unlink();target=self.path.with_name('target');target.write_text('TELEGRAM_BOT_TOKEN=123:a\n');target.chmod(0o600);self.path.symlink_to(target)
++                elif case=='identity':self.write('777:another_bot')
++                with patch.object(product,'_send_delivery') as transport:
++                    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
++                    transport.assert_not_called()
++
++
++class LinkedContinuation(fixtures.SingleResend):
++    # Fixture inheritance; leave original tests to their original suite.
++    def test_linked_success_keeps_original_operation_and_uses_same_event(self):
++        from reconcile_notification import resend_once
++        self.prepare()
++        with closing(sqlite3.connect(self.db)) as db:
++            db.execute('CREATE TABLE monitor_reconciliations(operation TEXT PRIMARY KEY,event_id TEXT UNIQUE NOT NULL,status TEXT NOT NULL,created_at REAL NOT NULL,backup TEXT NOT NULL)')
++            db.execute('INSERT INTO monitor_reconciliations VALUES(?,?,?,?,?)',('old',self.key,'unknown',0,'original-backup'));db.execute("UPDATE monitor_delivery_attempts SET status='rejected',error_type='DeliveryRejected'");db.commit()
++        result=resend_once(self.db,self.key,'new',self.digest,lambda msg:91,self.db.parent/'new-backups',predecessor='old')
++        self.assertEqual(result['status'],'sent')
++        with closing(sqlite3.connect(self.db)) as db:
++            self.assertEqual(db.execute('SELECT status,backup FROM monitor_reconciliations').fetchone(),('unknown','original-backup'))
++            self.assertEqual(db.execute('SELECT operation,predecessor,status FROM monitor_reconciliation_continuations').fetchone(),('new','old','sent'))
++
++    def test_failed_or_interrupted_continuation_is_single_use(self):
++        from reconcile_notification import resend_once
++        class Crash(BaseException):pass
++        for error in (TimeoutError('response lost'),product.DeliveryRejected('telegram_rejected',403),Crash()):
++            self.db=self.db.with_name(type(error).__name__+'.sqlite');self.prepare()
++            with closing(sqlite3.connect(self.db)) as db:
++                db.execute('CREATE TABLE monitor_reconciliations(operation TEXT PRIMARY KEY,event_id TEXT UNIQUE NOT NULL,status TEXT NOT NULL,created_at REAL NOT NULL,backup TEXT NOT NULL)')
++                db.execute('INSERT INTO monitor_reconciliations VALUES(?,?,?,?,?)',('old',self.key,'unknown',0,'original-backup'));db.execute("UPDATE monitor_delivery_attempts SET status='rejected',error_type='DeliveryRejected'");db.commit()
++            def failed(message):raise error
++            def run(operation,sender):return resend_once(self.db,self.key,operation,self.digest,sender,self.db.parent/(self.db.stem+'-new-backups'),predecessor='old')
++            if isinstance(error,Crash):
++                with self.assertRaises(Crash):run('new',failed)
++            else:self.assertEqual(run('new',failed)['status'],'unknown')
++            for operation in ('new','another'):
++                with self.assertRaises(ValueError):run(operation,lambda message:self.fail('duplicate send'))
++            with closing(sqlite3.connect(self.db)) as db:
++                self.assertEqual(db.execute('SELECT status FROM monitor_reconciliations').fetchone(),('unknown',))
++                self.assertEqual(db.execute('SELECT COUNT(*) FROM monitor_reconciliation_continuations').fetchone(),(1,))
++            self.step(1,monitor=self.monitor(lambda message:self.fail('automatic replay')))
++
++    def test_ambiguous_predecessor_never_sends(self):
++        from reconcile_notification import resend_once
++        self.prepare()
++        with closing(sqlite3.connect(self.db)) as db:
++            db.execute('CREATE TABLE monitor_reconciliations(operation TEXT PRIMARY KEY,event_id TEXT UNIQUE NOT NULL,status TEXT NOT NULL,created_at REAL NOT NULL,backup TEXT NOT NULL)')
++            db.execute('INSERT INTO monitor_reconciliations VALUES(?,?,?,?,?)',('old',self.key,'unknown',0,'original-backup'));db.commit()
++        with self.assertRaises(ValueError):resend_once(self.db,self.key,'new',self.digest,lambda msg:self.fail('ambiguous resend'),self.db.parent/'new-backups',predecessor='old')
++
++
++for name in list(fixtures.SingleResend.__dict__):
++    if name.startswith('test_'):setattr(LinkedContinuation,name,None)
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/hermes/owner_successor.py
+@@ -0,0 +1,227 @@
++"""Pinned owner adapter over existing approval, updater and policy interfaces."""
++from contextlib import closing,redirect_stdout
++import hashlib
++import io
++import json
++import os
++from pathlib import Path
++import re
++import shutil
++import stat
++import sys
++import tempfile
++from updater_guard import read,digest,check_payload,atomic
++from update_entry import write_public,sync_directory
++
++ROOT=Path('/usr/local/share/gcake-hermes-runtime')
++JOB='550aaf17723d'
++
++
++def publish_pointer(store,sha,base):
++    store.writer()
++    if store.journal.exists():raise ValueError('pending-update-recovery')
++    if store.active()['digest']!=base:raise ValueError('active-baseline-drift')
++    target=store.root/'proposals'/sha
++    manifest=read(target/'manifest.json')
++    if digest(manifest)!=sha or read(store.root/'approvals.json').get(manifest['release_id'])!=sha:
++        raise ValueError('exact-approval-required')
++    pointer=store.root/'private/next-candidate.json'
++    if pointer.exists():
++        store.safe(pointer)
++        if read(pointer)!={'digest':sha}:raise ValueError('foreign-successor-pending')
++    else:atomic(pointer,dict(digest=sha))
++
++
++def stage_proposal(store,bundle,sha,base,*,verify=None,publish=True):
++    store.writer()
++    if store.journal.exists():raise ValueError('pending-update-recovery')
++    if store.active()['digest']!=base:raise ValueError('active-baseline-drift')
++    pointer=store.root/'private/next-candidate.json'
++    if pointer.exists() and read(pointer)!={'digest':sha}:raise ValueError('foreign-successor-pending')
++    bundle=Path(bundle)
++    manifest=read(bundle/'manifest.json')
++    if digest(manifest)!=sha:raise ValueError('proposal-digest-drift')
++    check_payload(bundle/'payload',manifest)
++    if verify is None:
++        from packaging_contract import verify_candidate
++        verify=verify_candidate
++    verify(bundle)
++    proposals=store.root/'proposals';proposals.mkdir(mode=0o755,exist_ok=True);store.safe(proposals)
++    target=proposals/sha
++    if target.exists():
++        store.safe(target)
++        if read(target/'manifest.json')!=manifest:raise ValueError('existing-proposal-drift')
++        verify(target)
++    else:
++        staging=proposals/('.stage-'+sha)
++        if staging.exists():raise ValueError('unfinished-proposal-staging')
++        try:
++            shutil.copytree(bundle,staging,symlinks=True)
++            verify(staging)
++            for path in (staging,*staging.rglob('*')):
++                info=path.lstat()
++                if info.st_uid!=store.uid or (not path.is_symlink() and info.st_mode&0o022):
++                    raise ValueError('unsafe-staged-proposal')
++            staging.rename(target);sync_directory(proposals)
++        except BaseException:
++            if staging.exists() and not staging.is_symlink():shutil.rmtree(staging)
++            raise
++    store.approve(manifest,sha)
++    if publish:publish_pointer(store,sha,base)
++    return dict(status='approved',proposal_digest=sha,proposal_path=str(target),
++                manifest_path=str(target/'manifest.json'),next_candidate_published=publish)
++
++
++def job_contract(job):
++    return {key:job.get(key) for key in ('id','enabled','no_agent','schedule','script','deliver','failure_deliver')}
++
++
++def history_hash(actor,payload):
++    code='import sqlite3,json,hashlib;from pathlib import Path;from contextlib import closing\np=Path("/Users/hermes/.local/state/gcake-rss/live.sqlite")\nwith closing(sqlite3.connect(p.as_uri()+"?mode=ro",uri=True)) as db:\n db.execute("PRAGMA query_only=ON")\n value=hashlib.sha256("\\n".join(db.iterdump()).encode()).hexdigest()\nprint(json.dumps(dict(sha256=value)))'
++    return actor.run(payload,code)['sha256']
++
++
++def source_probe(actor,payload):
++    bootstrap='import sys,runpy;sys.path.insert(0,sys.argv[1]);runpy.run_path(sys.argv[1]+"/successor_runner_probe.py",run_name="__main__")'
++    import shlex
++    shell='set -euo pipefail\nset -a\n. /Users/hermes/.config/gcake-rss/live.env\n. /Users/hermes/.config/gcake-rss/publication-monitor.env\nset +a\nexec "$1" -I -B -S -c '+shlex.quote(bootstrap)+' "$2"'
++    argv=['/bin/bash','-c',shell,'source-probe',str(payload/'runtime/bin/python3.11'),str(payload/'library')]
++    code='import subprocess,json\nr=subprocess.run('+repr(argv)+',capture_output=True,text=True,timeout=45)\ntry:value=json.loads(r.stdout.splitlines()[-1])\nexcept Exception:value=dict(ready=False,error_type="runner-probe-failed")\nprint(json.dumps(value))'
++    return actor.run(payload,code,timeout=55)
++
++
++def natural_receipt(actor,payload,sha):
++    code='from pathlib import Path;import json\nr=json.loads(Path("/Users/hermes/.local/state/gcake-rss/managed-last-run.json").read_text())\nprint(json.dumps({k:r.get(k) for k in ("job_id","execution_id","scheduled_instant","uid","digest","mode","exit_code")}))'
++    receipt=actor.run(payload,code)
++    if not (receipt.get('job_id')==JOB and receipt.get('digest')==sha and receipt.get('mode')=='dry-run' and receipt.get('uid')==actor.user.pw_uid and receipt.get('exit_code')==0):
++        raise ValueError('natural-dry-receipt-required')
++    matches=[row for row in actor.ledger() if row[0]==receipt.get('execution_id')]
++    if len(matches)!=1 or matches[0][1:]!=[JOB,receipt.get('scheduled_instant'),'completed']:
++        raise ValueError('natural-ledger-receipt-mismatch')
++    return receipt
++
++
++def restore_live_policy(store,sha,actor,health,contract,record,save):
++    if store.active()['digest']!=sha:raise ValueError('qualified-selection-drift')
++    if record.get('phase') not in ('qualified','activating'):raise ValueError('qualification-record-required')
++    if store.journal.exists():raise ValueError('pending-update-recovery')
++    if health.get('status')!='passed':raise ValueError('current-gateway-health-required')
++    with store.maintenance():
++        if not actor.drained():raise ValueError('cron-execution-in-progress')
++        if job_contract(actor.job())!=contract:raise ValueError('existing-job-changed')
++        before=history_hash(actor,store.verify_release(sha))
++        if record.get('phase')=='activating' and record.get('policy_history_hash')!=before:
++            store.select(sha,mode='dry-run');store.gate('ready',sha,'dry-run')
++            record.update(phase='activation-failed',reason='interrupted-policy-history-drift');save(record)
++            raise ValueError('interrupted-policy-history-drift')
++        record.update(phase='activating',policy_history_hash=before);save(record)
++        store.gate('maintenance')
++        store.select(sha,mode='live');store.gate('ready',sha,'live')
++        if history_hash(actor,store.verify_release(sha))!=before:
++            store.select(sha,mode='dry-run');store.gate('ready',sha,'dry-run')
++            record.update(phase='activation-failed',reason='notification-history-changed');save(record)
++            raise ValueError('notification-history-changed')
++        record.update(phase='active-live',mode='live',notification_history_unchanged=True,job_unchanged=True)
++        save(record)
++    return record
++
++
++def public_report(record,receipt_path,**extra):
++    # Job contracts can include private destinations: never project them.
++    keys=('status','phase','base_digest','proposal_digest','proposal_path','manifest_path',
++          'next_candidate_created','next_candidate_published','next_candidate_cleared',
++          'qualification','mode','notification_history_unchanged','job_unchanged')
++    result={key:record[key] for key in keys if key in record}
++    result.update(status=record.get('phase','blocked'),receipt_path=str(receipt_path),**extra)
++    return result
++
++
++def main(control,package):
++    if os.geteuid()!=0 or sys.platform!='darwin':raise PermissionError('root-macos-owner-required')
++    package=Path(package)
++    if package.resolve()!=package or not str(package).startswith('/private/tmp/'):
++        raise ValueError('fixed-local-package-required')
++    tools=ROOT/'tools'
++    for name,sha in control['installed_tools'].items():
++        if not re.fullmatch(r'[a-z_]+\.py',name):raise ValueError('invalid-installed-tool-name')
++        path=tools/name;info=path.lstat()
++        if not stat.S_ISREG(info.st_mode) or info.st_uid!=0 or info.st_mode&0o022 or info.st_nlink!=1 or hashlib.sha256(path.read_bytes()).hexdigest()!=sha:
++            raise ValueError('installed-control-drift')
++    sys.path.insert(0,str(tools))
++    from production_entry import ProductionStore
++    from production_owner import Actor,Supervisor,updater_exclusion,manage,validate_existing_job
++    from packaging_contract import verify_candidate
++    store=ProductionStore();sha=control['bundle_digest'];base=control['base_digest']
++    receipt_path=ROOT/'private'/('notification-successor-'+sha+'.json')
++    record=read(receipt_path) if receipt_path.exists() else dict(schema=1,phase='prepared',base_digest=base,proposal_digest=sha)
++    def save(value):atomic(receipt_path,value)
++    if record.get('proposal_digest')!=sha or record.get('base_digest')!=base:raise ValueError('owner-receipt-drift')
++    if record.get('phase')=='active-live':
++        status=store.launch_status()
++        if status!={'status':'ready','digest':sha,'mode':'live'}:raise ValueError('completed-selection-drift')
++        with updater_exclusion():
++            pointer=ROOT/'private/next-candidate.json'
++            if pointer.exists() and read(pointer)=={'digest':sha}:
++                pointer.unlink();sync_directory(pointer.parent)
++                record.update(next_candidate_published=False,next_candidate_cleared=True);save(record)
++        print(json.dumps(public_report(record,receipt_path,already_complete=True)));return 0
++    if record.get('phase') in ('rolled_back','recovery_failed','updating','activation-failed'):
++        print(json.dumps(dict(status='blocked',reason='reconcile-existing-owner-operation',receipt_path=str(receipt_path),phase=record['phase'])));return 1
++    try:
++        if store.journal.exists():raise ValueError('pending-update-recovery')
++        if record['phase'] not in ('qualified','activating'):
++            bundle=package/'bundle';manifest=read(bundle/'manifest.json')
++            if digest(manifest)!=sha:raise ValueError('package-manifest-drift')
++            verify_candidate(bundle)
++            if store.active()!=dict(digest=base,mode='live'):raise ValueError('initial-live-baseline-drift')
++            with updater_exclusion():
++                staged=stage_proposal(store,bundle,sha,base,publish=False)
++                record.update(staged,phase='approved');save(record)
++            proposal=ROOT/'proposals'/sha
++            actor=Actor(store);job=validate_existing_job(actor);record['job_contract']=job_contract(job)
++            # Re-prove native SDK as hermes, with all external effects denied.
++            code='import runpy;runpy.run_path("/usr/local/share/gcake-hermes-runtime/tools/offline_probe.py",run_name="__main__")'
++            sdk=actor.run(proposal/'payload',code,timeout=45)
++            if sdk!=manifest['verification']['telegram']:raise ValueError('native-sdk-proof-drift')
++            probe=source_probe(actor,proposal/'payload');record['source_probe']=probe
++            if probe.get('ready') is not True:
++                record['phase']='approved';save(record)
++                print(json.dumps(dict(status='staged-awaiting-shared-source',proposal_digest=sha,proposal_path=str(proposal),source_probe=probe,receipt_path=str(receipt_path))));return 1
++            with updater_exclusion():
++                publish_pointer(store,sha,base)
++                record.update(phase='updating',next_candidate=str(ROOT/'private/next-candidate.json'),next_candidate_created=True,next_candidate_published=True);save(record)
++            output=io.StringIO()
++            with redirect_stdout(output):manage('update')
++            result=json.loads(output.getvalue().splitlines()[-1]);record['managed_update']=result
++            if result.get('status')!='updated' or store.active()!=dict(digest=sha,mode='dry-run'):
++                record['phase']=result.get('status','blocked');save(record)
++                print(json.dumps(public_report(record,receipt_path)));return 1
++            actor=Actor(store)
++            record['qualification']=natural_receipt(actor,actor.payload(),sha)
++            record['phase']='qualified';save(record)
++        actor=Actor(store);payload=actor.payload()
++        if store.active()['digest']!=sha:raise ValueError('qualified-selection-drift')
++        probe=source_probe(actor,payload)
++        if probe.get('ready') is not True:
++            print(json.dumps(dict(status='qualified-dry-run-awaiting-source',source_probe=probe,receipt_path=str(receipt_path))));return 1
++        original=read(ROOT/'private/original-gateway-map.json')
++        service=Supervisor(store,original,actor)
++        health=service.verify_telegram_health(payload)
++        with updater_exclusion():
++            restore_live_policy(store,sha,actor,health,record['job_contract'],record,save)
++            pointer=ROOT/'private/next-candidate.json'
++            if pointer.exists() and read(pointer)=={'digest':sha}:
++                pointer.unlink();sync_directory(pointer.parent)
++                record.update(next_candidate_published=False,next_candidate_cleared=True);save(record)
++        result=public_report(record,receipt_path,message_sends=0,manual_job_execution=False,
++                    next_step='Hermes executes the fixed one-time continuation after verifying this receipt')
++        print(json.dumps(result));return 0
++    except Exception as error:
++        reason=str(error)
++        report=dict(status='blocked',error_type=type(error).__name__,phase=record.get('phase'),receipt_path=str(receipt_path))
++        if re.fullmatch(r'[a-z0-9_-]{1,100}',reason):report['reason']=reason
++        print(json.dumps(report));return 1
++
++
++if __name__=='__main__':
++    raise SystemExit(main(APPROVED_CONTROL,PACKAGE_ROOT))
+--- /dev/null
++++ b/scripts/hermes/prepare_notification_successor.py
+@@ -0,0 +1,107 @@
++"""Build a fixed approved-baseline successor; no production writes or network."""
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++
++ROOT=Path('/usr/local/share/gcake-hermes-runtime')
++BASE_DIGEST='f98d49207288ae81f1cad0ece146489c1631700f946ea9146663cfab32eab66e'
++TASK=Path('/private/tmp/gcake-notification-repair-20261015')
++TARGET=TASK/'owner-successor'
++SCRIPTS=Path(__file__).resolve().parent
++sys.path.insert(0,str(ROOT/'tools'))
++from updater_guard import read,tree,digest,canonical,check_payload
++from packaging_contract import verify_candidate,PROOF
++
++# Root executes only this bootstrap plus an exact hash-pinned adapter copy.
++BOOTSTRAP_TEMPLATE='''import hashlib,json,os,stat,sys,tempfile,runpy
++from pathlib import Path
++package=Path(PACKAGE_LITERAL)
++if os.geteuid()!=0:raise PermissionError("root-required")
++if package.resolve()!=package:raise ValueError("package-path-drift")
++def checked(path,sha,limit):
++ fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
++ with os.fdopen(fd,"rb") as f:
++  st=os.fstat(f.fileno());raw=f.read(limit+1)
++ if not stat.S_ISREG(st.st_mode) or st.st_nlink!=1 or st.st_mode&0o022 or st.st_uid not in (0,OWNER_LITERAL) or len(raw)>limit or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError("owner-input-drift")
++ return raw
++control=json.loads(checked(package/"controls.json",CONTROL_LITERAL,1024*1024))
++for name,sha in control["installed_tools"].items():
++ if not name.replace("_","").replace(".","").isalnum() or not name.endswith(".py"):raise ValueError("invalid-tool-name")
++ checked(Path("/usr/local/share/gcake-hermes-runtime/tools")/name,sha,1024*1024)
++source=checked(package/"owner_successor.py",control["owner_script_sha256"],1024*1024)
++sys.path.insert(0,"/usr/local/share/gcake-hermes-runtime/tools")
++with tempfile.TemporaryDirectory(prefix="gcake-owner-successor-code-",dir="/private/tmp") as temp:
++ path=Path(temp)/"owner_successor.py";path.write_bytes(source);path.chmod(0o600)
++ runpy.run_path(str(path),init_globals={"APPROVED_CONTROL":control,"PACKAGE_ROOT":str(package)},run_name="__main__")
++'''
++
++
++def prepare():
++    if os.geteuid()==0:raise PermissionError('prepare-as-main-user')
++    if read(ROOT/'active.json')!={'digest':BASE_DIGEST,'mode':'live'}:raise ValueError('active-baseline-drift')
++    if TARGET.exists():raise ValueError('owned-package-already-exists')
++    original=read(ROOT/'manifests'/(BASE_DIGEST+'.json'))
++    if digest(original)!=BASE_DIGEST:raise ValueError('original-manifest-drift')
++    source=ROOT/'releases'/BASE_DIGEST
++    check_payload(source,original)
++    if shutil.disk_usage(TASK).free<5*1024**3:raise ValueError('prepare-disk-budget')
++    TARGET.mkdir(mode=0o755)
++    owned=dict(path=str(TARGET),owner_uid=os.geteuid(),purpose='authorized owner notification repair successor',retention='until production adoption and closeout; do not remove while owner operation runs')
++    (TARGET/'owned.json').write_bytes(canonical(owned))
++    try:
++        bundle=TARGET/'bundle';payload=bundle/'payload'
++        shutil.copytree(source,payload,symlinks=True)
++        library=payload/'library'
++        names=('publication_monitor.py','reconcile_notification.py','telegram_readonly_diagnostic.py','owner_continue.py','successor_runner_probe.py')
++        for name in names:
++            src=TASK/'gateway-switch'/name if name=='owner_continue.py' else SCRIPTS/name
++            shutil.copyfile(src,library/name);(library/name).chmod(0o644)
++        native=payload/'runtime/bin/python3.11'
++        result=subprocess.run([str(native),'-I','-B','-S',str(ROOT/'tools/offline_probe.py')],capture_output=True,text=True,timeout=40,check=True,
++                              env=dict(HOME=str(TARGET/'offline-home'),PATH='/usr/bin:/bin',PYTHONDONTWRITEBYTECODE='1'))
++        sdk=json.loads(result.stdout.splitlines()[-1])
++        if sdk.get('status')!='passed':raise ValueError('native-sdk-proof-failed')
++        (payload/PROOF).write_bytes(canonical(sdk));(payload/PROOF).chmod(0o644)
++        evidence=dict(schema=1,source_baseline='4068a3695b484309bfc87c1b1ad68bee6d7eb327',
++                      product_tests='gateway-switch-full-green.log',hermes_test_count=174,
++                      product_test_log_sha256=hashlib.sha256((TASK/'gateway-switch-full-green.log').read_bytes()).hexdigest(),
++                      root_owner_qualification='pending',human_receipt='not_run',message_sends=0)
++        (library/'notification-repair-health.json').write_bytes(canonical(evidence))
++        files=tree(payload)
++        changed={name for name in set(files)|set(original['files']) if files.get(name)!=original['files'].get(name)}
++        allowed={'library/'+name for name in names}|{PROOF,'library/notification-repair-health.json'}
++        if changed!=allowed:raise ValueError('unexpected-payload-change')
++        manifest=dict(original,release_id='hermes-notification-repair-20261015',files=files,
++                      capability=dict(telegram=dict(required=True,proof_file=PROOF,post_start_required=True)),
++                      verification=dict(passed=True,evidence_sha=hashlib.sha256(canonical(sdk)).hexdigest(),telegram=sdk,notification_repair=evidence))
++        (bundle/'manifest.json').write_bytes(canonical(manifest));(bundle/'manifest.json').chmod(0o644)
++        verify_candidate(bundle);sha=digest(manifest)
++        shutil.copyfile(SCRIPTS/'owner_successor.py',TARGET/'owner_successor.py');(TARGET/'owner_successor.py').chmod(0o644)
++        installed={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((ROOT/'tools').glob('*.py'))}
++        controls=dict(schema=1,base_digest=BASE_DIGEST,bundle_digest=sha,
++                      owner_script_sha256=hashlib.sha256((TARGET/'owner_successor.py').read_bytes()).hexdigest(),
++                      installed_tools=installed,changed_files=sorted(changed),owner_uid=os.geteuid())
++        raw=canonical(controls);(TARGET/'controls.json').write_bytes(raw);(TARGET/'controls.json').chmod(0o644)
++        control_sha=hashlib.sha256(raw).hexdigest()
++        bootstrap=BOOTSTRAP_TEMPLATE.replace('PACKAGE_LITERAL',repr(str(TARGET))).replace('CONTROL_LITERAL',repr(control_sha)).replace('OWNER_LITERAL',str(os.geteuid()))
++        import shlex
++        entry='#!/bin/bash\nset -euo pipefail\nexec /usr/bin/sudo /usr/bin/python3 -I -B -S -c '+shlex.quote(bootstrap)+'\n'
++        (TARGET/'owner_adopt.sh').write_text(entry);(TARGET/'owner_adopt.sh').chmod(0o755)
++        report=dict(owned,bundle_digest=sha,manifest_path=str(bundle/'manifest.json'),control_sha256=control_sha,
++                    proposal_path=str(ROOT/'proposals'/sha),owner_command='bash '+str(TARGET/'owner_adopt.sh'),
++                    receipt_path=str(ROOT/'private'/('notification-successor-'+sha+'.json')),
++                    changed_files=sorted(changed),gateway_code_runtime_unchanged=True,sdk_offline_passed=True,
++                    production_writes=False,qualification='pending owner native/root/launchd execution')
++        (TARGET/'prepared.json').write_bytes(canonical(report));(TARGET/'prepared.json').chmod(0o644)
++        print(json.dumps(report,indent=2))
++    except BaseException:
++        # The marker, exact fixed path and owner were established in this run.
++        if TARGET.resolve()==TARGET and read(TARGET/'owned.json')==owned:shutil.rmtree(TARGET)
++        raise
++
++
++if __name__=='__main__':prepare()
+--- /dev/null
++++ b/scripts/hermes/successor_runner_probe.py
+@@ -0,0 +1,23 @@
++"""Runner-only shared source probe; no DB, writes, send or update polling."""
++import json
++import os
++from pathlib import Path
++import pwd
++import sys
++sys.path.insert(0,str(Path(__file__).resolve().parent))
++from publication_monitor import _notification_configuration
++from telegram_readonly_diagnostic import inspect_provider
++
++if __name__=='__main__':
++    try:
++        if os.geteuid()!=pwd.getpwnam('hermes').pw_uid:raise PermissionError('runner-required')
++        readiness,token,chat=_notification_configuration()
++        if readiness.get('credential_source')!='gateway' or readiness.get('rejection_reason') is not None:
++            print(json.dumps(dict(ready=False,readiness=readiness,message_sends=0,state_writes=0)))
++        else:
++            probe=inspect_provider(token,chat)
++            ready=bool(probe.get('bot_identity_matches_token') and probe.get('chat_identity_matches_configuration') and probe.get('getMe',{}).get('ok') and probe.get('getChat',{}).get('ok'))
++            print(json.dumps(dict(ready=ready,credential_source='gateway',identity_pinned=True,
++                                  probe=probe,message_sends=0,state_writes=0)))
++    except Exception as error:
++        print(json.dumps(dict(ready=False,error_type=type(error).__name__,message_sends=0,state_writes=0)))
+--- /dev/null
++++ b/scripts/hermes/test_owner_successor.py
+@@ -0,0 +1,105 @@
++from contextlib import closing
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++import owner_successor as owner
++from updater_guard import read,digest,check_payload,atomic
++from update_entry import EntryStore,write_public
++from test_update_entry import bundle
++
++
++class OwnerProposal(unittest.TestCase):
++    def setUp(self):
++        self.temp=tempfile.TemporaryDirectory(prefix='gcake-entry-owner-',dir='/private/tmp');self.addCleanup(self.temp.cleanup)
++        self.base=Path(self.temp.name);self.old=bundle(self.base,'old');self.new=bundle(self.base,'new')
++        self.store=EntryStore.initialize(self.base/'authority',__import__('os').getuid())
++        self.oldsha=digest(read(self.old/'manifest.json'));self.sha=digest(read(self.new/'manifest.json'))
++        self.store.approve(read(self.old/'manifest.json'),self.oldsha);self.store.bootstrap(self.old)
++        self.store.select(self.oldsha,'live');self.store.gate('ready',self.oldsha,'live')
++        self.approvals=read(self.store.root/'approvals.json')
++
++    def stage(self,**kwargs):
++        verify=lambda p:check_payload(p/'payload',read(p/'manifest.json'))
++        return owner.stage_proposal(self.store,self.new,self.sha,self.oldsha,verify=verify,**kwargs)
++
++    def test_exact_proposal_approval_pointer_and_repeat_preserve_active(self):
++        first=self.stage();second=self.stage()
++        self.assertEqual(first,second)
++        self.assertEqual(read(self.store.root/'private/next-candidate.json'),{'digest':self.sha})
++        self.assertEqual(read(self.store.root/'approvals.json')['new'],self.sha)
++        self.assertEqual(self.store.active(),{'digest':self.oldsha,'mode':'live'})
++        self.assertEqual(digest(read(Path(first['manifest_path']))),self.sha)
++
++    def test_foreign_pointer_and_pending_recovery_are_preserved(self):
++        pointer=self.store.root/'private/next-candidate.json';atomic(pointer,{'digest':'f'*64})
++        with self.assertRaises(ValueError):self.stage()
++        self.assertEqual(read(pointer),{'digest':'f'*64});self.assertEqual(read(self.store.root/'approvals.json'),self.approvals)
++        pointer.unlink();atomic(self.store.journal,{'phase':'prepared'})
++        with self.assertRaises(ValueError):self.stage()
++        self.assertEqual(read(self.store.root/'approvals.json'),self.approvals)
++
++    def test_payload_or_baseline_drift_is_rejected_before_approval(self):
++        self.store.select(self.oldsha,'dry-run')
++        with patch.object(self.store,'active',return_value={'digest':'a'*64,'mode':'dry-run'}):
++            with self.assertRaises(ValueError):self.stage()
++        file=self.new/'payload/runtime/bin/python3.11';file.write_text('tampered')
++        with self.assertRaises(ValueError):self.stage()
++        self.assertEqual(read(self.store.root/'approvals.json'),self.approvals)
++
++    def test_approval_without_pointer_cannot_trigger_updater(self):
++        self.stage(publish=False)
++        self.assertFalse((self.store.root/'private/next-candidate.json').exists())
++        owner.publish_pointer(self.store,self.sha,self.oldsha)
++        self.assertEqual(read(self.store.root/'private/next-candidate.json'),{'digest':self.sha})
++
++    def test_qualified_policy_restore_has_no_service_or_job_commands(self):
++        self.stage();self.store.seal(self.new);self.store.select(self.sha,'dry-run');self.store.gate('ready',self.sha)
++        contract={'id':'test-job'}
++        class Actor:
++            def drained(self):return True
++            def job(self):return dict(contract)
++        normalized=owner.job_contract(contract);record={'phase':'qualified'};saved=[]
++        with patch.object(owner,'history_hash',return_value='history'):
++            owner.restore_live_policy(self.store,self.sha,Actor(),{'status':'passed'},normalized,record,lambda r:saved.append(dict(r)))
++        self.assertEqual(self.store.active(),{'digest':self.sha,'mode':'live'})
++        self.assertEqual(saved[-1]['phase'],'active-live')
++        self.assertTrue(saved[-1]['notification_history_unchanged'])
++
++    def test_unqualified_health_never_activates(self):
++        record={'phase':'prepared'}
++        with self.assertRaises(ValueError):owner.restore_live_policy(self.store,self.oldsha,None,{'status':'passed'},{},record,lambda r:None)
++        record={'phase':'qualified'}
++        with self.assertRaises(ValueError):owner.restore_live_policy(self.store,self.oldsha,None,{'status':'failed'},{},record,lambda r:None)
++        self.assertEqual(self.store.active(),{'digest':self.oldsha,'mode':'live'})
++
++    def test_public_receipt_never_exposes_private_job_destination(self):
++        result=owner.public_report({'phase':'qualified','job_contract':{'deliver':'PRIVATE_RECIPIENT'},'source_probe':{'secret':'PRIVATE_TOKEN'}},'/private/receipt')
++        self.assertEqual(result,{'phase':'qualified','status':'qualified','receipt_path':'/private/receipt'})
++
++    def test_policy_history_drift_returns_to_dry_and_records_failure(self):
++        self.stage();self.store.seal(self.new);self.store.select(self.sha,'dry-run');self.store.gate('ready',self.sha)
++        class Actor:
++            def drained(self):return True
++            def job(self):return {'id':'test'}
++        record={'phase':'qualified'};saved=[]
++        with patch.object(owner,'history_hash',side_effect=['before','after']):
++            with self.assertRaises(ValueError):owner.restore_live_policy(self.store,self.sha,Actor(),{'status':'passed'},owner.job_contract({'id':'test'}),record,lambda r:saved.append(dict(r)))
++        self.assertEqual(self.store.active()['mode'],'dry-run')
++        self.assertEqual(saved[-1]['phase'],'activation-failed')
++
++    def test_natural_receipt_requires_exact_execution_and_original_time(self):
++        from types import SimpleNamespace
++        receipt={'job_id':owner.JOB,'execution_id':'exec','scheduled_instant':'2026-10-15T00:00:00Z','uid':502,'digest':self.sha,'mode':'dry-run','exit_code':0}
++        class Actor:
++            user=SimpleNamespace(pw_uid=502)
++            def run(self,*args):return receipt
++            def ledger(self):return [['exec',owner.JOB,'2026-10-15T00:00:00Z','completed']]
++        actor=Actor()
++        self.assertEqual(owner.natural_receipt(actor,self.new/'payload',self.sha),receipt)
++        with patch.object(actor,'ledger',return_value=[['exec',owner.JOB,'2026-10-15T00:01:00Z','completed']]):
++            with self.assertRaises(ValueError):owner.natural_receipt(actor,self.new/'payload',self.sha)
++
++
++if __name__=='__main__':unittest.main()
+--- a/openspec/changes/add-hermes-publication-monitor/proposal.md
++++ b/openspec/changes/add-hermes-publication-monitor/proposal.md
+@@ -54,3 +54,15 @@
+ ## Authorized production rollout extension
+ 
+ Owner authorization on 2026-10-13 supersedes prior production-installation exclusions for the Hermes patch, managed update entry, wrapper and existing gateway restart. After verified operation, update only the existing production monitor job and commit/push this change. Preserve all historical isolated tasks and evidence. Add production-specific fixed path/service mappings, fresh drift checks, durable first-install backup/restore, runner-only private state access, production read-only scheduled qualification and gated activation. Do not infer Telegram test-message authority or replace notification history. A missing summary endpoint or restricted credential blocks monitor activation; owner does not know their configuration, so establish their status rather than guessing. Installer and release artifacts require local acceptance and owner-run execution before production success can be reported.
++
++## Authorized notification repair, 2026-10-15
++
++The owner selected both program repair and one Telegram resend for the toolchain article after confirming non-receipt. Preserve the original event identity and all history. Add sanitized delivery diagnostics and a failing live CLI exit status while unresolved delivery exists. Prepare a lock-protected, backed-up one-time reconciliation tool; do not reset the event to an automatically retryable state. Production operation requires the existing privileged owner; no commit/push or gateway restart is authorized by this repair.
++
++## Authorized Hermes Bot switch, 2026-10-15
++
++The owner selected option 2: change the notification sender to the existing Gateway/Hermes Bot and share its credential source. Owner read-only evidence: notification live.env token is unauthorized; Gateway .env token authenticates and reads the existing destination; identities differ. This explicitly supersedes the same-Bot requirement for this switch. Preserve destination, hourly job, gateway, original event and consumed reconciliation. The approved scope includes one audited continuation of this article's failed resend using the selected Hermes Bot. No additional test messages, token rotation, gateway restart, commit/push or bypass of unknown delivery is authorized.
++
++## Authorized owner successor delivery
++
++Owner forwarded the controlled-restart authorization and reported that no usable privileged successor proposal/approval entry was supplied. Supply a hash-pinned owner-side adapter and complete native package using existing ProductionStore approval, fixed next-candidate and production_owner.manage update/qualification/rollback. Do not add privilege services, change sudo policy or execute production from the hermes principal. A main-user terminal password is required only through normal sudo. Preparation is local; production receipts remain pending owner execution.
+--- a/openspec/changes/add-hermes-publication-monitor/design.md
++++ b/openspec/changes/add-hermes-publication-monitor/design.md
+@@ -388,3 +388,39 @@
+ The new wrapper reads its restricted summary URL/credential from /Users/hermes/.config/gcake-rss/publication-monitor.env, which the fresh inventory reports absent. The owner does not know another location. Verify the candidate Worker summary route/configuration and existing deployment inventory before declaring this prerequisite ready; do not invent an endpoint, use account-wide credentials, expose a credential or substitute fixture observations. Missing prerequisites block activation before service stop. Private configuration is owner-readable only and never included in evidence/repository. Readiness includes read-only handler semantics, authentication and fresh canonical source identity.
+ 
+ After restart verify exact UID/interpreter/code digest, Unix gateway identity, one supervisor and a naturally dispatched existing-job dry round matching scheduled context, with production DB unchanged. Do not rearm the production job to simulate that round before qualification. Persist the receipt; only then apply the authorized existing-job correction and explicit live policy without identity/interval changes. Do not send a test message. Commit/push only the scoped repository change after all affected required gates, readiness and owner operation evidence pass. Do not claim completion for an unexecuted owner command or missing summary.
++
++## Notification repair implementation contract, 2026-10-15
++
++Decision context: Level 2; existing durable uncertainty and immutable runtime decisions remain binding. No decision ledger exists. This scoped repair introduces failure visibility and explicitly authorized reconciliation, captured here without an ADR bootstrap. Source baseline 4068a3695b484309bfc87c1b1ad68bee6d7eb327 matches the installed publication_monitor.py bytes. Dirty parent and existing owner worktrees remain untouched.
++
++In scope: scripts/hermes/publication_monitor.py sanitized attempt records and live CLI health check; scripts/hermes/reconcile_notification.py exclusive one-time resend; test_notification_repair.py; local repair evidence and owner handoff. Out of scope: article/publication writes, credentials changes, job schedule changes, gateway restart, commit/push. Production runtime remains immutable and requires hash-approved release staging; source edits are not production installation.
++
++The monitor keeps run_round's existing list return contract. A separate read-only delivery_health reports unresolved intent/unknown/rejected events and legacy uncertain outbox. CLI emits only counts and exits nonzero for live unresolved delivery, including duplicate occurrences. An additive delivery-attempt journal stores event, result, time, allowlisted diagnostic type/reason type, errno/HTTP status and integer Telegram message ID. No exception text is persisted.
++
++Reconciliation keeps original unknown/uncertain semantics until acknowledgement; it never changes the event to rejected. Under the same flock, validate event/status/message and expected message digest, back up SQLite including WAL, commit a unique operation intent, then call the existing sender once. Persist outcome before releasing the lock. A crash leaves consumed intent and unknown state. Both same operation and another operation for an already reconciled event must be refused. Positive acknowledgement alone updates event/outbox sent; no human_received edit or invented scheduled context.
++
++Verification: acceptance tests must first reproduce CLI zero exit on a timeout using the real main entrypoint with an injected transport and private SQLite fixture. Extend real SQLite tests for later unresolved runs, secret-free diagnostics, confirmed/rejected transport, backup/state drift, concurrent locking and interrupted/repeated reconciliation. Run complete pnpm test:hermes; no Worker/frontend behavior changes. Production execution remains blocked until the owner supplies privileged execution, not another authorization.
++
++### Rejection diagnostics follow-up
++
++Owner returned a consumed reconciliation with transport_status=rejected and no message ID. Original DeliveryRejected did not distinguish local disabled/invalid configuration from explicit Telegram rejection; do not infer a provider request. Extend the bounded journal with an additive rejection_reason and retain numeric provider error_code. notification_readiness is a pure environment projection shared with the sender, exposing only boolean validity and an allowlisted reason. A separate owner diagnostic compares clean legacy-only and legacy-plus-summary environments, and reads only this event's journal via SQLite mode=ro. It must state that inherited gateway environment is unobserved. Original operation, backup and original handoff binaries are preserved; no new retry, new operation, reclassification of past attempts or production adoption is authorized by a diagnostic result alone.
++
++### Provider identity diagnosis
++
++Owner reports both clean env configurations have valid token/chat formats and notifications enabled, while event/outbox remain unknown/uncertain. Preserve that report separately from historical transmission evidence. A bounded owner-only helper telegram_readonly_diagnostic.py calls only Telegram getMe, then getChat if bot identity matches the token prefix. All requests use the fixed api.telegram.org host, disabled proxies and redirects, 15-second timeout, 64 KiB response cap and no retries. Allowlisted error reason/numeric status only; no names, bot/chat IDs, credentials, raw descriptions or exception messages are output. No DB is opened and no send/getUpdates/setWebhook method is allowed. Successful identity metadata cannot prove send permission, user receipt or the cause of an earlier rejection. References: https://core.telegram.org/bots/api#getme and https://core.telegram.org/bots/api#getchat.
++
++### Authorized Hermes Bot routing and recovery
++
++Select HERMES_RSS_TELEGRAM_CREDENTIAL_SOURCE=gateway in notification configuration and pin HERMES_RSS_TELEGRAM_EXPECTED_BOT_ID using the verified Gateway identity. Resolve TELEGRAM_BOT_TOKEN only from the fixed /Users/hermes/.hermes/.env on every send. This stdlib isolated runtime accepts only a unique literal token assignment (optionally export and single/double quoted); interpolation, duplicate assignments, non-private owner permissions, symlinks/hardlinks or oversized files fail closed. Parse only the token, never source the Gateway .env as shell or call load_hermes_dotenv, whose sanitization and external secret loading can mutate configuration. Do not export unrelated Gateway secrets or change TELEGRAM_CHAT_ID. Preserve legacy source default and exact dry-run output.
++
++Extend resend_once with an explicit predecessor parameter. A separate monitor_reconciliation_continuations table has unique event_id, operation and predecessor identities and stores a durable linked intent; do not remove the original monitor_reconciliations event uniqueness or update the original operation. Eligibility requires the named original unknown operation for the same event plus latest recorded rejected/DeliveryRejected attempt. Only one continuation per event is allowed. The existing backup, exclusive lock, original-message digest, no-auto-retry and human evidence contracts remain.
++
++Owner runtime adoption must use the existing immutable approved-release flow, with source hash checks, source-resolution tests and genuine runner qualification before selection. Do not overwrite installed libraries or change the job merely to apply configuration. Owner shall back up the private notification configuration before setting only the source selector and Bot pin; no token copy. After getMe/getChat identity and destination checks, allow exactly the authorized continuation with its explicit predecessor; any uncertain outcome stops. No separate test send, gateway restart, commit or push.
++
++### Owner successor package
++
++Decision context Level 2: production restart now explicitly authorized; no sudo policy/new privilege service. Local prepare_successor.py clones the fixed approved active payload into a task-owned package, changes only monitor and approved notification helpers/proof files, and runs installed offline_probe.py in the candidate Python -I -B -S runtime. Preserve source_sha/lock_sha/cron patch_sha and entire code/runtime inventory. Bind the fresh offline-SDK report through existing packaging_contract, and retain monitor test evidence separately.
++
++The owner entry is a thin pinned adapter over existing ProductionStore.approve, fixed root/proposals/<digest>, root/private/next-candidate.json and production_owner.manage(update). Minimal sudo bootstrap verifies exact control/script bytes, copies only the adapter into a root-private temporary directory and imports only pinned installed root tools. It accepts no arbitrary root/service/job override. Staging validates existing pointer/baseline/payload before writes, copies to a new root-owned proposal, preserves a foreign pending candidate, and records same-ID resumable receipts. SDK qualification runs as hermes. Existing update performs the real natural dry round, current-boot Telegram health, summary and rollback.
++
++Because managed update returns dry-run, source overlay must already select the authorized Gateway Bot and pin. Owner entry checks it through a runner child without copying credentials, before updater dispatch. After a verified exact natural dry receipt, it uses existing maintenance/select/gate policy APIs to restore the prior live policy for that same qualified digest, with a durable per-digest activation receipt and job/history-preservation checks. No sendMessage, manual job, getUpdates or extra service lifecycle is introduced. Interrupted/pending transactions fail closed; rolled_back remains explicitly dry-run, not a claim of full prior-live restoration. Owner then forwards the receipt to Hermes for the existing one-time continuation.
+--- a/openspec/changes/add-hermes-publication-monitor/tasks.md
++++ b/openspec/changes/add-hermes-publication-monitor/tasks.md
+@@ -84,3 +84,28 @@
+ ## Closeout trace
+ 
+ Task 5.1/5.2 cover Explicit scheduler context and Wrapper cutover and rollback compatibility; tasks 7–10 cover the subsequently accepted update design. Historical task completion is recovered from this conversation and real owner combined results, not reconstructed raw log files. Task 11.7 is complete: full closeout gates passed and remote source commit 373299fae570884c3efb58d21a1a3be884b02a43 was verified. The following documentation commit records completion; it does not change the production release.
++
++## 12. Authorized notification repair
++
++- [x] 12.1 Record genuine acceptance RED for Truthful delivery failure reporting through the actual monitor CLI, then implement sanitized attempt diagnostics, acknowledgement persistence and nonzero live CLI health; verify test_notification_repair.py and monitor regressions.
++- [x] 12.2 Implement Authorized single-event reconciliation with backup, exact message digest, existing sender lock and crash-safe single-use operation; verify success, timeout, interrupted intent, repetition, drift and unrelated-history preservation through actual SQLite tests.
++- [x] 12.3 Pass complete pnpm test:hermes and Spectra validation; deliver source patch, sanitized evidence and precise owner commands, clearly separating local verification from production installation and Telegram acknowledgement.
++- [ ] 12.4 Execute privileged production inspection, immutable runtime adoption and the single authorized resend; verify the selected runtime, unchanged job and Telegram acknowledgement. Keep blocked if owner execution is unavailable; never claim human receipt.
++
++- [x] 12.5 Distinguish local transport preflight refusal from explicit numeric Telegram rejection using acceptance RED and sanitized diagnostics; deliver a read-only owner configuration comparison with no resend or journal reset, and verify complete Hermes regression.
++
++- [x] 12.6 Deliver bounded read-only Telegram identity diagnosis through telegram_readonly_diagnostic.py and an owner command; verify invalid configuration, unauthorized token, chat rejection, timeout, redirect and zero secret disclosure with test_telegram_readonly_diagnostic.py and the complete Hermes gate. Real provider results remain pending owner execution.
++
++## 13. Authorized Hermes Bot switch
++
++- [x] 13.1 Record acceptance RED and implement shared pinned Gateway credential resolution with no retired-token fallback, refresh on token renewal and private literal-source validation; verify test_gateway_notification.py and legacy sender regression.
++- [x] 13.2 Record acceptance RED and implement one owner-authorized linked continuation after definite rejection; preserve old operation/history and verify unknown predecessor, repeated attempt, interruption and successful acknowledgement through SQLite tests.
++- [x] 13.3 Run complete Hermes regression and exact Python 3.11 focused tests; deliver current patch and precise Hermes handoff identifying the authorized source switch, immutable runtime adoption, unchanged destination/job and one linked continuation.
++- [ ] 13.4 Receive genuine owner evidence of selected runtime, shared-source configuration, successful Telegram acknowledgement and unchanged old history; keep human receipt separately unconfirmed until the user confirms.
++
++## 14. Owner-side approved successor delivery
++
++- [x] 14.1 Prepare a complete native successor from the exact active approved payload, preserving all Gateway code/runtime files and adding fresh bound offline SDK proof plus monitor evidence; verify installed packaging_contract and exact manifest/payload digest.
++- [x] 14.2 Implement and verify the thin pinned owner staging adapter through isolated real approval/pointer tests for baseline drift, payload tampering, foreign pointer and repeat reconciliation; keep root/launchd qualification distinct.
++- [x] 14.3 Deliver one administrator entry using existing managed update, durable qualification/live receipt and no notification replay; run complete Hermes regression, native SDK/source checks and shell/control/hash checks before handoff.
++- [ ] 14.4 Obtain owner production proposal/approval/qualification/selector receipt; then resume the already authorized source/continuation gates without claiming success from local preparation.
+--- a/openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md
++++ b/openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md
+@@ -177,3 +177,114 @@
+ - **GIVEN** live notification history and a dry-run invocation
+ - **WHEN** simulated events are evaluated
+ - **THEN** live history remains unchanged and no real Telegram delivery occurs
++
++### Requirement: Truthful delivery failure reporting
++Live monitoring SHALL finish with a nonzero exit status if delivery is rejected, uncertain or interrupted, including unresolved historical notifications. It SHALL preserve bounded diagnostic types and successful acknowledgement identity without storing exception messages, token-bearing URLs or recipient identities. Successful transport acknowledgement SHALL NOT imply human receipt.
++
++#### Scenario: Send response lost
++- **GIVEN** a publicly verified article and a persisted notification intent
++- **WHEN** Telegram delivery times out
++- **THEN** monitoring exits unsuccessfully and retains uncertainty plus a timeout diagnostic without exposing secrets
++
++#### Scenario: Later check of unresolved notification
++- **GIVEN** a prior unresolved notification
++- **WHEN** a later healthy observation or repeated occurrence runs
++- **THEN** monitoring still reports unsuccessful delivery and performs no automatic resend of the uncertain event
++
++#### Scenario: Rejection and confirmed send
++- **GIVEN** Telegram explicitly rejects one notification and acknowledges another
++- **WHEN** monitoring finishes
++- **THEN** it reports failure for the unresolved event and records the confirmed acknowledgement independently of human receipt
++
++### Requirement: Authorized single-event reconciliation
++An explicit owner confirmation of non-receipt SHALL permit one additional send of exactly the authorized original event. Reconciliation SHALL require an existing uncertain article event, an exclusive sender lock, a consistent backup and a durable single-use operation identity committed before sending. It SHALL preserve unrelated events, original message and human receipt evidence. No scheduler observation or automatic retry SHALL be fabricated.
++
++#### Scenario: Owner authorizes a missing notification
++- **GIVEN** the owner confirms non-receipt and authorizes one resend of an uncertain article event
++- **WHEN** reconciliation obtains exclusive access and Telegram acknowledges the resend
++- **THEN** that original event becomes sent, a backup and acknowledgement receipt exist, and human receipt remains unconfirmed
++
++#### Scenario: Repeated reconciliation or lost resend response
++- **GIVEN** a consumed reconciliation operation, including one interrupted after intent
++- **WHEN** reconciliation runs again with that operation identity
++- **THEN** it sends no additional message and retains the recorded outcome or uncertainty
++
++#### Scenario: State drift, lock contention or backup failure
++- **GIVEN** the event is no longer uncertain, another sender holds the lock or a backup cannot be saved
++- **WHEN** reconciliation starts
++- **THEN** it refuses before changing delivery state or sending any message
++
++#### Scenario: Distinguish local rejection from Telegram rejection
++- **GIVEN** delivery is disabled, the configured token or recipient is invalid, or Telegram returns an explicit error code
++- **WHEN** a delivery attempt is rejected
++- **THEN** the journal identifies the local refusal or the numeric Telegram rejection without exposing credentials, destination values or raw response text
++
++#### Scenario: Read-only comparison of owner and scheduled configuration
++- **GIVEN** an owner reconciliation failed with an unspecified rejection
++- **WHEN** the configuration diagnostic compares the owner environment with the scheduled wrapper configuration
++- **THEN** it reports only readiness flags and refusal codes, sends no message and does not change notification state
++
++#### Scenario: Read-only Telegram identity diagnosis
++- **GIVEN** configuration format checks passed but the prior rejection lacks a numeric cause
++- **WHEN** the owner runs the provider diagnostic
++- **THEN** it performs at most one getMe and one getChat request to Telegram, exposes only numeric errors and bounded reason codes, sends no message, never polls updates or writes state, and does not claim successful reads prove message delivery or send permission
++
++### Requirement: Explicit shared Gateway Bot credentials
++On explicit owner selection of the Hermes Bot, notifications SHALL resolve the current Telegram token from the existing Gateway credential file for each send, rather than copy it into notification settings. The selected Bot identity SHALL be pinned; token renewal for that Bot SHALL work without another copy, while a different Bot identity SHALL fail closed. Legacy mode SHALL remain compatible. Missing, unsafe, ambiguous or unsupported Gateway configuration SHALL fail without fallback to the retired token. Other Gateway settings SHALL NOT be imported or executed. The original destination and notification switch SHALL remain authoritative.
++
++#### Scenario: Shared source supersedes a retired token
++- **GIVEN** the owner selected the Gateway Bot and the notification environment contains a retired token
++- **WHEN** a notification is sent
++- **THEN** the request uses the current credential of the pinned Gateway Bot and the existing destination
++
++#### Scenario: Gateway token renewal and identity change
++- **GIVEN** the shared credential is renewed for the pinned Bot
++- **WHEN** a later notification is sent
++- **THEN** the new credential is used without copying it into notification settings
++- **AND** replacement with another Bot identity refuses delivery
++
++#### Scenario: Unsafe or unavailable credential source
++- **GIVEN** the shared source is missing, linked, accessible to other users, has duplicate token assignments or requires unsupported interpolation
++- **WHEN** a notification attempts credential resolution
++- **THEN** it refuses before a delivery request and does not use the retired token
++
++### Requirement: Owner-authorized continuation after a definite rejection
++After the owner explicitly changes the sending Bot, one continuation MAY be linked to the original rejected reconciliation for that event. It SHALL preserve the original operation, its status, backup and attempt records; acquire the existing sender lock; back up current state; and commit a unique continuation intent before sending. Unknown or interrupted preceding delivery SHALL NOT qualify. The continuation SHALL be consumed by success, rejection, ambiguity or interruption and SHALL NOT be automatically repeated. Human receipt remains separate.
++
++#### Scenario: Continue the rejected original operation
++- **GIVEN** the named original operation for this event remains recorded and its latest delivery was definitely rejected
++- **WHEN** the authorized Hermes Bot continuation is acknowledged
++- **THEN** the same article event becomes sent, the new operation links to the unchanged original operation, and both histories and backups remain
++
++#### Scenario: Ambiguous predecessor or repeated continuation
++- **GIVEN** a previous delivery outcome is unknown, or a continuation already exists
++- **WHEN** another continuation is requested
++- **THEN** no message is sent and no existing operation is reset or deleted
++
++### Requirement: Exact owner-side successor delivery
++The approved notification repair SHALL be delivered as a complete fixed proposal with an exact manifest digest, existing Telegram SDK capability proof, unchanged Gateway code/runtime, pinned control script and one administrator terminal entry. The entry SHALL verify the baseline, installed controls, payload and native offline proof before creating a root-owned proposal, approving its exact digest and creating the fixed next-candidate record. It SHALL call the existing managed updater for stop, qualification, selector and rollback, without modifying privilege policy or overwriting installed libraries.
++
++#### Scenario: Complete approved successor
++- **GIVEN** the selected baseline and an exact verified successor containing only the approved notification changes
++- **WHEN** the owner executes the pinned administrator entry
++- **THEN** the proposal, approval and next-candidate identify that exact successor and the existing updater performs its controlled qualification before any live activation
++
++#### Scenario: Payload, baseline or pending candidate drift
++- **GIVEN** an altered package, changed active baseline, existing foreign successor or pending update recovery
++- **WHEN** owner staging begins
++- **THEN** it refuses before approving or replacing that successor and leaves Gateway running
++
++#### Scenario: Repeated owner staging
++- **GIVEN** this exact proposal is already staged and approved
++- **WHEN** the owner repeats staging
++- **THEN** it reconciles the same digest rather than creating a different candidate or restarting an already completed update
++
++#### Scenario: Dry qualification and live restoration
++- **GIVEN** the existing updater has qualified the candidate in dry-run using a real natural scheduled occurrence
++- **WHEN** the operator verifies current Gateway health, shared credential identity, destination and unchanged job
++- **THEN** only the existing selected digest changes back to live policy, a durable receipt records it, and no manual job or Telegram send is performed by the owner adoption entry
++
++#### Scenario: Rollback or unknown adoption
++- **GIVEN** updater qualification fails or the owner entry is interrupted
++- **WHEN** the existing updater reports rollback or recovery state
++- **THEN** that state is preserved and reported rather than retrying a restart, claiming live restoration or performing the notification continuation

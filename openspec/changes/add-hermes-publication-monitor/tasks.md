@@ -84,3 +84,43 @@
 ## Closeout trace
 
 Task 5.1/5.2 cover Explicit scheduler context and Wrapper cutover and rollback compatibility; tasks 7–10 cover the subsequently accepted update design. Historical task completion is recovered from this conversation and real owner combined results, not reconstructed raw log files. Task 11.7 is complete: full closeout gates passed and remote source commit 373299fae570884c3efb58d21a1a3be884b02a43 was verified. The following documentation commit records completion; it does not change the production release.
+
+## 12. Authorized notification repair
+
+- [x] 12.1 Record genuine acceptance RED for Truthful delivery failure reporting through the actual monitor CLI, then implement sanitized attempt diagnostics, acknowledgement persistence and nonzero live CLI health; verify test_notification_repair.py and monitor regressions.
+- [x] 12.2 Implement Authorized single-event reconciliation with backup, exact message digest, existing sender lock and crash-safe single-use operation; verify success, timeout, interrupted intent, repetition, drift and unrelated-history preservation through actual SQLite tests.
+- [x] 12.3 Pass complete pnpm test:hermes and Spectra validation; deliver source patch, sanitized evidence and precise owner commands, clearly separating local verification from production installation and Telegram acknowledgement.
+- [x] 12.4 Execute privileged production inspection, immutable runtime adoption and the single authorized resend; verify the selected runtime, unchanged job and Telegram acknowledgement. Keep blocked if owner execution is unavailable; never claim human receipt.
+
+- [x] 12.5 Distinguish local transport preflight refusal from explicit numeric Telegram rejection using acceptance RED and sanitized diagnostics; deliver a read-only owner configuration comparison with no resend or journal reset, and verify complete Hermes regression.
+
+- [x] 12.6 Deliver bounded read-only Telegram identity diagnosis through telegram_readonly_diagnostic.py and an owner command; verify invalid configuration, unauthorized token, chat rejection, timeout, redirect and zero secret disclosure with test_telegram_readonly_diagnostic.py and the complete Hermes gate. Real provider results remain pending owner execution.
+
+## 13. Authorized Hermes Bot switch
+
+- [x] 13.1 Record acceptance RED and implement shared pinned Gateway credential resolution with no retired-token fallback, refresh on token renewal and private literal-source validation; verify test_gateway_notification.py and legacy sender regression.
+- [x] 13.2 Record acceptance RED and implement one owner-authorized linked continuation after definite rejection; preserve old operation/history and verify unknown predecessor, repeated attempt, interruption and successful acknowledgement through SQLite tests.
+- [x] 13.3 Run complete Hermes regression and exact Python 3.11 focused tests; deliver current patch and precise Hermes handoff identifying the authorized source switch, immutable runtime adoption, unchanged destination/job and one linked continuation.
+- [x] 13.4 Receive genuine owner evidence of selected runtime, shared-source configuration, successful Telegram acknowledgement and unchanged old history; keep human receipt separately unconfirmed until the user confirms.
+
+## 14. Owner-side approved successor delivery
+
+- [x] 14.1 Prepare a complete native successor from the exact active approved payload, preserving all Gateway code/runtime files and adding fresh bound offline SDK proof plus monitor evidence; verify installed packaging_contract and exact manifest/payload digest.
+- [x] 14.2 Implement and verify the thin pinned owner staging adapter through isolated real approval/pointer tests for baseline drift, payload tampering, foreign pointer and repeat reconciliation; keep root/launchd qualification distinct.
+- [x] 14.3 Deliver one administrator entry using existing managed update, durable qualification/live receipt and no notification replay; run complete Hermes regression, native SDK/source checks and shell/control/hash checks before handoff.
+- [x] 14.4 Obtain owner production proposal/approval/qualification/selector receipt; then resume the already authorized source/continuation gates without claiming success from local preparation.
+
+Notification repair closeout: owner-reported single continuation exited 0 with Telegram message_id=40; event/outbox/continuation read back sent. Original unknown predecessor and both backups remain. Selected live digest and existing job were verified by Hermes. Human receipt was directly confirmed by the user on 2026-10-15 for message_id=40. Hermes subsequently recorded human_received=1 in production at 2026-10-15T13:33:58.880Z, with a pre-change human-received backup and monitor_human_receipts audit record. The earlier DB human_received=0 remains historical readback. This local synchronization makes no production writes or sends; repair closeout is complete. No repeat or further send is authorized by this closeout.
+
+## 15. Repository saveback
+
+- [x] 15.1 Deliver Durable repository saveback with preserved canonical source and historical evidence inventory; verify source SHA-256 and completed owner-reported human receipt without importing runtime bundles or private DB/configuration.
+- [x] 15.2 Implement repository-relative preparation inputs with acceptance RED/GREEN for a relocated checkout and missing evidence; retain the existing output/baseline/approval policy and run the complete pnpm test:hermes gate.
+- [x] 15.3 Validate Spectra and historical entry syntax, guard pre-existing dirty file hashes, copy only verified saveback paths into gcake-dev and clean the isolated worktree without commit/push or backup deletion.
+
+- [x] 15.4 Verify acceptance trace for Explicit shared Gateway Bot credentials, Owner-authorized continuation after a definite rejection and Exact owner-side successor delivery against the preserved test/source inventory and owner receipts; confirm Spectra analysis has no coverage warning without editing completed historical tasks.
+
+## 16. CI runtime dependency isolation
+
+- [x] 16.1 Reproduce Durable repository saveback failure on a bare checkout by blocking the installed-only runtime module in the existing relocation acceptance tests; retain local RED matching both failed PR runs.
+- [x] 16.2 Defer installed control imports until actual preparation after local input validation; verify relocation GREEN, complete local workflow gates and unchanged notification runtime before publishing a focused CI fix.

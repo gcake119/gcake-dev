@@ -1,5 +1,7 @@
 > 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
 
+> 2026-10-13 後續操作說明：使用者確認 Substack 改用已開啟的 Chrome，經由 Computer Use 操作。現行受控流程以 [同步發文腳本操作手冊](../../distribution-scripted-runbook.md) 為準，目標只有 Substack。下文雙平台、側邊瀏覽器與舊排程描述保留為歷史，不構成恢復 Paragraph 的授權。新文章首次電子報政策與尚待正式啟用的界線，見 [多平台發佈文件](../../multi-platform-publishing.md)；本次沒有寄信或更改設定。
+
 # 同步發文腳本
 
 正式來源只有 gcake119/gcake-dev main 的完整 Markdown。Pages 先正常公開並匿名驗證後，才執行精確版本的 Paragraph／Substack 同步。Paragraph canonical 指向 Pages 原文；Substack canonical 指向同一篇平台文章並保留原文連結。Substack 日期比對到分鐘，其他來源保留秒數。電子郵件與 Substack App 傳送均關閉。

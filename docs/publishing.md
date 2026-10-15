@@ -56,17 +56,29 @@ src/data/topics.yaml is the topic taxonomy SSOT. Article frontmatter stores stab
 
 robots.txt allows normal crawling and explicitly allows OAI-SearchBot. No separate AI summary field or llms.txt is required by this site architecture.
 
+## 流程摘要與分工
+
+保留本機精簡說明：Git 是正文與編輯資料來源；Astro 驗證、建置並產生網站與搜尋資料；Pages 是本地文章的原文閱讀位置；共用 transform 產生可攜式內容，再交給 Substack 發布及驗證。平台執行狀態由 D1 保存，一個平台失敗不回滾其他已成功的結果。
+
+網站的 Markdown／MDX 支援與平台分發能力是不同層次。純文字文章預設全文分發；依賴 Vue／MDX 互動的文章必須提供作者維護的靜態替代內容與原文連結。保留前述發布規則不代表本次已啟用任何尚未驗收的平台能力。詳細設計見 [多平台發佈文件](multi-platform-publishing.md)。
+
 ## 2026 iThome posts
 
-~~~text
+```text
 Markdown in ithome-2026
 → old GitHub Pages
 → canonical = old page
-→ rendered by gcake-dev
-~~~
+→ rendered by gcake-dev（原始 30 篇已完成同步渲染）
+```
 
-The original 30-day series keeps its existing ownership and canonical history. Multi-platform publishing begins with new gcake-dev content, starting with the iThome 2026 behind-the-scenes extension series.
+2026-10-13，使用者確認原始 30 篇的網站同步渲染已完成；正文與 canonical 仍由 ithome-2026 來源擁有。網站同步渲染與平台分發是不同工作；本文不以渲染完成推定平台分發已完成。
 
-Changes are always made in the owning Git repository and synchronized outward.
+## 幕後系列現況
 
-External writes remain disabled until the post-iThome production-enable gate. RSS is a reader feed, not a publication transport.
+「2026 鐵人賽幕後」系列已全部完稿，並開始排程連載。完稿不代表所有篇目都已公開；尚未到公開時間的內容維持既有編輯狀態與排程。六篇幕後文章作為第一批平台驗證對象是早期階段規劃，後續平台同步仍依既有核准政策與精確範圍執行。
+
+Substack is never an editing source. Changes are made in the owning Git repository and synchronized outward. A platform failure never rolls back another platform.
+
+2026-10-13，使用者確認新系列已開始連載發佈。外部發布沿用已核准的受控同步流程，限於既有授權的平台、文章與精確版本；Substack 已允許對之後首次發布的新文章寄送一次電子報；既有文章、更新與重試不補寄。D1 保存各平台寄送意圖與結果，未知結果先核對、不重新寄送。Substack App 通知維持關閉。正式寄信設定尚未啟用；政策與啟用邊界見 [多平台發佈文件](multi-platform-publishing.md)。Markdown 進入 main 本身不構成平台發布或寄信授權。詳細流程見 [同步發文腳本操作手冊](distribution-scripted-runbook.md)。
+
+早期「完賽與幕後系列開始前只做本機驗證」限制保留為歷史背景，不再作為現行全面禁令。RSS 仍是讀者訂閱來源，不是平台發布傳輸管道。

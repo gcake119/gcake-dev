@@ -1,0 +1,41 @@
+...FFF.F....
+======================================================================
+FAIL: test_local_refusals_identify_cause_without_network (test_notification_repair.RejectionDiagnostics.test_local_refusals_identify_cause_without_network) (expected='notify_disabled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 122, in test_local_refusals_identify_cause_without_network
+    self.assertEqual(getattr(caught.exception,'rejection_reason',None),expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'notify_disabled'
+
+======================================================================
+FAIL: test_local_refusals_identify_cause_without_network (test_notification_repair.RejectionDiagnostics.test_local_refusals_identify_cause_without_network) (expected='invalid_bot_token')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 122, in test_local_refusals_identify_cause_without_network
+    self.assertEqual(getattr(caught.exception,'rejection_reason',None),expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'invalid_bot_token'
+
+======================================================================
+FAIL: test_local_refusals_identify_cause_without_network (test_notification_repair.RejectionDiagnostics.test_local_refusals_identify_cause_without_network) (expected='invalid_chat_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 122, in test_local_refusals_identify_cause_without_network
+    self.assertEqual(getattr(caught.exception,'rejection_reason',None),expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'invalid_chat_id'
+
+======================================================================
+FAIL: test_provider_rejection_retains_only_numeric_error_and_bounded_reason (test_notification_repair.RejectionDiagnostics.test_provider_rejection_retains_only_numeric_error_and_bounded_reason)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py", line 130, in test_provider_rejection_retains_only_numeric_error_and_bounded_reason
+    self.assertEqual(getattr(caught.exception,'rejection_reason',None),'telegram_rejected')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'telegram_rejected'
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.078s
+
+FAILED (failures=4)
