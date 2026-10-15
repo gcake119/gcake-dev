@@ -119,3 +119,8 @@ Notification repair closeout: owner-reported single continuation exited 0 with T
 - [x] 15.3 Validate Spectra and historical entry syntax, guard pre-existing dirty file hashes, copy only verified saveback paths into gcake-dev and clean the isolated worktree without commit/push or backup deletion.
 
 - [x] 15.4 Verify acceptance trace for Explicit shared Gateway Bot credentials, Owner-authorized continuation after a definite rejection and Exact owner-side successor delivery against the preserved test/source inventory and owner receipts; confirm Spectra analysis has no coverage warning without editing completed historical tasks.
+
+## 16. CI runtime dependency isolation
+
+- [x] 16.1 Reproduce Durable repository saveback failure on a bare checkout by blocking the installed-only runtime module in the existing relocation acceptance tests; retain local RED matching both failed PR runs.
+- [x] 16.2 Defer installed control imports until actual preparation after local input validation; verify relocation GREEN, complete local workflow gates and unchanged notification runtime before publishing a focused CI fix.

@@ -20,21 +20,21 @@
       "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/design.md",
       "saved_path": "openspec/changes/add-hermes-publication-monitor/design.md",
       "source_sha256": "ade763ef2323706218556622dfcfc3910f3345748800150dd17bf4facfdaee60",
-      "saved_sha256": "ac84114c5b6f08ac9eaa3b8e96c035c027373dc2c32f023f744e9dafbdcbd46b",
+      "saved_sha256": "45ba81651368a26355519b553366a0259b6b873d5cc5f2aa216742788ba5829b",
       "byte_identical": false
     },
     {
       "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/tasks.md",
       "saved_path": "openspec/changes/add-hermes-publication-monitor/tasks.md",
       "source_sha256": "272873ab451b19054ce371403d604128a6e8a4e3404e5c12587fa85471d2a786",
-      "saved_sha256": "38366c510809bae8ff8e5d871a5c3b107513f42b745b8fdcd509eb8906e3a37b",
+      "saved_sha256": "04416b82a50516055daa4c287675bb9d40f42adbae213cc98508e4b718b0c0ba",
       "byte_identical": false
     },
     {
       "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md",
       "saved_path": "openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md",
       "source_sha256": "735209e9b1daca0e74c054333524c721e8354377e00093524daf854f2c4a472f",
-      "saved_sha256": "d7552bb3739d33faa5344a5eb6158aef493c695e1880015da616363b55f90c84",
+      "saved_sha256": "60d4cd27e030d76bf2b5cb8ee3025ec1ce53eb03961308aed7c90bee3a6790e9",
       "byte_identical": false
     },
     {
@@ -97,7 +97,7 @@
       "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/prepare_notification_successor.py",
       "saved_path": "scripts/hermes/prepare_notification_successor.py",
       "source_sha256": "56be39d53458f8ed8a1c755ff8cdd112322114b33171678bf6a2e26036f3349d",
-      "saved_sha256": "61b43ce771bdf1d41d7825b216f7b617d402d48ab7907ee0f4473a5763fab2a5",
+      "saved_sha256": "3ee5b85c01e0947fbe02e8a27adf7f7eeaa2edd2b99aeeee57b7aa4537e916ce",
       "byte_identical": false
     },
     {
@@ -410,5 +410,6 @@
     }
   ],
   "native_bundle": "excluded; original temp and root-approved artifacts retained",
-  "changed_copies": "canonical preparation source now resolves repo inputs; specs extend saveback contract; historical handoffs gain completed status banners"
+  "changed_copies": "canonical preparation source now resolves repo inputs; specs extend saveback contract; historical handoffs gain completed status banners",
+  "ci_followup": "PR #30: preparation source inspection defers installed controls until actual prepare; historical package/control bytes unchanged"
 }

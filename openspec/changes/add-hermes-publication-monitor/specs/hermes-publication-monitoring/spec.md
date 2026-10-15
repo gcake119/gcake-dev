@@ -306,3 +306,9 @@ The repair SHALL retain canonical source, completed acceptance evidence and cons
 - **GIVEN** unrelated uncommitted files and a completed, human-confirmed notification
 - **WHEN** verified repair files are saved back and the isolated validation worktree is removed
 - **THEN** unrelated contents and production backups remain unchanged and no new notification or delivery operation is created
+
+#### Scenario: Bare checkout without an installed owner runtime
+- **GIVEN** a complete source checkout on a machine without the privileged owner runtime
+- **WHEN** preparation inputs are inspected or missing source evidence is diagnosed
+- **THEN** source inspection works without installed runtime controls and missing evidence is reported before output creation
+- **AND** actual privileged package preparation still requires the existing owner runtime and approval policy

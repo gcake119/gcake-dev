@@ -22,7 +22,8 @@ class RelocatedPreparation(unittest.TestCase):
 
     def resolve(self,prepare=False):
         script=self.repo/'scripts/hermes/prepare_notification_successor.py'
-        code="import runpy,json; m=runpy.run_path("+repr(str(script))+"); "+("m['prepare']()" if prepare else "print(json.dumps({k:str(v) for k,v in m['preparation_inputs']().items()}))")
+        # A developer Mac has installed owner controls; clean CI hosts do not.
+        code="import sys,runpy,json; sys.modules['packaging_contract']=None; m=runpy.run_path("+repr(str(script))+"); "+("m['prepare']()" if prepare else "print(json.dumps({k:str(v) for k,v in m['preparation_inputs']().items()}))")
         return subprocess.run([sys.executable,'-B','-c',code],capture_output=True,text=True,cwd=script.parent)
 
     def test_relocated_checkout_uses_only_preserved_repository_inputs(self):

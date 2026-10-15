@@ -13,9 +13,6 @@ TASK=Path('/private/tmp/gcake-notification-repair-20261015')
 TARGET=TASK/'owner-successor'
 SCRIPTS=Path(__file__).resolve().parent
 EVIDENCE=SCRIPTS.parents[1]/'docs/hermes-notification-repair/2026-10-15'
-sys.path.insert(0,str(ROOT/'tools'))
-from updater_guard import read,tree,digest,canonical,check_payload
-from packaging_contract import verify_candidate,PROOF
 
 # Root executes only this bootstrap plus an exact hash-pinned adapter copy.
 BOOTSTRAP_TEMPLATE='''import hashlib,json,os,stat,sys,tempfile,runpy
@@ -55,6 +52,10 @@ def preparation_inputs():
 def prepare():
     if os.geteuid()==0:raise PermissionError('prepare-as-main-user')
     inputs=preparation_inputs()
+    # Installed controls are required only for actual owner preparation.
+    sys.path.insert(0,str(ROOT/'tools'))
+    from updater_guard import read,tree,digest,canonical,check_payload
+    from packaging_contract import verify_candidate,PROOF
     if read(ROOT/'active.json')!={'digest':BASE_DIGEST,'mode':'live'}:raise ValueError('active-baseline-drift')
     if TARGET.exists():raise ValueError('owned-package-already-exists')
     original=read(ROOT/'manifests'/(BASE_DIGEST+'.json'))

@@ -27,3 +27,7 @@ SQLite 備份、live.env、Gateway .env 與 runtime bundle 均未納入 repo。�
 ## 回存後的本機提交授權
 
 使用者另已授權審查並只提交本次 Hermes 通知修復，不 push。前述「不 commit」描述回存階段的界線；後續本機提交依本次新授權執行，範圍與審查結果見 REVIEW.md。
+
+## PR 驗證後續
+
+乾淨 CI 環境的 installed-runtime 依賴問題與修正見 [CI_FIX.md](CI_FIX.md)。原四筆提交與正式交付證據保留，準備工具的來源查核不再要求安裝 owner runtime；真正製作套件仍保留既有必要條件。
