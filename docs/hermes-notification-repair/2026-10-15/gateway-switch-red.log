@@ -1,0 +1,85 @@
+EEFFFFFFF....
+======================================================================
+ERROR: test_ambiguous_predecessor_never_sends (test_gateway_notification.LinkedContinuation.test_ambiguous_predecessor_never_sends)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 69, in test_ambiguous_predecessor_never_sends
+    with self.assertRaises(ValueError):resend_once(self.db,self.key,'new',self.digest,lambda msg:self.fail('ambiguous resend'),self.db.parent/'new-backups',predecessor='old')
+                                       ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: resend_once() got an unexpected keyword argument 'predecessor'
+
+======================================================================
+ERROR: test_linked_success_keeps_original_operation_and_uses_same_event (test_gateway_notification.LinkedContinuation.test_linked_success_keeps_original_operation_and_uses_same_event)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 57, in test_linked_success_keeps_original_operation_and_uses_same_event
+    result=resend_once(self.db,self.key,'new',self.digest,lambda msg:91,self.db.parent/'new-backups',predecessor='old')
+TypeError: resend_once() got an unexpected keyword argument 'predecessor'
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='permission')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='duplicate')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='interpolation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='symlink')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_missing_unsafe_or_ambiguous_source_never_falls_back (test_gateway_notification.SharedGatewaySource.test_missing_unsafe_or_ambiguous_source_never_falls_back) (case='identity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 45, in test_missing_unsafe_or_ambiguous_source_never_falls_back
+    with self.assertRaises(product.DeliveryRejected):product.send_notification('message')
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DeliveryRejected not raised
+
+======================================================================
+FAIL: test_real_sender_uses_shared_source_then_fresh_same_bot_credential (test_gateway_notification.SharedGatewaySource.test_real_sender_uses_shared_source_then_fresh_same_bot_credential)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py", line 26, in test_real_sender_uses_shared_source_then_fresh_same_bot_credential
+    self.assertIn('bot123:fresh_token/',transport.call_args.args[1])
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'bot123:fresh_token/' not found in 'https://api.telegram.org/bot999:retired_token/sendMessage'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.067s
+
+FAILED (failures=7, errors=2)

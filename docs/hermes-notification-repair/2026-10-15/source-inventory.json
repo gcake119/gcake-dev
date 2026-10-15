@@ -1,0 +1,414 @@
+{
+  "source_baseline": "4068a3695b484309bfc87c1b1ad68bee6d7eb327",
+  "saveback_base": "20b6578060ee0ee76b30b77f9038e78a1b5f7662",
+  "original_artifacts": [
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/publication_monitor.py",
+      "saved_path": "scripts/hermes/publication_monitor.py",
+      "source_sha256": "0301d3c3e3d16b52ddfbd5c4d27fbdd1aee7ea61601fa1a0acee12f2ff687cd5",
+      "saved_sha256": "0301d3c3e3d16b52ddfbd5c4d27fbdd1aee7ea61601fa1a0acee12f2ff687cd5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/proposal.md",
+      "saved_path": "openspec/changes/add-hermes-publication-monitor/proposal.md",
+      "source_sha256": "35538655c853751d1eb043d8720a104fb03d33492637a1d69385a1023796e742",
+      "saved_sha256": "1d78c44e5d90016768bf18b63dcddfaf7b3ad6f7f4304cab6c90ca6516e5b212",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/design.md",
+      "saved_path": "openspec/changes/add-hermes-publication-monitor/design.md",
+      "source_sha256": "ade763ef2323706218556622dfcfc3910f3345748800150dd17bf4facfdaee60",
+      "saved_sha256": "ac84114c5b6f08ac9eaa3b8e96c035c027373dc2c32f023f744e9dafbdcbd46b",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/tasks.md",
+      "saved_path": "openspec/changes/add-hermes-publication-monitor/tasks.md",
+      "source_sha256": "272873ab451b19054ce371403d604128a6e8a4e3404e5c12587fa85471d2a786",
+      "saved_sha256": "38366c510809bae8ff8e5d871a5c3b107513f42b745b8fdcd509eb8906e3a37b",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md",
+      "saved_path": "openspec/changes/add-hermes-publication-monitor/specs/hermes-publication-monitoring/spec.md",
+      "source_sha256": "735209e9b1daca0e74c054333524c721e8354377e00093524daf854f2c4a472f",
+      "saved_sha256": "d7552bb3739d33faa5344a5eb6158aef493c695e1880015da616363b55f90c84",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/owner_successor.py",
+      "saved_path": "scripts/hermes/owner_successor.py",
+      "source_sha256": "aeb06e94d37b0fdf4bb8db50b815548f70ad5cd9efa4de0842e3f83e659041c5",
+      "saved_sha256": "aeb06e94d37b0fdf4bb8db50b815548f70ad5cd9efa4de0842e3f83e659041c5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_notification_repair.py",
+      "saved_path": "scripts/hermes/test_notification_repair.py",
+      "source_sha256": "3143d3f0f3eda70ad71c53f21d4b9f94cde08fdabe269ad6d49a44cd57156a87",
+      "saved_sha256": "3143d3f0f3eda70ad71c53f21d4b9f94cde08fdabe269ad6d49a44cd57156a87",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/telegram_readonly_diagnostic.py",
+      "saved_path": "scripts/hermes/telegram_readonly_diagnostic.py",
+      "source_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "saved_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_gateway_notification.py",
+      "saved_path": "scripts/hermes/test_gateway_notification.py",
+      "source_sha256": "ed029d48846f2dbaff930fd72953f7f3bca1aefd256670c8720215aa9c2fa8c6",
+      "saved_sha256": "ed029d48846f2dbaff930fd72953f7f3bca1aefd256670c8720215aa9c2fa8c6",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/reconcile_notification.py",
+      "saved_path": "scripts/hermes/reconcile_notification.py",
+      "source_sha256": "9ce16c8370beb5cbdaef38308240c6d448884a4a088a066abc93384cab6bf5d5",
+      "saved_sha256": "9ce16c8370beb5cbdaef38308240c6d448884a4a088a066abc93384cab6bf5d5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_telegram_readonly_diagnostic.py",
+      "saved_path": "scripts/hermes/test_telegram_readonly_diagnostic.py",
+      "source_sha256": "c2205c4b9532dcb25682bec1e2fb409b7dcd68007e1932a2a9f1e8fc58830d30",
+      "saved_sha256": "c2205c4b9532dcb25682bec1e2fb409b7dcd68007e1932a2a9f1e8fc58830d30",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/successor_runner_probe.py",
+      "saved_path": "scripts/hermes/successor_runner_probe.py",
+      "source_sha256": "27dccceb80483e2a8b9571f80d7123fbc1ffa4049a72c88ca0d7e1ba28eea7c6",
+      "saved_sha256": "27dccceb80483e2a8b9571f80d7123fbc1ffa4049a72c88ca0d7e1ba28eea7c6",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/test_owner_successor.py",
+      "saved_path": "scripts/hermes/test_owner_successor.py",
+      "source_sha256": "82e46608f2c1a6e08b05b2e2a1cefc499cab9c6058c5527920c0c0598f119584",
+      "saved_sha256": "82e46608f2c1a6e08b05b2e2a1cefc499cab9c6058c5527920c0c0598f119584",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/scripts/hermes/prepare_notification_successor.py",
+      "saved_path": "scripts/hermes/prepare_notification_successor.py",
+      "source_sha256": "56be39d53458f8ed8a1c755ff8cdd112322114b33171678bf6a2e26036f3349d",
+      "saved_sha256": "61b43ce771bdf1d41d7825b216f7b617d402d48ab7907ee0f4473a5763fab2a5",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch-full-green.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/gateway-switch-full-green.log",
+      "source_sha256": "42339f2c2f4bb1c64b085441f0e5882dbafb0f5d7041b7cf505204cd5fd102a6",
+      "saved_sha256": "42339f2c2f4bb1c64b085441f0e5882dbafb0f5d7041b7cf505204cd5fd102a6",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-continuation-red.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/gateway-continuation-red.log",
+      "source_sha256": "f8e13c74d3101b2dd326461fd81610227084c17c15768796c5ec5b3dc3b1a159",
+      "saved_sha256": "f8e13c74d3101b2dd326461fd81610227084c17c15768796c5ec5b3dc3b1a159",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch-red.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/gateway-switch-red.log",
+      "source_sha256": "61d178c16d3ed8bd2eb4b840661b3e6674c0135198adc9ec0818b176257a64ed",
+      "saved_sha256": "61d178c16d3ed8bd2eb4b840661b3e6674c0135198adc9ec0818b176257a64ed",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor-full-green.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/owner-successor-full-green.log",
+      "source_sha256": "1c16d1e1cd978d33511e71751a2fec46a6cd960fe7040fea5552a8f47fa63de3",
+      "saved_sha256": "1c16d1e1cd978d33511e71751a2fec46a6cd960fe7040fea5552a8f47fa63de3",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/repair-evidence.json",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/repair-evidence.json",
+      "source_sha256": "b0847ff1cfadd5558e683eec6104da2578aeb11805f396b6b9a115472e7018b3",
+      "saved_sha256": "b0847ff1cfadd5558e683eec6104da2578aeb11805f396b6b9a115472e7018b3",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/active-sdk-offline.json",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/active-sdk-offline.json",
+      "source_sha256": "20db72b16d11e9a0cec6fd92728a4477b281b65f6b4cf709cea3ea9c4bb62bca",
+      "saved_sha256": "20db72b16d11e9a0cec6fd92728a4477b281b65f6b4cf709cea3ea9c4bb62bca",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/GATEWAY_SWITCH_HANDOFF.md",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/GATEWAY_SWITCH_HANDOFF.md",
+      "source_sha256": "817b27864a7a218d5e72099c8380887177322e76c3d764e55453e623e39cc960",
+      "saved_sha256": "8964aa27fb2a4266e61ebee819570712fee855d5e8d622f8ecd5750aa0f374d9",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/OWNER_SUCCESSOR_HANDOFF.md",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/OWNER_SUCCESSOR_HANDOFF.md",
+      "source_sha256": "24151114a9b75122312d65cb98ea5a35826560748639d58be3ca4aa801b417a4",
+      "saved_sha256": "c4d351e918b0cc4c9ca5131d293ef978b4d2b9f853ce306b889c3410e3cfd9e4",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor-prepared.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/owner-successor-prepared.log",
+      "source_sha256": "624d3e0ddf2dd9bede47476efd66bbdce4d13e9ee2760ad86c83d0fad9f382e2",
+      "saved_sha256": "624d3e0ddf2dd9bede47476efd66bbdce4d13e9ee2760ad86c83d0fad9f382e2",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/REPAIR.md",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/REPAIR.md",
+      "source_sha256": "7bd9e787ddcdf76aa69040273729b74547e28ff94f2c6219aef4106747f90914",
+      "saved_sha256": "7561a0ceebb7b39a6f43158f08bfdc7edcc4eb2731eb93c63f86fb2e5f0578a6",
+      "byte_identical": false
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch-progress.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/gateway-switch-progress.log",
+      "source_sha256": "23288b7de618d28e0385c93b023405fdba91d22a94a7100563c5cc231941dce7",
+      "saved_sha256": "23288b7de618d28e0385c93b023405fdba91d22a94a7100563c5cc231941dce7",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/notification-repair.patch",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/notification-repair.patch",
+      "source_sha256": "06acfbe5b622621072722ec387482c23d07be20b39fd2185a451b63eeac1d458",
+      "saved_sha256": "06acfbe5b622621072722ec387482c23d07be20b39fd2185a451b63eeac1d458",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/owner_resend_once.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/owner_resend_once.py",
+      "source_sha256": "529fc187f047ddbfbf6c87baf4e1516d4f9743541bb79e4aa7f4fdc7c65ca45a",
+      "saved_sha256": "529fc187f047ddbfbf6c87baf4e1516d4f9743541bb79e4aa7f4fdc7c65ca45a",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/cli-product-red.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/cli-product-red.log",
+      "source_sha256": "38795afc66f4bcad440b11fbf3abd6b802aa148520016d630c95fab527d55d52",
+      "saved_sha256": "38795afc66f4bcad440b11fbf3abd6b802aa148520016d630c95fab527d55d52",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/rejection-diagnostics-red.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/rejection-diagnostics-red.log",
+      "source_sha256": "da533539f414f605ca9fa9d916da77006d358c293076dd50c262338338fcad3e",
+      "saved_sha256": "da533539f414f605ca9fa9d916da77006d358c293076dd50c262338338fcad3e",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/rss_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/rss_monitor.py",
+      "source_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "saved_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/reconcile_notification.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/reconcile_notification.py",
+      "source_sha256": "b986bbf0ddea76fd7dbdb8705e44e12b8f077f1dba4e1c1007ebcab217d456a4",
+      "saved_sha256": "b986bbf0ddea76fd7dbdb8705e44e12b8f077f1dba4e1c1007ebcab217d456a4",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/owner_resend_once.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/owner_resend_once.sh",
+      "source_sha256": "e65bac16cad9169635509dfb1a6856e567704f957cde06155421838e24f6d3fd",
+      "saved_sha256": "e65bac16cad9169635509dfb1a6856e567704f957cde06155421838e24f6d3fd",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/hermes-full-green.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/hermes-full-green.log",
+      "source_sha256": "47206e39b98eec9ede76829b7cdc433815cb13900a09911b24f0a32975d21806",
+      "saved_sha256": "47206e39b98eec9ede76829b7cdc433815cb13900a09911b24f0a32975d21806",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/publication_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/publication_monitor.py",
+      "source_sha256": "599608ed8c6f5580ab6a40c970cf266342455834687e92521c73fa2eb08076f6",
+      "saved_sha256": "599608ed8c6f5580ab6a40c970cf266342455834687e92521c73fa2eb08076f6",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/handoff/SHA256SUMS",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/handoff/SHA256SUMS",
+      "source_sha256": "b3fc946a6b775a3270e4b7046c339a6147b045474663e1421b4f42f4a9ebd93f",
+      "saved_sha256": "b3fc946a6b775a3270e4b7046c339a6147b045474663e1421b4f42f4a9ebd93f",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/check_notification_readonly.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/check_notification_readonly.py",
+      "source_sha256": "20b91822ab78a1945058f0655eca6a1e8edc8283d1f2beafc14687d51c3dc910",
+      "saved_sha256": "20b91822ab78a1945058f0655eca6a1e8edc8283d1f2beafc14687d51c3dc910",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/rss_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/rss_monitor.py",
+      "source_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "saved_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/hermes-full-green.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/hermes-full-green.log",
+      "source_sha256": "944fcb7a74de15eb7ac3234b098f166715fdf17736282a33b9452db110f1f414",
+      "saved_sha256": "944fcb7a74de15eb7ac3234b098f166715fdf17736282a33b9452db110f1f414",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/publication_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/publication_monitor.py",
+      "source_sha256": "69739b6cd7977fa1d05e58279900de3d1e648c41e1c4377d55d13e0d126e159a",
+      "saved_sha256": "69739b6cd7977fa1d05e58279900de3d1e648c41e1c4377d55d13e0d126e159a",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/check_notification_readonly.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/check_notification_readonly.sh",
+      "source_sha256": "6b8193dbf8a1595efb0e33a5d1b85a64af90c4052ad22e07a028acd5e17e0146",
+      "saved_sha256": "6b8193dbf8a1595efb0e33a5d1b85a64af90c4052ad22e07a028acd5e17e0146",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/diagnostics/SHA256SUMS",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/diagnostics/SHA256SUMS",
+      "source_sha256": "0b82c3f4dec0d5c2fd893271f135a4951ba3c6921cf2dae52caccdc49690ea57",
+      "saved_sha256": "0b82c3f4dec0d5c2fd893271f135a4951ba3c6921cf2dae52caccdc49690ea57",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/provider-diagnostics/telegram_readonly_diagnostic.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/provider-diagnostics/telegram_readonly_diagnostic.py",
+      "source_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "saved_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/provider-diagnostics/hermes-full-green.log",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/provider-diagnostics/hermes-full-green.log",
+      "source_sha256": "17d322cff224e42526fa8dd00f1097adf082f2eef9a5a110bbf50ae66c38dc61",
+      "saved_sha256": "17d322cff224e42526fa8dd00f1097adf082f2eef9a5a110bbf50ae66c38dc61",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/provider-diagnostics/SHA256SUMS",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/provider-diagnostics/SHA256SUMS",
+      "source_sha256": "e5c68df1f45a4553e0436e6ef1346d3ee7775ac151a25273329a0cae24f973ae",
+      "saved_sha256": "e5c68df1f45a4553e0436e6ef1346d3ee7775ac151a25273329a0cae24f973ae",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/provider-diagnostics/check_telegram_readonly.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/provider-diagnostics/check_telegram_readonly.sh",
+      "source_sha256": "e1599f364eb782fd78a666cf7e275f40951b6fd5fd72b63ee2873e0b6ec3d098",
+      "saved_sha256": "e1599f364eb782fd78a666cf7e275f40951b6fd5fd72b63ee2873e0b6ec3d098",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/owner_continue.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/owner_continue.sh",
+      "source_sha256": "e453cdddd41c3dacbc4356031859787c810c2763a1cf978b7fb483dc2e70efea",
+      "saved_sha256": "e453cdddd41c3dacbc4356031859787c810c2763a1cf978b7fb483dc2e70efea",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/telegram_readonly_diagnostic.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/telegram_readonly_diagnostic.py",
+      "source_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "saved_sha256": "8a3c236e83c73efabf148b888c6e7f0f93b6f122af3d645d41e0b64ecdc889bf",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/rss_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/rss_monitor.py",
+      "source_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "saved_sha256": "f4b1e2dd88e53674e30abbd73b7a8ba7874246f74c20b46a9a6745e4a30ee7ac",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/reconcile_notification.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/reconcile_notification.py",
+      "source_sha256": "9ce16c8370beb5cbdaef38308240c6d448884a4a088a066abc93384cab6bf5d5",
+      "saved_sha256": "9ce16c8370beb5cbdaef38308240c6d448884a4a088a066abc93384cab6bf5d5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/owner_continue.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/owner_continue.py",
+      "source_sha256": "5c921ba4c271eca1ea2e48551ba3843ca685efa304daf0ae5326ed009e5bfc7a",
+      "saved_sha256": "5c921ba4c271eca1ea2e48551ba3843ca685efa304daf0ae5326ed009e5bfc7a",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/publication_monitor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/publication_monitor.py",
+      "source_sha256": "0301d3c3e3d16b52ddfbd5c4d27fbdd1aee7ea61601fa1a0acee12f2ff687cd5",
+      "saved_sha256": "0301d3c3e3d16b52ddfbd5c4d27fbdd1aee7ea61601fa1a0acee12f2ff687cd5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/gateway-switch/SHA256SUMS",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/gateway-switch/SHA256SUMS",
+      "source_sha256": "cc433ccd087b04c298567147bb39cb2ebec91a7a3a25b86ab57a239a56d68f97",
+      "saved_sha256": "cc433ccd087b04c298567147bb39cb2ebec91a7a3a25b86ab57a239a56d68f97",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/owner_successor.py",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/owner_successor.py",
+      "source_sha256": "aeb06e94d37b0fdf4bb8db50b815548f70ad5cd9efa4de0842e3f83e659041c5",
+      "saved_sha256": "aeb06e94d37b0fdf4bb8db50b815548f70ad5cd9efa4de0842e3f83e659041c5",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/controls.json",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/controls.json",
+      "source_sha256": "16ecd97d7d4089bfe431b1bb0edc46e3d7528363c1ae1074b19083a110c2c66a",
+      "saved_sha256": "16ecd97d7d4089bfe431b1bb0edc46e3d7528363c1ae1074b19083a110c2c66a",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/owner_adopt.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/owner_adopt.sh",
+      "source_sha256": "2d37a5d35fcfc1ab4933a888358f297d05df01db44bd774a2bf597afb9da9157",
+      "saved_sha256": "2d37a5d35fcfc1ab4933a888358f297d05df01db44bd774a2bf597afb9da9157",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/prepared.json",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/prepared.json",
+      "source_sha256": "203918e11907f4769fbad9ebd23f3bdf0af340906c4543604f959d55b97d4362",
+      "saved_sha256": "203918e11907f4769fbad9ebd23f3bdf0af340906c4543604f959d55b97d4362",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/continue_after_adoption.sh",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/continue_after_adoption.sh",
+      "source_sha256": "edd6675eef2292d468d4bf2777cc7a02b330da97ce5bb86bb7e2699a36f69ff9",
+      "saved_sha256": "edd6675eef2292d468d4bf2777cc7a02b330da97ce5bb86bb7e2699a36f69ff9",
+      "byte_identical": true
+    },
+    {
+      "source": "/private/tmp/gcake-notification-repair-20261015/owner-successor/owned.json",
+      "saved_path": "docs/hermes-notification-repair/2026-10-15/historical/owner-successor/owned.json",
+      "source_sha256": "677291128a5b5739c28220e63b4afd16c73aaadaf68c8a655dd687ce3600ed86",
+      "saved_sha256": "677291128a5b5739c28220e63b4afd16c73aaadaf68c8a655dd687ce3600ed86",
+      "byte_identical": true
+    }
+  ],
+  "native_bundle": "excluded; original temp and root-approved artifacts retained",
+  "changed_copies": "canonical preparation source now resolves repo inputs; specs extend saveback contract; historical handoffs gain completed status banners"
+}

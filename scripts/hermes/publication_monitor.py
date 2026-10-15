@@ -11,6 +11,7 @@ import re
 import secrets
 from pathlib import Path
 import sqlite3
+import stat
 import tempfile
 import time
 import urllib.error
@@ -21,6 +22,7 @@ from rss_monitor import SITE, LIMIT, canonical_url, parse_feed, verify_page, val
 HOUR = 3600
 TAIPEI = timezone(timedelta(hours=8))
 CRON_KEYS = ('HERMES_CRON_JOB_ID','HERMES_CRON_EXECUTION_ID','HERMES_CRON_SCHEDULED_INSTANT')
+GATEWAY_CREDENTIAL_FILE=Path('/Users/hermes/.hermes/.env')
 
 
 def invocation_identity(value):
@@ -46,6 +48,58 @@ def scheduled_context(explicit, live, now):
 
 class DeliveryRejected(Exception):
     """Transport has positively confirmed non-delivery; a later round may retry."""
+    def __init__(self, rejection_reason='unspecified', error_code=None):
+        allowed=('unspecified','notify_disabled','invalid_bot_token','invalid_chat_id','telegram_rejected',
+                 'invalid_credential_source','gateway_credentials_unavailable','gateway_bot_identity_changed')
+        self.rejection_reason=rejection_reason if rejection_reason in allowed else 'unspecified'
+        self.error_code=error_code if type(error_code) is int else None
+        super().__init__(self.rejection_reason)
+
+
+def delivery_tables(db):
+    db.execute('''CREATE TABLE IF NOT EXISTS monitor_delivery_attempts(
+        attempt_id INTEGER PRIMARY KEY,event_id TEXT NOT NULL,status TEXT NOT NULL,
+        attempted_at REAL NOT NULL,error_type TEXT,reason_type TEXT,
+        error_code INTEGER,message_id INTEGER)''')
+    if 'rejection_reason' not in {row[1] for row in db.execute('PRAGMA table_info(monitor_delivery_attempts)')}:
+        db.execute('ALTER TABLE monitor_delivery_attempts ADD COLUMN rejection_reason TEXT')
+
+
+def deliver_recorded(db, event_id, sender, message):
+    """Journal intent before transport; never persist exception text or URLs."""
+    delivery_tables(db)
+    attempt = db.execute('INSERT INTO monitor_delivery_attempts(event_id,status,attempted_at) VALUES(?,?,?)',
+                         (event_id,'intent',time.time())).lastrowid
+    db.commit()
+    error_type=reason_type=error_code=message_id=rejection_reason=None
+    try:
+        ack=sender(message) if sender is not None else None
+        message_id=ack if type(ack) is int else None
+        status='sent' if sender is not None else 'verified-dry-run'
+    except Exception as error:
+        status='rejected' if isinstance(error,DeliveryRejected) else 'unknown'
+        if isinstance(error,DeliveryRejected):rejection_reason=error.rejection_reason
+        # Fixed vocabulary: even custom exception class names can contain secrets.
+        allowed=('DeliveryRejected','TimeoutError','URLError','HTTPError','OSError',
+                 'ConnectionError','ConnectionResetError','BrokenPipeError',
+                 'JSONDecodeError','ValueError','UnicodeDecodeError')
+        error_type=type(error).__name__ if type(error).__name__ in allowed else 'Exception'
+        reason=getattr(error,'reason',None)
+        reason_type=type(reason).__name__ if type(reason).__name__ in allowed else None
+        code=error.error_code if isinstance(error,DeliveryRejected) else error.code if isinstance(error,urllib.error.HTTPError) else getattr(reason if isinstance(reason,OSError) else error,'errno',None)
+        error_code=code if type(code) is int else None
+    db.execute('UPDATE monitor_delivery_attempts SET status=?,error_type=?,reason_type=?,error_code=?,message_id=?,rejection_reason=? WHERE attempt_id=?',
+               (status,error_type,reason_type,error_code,message_id,rejection_reason,attempt))
+    # The caller updates event/outbox in this same completion transaction.
+    return status
+
+
+def delivery_health(path):
+    with closing(sqlite3.connect(Path(path).resolve().as_uri()+'?mode=ro',uri=True)) as db:
+        has_events=db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='monitor_events'").fetchone()
+        ids={row[0] for row in db.execute("SELECT event_id FROM monitor_events WHERE status IN ('intent','unknown','rejected')")} if has_events else set()
+        ids.update('article:'+row[0] for row in db.execute("SELECT url FROM outbox WHERE status='uncertain'"))
+        return len(ids)
 
 
 def instant(value):
@@ -326,14 +380,7 @@ class PublicationMonitor:
             if kind == 'article':
                 db.execute('INSERT OR IGNORE INTO outbox VALUES(?,?,?)',(url,by_url[url]['guid'],'uncertain'))
             db.commit()
-            try:
-                if self.sender is not None:
-                    self.sender(message)
-                status = 'sent' if self.sender is not None else 'verified-dry-run'
-            except DeliveryRejected:
-                status = 'rejected'
-            except Exception:
-                status = 'unknown'
+            status = deliver_recorded(db,key,self.sender,message)
             db.execute('UPDATE monitor_events SET status=? WHERE event_id=?',(status,key))
             if kind=='article' and status in ('sent','verified-dry-run'):
                 db.execute('UPDATE outbox SET status=? WHERE url=?',(status,url))
@@ -481,19 +528,67 @@ def _send_delivery(message, url, chat):
     if len(raw)>65536:raise ValueError('Delivery response bound')
     result=json.loads(raw)
     if isinstance(result,dict) and result.get('ok') is False and type(result.get('error_code')) is int:
-        raise DeliveryRejected()
+        raise DeliveryRejected('telegram_rejected',result['error_code'])
     if not isinstance(result,dict) or result.get('ok') is not True or not isinstance(result.get('result'),dict) or type(result['result'].get('message_id')) is not int:
         raise ValueError('Uncertain acknowledgement')
     return result['result']['message_id']
 
 
 def send_notification(message):
-    if os.environ.get('HERMES_RSS_NOTIFY_ENABLED')!='true':
-        raise DeliveryRejected()
-    token,chat=os.environ.get('TELEGRAM_BOT_TOKEN',''),os.environ.get('TELEGRAM_CHAT_ID','')
-    if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+',token) or not re.fullmatch(r'-?\d+',chat):
-        raise DeliveryRejected()
+    readiness,token,chat=_notification_configuration()
+    if readiness['rejection_reason'] is not None:
+        raise DeliveryRejected(readiness['rejection_reason'])
     return _send_delivery(message,'https://api.telegram.org/bot'+token+'/sendMessage',chat)
+
+
+def gateway_token():
+    """Read one unique literal credential; never execute/import other settings."""
+    try:
+        fd=os.open(GATEWAY_CREDENTIAL_FILE,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+        with os.fdopen(fd,'rb') as stream:
+            info=os.fstat(stream.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink!=1 or info.st_uid not in (0,os.geteuid()) or info.st_mode&0o077:
+                raise ValueError('private-owner-source-required')
+            raw=stream.read(1024*1024+1)
+        if len(raw)>1024*1024:raise ValueError('source-too-large')
+        lines=re.findall(r'^[ \t]*(?:export[ \t]+)?TELEGRAM_BOT_TOKEN[ \t]*=[ \t]*(.*)$',raw.decode('utf-8-sig'),re.MULTILINE)
+        if len(lines)!=1:raise ValueError('unique-token-required')
+        token_pattern=r'(\d+:[A-Za-z0-9_-]+)'
+        value=re.fullmatch(r'(?:'+token_pattern+'|"'+token_pattern+'"|\''+token_pattern+r"\')[ \t]*(?:#.*)?",lines[0].rstrip('\r'))
+        if value is None:raise ValueError('literal-token-required')
+        return next(group for group in value.groups() if group is not None)
+    except (OSError,ValueError,UnicodeError):
+        raise DeliveryRejected('gateway_credentials_unavailable') from None
+
+
+def _notification_configuration():
+    enabled=os.environ.get('HERMES_RSS_NOTIFY_ENABLED')=='true'
+    token,chat=os.environ.get('TELEGRAM_BOT_TOKEN',''),os.environ.get('TELEGRAM_CHAT_ID','')
+    source=os.environ.get('HERMES_RSS_TELEGRAM_CREDENTIAL_SOURCE','legacy')
+    source_error=None
+    if source not in ('legacy','gateway'):
+        token='';source_error='invalid_credential_source'
+    elif source=='gateway':
+        token=''
+        if enabled:
+            try:
+                token=gateway_token()
+                expected=os.environ.get('HERMES_RSS_TELEGRAM_EXPECTED_BOT_ID','')
+                if not re.fullmatch(r'\d{1,20}',expected) or int(token.split(':',1)[0])!=int(expected):
+                    token='';source_error='gateway_bot_identity_changed'
+            except DeliveryRejected as error:source_error=error.rejection_reason
+    token_ok=bool(re.fullmatch(r'\d+:[A-Za-z0-9_-]+',token))
+    chat_ok=bool(re.fullmatch(r'-?\d+',chat))
+    reason='notify_disabled' if not enabled else 'invalid_bot_token' if not token_ok else 'invalid_chat_id' if not chat_ok else None
+    if enabled and source_error is not None:reason=source_error
+    report=dict(notify_enabled=enabled,bot_token_valid=token_ok,chat_id_valid=chat_ok,rejection_reason=reason)
+    if source!='legacy':report['credential_source']=source
+    return report,token,chat
+
+
+def notification_readiness():
+    """No transport calls; return no credential or recipient values."""
+    return _notification_configuration()[0]
 
 
 def mock_delivery(api):
@@ -512,12 +607,16 @@ def main():
     observer=PublicationObserver(os.environ['PUBLICATION_MONITOR_SUMMARY_URL'],os.environ['PUBLICATION_MONITOR_READ_SECRET'])
     monitor=PublicationMonitor(args.db,observer,sender=send_notification if args.live else None,mode='live' if args.live else 'dry-run')
     result=monitor.run_round(round_at,now,job_id=job_id,execution_id=execution_id)
-    print(json.dumps({'evaluated_messages':len(result),'mode':monitor.mode}))
+    unresolved=delivery_health(args.db) if args.live else 0
+    report={'evaluated_messages':len(result),'mode':monitor.mode}
+    if args.live:report['unresolved_notifications']=unresolved
+    print(json.dumps(report))
+    return 1 if unresolved else 0
 
 
 if __name__=='__main__':
     try:
-        main()
+        raise SystemExit(main())
     except Exception as error:
         print(json.dumps({'error_type':type(error).__name__}))
         raise SystemExit(1)

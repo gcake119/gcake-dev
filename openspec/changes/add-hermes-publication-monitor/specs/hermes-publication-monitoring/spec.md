@@ -177,3 +177,132 @@ The monitor SHALL persist event identity and send intent before requesting Teleg
 - **GIVEN** live notification history and a dry-run invocation
 - **WHEN** simulated events are evaluated
 - **THEN** live history remains unchanged and no real Telegram delivery occurs
+
+### Requirement: Truthful delivery failure reporting
+Live monitoring SHALL finish with a nonzero exit status if delivery is rejected, uncertain or interrupted, including unresolved historical notifications. It SHALL preserve bounded diagnostic types and successful acknowledgement identity without storing exception messages, token-bearing URLs or recipient identities. Successful transport acknowledgement SHALL NOT imply human receipt.
+
+#### Scenario: Send response lost
+- **GIVEN** a publicly verified article and a persisted notification intent
+- **WHEN** Telegram delivery times out
+- **THEN** monitoring exits unsuccessfully and retains uncertainty plus a timeout diagnostic without exposing secrets
+
+#### Scenario: Later check of unresolved notification
+- **GIVEN** a prior unresolved notification
+- **WHEN** a later healthy observation or repeated occurrence runs
+- **THEN** monitoring still reports unsuccessful delivery and performs no automatic resend of the uncertain event
+
+#### Scenario: Rejection and confirmed send
+- **GIVEN** Telegram explicitly rejects one notification and acknowledges another
+- **WHEN** monitoring finishes
+- **THEN** it reports failure for the unresolved event and records the confirmed acknowledgement independently of human receipt
+
+### Requirement: Authorized single-event reconciliation
+An explicit owner confirmation of non-receipt SHALL permit one additional send of exactly the authorized original event. Reconciliation SHALL require an existing uncertain article event, an exclusive sender lock, a consistent backup and a durable single-use operation identity committed before sending. It SHALL preserve unrelated events, original message and human receipt evidence. No scheduler observation or automatic retry SHALL be fabricated.
+
+#### Scenario: Owner authorizes a missing notification
+- **GIVEN** the owner confirms non-receipt and authorizes one resend of an uncertain article event
+- **WHEN** reconciliation obtains exclusive access and Telegram acknowledges the resend
+- **THEN** that original event becomes sent, a backup and acknowledgement receipt exist, and human receipt remains unconfirmed
+
+#### Scenario: Repeated reconciliation or lost resend response
+- **GIVEN** a consumed reconciliation operation, including one interrupted after intent
+- **WHEN** reconciliation runs again with that operation identity
+- **THEN** it sends no additional message and retains the recorded outcome or uncertainty
+
+#### Scenario: State drift, lock contention or backup failure
+- **GIVEN** the event is no longer uncertain, another sender holds the lock or a backup cannot be saved
+- **WHEN** reconciliation starts
+- **THEN** it refuses before changing delivery state or sending any message
+
+#### Scenario: Distinguish local rejection from Telegram rejection
+- **GIVEN** delivery is disabled, the configured token or recipient is invalid, or Telegram returns an explicit error code
+- **WHEN** a delivery attempt is rejected
+- **THEN** the journal identifies the local refusal or the numeric Telegram rejection without exposing credentials, destination values or raw response text
+
+#### Scenario: Read-only comparison of owner and scheduled configuration
+- **GIVEN** an owner reconciliation failed with an unspecified rejection
+- **WHEN** the configuration diagnostic compares the owner environment with the scheduled wrapper configuration
+- **THEN** it reports only readiness flags and refusal codes, sends no message and does not change notification state
+
+#### Scenario: Read-only Telegram identity diagnosis
+- **GIVEN** configuration format checks passed but the prior rejection lacks a numeric cause
+- **WHEN** the owner runs the provider diagnostic
+- **THEN** it performs at most one getMe and one getChat request to Telegram, exposes only numeric errors and bounded reason codes, sends no message, never polls updates or writes state, and does not claim successful reads prove message delivery or send permission
+
+### Requirement: Explicit shared Gateway Bot credentials
+On explicit owner selection of the Hermes Bot, notifications SHALL resolve the current Telegram token from the existing Gateway credential file for each send, rather than copy it into notification settings. The selected Bot identity SHALL be pinned; token renewal for that Bot SHALL work without another copy, while a different Bot identity SHALL fail closed. Legacy mode SHALL remain compatible. Missing, unsafe, ambiguous or unsupported Gateway configuration SHALL fail without fallback to the retired token. Other Gateway settings SHALL NOT be imported or executed. The original destination and notification switch SHALL remain authoritative.
+
+#### Scenario: Shared source supersedes a retired token
+- **GIVEN** the owner selected the Gateway Bot and the notification environment contains a retired token
+- **WHEN** a notification is sent
+- **THEN** the request uses the current credential of the pinned Gateway Bot and the existing destination
+
+#### Scenario: Gateway token renewal and identity change
+- **GIVEN** the shared credential is renewed for the pinned Bot
+- **WHEN** a later notification is sent
+- **THEN** the new credential is used without copying it into notification settings
+- **AND** replacement with another Bot identity refuses delivery
+
+#### Scenario: Unsafe or unavailable credential source
+- **GIVEN** the shared source is missing, linked, accessible to other users, has duplicate token assignments or requires unsupported interpolation
+- **WHEN** a notification attempts credential resolution
+- **THEN** it refuses before a delivery request and does not use the retired token
+
+### Requirement: Owner-authorized continuation after a definite rejection
+After the owner explicitly changes the sending Bot, the system SHALL permit at most one authorized continuation linked to the original rejected reconciliation for that event. It SHALL preserve the original operation, its status, backup and attempt records; acquire the existing sender lock; back up current state; and commit a unique continuation intent before sending. Unknown or interrupted preceding delivery SHALL NOT qualify. The continuation SHALL be consumed by success, rejection, ambiguity or interruption and SHALL NOT be automatically repeated. Human receipt remains separate.
+
+#### Scenario: Continue the rejected original operation
+- **GIVEN** the named original operation for this event remains recorded and its latest delivery was definitely rejected
+- **WHEN** the authorized Hermes Bot continuation is acknowledged
+- **THEN** the same article event becomes sent, the new operation links to the unchanged original operation, and both histories and backups remain
+
+#### Scenario: Ambiguous predecessor or repeated continuation
+- **GIVEN** a previous delivery outcome is unknown, or a continuation already exists
+- **WHEN** another continuation is requested
+- **THEN** no message is sent and no existing operation is reset or deleted
+
+### Requirement: Exact owner-side successor delivery
+The approved notification repair SHALL be delivered as a complete fixed proposal with an exact manifest digest, existing Telegram SDK capability proof, unchanged Gateway code/runtime, pinned control script and one administrator terminal entry. The entry SHALL verify the baseline, installed controls, payload and native offline proof before creating a root-owned proposal, approving its exact digest and creating the fixed next-candidate record. It SHALL call the existing managed updater for stop, qualification, selector and rollback, without modifying privilege policy or overwriting installed libraries.
+
+#### Scenario: Complete approved successor
+- **GIVEN** the selected baseline and an exact verified successor containing only the approved notification changes
+- **WHEN** the owner executes the pinned administrator entry
+- **THEN** the proposal, approval and next-candidate identify that exact successor and the existing updater performs its controlled qualification before any live activation
+
+#### Scenario: Payload, baseline or pending candidate drift
+- **GIVEN** an altered package, changed active baseline, existing foreign successor or pending update recovery
+- **WHEN** owner staging begins
+- **THEN** it refuses before approving or replacing that successor and leaves Gateway running
+
+#### Scenario: Repeated owner staging
+- **GIVEN** this exact proposal is already staged and approved
+- **WHEN** the owner repeats staging
+- **THEN** it reconciles the same digest rather than creating a different candidate or restarting an already completed update
+
+#### Scenario: Dry qualification and live restoration
+- **GIVEN** the existing updater has qualified the candidate in dry-run using a real natural scheduled occurrence
+- **WHEN** the operator verifies current Gateway health, shared credential identity, destination and unchanged job
+- **THEN** only the existing selected digest changes back to live policy, a durable receipt records it, and no manual job or Telegram send is performed by the owner adoption entry
+
+#### Scenario: Rollback or unknown adoption
+- **GIVEN** updater qualification fails or the owner entry is interrupted
+- **WHEN** the existing updater reports rollback or recovery state
+- **THEN** that state is preserved and reported rather than retrying a restart, claiming live restoration or performing the notification continuation
+
+### Requirement: Durable repository saveback
+The repair SHALL retain canonical source, completed acceptance evidence and consumed operational artifacts in the repository without depending on the disposable repair directory for source inputs. Missing source or test evidence SHALL block preparation before output creation. Saveback SHALL preserve unrelated local work and all production backups, and SHALL NOT send notifications or mutate production.
+
+#### Scenario: Relocated source checkout
+- **GIVEN** the repaired source and historical evidence are copied to another checkout without the original repair directory
+- **WHEN** preparation resolves its required inputs
+- **THEN** every input resolves inside that checkout and matches its preserved evidence
+
+#### Scenario: Missing historical input
+- **GIVEN** a relocated checkout lacks the consumed continuation or bound test evidence
+- **WHEN** preparation begins
+- **THEN** it refuses before creating an output package and does not fall back to the temporary repair directory
+
+#### Scenario: Existing local work and completed delivery
+- **GIVEN** unrelated uncommitted files and a completed, human-confirmed notification
+- **WHEN** verified repair files are saved back and the isolated validation worktree is removed
+- **THEN** unrelated contents and production backups remain unchanged and no new notification or delivery operation is created

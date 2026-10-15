@@ -54,3 +54,23 @@ Connect the actual root authority and hermes UID, owned test LaunchDaemon, full 
 ## Authorized production rollout extension
 
 Owner authorization on 2026-10-13 supersedes prior production-installation exclusions for the Hermes patch, managed update entry, wrapper and existing gateway restart. After verified operation, update only the existing production monitor job and commit/push this change. Preserve all historical isolated tasks and evidence. Add production-specific fixed path/service mappings, fresh drift checks, durable first-install backup/restore, runner-only private state access, production read-only scheduled qualification and gated activation. Do not infer Telegram test-message authority or replace notification history. A missing summary endpoint or restricted credential blocks monitor activation; owner does not know their configuration, so establish their status rather than guessing. Installer and release artifacts require local acceptance and owner-run execution before production success can be reported.
+
+## Authorized notification repair, 2026-10-15
+
+The owner selected both program repair and one Telegram resend for the toolchain article after confirming non-receipt. Preserve the original event identity and all history. Add sanitized delivery diagnostics and a failing live CLI exit status while unresolved delivery exists. Prepare a lock-protected, backed-up one-time reconciliation tool; do not reset the event to an automatically retryable state. Production operation requires the existing privileged owner; no commit/push or gateway restart is authorized by this repair.
+
+## Authorized Hermes Bot switch, 2026-10-15
+
+The owner selected option 2: change the notification sender to the existing Gateway/Hermes Bot and share its credential source. Owner read-only evidence: notification live.env token is unauthorized; Gateway .env token authenticates and reads the existing destination; identities differ. This explicitly supersedes the same-Bot requirement for this switch. Preserve destination, hourly job, gateway, original event and consumed reconciliation. The approved scope includes one audited continuation of this article's failed resend using the selected Hermes Bot. No additional test messages, token rotation, gateway restart, commit/push or bypass of unknown delivery is authorized.
+
+## Authorized owner successor delivery
+
+Owner forwarded the controlled-restart authorization and reported that no usable privileged successor proposal/approval entry was supplied. Supply a hash-pinned owner-side adapter and complete native package using existing ProductionStore approval, fixed next-candidate and production_owner.manage update/qualification/rollback. Do not add privilege services, change sudo policy or execute production from the hermes principal. A main-user terminal password is required only through normal sudo. Preparation is local; production receipts remain pending owner execution.
+
+## Repository saveback and closeout, 2026-10-15
+
+Preserve the repaired notification sources, tests, completed requirements and sanitized owner evidence in gcake-dev. Resolve package source inputs from the repository rather than the disposable repair directory, while retaining the exact historical baseline and controlled output policy. Store consumed article-specific delivery tools as historical artifacts. Validate the complete Hermes suite, preserve existing dirty files and all production backups, transfer only the verified saveback files, and remove the temporary validation worktree. No commit, push, notification send or production mutation is authorized by saveback.
+
+## Scoped local commit authorization, 2026-10-15
+
+After completed source saveback, the owner explicitly requested review and a local commit containing only this Hermes notification repair, with no push. This supersedes the earlier commit restriction for this scoped local commit only. Existing unrelated dirty files, production settings, notification history and all backups remain untouched. Production execution, replay and additional delivery are not authorized by this commit.

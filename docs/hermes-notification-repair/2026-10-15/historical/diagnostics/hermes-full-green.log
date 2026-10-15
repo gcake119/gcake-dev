@@ -1,0 +1,54 @@
+
+> gcake-dev@0.1.0 test:hermes /private/tmp/gcake-notification-repair-20261015
+> python3 -m unittest discover -s scripts/hermes -p "test_*.py"
+
+......................................................................................................../opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a6067a0>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606200>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a6066b0>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606020>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a516890>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a604e50>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a516a70>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a605300>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a605c60>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a6065c0>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a605f30>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606890>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606a70>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606d40>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/encoder.py:426: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10a606e30>
+  def _iterencode(o, _current_indent_level):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...........................................................
+----------------------------------------------------------------------
+Ran 163 tests in 48.056s
+
+OK

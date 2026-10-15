@@ -1,0 +1,28 @@
+FF
+======================================================================
+FAIL: test_missing_continuation_or_evidence_refuses_without_output (test_notification_saveback.RelocatedPreparation.test_missing_continuation_or_evidence_refuses_without_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-saveback-red-mb3h_to5/scripts/hermes/test_notification_saveback.py", line 45, in test_missing_continuation_or_evidence_refuses_without_output
+    self.assertIn('preparation-input-missing',result.stderr)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'preparation-input-missing' not found in 'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\n    import runpy,json; m=runpy.run_path(\'/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-saveback-b_14oyma/checkout/scripts/hermes/prepare_notification_successor.py\'); m[\'prepare\']()\n                                                                                                                                                                                       ~~~~~~~~~~~~^^\n  File "/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-saveback-b_14oyma/checkout/scripts/hermes/prepare_notification_successor.py", line 45, in prepare\n    if read(ROOT/\'active.json\')!={\'digest\':BASE_DIGEST,\'mode\':\'live\'}:raise ValueError(\'active-baseline-drift\')\n                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: active-baseline-drift\n'
+
+======================================================================
+FAIL: test_relocated_checkout_uses_only_preserved_repository_inputs (test_notification_saveback.RelocatedPreparation.test_relocated_checkout_uses_only_preserved_repository_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-saveback-red-mb3h_to5/scripts/hermes/test_notification_saveback.py", line 30, in test_relocated_checkout_uses_only_preserved_repository_inputs
+    self.assertEqual(result.returncode,0,result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import runpy,json; m=runpy.run_path('/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-saveback-fx0l0lmq/checkout/scripts/hermes/prepare_notification_successor.py'); print(json.dumps({k:str(v) for k,v in m['preparation_inputs']().items()}))
+                                                                                                                                                                                                                             ~^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'preparation_inputs'
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.165s
+
+FAILED (failures=2)
