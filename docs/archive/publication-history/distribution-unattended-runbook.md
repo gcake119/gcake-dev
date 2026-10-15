@@ -1,5 +1,7 @@
 > 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
 
+> 2026-10-13 後續操作說明：使用者確認 Substack 改用已開啟的 Chrome，經由 Computer Use 操作。現行受控流程以 [同步發文腳本操作手冊](../../distribution-scripted-runbook.md) 為準，目標只有 Substack。下文雙平台、側邊瀏覽器與舊排程描述保留為歷史，不構成恢復 Paragraph 的授權。新文章首次電子報政策與尚待正式啟用的界線，見 [多平台發佈文件](../../multi-platform-publishing.md)；本次沒有寄信或更改設定。
+
 
 ## 最新有效政策：2026／10／12 分鐘精度核准
 

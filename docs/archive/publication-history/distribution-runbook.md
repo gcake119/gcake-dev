@@ -1,5 +1,7 @@
 > 歷史紀錄：Paragraph 同步已於 2026／10／13 停止。本頁不得作為啟動或恢復授權。
 
+> 2026-10-13 後續操作說明：使用者確認 Substack 改用已開啟的 Chrome，經由 Computer Use 操作。現行受控流程以 [同步發文腳本操作手冊](../../distribution-scripted-runbook.md) 為準，目標只有 Substack。下文雙平台、側邊瀏覽器與舊排程描述保留為歷史，不構成恢復 Paragraph 的授權。新文章首次電子報政策與尚待正式啟用的界線，見 [多平台發佈文件](../../multi-platform-publishing.md)；本次沒有寄信或更改設定。
+
 > 2026-10-12 更新：Pages 先公開，再由 Codex 排程使用側邊瀏覽器無人值守同步。下文早期逐次人工核准與專用 Chrome 指引保留為原方案紀錄；現行流程以 [distribution-unattended-runbook.md](distribution-unattended-runbook.md) 為準。提前公開文章已撤回，歷史審閱版本不可同步。
 
 # 受控跨平台發布操作手冊
@@ -72,7 +74,7 @@ CLI 額外 smoke test：兩平台均以 `/private/tmp/gcake-cli-fixture/src/cont
 
 ## Substack 深入查核更新
 
-詳見 [canonical 與原文日期查核](substack-capability-verification.md)。發布前日期欄位已確認為僅允許當下及未來的排程；官方支援在發布後回填顯示日期。外部 canonical 尚無可驗證的標準 UI／官方支援路徑。所有正式寫入能力仍關閉，使用者已於 2026-10-12 選擇全文鏡像例外及兩階段日期流程；現行實作與限制如下。
+詳見 [canonical 與原文日期查核](../../substack-capability-verification.md)。發布前日期欄位已確認為僅允許當下及未來的排程；官方支援在發布後回填顯示日期。外部 canonical 尚無可驗證的標準 UI／官方支援路徑。所有正式寫入能力仍關閉，使用者已於 2026-10-12 選擇全文鏡像例外及兩階段日期流程；現行實作與限制如下。
 
 ## 已接受的方案 3：全文鏡像與兩階段日期
 
