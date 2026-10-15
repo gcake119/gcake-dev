@@ -20,7 +20,7 @@ sections:
         status: published
         workingTitle: 我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的
       - slug: ithome-2026-publishing-toolchain
-        status: ready
+        status: published
         workingTitle: 原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？
       - slug: ithome-2026-astro-choice
         status: ready

@@ -1,12 +1,13 @@
 ---
 title: 原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？
 description: 30 篇文章原本只想自動發到 iThome，實作後卻一路拆成草稿匯入、每日發布、文章網站、Hermes 通知與可重用模板。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - development-automation
   - ai-assisted-development
   - technical-writing
+publishedAt: 2026-10-15T07:00:00+08:00
 ---
 
 一開始，我只是想解決一件事：30 篇文章會先寫完，開賽後我不想每天再手動登入 iThome 發一篇。
