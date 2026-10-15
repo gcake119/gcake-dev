@@ -36,3 +36,15 @@ macOS 使用者須登入、電腦醒著且指定 Chrome 開啟。權限、登入
 2026／10／13 已安裝版本的真實系統唯讀驗收確認原 ID 220011124、publication ID 11352259、完整編輯器及匿名正文一致、日期 11：56、寄送及排程 false，articleWrites=0。首次正式系統輪次 Substack verified，D1 locks／checkpoints／intents 為零，快照與共享鎖已清理。原 heartbeat 已 PAUSED。
 
 已安裝 runtime 為 distribution-launchd-20261012，私人版本 native-substack-final-20261013，pin 228 檔；私人 system-native.json、standalone-acceptance.json、cutover.json 保存上述證據。此 PR 移植至移除 Paragraph 後的 main，保留已安裝版本，沒有換 pin、重新部署或重新發布。此 PR 的完整本機結果需另行記錄，不能把前一版本的系統驗收直接宣稱為新版本平台驗收。
+
+## 2026／10／15 可靠性修復
+
+原生導向與控制項採有上限的 30 秒等待。切換清單後，先確認該清單已選取，再讀取總數與文章；仍須完整掃過已發佈、草稿與排程，數量不符即停止。已發佈清單的匹配文章先以匿名 archive 解析原 ID 的公開網址，交由既有完整驗證接手，不當成尚待改寫的草稿。
+
+匿名 HTML 讀回在套用已驗收選取器前，依 HTML 屬性名稱不分大小寫的規則處理 time 的 datetime／dateTime；同一控制項有多個此類屬性或匹配多個日期均拒絕。全文、連結、圖片、canonical、刊物與文章 ID，以及原文分鐘精度繼續獨立驗證。
+
+私人 UI 契約需保留實際觀察到的「僅在網站上發佈」確認控制。發佈確認只按一次，等待該對話框顯示後完成網站限定確認；電子郵件、Substack App 與排程均關閉。缺少控制或結果未知仍保留原意圖，不重播。
+
+此機器已觀察到 Node 自動嘗試多個網路位址時，來源請求在連線階段逾時，而指定 IPv4 可連續取得來源。新 LaunchAgent 使用 --no-network-family-autoselection 與 --dns-result-order=ipv4first；保留 TLS 驗證、原憑證檔與無自動寫入重試。此設定只控制同步程序的連線路徑，不修改系統 DNS 或代理。
+
+切換必須使用新私人目錄、獨立 runtime 副本與新雜湊清單，保存原 PR27 安裝供回復。先通過完整本機 gates、真正的原生三清單掃描與同 ID 匿名讀回，再切換；不得把人工啟動的一輪稱為自動排程驗收。新文章實際公開發佈的場域證據，需等下一篇符合條件的正式原文，不能為驗收提前發佈未到期內容。

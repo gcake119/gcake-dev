@@ -133,6 +133,16 @@ export function anonymousSubstackReader(ui:SubstackUiContract,fetcher:typeof fet
     const identity=ui.publicIdentity?parsePublicPostIdentity(html,remote.url,ui.publicIdentity.publicationId):undefined;
     if(identity&&identity.id!==remote.id)throw Error('SUBSTACK_PUBLIC_IDENTITY_MISMATCH');
     const {document}=parseHTML(html);
+    // HTML attribute names are case-insensitive. linkedom retains React SSR's
+    // dateTime spelling, so normalize before applying the reviewed selector.
+    // Reject conflicting spellings instead of choosing one by attribute order.
+    for (const time of document.querySelectorAll('time')) {
+      const dates=[...time.attributes].filter(attribute=>attribute.name.toLowerCase()==='datetime');
+      if (dates.length>1) throw Error('SUBSTACK_PUBLIC_DATE_AMBIGUOUS');
+      if (dates.length===1&&dates[0].name!=='datetime') {
+        const {name,value}=dates[0];time.removeAttribute(name);time.setAttribute('datetime',value);
+      }
+    }
     const unique=(selector:string)=>{const nodes=document.querySelectorAll(selector);if (nodes.length!==1) throw Error('SUBSTACK_PUBLIC_CONTROLS_AMBIGUOUS');return nodes[0];};
     const body=unique(ui.publicBody),date=unique(ui.publicDate);
     // Match the block boundaries used by the existing browser evidence verifier.

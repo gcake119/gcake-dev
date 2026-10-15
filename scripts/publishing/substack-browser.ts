@@ -95,7 +95,9 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
       || ui.version !== 1 || !Number.isFinite(Date.parse(ui.reviewedAt)) || !ui.homePath || !ui.postsPath || !ui.editPath.includes('{id}')
       || ui.publicationPolicy !== undefined && ui.publicationPolicy !== 'full-mirror'
       || !ui.create || !ui.title || !ui.body || !ui.saved || !ui.continue || !ui.email || !ui.confirmPublish) throw new Error('SUBSTACK_UI_CONTRACT_INVALID');
-    page.setDefaultTimeout(10_000);
+    // Native Apple Events require multiple guarded round trips per observation.
+    // Allow a bounded navigation/rendering window without replaying actions.
+    page.setDefaultTimeout(30_000);
   }
   private locator(spec: UiLocator): Locator {
     return 'css' in spec ? this.page.locator(spec.css) : this.page.getByRole(spec.role as Parameters<Page['getByRole']>[0], { name: spec.name, exact: true });
@@ -131,6 +133,9 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     for (const scope of scopes) {
       await this.navigate(this.ui.postsPath);
       if (scope.tab){await this.locator(scope.tab).waitFor({state:'visible'});await (await this.unique(scope.tab)).click();}
+      // A client-side tab transition can leave the previous list's totals and
+      // rows visible. Establish the selected-list boundary before reading them.
+      await this.locator(scope.complete).waitFor({state:'visible'});
       const totalSpec='total' in scope?scope.total:undefined;
       let total:number|undefined;
       if(totalSpec){const text=await (await this.unique(totalSpec)).innerText();const number=text.match(/[0-9][0-9,]*/)?.[0];total=number?Number(number.replace(/,/g,'')):0;if(!Number.isSafeInteger(total))throw Error('SUBSTACK_DRAFT_SCAN_INCOMPLETE');
@@ -153,8 +158,14 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
           const url = this.safeUrl(link.href), id = new URL(url).pathname.match(/\/publish\/(?:post|posts\/detail)\/([a-zA-Z0-9-]+)$/)?.[1];
           if (!id) throw new Error('SUBSTACK_REMOTE_ID_INVALID');
           const editorUrl = this.editUrl({id,url});
-          if (matches.has(id) && matches.get(id)!.url !== editorUrl) throw new Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
-          matches.set(id,{ id, url:editorUrl });
+          let remote={id,url:editorUrl};
+          if ('state' in scope&&scope.state==='published'&&this.publicLocator) {
+            remote=await this.publicLocator(id);
+            const publicUrl=new URL(this.safeUrl(remote.url));
+            if(remote.id!==id||!/^\/p\/[a-z0-9-]+$/.test(publicUrl.pathname)||publicUrl.search||publicUrl.hash)throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+          }
+          if (matches.has(id) && matches.get(id)!.url !== remote.url) throw new Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
+          matches.set(id,remote);
         }
         if (!scope.next || await this.locator(scope.next).count() === 0) {complete=true;break;}
         const next = await this.unique(scope.next);
@@ -285,6 +296,7 @@ export class PlaywrightSubstackAdapter implements SubstackBrowserAdapter {
     await this.beforeWrite?.();
     await confirm.click();
     if (this.ui.websiteOnlyConfirm) {
+      await this.locator(this.ui.websiteOnlyConfirm).waitFor({state:'visible'});
       await this.beforeWrite?.();
       await (await this.unique(this.ui.websiteOnlyConfirm)).click();
     }

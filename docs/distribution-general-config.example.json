@@ -47,6 +47,10 @@
         "role": "button",
         "name": "立即發佈"
       },
+      "websiteOnlyConfirm": {
+        "role": "button",
+        "name": "僅在網站上發佈"
+      },
       "draftLinks": "UNVERIFIED",
       "scanComplete": {
         "role": "tab",
