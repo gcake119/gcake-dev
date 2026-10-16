@@ -4,6 +4,35 @@ Define an isolated update entry that separates installation authority from gatew
 
 ## ADDED Requirements
 
+### Requirement: Preserved production control protections
+Repository control sources SHALL preserve the installed package approval and current-boot Telegram qualification protections. Local saveback SHALL not invoke production management, alter installed controls or change notification history. Offline qualification SHALL deny provider/model loading, network, private credential reads and child processes.
+
+#### Scenario: Verified package remains eligible
+- **GIVEN** a complete candidate with bound offline SDK evidence and matching locked dependencies
+- **WHEN** its approval and payload eligibility are checked locally
+- **THEN** it remains eligible without contacting Telegram or starting Gateway
+
+#### Scenario: Incomplete or altered package
+- **GIVEN** missing capability evidence, mismatched dependencies or altered candidate contents
+- **WHEN** approval or update eligibility is checked
+- **THEN** it is refused before approval or any service stop or start
+
+#### Scenario: Current boot is healthy
+- **GIVEN** a running Gateway and connected Telegram health from the same process and boot
+- **WHEN** qualification completes
+- **THEN** current health passes without asserting human receipt
+
+#### Scenario: Stale or foreign Telegram health
+- **GIVEN** stale health, another process or boot, disconnected Telegram or a platform error
+- **WHEN** qualification checks readiness
+- **THEN** it refuses to mark the candidate ready
+
+#### Scenario: Source preservation without production operation
+- **GIVEN** installed controls and a clean repository checkout
+- **WHEN** their existing protections are saved back and tested with disposable local fixtures
+- **THEN** installed controls, selected release and production history remain unchanged
+- **AND** forbidden external effects are denied during offline qualification
+
 ### Requirement: Authority and runner permission separation
 The entry SHALL permit only the installation authority to approve, seal, select or recover releases. The runner SHALL read non-secret identity and hold read-only shared invocation leases, without writing authority records or changing delivery authorization. Sealed release contents SHALL be immutable to the runner. Unsafe ownership, writable control paths, symlinks at control boundaries or altered approved contents SHALL block before execution. Actual root/hermes evidence SHALL be distinguished from same-UID fixtures.
 

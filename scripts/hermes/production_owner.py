@@ -198,6 +198,7 @@ class Supervisor:
         result=self.actor.run(payload,probe)
         assert result['uid']==self.store.runner_uid and result['version']=='3.11.15' and result['prefix']==str(payload/'runtime')
         assert result['identity']['pid']==self.pid() and result['identity']['hermes_home']==str(HH)
+        self.verify_telegram_health(payload)
         inventory=subprocess.run(['/bin/ps','-axo','pid=,uid=,args='],capture_output=True,text=True,timeout=10,check=True)
         pids=[]
         for line in inventory.stdout.splitlines():
@@ -213,6 +214,12 @@ class Supervisor:
         self.actor.selected=payload;self.start_managed()
 
     def verify(self,payload):self.verify_managed()
+
+    def verify_telegram_health(self,payload):
+        from telegram_health import check_current
+        code='from gateway.control_socket import identify_gateway,query_gateway_control;from pathlib import Path;import json;h=Path('+repr(str(HH))+');print(json.dumps(dict(identity=identify_gateway(h),status=query_gateway_control(h,"status"))))'
+        result=self.actor.run(payload,code)
+        return check_current(result['identity'],result['status'],pid=self.pid(),home=str(HH),now=time.time())
 
 
 def source_size(path):
@@ -339,7 +346,7 @@ def owner_main(control_sha):
     try:
         with updater_exclusion(),tempfile.TemporaryDirectory(prefix='gcake-production-tools-',dir='/private/tmp') as temporary:
             tools=Path(temporary);tools.chmod(0o755)
-            required={'production_entry.py','production_install.py','production_owner.py','production_monitor_dispatch.py','updater_guard.py','monitor_wrapper.py','update_entry.py'}
+            required={'production_entry.py','production_install.py','production_owner.py','production_monitor_dispatch.py','updater_guard.py','monitor_wrapper.py','update_entry.py','packaging_contract.py','telegram_health.py'}
             if set(control['modules'])!=required:raise ValueError('fixed-control-modules-required')
             for name,sha in control['modules'].items():
                 if not re.fullmatch(r'[a-z_]+\.py',name):raise ValueError('invalid-tool-identity')
@@ -442,6 +449,8 @@ def manage(command):
                     result=dict(status='skipped',reason='unapproved-release')
                 else:
                     guard.check_payload(candidate/'payload',manifest)
+                    from packaging_contract import verify_candidate
+                    verify_candidate(candidate)
                     original=guard.read(ROOT/'private/original-gateway-map.json')
                     supervisor=Supervisor(store,original,Actor(store))
                     with tempfile.TemporaryDirectory(prefix='gcake-approved-update-',dir='/private/tmp') as temporary:

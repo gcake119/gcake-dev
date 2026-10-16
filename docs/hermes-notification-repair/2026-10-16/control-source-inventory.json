@@ -1,0 +1,100 @@
+{
+  "source_scope": "installed root-owned controls; read-only snapshot",
+  "files": [
+    {
+      "name": "production_entry.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/production_entry.py",
+      "sha256": "2c2999778c711c3dbaa66d3d197f1c4e96cec07aeae2bb52cce1c222da9b2d9d",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": "aa3c4c0447a478d4241b592263df95a98aa60358d0c9aab5d3695a94d2ab7e45",
+      "repository_after_sha256": "2c2999778c711c3dbaa66d3d197f1c4e96cec07aeae2bb52cce1c222da9b2d9d",
+      "installed_after_sha256": "2c2999778c711c3dbaa66d3d197f1c4e96cec07aeae2bb52cce1c222da9b2d9d",
+      "installed_unchanged": true,
+      "exact_parity": true
+    },
+    {
+      "name": "production_owner.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/production_owner.py",
+      "sha256": "98d04dc2f7a11a467ea8ef9bc97f5bb792c18bf856936a800f08e8edba66a127",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": "5f289d3343887db43db2ef8814e2fef1184606d1d1958f9071b33cd845cbde8d",
+      "repository_after_sha256": "98d04dc2f7a11a467ea8ef9bc97f5bb792c18bf856936a800f08e8edba66a127",
+      "installed_after_sha256": "98d04dc2f7a11a467ea8ef9bc97f5bb792c18bf856936a800f08e8edba66a127",
+      "installed_unchanged": true,
+      "exact_parity": true
+    },
+    {
+      "name": "packaging_contract.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/packaging_contract.py",
+      "sha256": "d9aaea44d25bbbf12cbf906d5436c6b27ddb4d265503ee6a0a803f05b9ba8ac5",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": null,
+      "repository_after_sha256": "d9aaea44d25bbbf12cbf906d5436c6b27ddb4d265503ee6a0a803f05b9ba8ac5",
+      "installed_after_sha256": "d9aaea44d25bbbf12cbf906d5436c6b27ddb4d265503ee6a0a803f05b9ba8ac5",
+      "installed_unchanged": true,
+      "exact_parity": true
+    },
+    {
+      "name": "telegram_health.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/telegram_health.py",
+      "sha256": "a1c146664e624337cf110232e8896c3d526d7a1da5ae63f3c154c0b4da941f18",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": null,
+      "repository_after_sha256": "a1c146664e624337cf110232e8896c3d526d7a1da5ae63f3c154c0b4da941f18",
+      "installed_after_sha256": "a1c146664e624337cf110232e8896c3d526d7a1da5ae63f3c154c0b4da941f18",
+      "installed_unchanged": true,
+      "exact_parity": true
+    },
+    {
+      "name": "offline_guard.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/offline_guard.py",
+      "sha256": "85b597f89460a3b2603dacea90f8a27babf851d3888581e81858f2e016eb0973",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": null,
+      "repository_after_sha256": "85b597f89460a3b2603dacea90f8a27babf851d3888581e81858f2e016eb0973",
+      "installed_after_sha256": "85b597f89460a3b2603dacea90f8a27babf851d3888581e81858f2e016eb0973",
+      "installed_unchanged": true,
+      "exact_parity": true
+    },
+    {
+      "name": "offline_probe.py",
+      "source": "/usr/local/share/gcake-hermes-runtime/tools/offline_probe.py",
+      "sha256": "52c2a6a7d3ecb04f62144984b90ebad860836d156ab150a2a6e0cce09193bf08",
+      "owner_uid": 0,
+      "mode": "0o644",
+      "repository_before_sha256": null,
+      "repository_after_sha256": "52c2a6a7d3ecb04f62144984b90ebad860836d156ab150a2a6e0cce09193bf08",
+      "installed_after_sha256": "52c2a6a7d3ecb04f62144984b90ebad860836d156ab150a2a6e0cce09193bf08",
+      "installed_unchanged": true,
+      "exact_parity": true
+    }
+  ],
+  "production_before": {
+    "active.json": {
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "mode": "live"
+    },
+    "gate.json": {
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "mode": "live",
+      "status": "ready"
+    }
+  },
+  "production_after": {
+    "active.json": {
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "mode": "live"
+    },
+    "gate.json": {
+      "digest": "f36ad05d1ea2fe93fe82712008904ae1cbe7cc4b9b606833fae07aa8bbaf753c",
+      "mode": "live",
+      "status": "ready"
+    }
+  },
+  "production_selection_unchanged": true
+}

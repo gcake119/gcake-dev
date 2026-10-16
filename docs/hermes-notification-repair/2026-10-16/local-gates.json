@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "exit_code": 0,
+    "log": "docs/hermes-notification-repair/2026-10-16/test.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "check"
+    ],
+    "exit_code": 0,
+    "log": "docs/hermes-notification-repair/2026-10-16/check.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "build:all"
+    ],
+    "exit_code": 0,
+    "log": "docs/hermes-notification-repair/2026-10-16/build-all.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "release:dry-run"
+    ],
+    "exit_code": 0,
+    "log": "docs/hermes-notification-repair/2026-10-16/release-dry-run.log"
+  }
+]
