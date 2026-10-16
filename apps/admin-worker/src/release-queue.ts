@@ -522,7 +522,7 @@ export class ReleaseQueue {
     });
     return this.view(snapshot);
   }
-  async assertSeriesWrites(snapshot: ReleaseSnapshot, files: readonly { path: string; source: string }[]) {
+  async assertSeriesWrites(snapshot: ReleaseSnapshot, files: readonly { path: string; source?: string }[]) {
     const s = await this.store.read();
     for (const series of snapshot.series) {
       const file = files.find((f) => f.path === series.path);
@@ -531,8 +531,10 @@ export class ReleaseQueue {
         series.sections.some((section) => section.posts.some((p) => p.status === 'published')) ||
         s.data.releases.some((r) => r.seriesSlug === series.slug);
       if (!started) continue;
-      // caller passes parsed series through validateAndSerialize; only compare order here.
+      // Lifecycle writes retain both the identity and article order of a started series.
+      if (file.source === undefined) throw new Error('STARTED_SERIES_ORDER_LOCKED');
       const parsed = YAML.parse(file.source);
+      if (parsed.slug !== series.slug) throw new Error('STARTED_SERIES_ORDER_LOCKED');
       const order = JSON.stringify(parsed.sections.flatMap((section: any) => section.posts.map((p: any) => p.slug)));
       const current = JSON.stringify(series.sections.flatMap((section) => section.posts.map((p) => p.slug)));
       if (order !== current) throw new Error('STARTED_SERIES_ORDER_LOCKED');

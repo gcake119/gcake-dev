@@ -568,3 +568,14 @@ test('verified-public does not hide unrelated pause or missed fixed-slot reasons
     assert.deepEqual(await s.store.read(), before);
   }
 });
+
+test('started series refuses manifest deletion and identity rename but permits title-only edits', async () => {
+  const { queue } = setup();
+  const s = snapshot();
+  s.series[0].sections[0].posts[0].status = 'published';
+  const path = s.series[0].path;
+  await assert.rejects(() => queue.assertSeriesWrites(s, [{ path } as any]), /STARTED_SERIES_ORDER_LOCKED/);
+  const sections = s.series[0].sections;
+  await assert.rejects(() => queue.assertSeriesWrites(s, [{ path, source: JSON.stringify({ slug: 'renamed', sections }) }]), /STARTED_SERIES_ORDER_LOCKED/);
+  await queue.assertSeriesWrites(s, [{ path, source: JSON.stringify({ slug: 's', title: 'Updated', sections }) }]);
+});

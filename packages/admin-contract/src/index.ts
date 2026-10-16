@@ -52,7 +52,25 @@ export interface MediaRecord {
 export interface SaveFileInput {
   readonly path: string;
   readonly expectedBlobSha?: string;
-  readonly source: string;
+  readonly source?: string;
+}
+
+export interface CreateSeriesRequest {
+  readonly title: string;
+  readonly slug: string;
+  readonly expectedBaseCommitSha: string;
+}
+
+export interface UpdateSeriesRequest {
+  readonly manifest: Readonly<Record<string, unknown>>;
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+}
+
+export interface DeleteSeriesRequest {
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+  readonly confirmed: boolean;
 }
 
 export interface SaveContentRequest {
@@ -121,6 +139,8 @@ export interface PostSeriesMembership {
 
 export interface SeriesSource {
   readonly slug: string;
+  readonly title: string;
+  readonly postCount: number;
   readonly path: string;
   readonly source: string;
   readonly baseBlobSha: string;

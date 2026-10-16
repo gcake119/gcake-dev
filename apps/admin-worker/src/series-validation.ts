@@ -28,6 +28,7 @@ export function validateSeries(
   options: { readonly existingMarkdownSlugs: ReadonlySet<string>; readonly otherSeriesSlugs?: ReadonlySet<string> },
 ): void {
   const issues: string[] = [];
+  if (typeof manifest.title !== 'string' || !manifest.title.trim()) issues.push('系列名稱不可為空白');
   if (!/^[a-z0-9][a-z0-9-]*$/.test(manifest.slug)) issues.push('系列 slug 不合法');
   if (options.otherSeriesSlugs?.has(manifest.slug)) issues.push('系列 slug 重複');
   const sections = new Set<string>();

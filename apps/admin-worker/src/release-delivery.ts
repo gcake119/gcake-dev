@@ -4,7 +4,7 @@ import { ReleaseQueue, type ReleaseSnapshot } from './release-queue.js';
 import { RepositoryConflictError } from './git-writes.js';
 export interface ReleaseGit {
   snapshot(): Promise<ReleaseSnapshot>;
-  save(request: SaveContentRequest): Promise<{ commitSha: string; paths: readonly string[] }>;
+  save(request: SaveContentRequest & { readonly files: readonly { readonly path: string; readonly expectedBlobSha?: string; readonly source: string }[] }): Promise<{ commitSha: string; paths: readonly string[] }>;
   deployment?(sha?: string): Promise<DeploymentObservation | undefined>;
   retryDeployment?(sha: string): Promise<void>;
 }

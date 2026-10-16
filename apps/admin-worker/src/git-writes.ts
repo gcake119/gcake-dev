@@ -56,6 +56,67 @@ export async function saveRepositoryTransaction(
   return repository.commit(transaction);
 }
 
+export async function createSeries(repository: GitWriteRepository, input: {
+  readonly path: string;
+  readonly source: string;
+  readonly expectedBaseCommitSha: string;
+}): Promise<RepositoryCommit> {
+  return saveRepositoryTransaction(repository, {
+    expectedBaseCommitSha: input.expectedBaseCommitSha,
+    message: `Create series ${input.path}`,
+    changes: [{ path: input.path, content: input.source }],
+  });
+}
+
+export async function updateSeries(repository: GitWriteRepository, input: {
+  readonly path: string;
+  readonly source: string;
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+}): Promise<RepositoryCommit> {
+  return saveRepositoryTransaction(repository, {
+    expectedBaseCommitSha: input.expectedBaseCommitSha,
+    message: `Update series ${input.path}`,
+    changes: [{ path: input.path, expectedBlobSha: input.expectedBlobSha, content: input.source }],
+  });
+}
+
+export async function renameSeries(repository: GitWriteRepository, input: {
+  readonly oldPath: string;
+  readonly newPath: string;
+  readonly source: string;
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+}): Promise<RepositoryCommit> {
+  return saveRepositoryTransaction(repository, {
+    expectedBaseCommitSha: input.expectedBaseCommitSha,
+    message: `Rename series ${input.oldPath} to ${input.newPath}`,
+    changes: [
+      { path: input.oldPath, expectedBlobSha: input.expectedBlobSha },
+      { path: input.newPath, content: input.source },
+    ],
+  });
+}
+
+export type DeleteSeriesResult =
+  | { readonly kind: 'confirmation-required' }
+  | { readonly kind: 'deleted'; readonly commit: RepositoryCommit };
+
+export async function deleteSeries(repository: GitWriteRepository, input: {
+  readonly path: string;
+  readonly expectedBlobSha: string;
+  readonly expectedBaseCommitSha: string;
+  readonly confirmed: boolean;
+}): Promise<DeleteSeriesResult> {
+  if (!input.confirmed) return { kind: 'confirmation-required' };
+  const commit = await saveRepositoryTransaction(repository, {
+    expectedBaseCommitSha: input.expectedBaseCommitSha,
+    message: `Delete series ${input.path}`,
+    changes: [{ path: input.path, expectedBlobSha: input.expectedBlobSha }],
+  });
+  return { kind: 'deleted', commit };
+}
+
 export async function renamePost(repository: GitWriteRepository, input: {
   readonly oldSlug: string;
   readonly newSlug: string;
