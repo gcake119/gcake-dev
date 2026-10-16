@@ -1,0 +1,33 @@
+[
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/public_release_acceptance.py",
+    "saved_path": "scripts/hermes/public_release_acceptance.py",
+    "sha256": "4d0562acef9f446cdb9e885c7721085180fdb09bfa4b897e30e67cba72a92804"
+  },
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/test_public_release_acceptance.py",
+    "saved_path": "scripts/hermes/test_public_release_acceptance.py",
+    "sha256": "0907065aa8b77f0d815c9af5a58502e558f7a00f84b554a03a5aa4ea0d18ee39"
+  },
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/fixtures/public-pages-run.html",
+    "saved_path": "scripts/hermes/fixtures/public-pages-run.html",
+    "sha256": "627524a02a82f58b1f61e7bfa1a39570fc2adcc6fd036dc6ec36a0d093936fb0"
+  },
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/fixtures/public-build-job.html",
+    "saved_path": "scripts/hermes/fixtures/public-build-job.html",
+    "sha256": "2e3932a8ecb201b27c7c9b31131ff548b09442e69bf69e09d0fff9dd17c489f8"
+  },
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/fixtures/reviewed-pages-workflow.yml",
+    "saved_path": "scripts/hermes/fixtures/reviewed-pages-workflow.yml",
+    "sha256": "5bc44c7c70ecb2ce1698b1ab8125cf15ac2f3c56eda06dc8ca5533c00bae0373"
+  },
+  {
+    "source": "/Users/caiyijun/project/gcake-dev-release/scripts/hermes/gcake-first-post-release-check-20261012.sh",
+    "saved_path": "docs/worktree-closeout/2026-10-16/historical/gcake-first-post-release-check-20261012.sh",
+    "sha256": "ebef5c8caa269584e1866e3c80fb5615f41e5f3736d24bdf5b93236287e9fb9f",
+    "historical_consumed": true
+  }
+]

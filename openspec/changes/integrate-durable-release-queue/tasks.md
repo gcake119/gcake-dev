@@ -33,3 +33,9 @@
 - [x] 7.1 Publication conditioned Pages delivery: prove runner acceptance RED/GREEN for exact committed SHA, no-op, invalid response and disabled gate; wire isolated build/deploy jobs with least privilege and workflow safety tests.
 - [x] 7.2 Complete full pnpm test/check/build:all/release:dry-run and AI review; update activation/recovery evidence, atomic commits, PR and successful CI before authorized merge.
 - [x] 7.3 Configure paired private Worker/Actions credentials and main-only automation environment; verify disabled authentication, activate Worker and Actions gates, run a controlled due/no-op check and verify production UI/public evidence without modifying bodies/order.
+
+## 8. Public-only verifier source reconciliation
+
+- [x] 8.1 Reconcile Deterministic public-only publication acceptance through Public provenance and accurate progress scenarios and source provenance before source saveback tasks; preserve current ingestion/snapshot/retirement policy.
+- [x] 8.2 Preserve API-free deterministic publication acceptance and Structured incomplete-response handling by saving the existing verifier, 29 fixture tests and static sources, retain the consumed wrapper as non-executable historical evidence, and verify the complete focused suite without real provider or job execution.
+- [x] 8.3 Pass full local test/check/build:all/release:dry-run plus Spectra checks and prepare the scoped saveback; remote exact-head CI and merge results are tracked in the delivery PR.
