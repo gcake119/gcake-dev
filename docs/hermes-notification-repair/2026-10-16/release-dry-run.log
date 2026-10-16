@@ -1,0 +1,24 @@
+
+> gcake-dev@0.1.0 release:dry-run /Users/caiyijun/project/gcake-dev
+> node --import tsx scripts/publishing/release-dry-run.ts
+
+(node:9512) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "mode": "local-simulation",
+  "authority": "D1",
+  "result": "passed",
+  "releaseId": "41f8ffd4-fccd-4579-9f8e-1c407f339997",
+  "buildFailureRetriedSameIdentity": true,
+  "gitWrites": 1,
+  "baselineReadyRoutesAbsent": 6,
+  "newRSSArticles": 1,
+  "sourceDigestVerified": true,
+  "dryRunNotifications": 1,
+  "repeatNotifications": 0,
+  "mockTelegramRequests": 1,
+  "sixBodiesUnchanged": true,
+  "readingOrderUnchanged": true,
+  "productionWrites": false,
+  "telegramNetworkCalls": 0
+}

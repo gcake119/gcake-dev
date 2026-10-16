@@ -1,0 +1,2678 @@
+
+> gcake-dev@0.1.0 test /Users/caiyijun/project/gcake-dev
+> pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution && pnpm test:observability
+
+
+> gcake-dev@0.1.0 test:editorial /Users/caiyijun/project/gcake-dev
+> node --import tsx --test src/lib/publishing/release-queue.test.ts scripts/publishing/editorial-release.test.ts scripts/publishing/deployment-rehearsal.test.ts scripts/publishing/unattended-check.test.ts
+
+TAP version 13
+# Subtest: manual Pages has no queue writer, even when legacy flag is true
+ok 1 - manual Pages has no queue writer, even when legacy flag is true
+  ---
+  duration_ms: 12.475875
+  type: 'test'
+  ...
+# Subtest: PR CI validates the candidate without deployment credentials or production writes
+ok 2 - PR CI validates the candidate without deployment credentials or production writes
+  ---
+  duration_ms: 2.99925
+  type: 'test'
+  ...
+# Subtest: manual Secret acceptance isolates environment credentials and excludes every publication job
+ok 3 - manual Secret acceptance isolates environment credentials and excludes every publication job
+  ---
+  duration_ms: 3.055625
+  type: 'test'
+  ...
+# Subtest: Secret acceptance preflight rejects SHA drift and enabled gates before Secret access
+ok 4 - Secret acceptance preflight rejects SHA drift and enabled gates before Secret access
+  ---
+  duration_ms: 23.41625
+  type: 'test'
+  ...
+# Subtest: Secret identity acceptance accepts installation schema and rejects scope drift without printing token
+ok 5 - Secret identity acceptance accepts installation schema and rejects scope drift without printing token
+  ---
+  duration_ms: 2832.208084
+  type: 'test'
+  ...
+# Subtest: D1 delivery rejects a stale Pages artifact after a concurrent CMS edit without writer credentials
+ok 6 - D1 delivery rejects a stale Pages artifact after a concurrent CMS edit without writer credentials
+  ---
+  duration_ms: 1111.929542
+  type: 'test'
+  ...
+# Subtest: retired Git journal CLI cannot write or invoke Git with any legacy command or activation flag
+ok 7 - retired Git journal CLI cannot write or invoke Git with any legacy command or activation flag
+  ---
+  duration_ms: 563.200292
+  type: 'test'
+  ...
+# Subtest: configured unattended policy is reported separately from production acceptance
+ok 8 - configured unattended policy is reported separately from production acceptance
+  ---
+  duration_ms: 0.879083
+  type: 'test'
+  ...
+# Subtest: approved CMS and dedicated release exceptions preserve configuration without activation
+ok 9 - approved CMS and dedicated release exceptions preserve configuration without activation
+  ---
+  duration_ms: 0.122
+  type: 'test'
+  ...
+# Subtest: CMS compatibility requires both named identities and rejects extra exceptions
+ok 10 - CMS compatibility requires both named identities and rejects extra exceptions
+  ---
+  duration_ms: 0.224625
+  type: 'test'
+  ...
+# Subtest: private App metadata unavailable to owner CLI remains incomplete
+ok 11 - private App metadata unavailable to owner CLI remains incomplete
+  ---
+  duration_ms: 0.139916
+  type: 'test'
+  ...
+# Subtest: missing environment, credentials or main protection cannot be called ready
+ok 12 - missing environment, credentials or main protection cannot be called ready
+  ---
+  duration_ms: 0.08325
+  type: 'test'
+  ...
+# Subtest: reviewer wait, tag-only branch policy and broad App privilege block unattended configuration
+ok 13 - reviewer wait, tag-only branch policy and broad App privilege block unattended configuration
+  ---
+  duration_ms: 0.159917
+  type: 'test'
+  ...
+# Subtest: configuration audit CLI only makes read requests and reports missing setup
+ok 14 - configuration audit CLI only makes read requests and reports missing setup
+  ---
+  duration_ms: 3271.020166
+  type: 'test'
+  ...
+# Subtest: audit reads production flag from later API pages
+ok 15 - audit reads production flag from later API pages
+  ---
+  duration_ms: 1870.532875
+  type: 'test'
+  ...
+# Subtest: D1 automation gate drift is reported even when the retired journal flag is disabled
+ok 16 - D1 automation gate drift is reported even when the retired journal flag is disabled
+  ---
+  duration_ms: 0.21175
+  type: 'test'
+  ...
+# Subtest: six ready series posts occupy Monday/Thursday 07:00 slots in order
+ok 17 - six ready series posts occupy Monday/Thursday 07:00 slots in order
+  ---
+  duration_ms: 5.719834
+  type: 'test'
+  ...
+# Subtest: standalone interrupts active series while preserving internal order
+ok 18 - standalone interrupts active series while preserving internal order
+  ---
+  duration_ms: 0.122333
+  type: 'test'
+  ...
+# Subtest: unready series does not schedule until every provided item becomes ready
+ok 19 - unready series does not schedule until every provided item becomes ready
+  ---
+  duration_ms: 0.270875
+  type: 'test'
+  ...
+# Subtest: reserved slot is skipped
+ok 20 - reserved slot is skipped
+  ---
+  duration_ms: 0.078208
+  type: 'test'
+  ...
+# Subtest: rejects reserved timestamps that are not an exact policy slot
+ok 21 - rejects reserved timestamps that are not an exact policy slot
+  ---
+  duration_ms: 0.236417
+  type: 'test'
+  ...
+# Subtest: rejects impossible calendar timestamps instead of normalizing them
+ok 22 - rejects impossible calendar timestamps instead of normalizing them
+  ---
+  duration_ms: 0.066833
+  type: 'test'
+  ...
+# Subtest: resumes previously active series before an older waiting group
+ok 23 - resumes previously active series before an older waiting group
+  ---
+  duration_ms: 0.121084
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5282.969792
+
+> gcake-dev@0.1.0 test:hermes /Users/caiyijun/project/gcake-dev
+> python3 -m unittest discover -s scripts/hermes -p "test_*.py"
+
+..............owner: waiting for natural existing-job dry-run
+.owner: waiting for natural existing-job dry-run
+.........................................................................................................................../opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107002b60>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x1070034c0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003970>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x1070035b0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106edf2e0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003a60>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106edf3d0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107002f20>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003790>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x1070031f0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003b50>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x1070032e0>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003c40>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003e20>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.14/3.14.8_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py:2259: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x107003f10>
+  def __init__(self, name, parent):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.........................................................
+----------------------------------------------------------------------
+Ran 195 tests in 53.586s
+
+OK
+
+> gcake-dev@0.1.0 test:public /Users/caiyijun/project/gcake-dev
+> node --import tsx --test src/data/external/ithome-2026-topics.test.ts src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/seo/structured-data.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/release-orchestrate.test.ts scripts/external/ithome-sync.test.ts src/lib/publishing/release-queue.test.ts src/lib/publishing/release-eligibility.test.ts scripts/publishing/prepare-distribution.test.ts test/pages-scheduled-deployment.test.ts scripts/external/completed-restoration.test.ts
+
+TAP version 13
+# Subtest: the restoration command uses the saved completed snapshot and atomically replaces old 19-post content
+ok 1 - the restoration command uses the saved completed snapshot and atomically replaces old 19-post content
+  ---
+  duration_ms: 141.999333
+  type: 'test'
+  ...
+# Subtest: unavailable, active, incomplete, changed revision and body/hash tampering retain the previous file without source fallback
+ok 2 - unavailable, active, incomplete, changed revision and body/hash tampering retain the previous file without source fallback
+  ---
+  duration_ms: 8.35475
+  type: 'test'
+  ...
+# Subtest: the actual restoration CLI exits nonzero on bad snapshot before a following build can run
+ok 3 - the actual restoration CLI exits nonzero on bad snapshot before a following build can run
+  ---
+  duration_ms: 206.659875
+  type: 'test'
+  ...
+# Subtest: follows deployed public set and pins the revision even across midnight
+ok 4 - follows deployed public set and pins the revision even across midnight
+  ---
+  duration_ms: 4.5025
+  type: 'test'
+  ...
+# Subtest: rejects incomplete fetch, corrupted body and inconsistent manifests
+ok 5 - rejects incomplete fetch, corrupted body and inconsistent manifests
+  ---
+  duration_ms: 0.877583
+  type: 'test'
+  ...
+# Subtest: draft content cannot enter the public snapshot
+ok 6 - draft content cannot enter the public snapshot
+  ---
+  duration_ms: 0.403667
+  type: 'test'
+  ...
+# Subtest: completion freezes 30 verified posts without any source requests; corruption fails closed
+ok 7 - completion freezes 30 verified posts without any source requests; corruption fails closed
+  ---
+  duration_ms: 4.87025
+  type: 'test'
+  ...
+# Subtest: ongoing series still synchronizes the deployed source
+ok 8 - ongoing series still synchronizes the deployed source
+  ---
+  duration_ms: 0.455584
+  type: 'test'
+  ...
+# Subtest: prepares Substack with canonical source and writes disabled
+ok 9 - prepares Substack with canonical source and writes disabled
+  ---
+  duration_ms: 12.217708
+  type: 'test'
+  ...
+# Subtest: invalid slugs and missing content fail closed
+ok 10 - invalid slugs and missing content fail closed
+  ---
+  duration_ms: 0.913541
+  type: 'test'
+  ...
+# Subtest: ready posts are not prepared for distribution
+ok 11 - ready posts are not prepared for distribution
+  ---
+  duration_ms: 1.628417
+  type: 'test'
+  ...
+# Subtest: future posts are never prepared for distribution
+ok 12 - future posts are never prepared for distribution
+  ---
+  duration_ms: 1.393
+  type: 'test'
+  ...
+# Subtest: committed publication exports its exact revision for Pages delivery
+ok 13 - committed publication exports its exact revision for Pages delivery
+  ---
+  duration_ms: 175.404583
+  type: 'test'
+  ...
+# Subtest: empty hourly verification never arms Pages delivery
+ok 14 - empty hourly verification never arms Pages delivery
+  ---
+  duration_ms: 117.199083
+  type: 'test'
+  ...
+# Subtest: known pre-write conflict and unknown Git result never arm deployment
+ok 15 - known pre-write conflict and unknown Git result never arm deployment
+  ---
+  duration_ms: 236.367292
+  type: 'test'
+  ...
+# Subtest: malformed and injectable publication identities fail closed
+ok 16 - malformed and injectable publication identities fail closed
+  ---
+  duration_ms: 619.825834
+  type: 'test'
+  ...
+# Subtest: disabled Worker gate never arms deployment
+ok 17 - disabled Worker gate never arms deployment
+  ---
+  duration_ms: 117.375333
+  type: 'test'
+  ...
+# Subtest: all 30 fixed Ironman articles have 1-3 curated topics from the shared taxonomy
+ok 18 - all 30 fixed Ironman articles have 1-3 curated topics from the shared taxonomy
+  ---
+  duration_ms: 10.071208
+  type: 'test'
+  ...
+# Subtest: all local finalized manuscripts use existing topic taxonomy without rewriting prose
+ok 19 - all local finalized manuscripts use existing topic taxonomy without rewriting prose
+  ---
+  duration_ms: 87.144917
+  type: 'test'
+  ...
+# Subtest: local post slug ignores parent folders
+ok 20 - local post slug ignores parent folders
+  ---
+  duration_ms: 0.661625
+  type: 'test'
+  ...
+# Subtest: local post discovery is recursive
+ok 21 - local post discovery is recursive
+  ---
+  duration_ms: 46.368709
+  type: 'test'
+  ...
+# Subtest: duplicate basenames are rejected when resolving a slug
+ok 22 - duplicate basenames are rejected when resolving a slug
+  ---
+  duration_ms: 9.1655
+  type: 'test'
+  ...
+# Subtest: publication rolls over at Taipei midnight, rather than UTC midnight
+ok 23 - publication rolls over at Taipei midnight, rather than UTC midnight
+  ---
+  duration_ms: 46.025959
+  type: 'test'
+  ...
+# Subtest: legacy date begins at Taipei midnight while offset date-time uses its exact instant
+ok 24 - legacy date begins at Taipei midnight while offset date-time uses its exact instant
+  ---
+  duration_ms: 0.353375
+  type: 'test'
+  ...
+# Subtest: invalid publication input fails closed and undated published posts stay compatible
+ok 25 - invalid publication input fails closed and undated published posts stay compatible
+  ---
+  duration_ms: 0.553291
+  type: 'test'
+  ...
+# Subtest: offset-aware visibility is timezone-environment independent
+ok 26 - offset-aware visibility is timezone-environment independent
+  ---
+  duration_ms: 0.770792
+  type: 'test'
+  ...
+# Subtest: completed manuscripts and archived sources do not end an ongoing public schedule
+ok 27 - completed manuscripts and archived sources do not end an ongoing public schedule
+  ---
+  duration_ms: 0.254542
+  type: 'test'
+  ...
+# Subtest: inactivity never completes an open series and paused series remain paused
+ok 28 - inactivity never completes an open series and paused series remain paused
+  ---
+  duration_ms: 0.050125
+  type: 'test'
+  ...
+# Subtest: Substack dry run stays provider-payload independent and cannot publish
+ok 29 - Substack dry run stays provider-payload independent and cannot publish
+  ---
+  duration_ms: 1.37175
+  type: 'test'
+  ...
+# Subtest: full mode preserves portable Markdown and records assets
+ok 30 - full mode preserves portable Markdown and records assets
+  ---
+  duration_ms: 8.574625
+  type: 'test'
+  ...
+# Subtest: interactive-summary uses only the authored fallback and canonical link
+ok 31 - interactive-summary uses only the authored fallback and canonical link
+  ---
+  duration_ms: 1.231916
+  type: 'test'
+  ...
+# Subtest: interactive-summary rejects source without an authored fallback
+ok 32 - interactive-summary rejects source without an authored fallback
+  ---
+  duration_ms: 1.008875
+  type: 'test'
+  ...
+# Subtest: full mode rejects MDX constructs instead of delegating improvisation to adapters
+ok 33 - full mode rejects MDX constructs instead of delegating improvisation to adapters
+  ---
+  duration_ms: 0.866334
+  type: 'test'
+  ...
+# Subtest: complete series follows manifest order, independent of file order
+ok 34 - complete series follows manifest order, independent of file order
+  ---
+  duration_ms: 1.898917
+  type: 'test'
+  ...
+# Subtest: partially written series fails closed
+ok 35 - partially written series fails closed
+  ---
+  duration_ms: 0.205458
+  type: 'test'
+  ...
+# Subtest: status mismatch and missing durable timestamp block series
+ok 36 - status mismatch and missing durable timestamp block series
+  ---
+  duration_ms: 0.115834
+  type: 'test'
+  ...
+# Subtest: published parts do not re-enter the queue
+ok 37 - published parts do not re-enter the queue
+  ---
+  duration_ms: 0.270333
+  type: 'test'
+  ...
+# Subtest: standalone ready post enters as standalone
+ok 38 - standalone ready post enters as standalone
+  ---
+  duration_ms: 0.077792
+  type: 'test'
+  ...
+# Subtest: duplicate cross-series reference fails closed
+ok 39 - duplicate cross-series reference fails closed
+  ---
+  duration_ms: 0.066042
+  type: 'test'
+  ...
+# Subtest: six ready series posts occupy Monday/Thursday 07:00 slots in order
+ok 40 - six ready series posts occupy Monday/Thursday 07:00 slots in order
+  ---
+  duration_ms: 5.208958
+  type: 'test'
+  ...
+# Subtest: standalone interrupts active series while preserving internal order
+ok 41 - standalone interrupts active series while preserving internal order
+  ---
+  duration_ms: 0.1685
+  type: 'test'
+  ...
+# Subtest: unready series does not schedule until every provided item becomes ready
+ok 42 - unready series does not schedule until every provided item becomes ready
+  ---
+  duration_ms: 0.269625
+  type: 'test'
+  ...
+# Subtest: reserved slot is skipped
+ok 43 - reserved slot is skipped
+  ---
+  duration_ms: 0.085708
+  type: 'test'
+  ...
+# Subtest: rejects reserved timestamps that are not an exact policy slot
+ok 44 - rejects reserved timestamps that are not an exact policy slot
+  ---
+  duration_ms: 0.243417
+  type: 'test'
+  ...
+# Subtest: rejects impossible calendar timestamps instead of normalizing them
+ok 45 - rejects impossible calendar timestamps instead of normalizing them
+  ---
+  duration_ms: 0.069916
+  type: 'test'
+  ...
+# Subtest: resumes previously active series before an older waiting group
+ok 46 - resumes previously active series before an older waiting group
+  ---
+  duration_ms: 0.127833
+  type: 'test'
+  ...
+# Subtest: article structured data uses canonical page and shared author identity
+ok 47 - article structured data uses canonical page and shared author identity
+  ---
+  duration_ms: 8.607334
+  type: 'test'
+  ...
+# Subtest: profile structured data exposes one stable author entity
+ok 48 - profile structured data exposes one stable author entity
+  ---
+  duration_ms: 0.137208
+  type: 'test'
+  ...
+# Subtest: breadcrumb structured data preserves reading order
+ok 49 - breadcrumb structured data preserves reading order
+  ---
+  duration_ms: 0.09175
+  type: 'test'
+  ...
+# Subtest: series structured data exposes an ordered article collection
+ok 50 - series structured data exposes an ordered article collection
+  ---
+  duration_ms: 0.261958
+  type: 'test'
+  ...
+# Subtest: legacy automatic Pages triggers are withdrawn without losing manual controls
+ok 51 - legacy automatic Pages triggers are withdrawn without losing manual controls
+  ---
+  duration_ms: 1.189708
+  type: 'test'
+  ...
+# Subtest: manual deployment guards reject unexpected automatic events and isolate Secret acceptance
+ok 52 - manual deployment guards reject unexpected automatic events and isolate Secret acceptance
+  ---
+  duration_ms: 7.628667
+  type: 'test'
+  ...
+# Subtest: failed builds and stale main cannot publish and Pages does not distribute or mail
+ok 53 - failed builds and stale main cannot publish and Pages does not distribute or mail
+  ---
+  duration_ms: 0.22675
+  type: 'test'
+  ...
+# Subtest: publication remains private before the Taipei instant and eligible at the instant
+ok 54 - publication remains private before the Taipei instant and eligible at the instant
+  ---
+  duration_ms: 0.168125
+  type: 'test'
+  ...
+# Subtest: the saved 30 completed articles validate offline and corruption never falls back
+ok 55 - the saved 30 completed articles validate offline and corruption never falls back
+  ---
+  duration_ms: 12.800417
+  type: 'test'
+  ...
+# Subtest: existing editorial cron and no-op delivery guards remain intact; both builds restore completed content first
+ok 56 - existing editorial cron and no-op delivery guards remain intact; both builds restore completed content first
+  ---
+  duration_ms: 0.13275
+  type: 'test'
+  ...
+1..56
+# tests 56
+# suites 0
+# pass 56
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1421.964959
+TAP version 13
+# Subtest: Phase 0 exposes independent workspace build and test entry points
+ok 1 - Phase 0 exposes independent workspace build and test entry points
+  ---
+  duration_ms: 6.079333
+  type: 'test'
+  ...
+# Subtest: Astro checks exclude generated workspace build output
+ok 2 - Astro checks exclude generated workspace build output
+  ---
+  duration_ms: 0.750916
+  type: 'test'
+  ...
+# Subtest: preview Worker serves the built Admin as a same-origin SPA while runtime routes reach the Worker
+ok 3 - preview Worker serves the built Admin as a same-origin SPA while runtime routes reach the Worker
+  ---
+  duration_ms: 0.181834
+  type: 'test'
+  ...
+# Subtest: production Admin deployment migrates before deploy and verifies health
+ok 4 - production Admin deployment migrates before deploy and verifies health
+  ---
+  duration_ms: 0.1455
+  type: 'test'
+  ...
+# Subtest: main pull requests receive full local gates without deployment authority
+ok 5 - main pull requests receive full local gates without deployment authority
+  ---
+  duration_ms: 13.571542
+  type: 'test'
+  ...
+# Subtest: deploy-admin-worker.yml preserves its approved triggers and deploys only on main
+ok 6 - deploy-admin-worker.yml preserves its approved triggers and deploys only on main
+  ---
+  duration_ms: 1.897375
+  type: 'test'
+  ...
+# Subtest: deploy-pages.yml preserves its approved triggers and deploys only on main
+ok 7 - deploy-pages.yml preserves its approved triggers and deploys only on main
+  ---
+  duration_ms: 2.901917
+  type: 'test'
+  ...
+# Subtest: production and preview deployment retain verified OAuth client and owner configuration
+ok 8 - production and preview deployment retain verified OAuth client and owner configuration
+  ---
+  duration_ms: 0.183625
+  type: 'test'
+  ...
+# Subtest: editorial release deploys only newly committed revisions with isolated Pages permissions
+ok 9 - editorial release deploys only newly committed revisions with isolated Pages permissions
+  ---
+  duration_ms: 2.124792
+  type: 'test'
+  ...
+# Subtest: every direct local-post surface uses the shared publication-time predicate
+ok 10 - every direct local-post surface uses the shared publication-time predicate
+  ---
+  duration_ms: 5.873042
+  type: 'test'
+  ...
+# Subtest: catalog-derived RSS, search, navigation, and series outputs cannot bypass visibility filtering
+ok 11 - catalog-derived RSS, search, navigation, and series outputs cannot bypass visibility filtering
+  ---
+  duration_ms: 2.282042
+  type: 'test'
+  ...
+# Subtest: public post pages derive series membership from manifests and hide sequence UI for standalone posts
+ok 12 - public post pages derive series membership from manifests and hide sequence UI for standalone posts
+  ---
+  duration_ms: 0.659542
+  type: 'test'
+  ...
+# Subtest: public article pages emit shared structured data
+ok 13 - public article pages emit shared structured data
+  ---
+  duration_ms: 0.947791
+  type: 'test'
+  ...
+# Subtest: article topics use the approved mist-blue pill treatment
+ok 14 - article topics use the approved mist-blue pill treatment
+  ---
+  duration_ms: 0.883625
+  type: 'test'
+  ...
+# Subtest: public Astro and Cloudflare Worker runtimes do not depend on Ollama
+ok 15 - public Astro and Cloudflare Worker runtimes do not depend on Ollama
+  ---
+  duration_ms: 1.173834
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 176.680958
+
+> gcake-dev@0.1.0 test:workspaces /Users/caiyijun/project/gcake-dev
+> pnpm --filter "./apps/**" --filter "./packages/**" test
+
+Scope: 5 of 6 workspace projects
+apps/slug-generator test$ node --import tsx --test src/*.test.ts
+packages/admin-contract test$ node --import tsx --test src/*.test.ts
+packages/publishing-contract test$ node --import tsx --test src/*.test.ts
+packages/admin-contract test: TAP version 13
+packages/publishing-contract test: TAP version 13
+apps/slug-generator test: TAP version 13
+packages/publishing-contract test: # Subtest: Publishing ownership remains explicit across GitHub, R2, and D1
+packages/admin-contract test: # Subtest: Admin API contract has a stable Phase 0 version
+packages/admin-contract test: ok 1 - Admin API contract has a stable Phase 0 version
+packages/admin-contract test:   ---
+packages/admin-contract test:   duration_ms: 0.591042
+packages/admin-contract test:   type: 'test'
+packages/admin-contract test:   ...
+packages/admin-contract test: # Subtest: Phase 1 API errors use a stable shared envelope
+packages/publishing-contract test: ok 1 - Publishing ownership remains explicit across GitHub, R2, and D1
+packages/publishing-contract test:   ---
+packages/publishing-contract test:   duration_ms: 1.140375
+packages/publishing-contract test:   type: 'test'
+packages/publishing-contract test:   ...
+packages/publishing-contract test: # Subtest: Provider writes default off and fail closed for Substack
+packages/publishing-contract test: ok 2 - Provider writes default off and fail closed for Substack
+packages/publishing-contract test:   ---
+packages/publishing-contract test:   duration_ms: 0.194334
+packages/publishing-contract test:   type: 'test'
+packages/publishing-contract test:   ...
+packages/admin-contract test: ok 2 - Phase 1 API errors use a stable shared envelope
+packages/admin-contract test:   ---
+packages/admin-contract test:   duration_ms: 0.067
+packages/admin-contract test:   type: 'test'
+packages/admin-contract test:   ...
+packages/admin-contract test: # Subtest: Session contract exposes owner identity and CSRF token without provider credentials
+packages/admin-contract test: ok 3 - Session contract exposes owner identity and CSRF token without provider credentials
+packages/admin-contract test:   ---
+packages/admin-contract test:   duration_ms: 0.060542
+packages/admin-contract test:   type: 'test'
+packages/admin-contract test:   ...
+packages/admin-contract test: 1..3
+packages/admin-contract test: # tests 3
+packages/admin-contract test: # suites 0
+packages/admin-contract test: # pass 3
+packages/admin-contract test: # fail 0
+packages/admin-contract test: # cancelled 0
+packages/admin-contract test: # skipped 0
+packages/admin-contract test: # todo 0
+packages/admin-contract test: # duration_ms 120.579042
+packages/publishing-contract test: 1..2
+packages/publishing-contract test: # tests 2
+packages/publishing-contract test: # suites 0
+packages/publishing-contract test: # pass 2
+packages/publishing-contract test: # fail 0
+packages/publishing-contract test: # cancelled 0
+packages/publishing-contract test: # skipped 0
+packages/publishing-contract test: # todo 0
+packages/publishing-contract test: # duration_ms 117.42175
+packages/publishing-contract test: Done
+packages/admin-contract test: Done
+apps/slug-generator test: # Subtest: sanitizes one plain or fenced candidate to lowercase kebab-case
+apps/slug-generator test: ok 1 - sanitizes one plain or fenced candidate to lowercase kebab-case
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 1.005083
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: # Subtest: rejects prose, multiple candidates, invalid word counts, dates, and meaningless numbers
+apps/slug-generator test: ok 2 - rejects prose, multiple candidates, invalid word counts, dates, and meaningless numbers
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 0.192875
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: # Subtest: prompt keeps technical terms and asks for slug only
+apps/slug-generator test: ok 3 - prompt keeps technical terms and asks for slug only
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 0.272291
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: # Subtest: valid request calls configured Ollama model and returns a sanitized suggestion
+apps/slug-generator test: ok 4 - valid request calls configured Ollama model and returns a sanitized suggestion
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 20.326708
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: # Subtest: empty title and unapproved origin never call Ollama
+apps/slug-generator test: ok 5 - empty title and unapproved origin never call Ollama
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 0.425167
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: # Subtest: unavailable, missing model, timeout, and invalid model output are optional failures
+apps/slug-generator test: ok 6 - unavailable, missing model, timeout, and invalid model output are optional failures
+apps/slug-generator test:   ---
+apps/slug-generator test:   duration_ms: 8.2765
+apps/slug-generator test:   type: 'test'
+apps/slug-generator test:   ...
+apps/slug-generator test: 1..6
+apps/slug-generator test: # tests 6
+apps/slug-generator test: # suites 0
+apps/slug-generator test: # pass 6
+apps/slug-generator test: # fail 0
+apps/slug-generator test: # cancelled 0
+apps/slug-generator test: # skipped 0
+apps/slug-generator test: # todo 0
+apps/slug-generator test: # duration_ms 147.558708
+apps/slug-generator test: Done
+apps/admin test$ node --import tsx --test src/*.test.ts
+apps/admin-worker test$ node --import tsx --test src/*.test.ts
+apps/admin test: TAP version 13
+apps/admin-worker test: TAP version 13
+apps/admin-worker test: # Subtest: audit events retain bounded diagnostics and reject secrets or article bodies
+apps/admin-worker test: ok 1 - audit events retain bounded diagnostics and reject secrets or article bodies
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.33475
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin test: # Subtest: deployment observation never promotes a Git save into publication proof
+apps/admin test: ok 1 - deployment observation never promotes a Git save into publication proof
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.179834
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: one control cycles markdown → rendered → split → markdown without source or position loss
+apps/admin test: ok 2 - one control cycles markdown → rendered → split → markdown without source or position loss
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.627166
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: split preferences default to 50/50, clamp keyboard resize, and persist sync opt-out
+apps/admin test: ok 3 - split preferences default to 50/50, clamp keyboard resize, and persist sync opt-out
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.663
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: immediate preview renders portable Markdown fixtures and reports unsupported MDX honestly
+apps/admin test: ok 4 - immediate preview renders portable Markdown fixtures and reports unsupported MDX honestly
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.461458
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: given a post with frontmatter, when immediate preview renders, then only the article body is visible
+apps/admin test: ok 5 - given a post with frontmatter, when immediate preview renders, then only the article body is visible
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.146209
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: Admin consumes the shared API contract package
+apps/admin test: ok 6 - Admin consumes the shared API contract package
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.766125
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: given a 320px viewport, the Admin shell does not enforce horizontal overflow
+apps/admin test: ok 7 - given a 320px viewport, the Admin shell does not enforce horizontal overflow
+apps/admin test:   ---
+apps/admin test:   duration_ms: 37.175459
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: Admin headings and article preview inherit the project system sans typography
+apps/admin test: ok 8 - Admin headings and article preview inherit the project system sans typography
+apps/admin test:   ---
+apps/admin test:   duration_ms: 14.718208
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: opening an article or series replaces the content overview with a focused workspace
+apps/admin test: ok 9 - opening an article or series replaces the content overview with a focused workspace
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.872
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: the publication center follows content editing and preview
+apps/admin test: ok 10 - the publication center follows content editing and preview
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.722
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: series ordering exposes a visible drag affordance and dragging state
+apps/admin test: ok 11 - series ordering exposes a visible drag affordance and dragging state
+apps/admin test:   ---
+apps/admin test:   duration_ms: 7.692708
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: series sections expose editable fields and guarded structure actions
+apps/admin test: ok 12 - series sections expose editable fields and guarded structure actions
+apps/admin test:   ---
+apps/admin test:   duration_ms: 11.07
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: content workbench creates, labels, and filters standalone posts without a series selector
+apps/admin test: ok 13 - content workbench creates, labels, and filters standalone posts without a series selector
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.161125
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: new article workspace exposes an explicit editable slug suggestion without autosave
+apps/admin test: ok 14 - new article workspace exposes an explicit editable slug suggestion without autosave
+apps/admin test:   ---
+apps/admin test:   duration_ms: 6.979042
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: existing article workspace keeps title and slug editable and generates only on explicit action
+apps/admin test: ok 15 - existing article workspace keeps title and slug editable and generates only on explicit action
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.501542
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: series editor adds standalone posts by changing only its manifest state
+apps/admin test: ok 16 - series editor adds standalone posts by changing only its manifest state
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.054875
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: manual owner UI previews before confirmation and never publishes dirty or denied content
+apps/admin test: ok 17 - manual owner UI previews before confirmation and never publishes dirty or denied content
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.816542
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: manual owner UI posts only the reviewed intent once and preserves unknown outcome without replay
+apps/admin test: ok 18 - manual owner UI posts only the reviewed intent once and preserves unknown outcome without replay
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.79575
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: manual owner UI refuses a main revision newer than the content actually reviewed
+apps/admin test: ok 19 - manual owner UI refuses a main revision newer than the content actually reviewed
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.086458
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: removed image URLs exclude retained images and ordinary links
+apps/admin test: ok 20 - removed image URLs exclude retained images and ordinary links
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.4465
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: duplicate references produce one cleanup candidate only after every image reference is removed
+apps/admin test: ok 21 - duplicate references produce one cleanup candidate only after every image reference is removed
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.1475
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: cleanup candidates include only removed images that belong to the media library
+apps/admin test: ok 22 - cleanup candidates include only removed images that belong to the media library
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.121667
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin-worker test: # Subtest: mocked OAuth owner callback creates a bounded CMS session without exposing credentials
+apps/admin-worker test: ok 2 - mocked OAuth owner callback creates a bounded CMS session without exposing credentials
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 154.094334
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: mocked OAuth rejects a non-owner and creates no authorized session
+apps/admin-worker test: ok 3 - mocked OAuth rejects a non-owner and creates no authorized session
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.108791
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: immutable GitHub user ID allowlist rejects every other authenticated user
+apps/admin-worker test: ok 4 - immutable GitHub user ID allowlist rejects every other authenticated user
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.103334
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: OAuth state is bounded, signed, and can only be consumed once
+apps/admin-worker test: ok 5 - OAuth state is bounded, signed, and can only be consumed once
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.011292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: authorized login stores only a session-token hash and returns a secure cookie
+apps/admin-worker test: ok 6 - authorized login stores only a session-token hash and returns a secure cookie
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 6.163792
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 sessions persist only a hash and resolve the owner from the raw cookie
+apps/admin-worker test: ok 7 - D1 sessions persist only a hash and resolve the owner from the raw cookie
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 38.769542
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: state-changing requests require the session CSRF token
+apps/admin-worker test: ok 8 - state-changing requests require the session CSRF token
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 84.505333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Missing production flags keep every provider write disabled
+apps/admin-worker test: ok 9 - Missing production flags keep every provider write disabled
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.143958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Invalid provider write flags fail closed instead of silently enabling writes
+apps/admin-worker test: ok 10 - Invalid provider write flags fail closed instead of silently enabling writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.171916
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Wrangler local, preview, and production bindings use separate resources
+apps/admin-worker test: ok 11 - Wrangler local, preview, and production bindings use separate resources
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.146209
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin test: # Subtest: content list can identify and filter standalone posts
+apps/admin test: ok 23 - content list can identify and filter standalone posts
+apps/admin test:   ---
+apps/admin test:   duration_ms: 36.011
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: series editor offers only posts absent from every manifest
+apps/admin test: ok 24 - series editor offers only posts absent from every manifest
+apps/admin test:   ---
+apps/admin test:   duration_ms: 4.225167
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: new post source is standalone and contains no permanent article-type or series fields
+apps/admin test: ok 25 - new post source is standalone and contains no permanent article-type or series fields
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.583625
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: editing an article title updates only the frontmatter title
+apps/admin test: ok 26 - editing an article title updates only the frontmatter title
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.250334
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin-worker test: # Subtest: authorized owner browses repository-derived posts with blob and commit SHAs
+apps/admin-worker test: ok 12 - authorized owner browses repository-derived posts with blob and commit SHAs
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 108.547625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: content routes reject unauthenticated requests before calling GitHub
+apps/admin-worker test: ok 13 - content routes reject unauthenticated requests before calling GitHub
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.5555
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: authorized owner browses repository-derived series with base SHAs
+apps/admin-worker test: ok 14 - authorized owner browses repository-derived series with base SHAs
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.94725
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Worker runtime has an independent entry point
+apps/admin-worker test: ok 15 - Worker runtime has an independent entry point
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.580084
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin test: # Subtest: Publishing Center exposes only current Pages and Substack targets
+apps/admin test: ok 27 - Publishing Center exposes only current Pages and Substack targets
+apps/admin test:   ---
+apps/admin test:   duration_ms: 4.659833
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: autosave is keyed by repository, article slug, and base revision
+apps/admin test: ok 28 - autosave is keyed by repository, article slug, and base revision
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.630167
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: older-base autosave enters conflict handling and never silently replaces repository source
+apps/admin test: ok 29 - older-base autosave enters conflict handling and never silently replaces repository source
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.079
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: release presentation distinguishes estimates, verification and external notification
+apps/admin test: ok 30 - release presentation distinguishes estimates, verification and external notification
+apps/admin test:   ---
+apps/admin test:   duration_ms: 66.701416
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: changing article or date ignores a late preview response
+apps/admin test: ok 31 - changing article or date ignores a late preview response
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.293584
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: latest preview wins even when requests complete out of order
+apps/admin test: ok 32 - latest preview wins even when requests complete out of order
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.194084
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin-worker test: # Subtest: stale article SHA returns conflict details and creates no commit
+apps/admin-worker test: ok 16 - stale article SHA returns conflict details and creates no commit
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.722417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: article and series update validate first and land in exactly one commit
+apps/admin-worker test: ok 17 - article and series update validate first and land in exactly one commit
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.724
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: deletion requires explicit confirmation and blocks unresolved series references
+apps/admin-worker test: ok 18 - deletion requires explicit confirmation and blocks unresolved series references
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.094292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post rename creates the new path and removes the old path in one transaction
+apps/admin-worker test: ok 19 - post rename creates the new path and removes the old path in one transaction
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.164584
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post rename rewrites every series post entry and editorial pointer in the same transaction
+apps/admin-worker test: ok 20 - post rename rewrites every series post entry and editorial pointer in the same transaction
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 48.431292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: stale referencing series blocks the entire post rename
+apps/admin-worker test: ok 21 - stale referencing series blocks the entire post rename
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.642958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post rename rejects an existing target slug without creating a commit
+apps/admin-worker test: ok 22 - post rename rejects an existing target slug without creating a commit
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.145042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin test: # Subtest: new CMS schedules are serialized with an explicit Taipei offset
+apps/admin test: ok 33 - new CMS schedules are serialized with an explicit Taipei offset
+apps/admin test:   ---
+apps/admin test:   duration_ms: 110.491709
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: schedule editor changes only the canonical publishedAt frontmatter value
+apps/admin test: ok 34 - schedule editor changes only the canonical publishedAt frontmatter value
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.315875
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: presentation separates scheduled, due-awaiting-build, and post-instant deployment
+apps/admin test: ok 35 - presentation separates scheduled, due-awaiting-build, and post-instant deployment
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.258875
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: reordering is local UI state and preserves every post
+apps/admin test: ok 36 - reordering is local UI state and preserves every post
+apps/admin test:   ---
+apps/admin test:   duration_ms: 5.259083
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: adding a section creates the next unique chapter without mutating the source manifest
+apps/admin test: ok 37 - adding a section creates the next unique chapter without mutating the source manifest
+apps/admin test:   ---
+apps/admin test:   duration_ms: 27.9
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: section details, order, and empty-section removal are editable without losing posts
+apps/admin test: ok 38 - section details, order, and empty-section removal are editable without losing posts
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.845541
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: a standalone post can be added through the manifest without article frontmatter fields
+apps/admin test: ok 39 - a standalone post can be added through the manifest without article frontmatter fields
+apps/admin test:   ---
+apps/admin test:   duration_ms: 4.442708
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: empty title does not send a request
+apps/admin test: ok 40 - empty title does not send a request
+apps/admin test:   ---
+apps/admin test:   duration_ms: 1.1885
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: returns a safe suggestion without invoking any CMS save endpoint
+apps/admin test: ok 41 - returns a safe suggestion without invoking any CMS save endpoint
+apps/admin test:   ---
+apps/admin test:   duration_ms: 58.042958
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: # Subtest: invalid, unavailable, or unconfigured responses preserve manual editing
+apps/admin test: ok 42 - invalid, unavailable, or unconfigured responses preserve manual editing
+apps/admin test:   ---
+apps/admin test:   duration_ms: 0.319958
+apps/admin test:   type: 'test'
+apps/admin test:   ...
+apps/admin test: 1..42
+apps/admin test: # tests 42
+apps/admin test: # suites 0
+apps/admin test: # pass 42
+apps/admin test: # fail 0
+apps/admin test: # cancelled 0
+apps/admin test: # skipped 0
+apps/admin test: # todo 0
+apps/admin test: # duration_ms 579.493
+apps/admin test: Done
+apps/admin-worker test: # Subtest: native Workers history request reads readiness without unsupported redirect mode
+apps/admin-worker test: ok 23 - native Workers history request reads readiness without unsupported redirect mode
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 684.716291
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: native Workers history rejects redirects without following an untrusted destination
+apps/admin-worker test: ok 24 - native Workers history rejects redirects without following an untrusted destination
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 75.065958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: GitHub App boundary is pinned to the approved repository and least privileges
+apps/admin-worker test: ok 25 - GitHub App boundary is pinned to the approved repository and least privileges
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.243333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: installation token remains server-side and Phase 1 performs GET only
+apps/admin-worker test: ok 26 - installation token remains server-side and Phase 1 performs GET only
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 70.769375
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: GitHub App installation provider signs a short-lived JWT and exchanges it server-side
+apps/admin-worker test: ok 27 - GitHub App installation provider signs a short-lived JWT and exchanges it server-side
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 86.76075
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: GitHub App installation provider accepts GitHub-generated PKCS\#1 private keys
+apps/admin-worker test: ok 28 - GitHub App installation provider accepts GitHub-generated PKCS\#1 private keys
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 31.602833
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: GitHub read client returns repository-derived posts, series, and deployment state
+apps/admin-worker test: ok 29 - GitHub read client returns repository-derived posts, series, and deployment state
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 7.637958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: production GitHub writer creates one commit and advances the branch once without force
+apps/admin-worker test: ok 30 - production GitHub writer creates one commit and advances the branch once without force
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.111708
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: production GitHub writer maps a concurrent non-fast-forward ref update to a repository conflict
+apps/admin-worker test: ok 31 - production GitHub writer maps a concurrent non-fast-forward ref update to a repository conflict
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.721792
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: production GitHub writer renames the post and every series reference in one tree update
+apps/admin-worker test: ok 32 - production GitHub writer renames the post and every series reference in one tree update
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.963333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: GET /health returns the shared healthy payload without production credentials
+apps/admin-worker test: ok 33 - GET /health returns the shared healthy payload without production credentials
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 58.703667
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: unknown Worker routes return 404 without touching production bindings
+apps/admin-worker test: ok 34 - unknown Worker routes return 404 without touching production bindings
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.826583
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Worker entrypoint exposes the CMS session route without requiring provider writes
+apps/admin-worker test: ok 35 - Worker entrypoint exposes the CMS session route without requiring provider writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.669917
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Worker entrypoint fails closed before OAuth when required secrets are missing
+apps/admin-worker test: ok 36 - Worker entrypoint fails closed before OAuth when required secrets are missing
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.296459
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Worker entrypoint wires GitHub App installation credentials into repository reads
+apps/admin-worker test: ok 37 - Worker entrypoint wires GitHub App installation credentials into repository reads
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 87.546875
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Worker entrypoint wires GitHub App installation credentials into repository writes
+apps/admin-worker test: ok 38 - Worker entrypoint wires GitHub App installation credentials into repository writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 117.945959
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: Cloudflare execution context is not mistaken for the outbound fetch function
+apps/admin-worker test: ok 39 - Cloudflare execution context is not mistaken for the outbound fetch function
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 45.0665
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: OAuth login and token exchange use the initiating CMS callback in production and preview
+apps/admin-worker test: ok 40 - OAuth login and token exchange use the initiating CMS callback in production and preview
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.859417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 media index stores operational metadata only, never article alt, caption, or bytes
+apps/admin-worker test: ok 41 - D1 media index stores operational metadata only, never article alt, caption, or bytes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.705958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: authenticated media list exposes operational metadata without article copy
+apps/admin-worker test: ok 42 - authenticated media list exposes operational metadata without article copy
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 84.692417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: PNG upload requires CSRF and passes server-computed metadata to service
+apps/admin-worker test: ok 43 - PNG upload requires CSRF and passes server-computed metadata to service
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 23.734125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: invalid media fails with stable code and no successful response
+apps/admin-worker test: ok 44 - invalid media fails with stable code and no successful response
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.587916
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: used media deletion reports repository usages instead of deleting
+apps/admin-worker test: ok 45 - used media deletion reports repository usages instead of deleting
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.3585
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: immutable keys are deterministic in shape and unique by asset ID
+apps/admin-worker test: ok 46 - immutable keys are deterministic in shape and unique by asset ID
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.225084
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: disallowed type and oversize input create neither R2 object nor D1 record
+apps/admin-worker test: ok 47 - disallowed type and oversize input create neither R2 object nor D1 record
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.490334
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: WebP, PNG, and SVG are accepted with matching immutable extensions
+apps/admin-worker test: ok 48 - WebP, PNG, and SVG are accepted with matching immutable extensions
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.090459
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: upload stores immutable bytes and operational metadata without article alt or caption
+apps/admin-worker test: ok 49 - upload stores immutable bytes and operational metadata without article alt or caption
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.111417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: replacement gets a new URL and preserves historical object
+apps/admin-worker test: ok 50 - replacement gets a new URL and preserves historical object
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.204959
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: usage scan blocks deletion until references are resolved and confirmed
+apps/admin-worker test: ok 51 - usage scan blocks deletion until references are resolved and confirmed
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.823
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: CMS matches editorial artifact SHA despite preceding trigger SHA and newer unrelated/no-op runs
+apps/admin-worker test: ok 52 - CMS matches editorial artifact SHA despite preceding trigger SHA and newer unrelated/no-op runs
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 29.687916
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: missing or skipped deployment never becomes deployed after scheduler success
+apps/admin-worker test: ok 53 - missing or skipped deployment never becomes deployed after scheduler success
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.484625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: CMS reports failed snapshot/build and failed deployment for the actual publication SHA
+apps/admin-worker test: ok 54 - CMS reports failed snapshot/build and failed deployment for the actual publication SHA
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.682709
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: recovery reruns only failed jobs of the matching editorial run, never unrelated newest run
+apps/admin-worker test: ok 55 - recovery reruns only failed jobs of the matching editorial run, never unrelated newest run
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.405708
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: successful or unproven publication refuses recovery without external writes
+apps/admin-worker test: ok 56 - successful or unproven publication refuses recovery without external writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.913167
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 preview lifecycle stores source identity and operational state without draft body
+apps/admin-worker test: ok 57 - D1 preview lifecycle stores source identity and operational state without draft body
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.330416
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: formal preview route requires owner CSRF and forwards exact base plus unsaved draft
+apps/admin-worker test: ok 58 - formal preview route requires owner CSRF and forwards exact base plus unsaved draft
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 74.330833
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: formal preview binds base revision and draft hash through queued, running, ready lifecycle
+apps/admin-worker test: ok 59 - formal preview binds base revision and draft hash through queued, running, ready lifecycle
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 24.863292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: unreconstructable base fails actionably and never substitutes current source
+apps/admin-worker test: ok 60 - unreconstructable base fails actionably and never substitutes current source
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 36.137208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: expiry makes preview unavailable and cleanup is scoped to preview artifacts
+apps/admin-worker test: ok 61 - expiry makes preview unavailable and cleanup is scoped to preview artifacts
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.702333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # (node:4990) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+apps/admin-worker test: # (Use `node --trace-warnings ...` to show where the warning was created)
+apps/admin-worker test: # Subtest: authenticated current request identity is echoed without writes and invalid identity is refused
+apps/admin-worker test: ok 62 - authenticated current request identity is echoed without writes and invalid identity is refused
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 47.104542
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: complete observation discovers new series, member and standalone with only formal commitments
+apps/admin-worker test: ok 63 - complete observation discovers new series, member and standalone with only formal commitments
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.741084
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: read-only entrypoint repeated reads are current, bounded and minimally disclosed
+apps/admin-worker test: ok 64 - read-only entrypoint repeated reads are current, bounded and minimally disclosed
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.908333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: summary rejects missing/invalid dedicated credential and non-GET without observations
+apps/admin-worker test: ok 65 - summary rejects missing/invalid dedicated credential and non-GET without observations
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.992875
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: estimate, pause and reschedule replace old authority; unlocked record is unknown, never inferred cancelled
+apps/admin-worker test: ok 66 - estimate, pause and reschedule replace old authority; unlocked record is unknown, never inferred cancelled
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.207584
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: unavailable catalogue, malformed authority, duplicate identities and revision/version race fail closed
+apps/admin-worker test: ok 67 - unavailable catalogue, malformed authority, duplicate identities and revision/version race fail closed
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.73375
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 schema owns operational state but excludes article body, frontmatter, and publishedAt
+apps/admin-worker test: ok 68 - D1 schema owns operational state but excludes article body, frontmatter, and publishedAt
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 8.122625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: legacy JSON import is idempotent and subsequent writes target only D1 repository
+apps/admin-worker test: ok 69 - legacy JSON import is idempotent and subsequent writes target only D1 repository
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.45625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: accepted cutover removes the JSON owner and compatibility module together
+apps/admin-worker test: ok 70 - accepted cutover removes the JSON owner and compatibility module together
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.980458
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: targets remain independent and verified old revision becomes stale without provider calls
+apps/admin-worker test: ok 71 - targets remain independent and verified old revision becomes stale without provider calls
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.007667
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: unsupported destinations fail closed while Substack remains manual
+apps/admin-worker test: ok 72 - unsupported destinations fail closed while Substack remains manual
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.530917
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: one target failure never rolls back another verified target
+apps/admin-worker test: ok 73 - one target failure never rolls back another verified target
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.155708
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: prepare and failure preserve remote identity and newsletter history
+apps/admin-worker test: ok 74 - prepare and failure preserve remote identity and newsletter history
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.214708
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: saving content never invokes publication operations and explicit operation names one target
+apps/admin-worker test: ok 75 - saving content never invokes publication operations and explicit operation names one target
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 39.236583
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: newsletter route requires a separate irreversible intent key before reaching operations
+apps/admin-worker test: ok 76 - newsletter route requires a separate irreversible intent key before reaching operations
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.212584
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # release-operation-failed { category: 'RELEASE_FAILED', kind: 'Error', property: undefined }
+apps/admin-worker test: # Subtest: queue read requires owner; mutations require CSRF; automation requires secret and disabled gate
+apps/admin-worker test: ok 77 - queue read requires owner; mutations require CSRF; automation requires secret and disabled gate
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 32.737125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: immediate publication requires owner CSRF, exact preview and explicit confirmation
+apps/admin-worker test: ok 78 - immediate publication requires owner CSRF, exact preview and explicit confirmation
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.811042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: release errors emit only stable categories without raw secrets or provider messages
+apps/admin-worker test: ok 79 - release errors emit only stable categories without raw secrets or provider messages
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.236083
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: inherited object names cannot become release error categories
+apps/admin-worker test: ok 80 - inherited object names cannot become release error categories
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.329
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # (node:4994) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+apps/admin-worker test: # (Use `node --trace-warnings ...` to show where the warning was created)
+apps/admin-worker test: # Subtest: atomic publication changes frontmatter/manifest status but preserves body and order
+apps/admin-worker test: ok 81 - atomic publication changes frontmatter/manifest status but preserves body and order
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.511959
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: disabled execution and stale revisions never call Git writer
+apps/admin-worker test: ok 82 - disabled execution and stale revisions never call Git writer
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 7.881042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: lost Git write response remains unknown, reverify repairs public state without another write
+apps/admin-worker test: ok 83 - lost Git write response remains unknown, reverify repairs public state without another write
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 32.282417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: RSS delay and wrong canonical do not consume slot; conflict retries retain release identity
+apps/admin-worker test: ok 84 - RSS delay and wrong canonical do not consume slot; conflict retries retain release identity
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 7.35925
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: fresh revision check after acquisition stops concurrent editorial mutation before Git write
+apps/admin-worker test: ok 85 - fresh revision check after acquisition stops concurrent editorial mutation before Git write
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.8405
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: build failure retry reuses release id without writing article again
+apps/admin-worker test: ok 86 - build failure retry reuses release id without writing article again
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.854958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: wrong GUID, JSON-LD identity or release metadata never verifies publication
+apps/admin-worker test: ok 87 - wrong GUID, JSON-LD identity or release metadata never verifies publication
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.45325
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: public reverify never associates an unrelated Pages deployment with this release
+apps/admin-worker test: ok 88 - public reverify never associates an unrelated Pages deployment with this release
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 5.678042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 persists expected publication digest before Git write and rejects stale public source
+apps/admin-worker test: ok 89 - D1 persists expected publication digest before Git write and rejects stale public source
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.126833
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 pending source changes and missing legacy digest retain identity without another write
+apps/admin-worker test: ok 90 - D1 pending source changes and missing legacy digest retain identity without another write
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.517208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: manual delivery preserves one identity across duplicate confirmation and unknown write result without history fallback
+apps/admin-worker test: ok 91 - manual delivery preserves one identity across duplicate confirmation and unknown write result without history fallback
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.696667
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: manual public confirmation requires the actual manual date, full source digest and canonical RSS
+apps/admin-worker test: ok 92 - manual public confirmation requires the actual manual date, full source digest and canonical RSS
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.80775
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # release-history-rejected {
+apps/admin-worker test: #   stage: 'graphql',
+apps/admin-worker test: #   root: false,
+apps/admin-worker test: #   types: [ 'UNKNOWN' ],
+apps/admin-worker test: #   depthRejected: false
+apps/admin-worker test: # }
+apps/admin-worker test: # release-history-rejected {
+apps/admin-worker test: #   stage: 'graphql',
+apps/admin-worker test: #   root: true,
+apps/admin-worker test: #   types: [ 'NOT_FOUND' ],
+apps/admin-worker test: #   depthRejected: false
+apps/admin-worker test: # }
+apps/admin-worker test: # Subtest: first readiness uses pinned Git commit history, not the latest edit or ingestion clock
+apps/admin-worker test: ok 93 - first readiness uses pinned Git commit history, not the latest edit or ingestion clock
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 27.277959
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: readiness history chooses latest continuous period, retaining edits but excluding earlier draft cycles
+apps/admin-worker test: ok 94 - readiness history chooses latest continuous period, retaining edits but excluding earlier draft cycles
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.865209
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: whole-series history retains only current complete ordered membership after pause or membership change
+apps/admin-worker test: ok 95 - whole-series history retains only current complete ordered membership after pause or membership change
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.349208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: legacy Git journal evidence blocks D1 snapshot before content ingestion instead of replaying or deleting it
+apps/admin-worker test: ok 96 - legacy Git journal evidence blocks D1 snapshot before content ingestion instead of replaying or deleting it
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.269209
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 readiness uses first-parent main visibility, not the earlier feature-branch ready commit
+apps/admin-worker test: ok 97 - D1 readiness uses first-parent main visibility, not the earlier feature-branch ready commit
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.700041
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: first-parent history handles a newly created file but rejects incomplete or cyclic ancestry
+apps/admin-worker test: ok 98 - first-parent history handles a newly created file but rejects incomplete or cyclic ancestry
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.061
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: whole release snapshot resolves long first-parent readiness inside a free Worker request budget
+apps/admin-worker test: ok 99 - whole release snapshot resolves long first-parent readiness inside a free Worker request budget
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 18.632625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: batch histories fail closed on GraphQL errors, partial blobs, cycles and oversized replies
+apps/admin-worker test: ok 100 - batch histories fail closed on GraphQL errors, partial blobs, cycles and oversized replies
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 7.773125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: repeated snapshots refresh main while reusing immutable blobs and trees within one request
+apps/admin-worker test: ok 101 - repeated snapshots refresh main while reusing immutable blobs and trees within one request
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.939208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: a confirmed missing historical file ends readiness while unrelated NOT_FOUND errors fail closed
+apps/admin-worker test: ok 102 - a confirmed missing historical file ends readiness while unrelated NOT_FOUND errors fail closed
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.05025
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # (node:4997) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+apps/admin-worker test: # (Use `node --trace-warnings ...` to show where the warning was created)
+apps/admin-worker test: # Subtest: complete snapshot ingestion preserves firstReadyAt across repeated snapshots and partial series
+apps/admin-worker test: ok 103 - complete snapshot ingestion preserves firstReadyAt across repeated snapshots and partial series
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 10.140334
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: two concurrent reservations acquire only one Taipei slot and expired writes require verification
+apps/admin-worker test: ok 104 - two concurrent reservations acquire only one Taipei slot and expired writes require verification
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.96
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: disabled gate makes no queue reservation or editorial writes
+apps/admin-worker test: ok 105 - disabled gate makes no queue reservation or editorial writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.436958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: future published dates reserve their Taipei date and ready legacy dates need adoption
+apps/admin-worker test: ok 106 - future published dates reserve their Taipei date and ready legacy dates need adoption
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.299833
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: committed slots resist late standalone insertion and paused series cannot acquire
+apps/admin-worker test: ok 107 - committed slots resist late standalone insertion and paused series cannot acquire
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.864458
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: override preview rejects conflict and confirmation compares plan version and source
+apps/admin-worker test: ok 108 - override preview rejects conflict and confirmation compares plan version and source
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 7.503334
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: unverified first installment blocks later slot acquisition instead of skipping it
+apps/admin-worker test: ok 109 - unverified first installment blocks later slot acquisition instead of skipping it
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.808042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: active series resumes third post after standalone, ahead of an older waiting series
+apps/admin-worker test: ok 110 - active series resumes third post after standalone, ahead of an older waiting series
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.521166
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: paused or legacy-held predecessor withholds later installments and retains fixed reservations
+apps/admin-worker test: ok 111 - paused or legacy-held predecessor withholds later installments and retains fixed reservations
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.1115
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: same-day legacy publication consumes the Taipei date even after its midnight instant
+apps/admin-worker test: ok 112 - same-day legacy publication consumes the Taipei date even after its midnight instant
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.620125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: prestart reorder refreshes baseline; fixed chapter protects predecessors from late insertion
+apps/admin-worker test: ok 113 - prestart reorder refreshes baseline; fixed chapter protects predecessors from late insertion
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.215083
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: verified-public is terminal and cannot be downgraded by a stale response
+apps/admin-worker test: ok 114 - verified-public is terminal and cannot be downgraded by a stale response
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.351375
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: fixed current-day commitment remains executable after 07:00 rather than failing estimate refresh
+apps/admin-worker test: ok 115 - fixed current-day commitment remains executable after 07:00 rather than failing estimate refresh
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.98625
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: identity changes are refused for commitments and pre-write eligibility failures can recover safely
+apps/admin-worker test: ok 116 - identity changes are refused for commitments and pre-write eligibility failures can recover safely
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.893667
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: safe unlock preserves article identity/history and permits recovery after a rename race
+apps/admin-worker test: ok 117 - safe unlock preserves article identity/history and permits recovery after a rename race
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.014209
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: delayed ingestion keeps actual first-ready commit chronology immutable
+apps/admin-worker test: ok 118 - delayed ingestion keeps actual first-ready commit chronology immutable
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.384417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: operator pause flags stay separate from release state and pause scope
+apps/admin-worker test: ok 119 - operator pause flags stay separate from release state and pause scope
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.736292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: off-calendar published legacy dates do not consume Monday or Thursday slots
+apps/admin-worker test: ok 120 - off-calendar published legacy dates do not consume Monday or Thursday slots
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.619
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: legacy reservations use the Taipei weekday across UTC midnight
+apps/admin-worker test: ok 121 - legacy reservations use the Taipei weekday across UTC midnight
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.225125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 continuous readiness renews FIFO after observed and between-poll draft cycles
+apps/admin-worker test: ok 122 - D1 continuous readiness renews FIFO after observed and between-poll draft cycles
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.992208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 incomplete/restored and changed unstarted membership renew whole-series eligibility
+apps/admin-worker test: ok 123 - D1 incomplete/restored and changed unstarted membership renew whole-series eligibility
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.617417
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 whole-series FIFO includes continuous manifest history before first observation
+apps/admin-worker test: ok 124 - D1 whole-series FIFO includes continuous manifest history before first observation
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.356208
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 recovery claims only latest due window on intervening days, never pre-observation or late readiness
+apps/admin-worker test: ok 125 - D1 recovery claims only latest due window on intervening days, never pre-observation or late readiness
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.8545
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 refuses ambiguous manually started series rather than choosing snapshot order
+apps/admin-worker test: ok 126 - D1 refuses ambiguous manually started series rather than choosing snapshot order
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.34775
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 remembers active identity and blocks deletion or future predecessors without consuming another series
+apps/admin-worker test: ok 127 - D1 remembers active identity and blocks deletion or future predecessors without consuming another series
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.756084
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 manifest pause holds complete series and renews eligibility on resume
+apps/admin-worker test: ok 128 - D1 manifest pause holds complete series and renews eligibility on resume
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.587042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 detects between-poll draft cycle even when final ready blob is byte-identical
+apps/admin-worker test: ok 129 - D1 detects between-poll draft cycle even when final ready blob is byte-identical
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.164584
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 owner pause/resume renews uncommitted FIFO without moving a committed fixed date
+apps/admin-worker test: ok 130 - D1 owner pause/resume renews uncommitted FIFO without moving a committed fixed date
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 2.785292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: D1 finishing active series still rejects two newly discovered started series in the same ingestion
+apps/admin-worker test: ok 131 - D1 finishing active series still rejects two newly discovered started series in the same ingestion
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.371708
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: owner manual preview is read-only; confirmation records actual time without backdating and duplicate intent retains identity
+apps/admin-worker test: ok 132 - owner manual preview is read-only; confirmation records actual time without backdating and duplicate intent retains identity
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.58725
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: manual confirmation refuses out-of-order, stale version/source, disabled and held publications without identities
+apps/admin-worker test: ok 133 - manual confirmation refuses out-of-order, stale version/source, disabled and held publications without identities
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.224958
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: verified Monday manual publication occupies its date without claiming 07:00 and Thursday resumes chapter two
+apps/admin-worker test: ok 134 - verified Monday manual publication occupies its date without claiming 07:00 and Thursday resumes chapter two
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.718458
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: manual publication cannot treat a legacy published intent as a publicly verified predecessor
+apps/admin-worker test: ok 135 - manual publication cannot treat a legacy published intent as a publicly verified predecessor
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.1875
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: verified published chapter has no legacy attention warning and viewing preserves records and next slot
+apps/admin-worker test: ok 136 - verified published chapter has no legacy attention warning and viewing preserves records and next slot
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.915833
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: legacy attention is retained for unresolved, unlocked or ready-again release records
+apps/admin-worker test: ok 137 - legacy attention is retained for unresolved, unlocked or ready-again release records
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.418
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: verified-public does not hide unrelated pause or missed fixed-slot reasons
+apps/admin-worker test: ok 138 - verified-public does not hide unrelated pause or missed fixed-slot reasons
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.60975
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: series route validates before Git writes and returns actionable issues
+apps/admin-worker test: ok 139 - series route validates before Git writes and returns actionable issues
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 25.991042
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: series route saves exactly one canonical YAML file with optimistic revisions
+apps/admin-worker test: ok 140 - series route saves exactly one canonical YAML file with optimistic revisions
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.65975
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: coherent article-plus-series save validates YAML before one Git transaction
+apps/admin-worker test: ok 141 - coherent article-plus-series save validates YAML before one Git transaction
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 4.3205
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: standalone article creation writes one post file without a series manifest or relationship fields
+apps/admin-worker test: ok 142 - standalone article creation writes one post file without a series manifest or relationship fields
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.749083
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post save route rejects paths outside the addressed post and validated series directory
+apps/admin-worker test: ok 143 - post save route rejects paths outside the addressed post and validated series directory
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.491709
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post rename route delegates a bounded rename request instead of generic file deletion
+apps/admin-worker test: ok 144 - post rename route delegates a bounded rename request instead of generic file deletion
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.026291
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: post rename route rejects an invalid target slug before repository writes
+apps/admin-worker test: ok 145 - post rename route rejects an invalid target slug before repository writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.130292
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: save route returns 409 revision details and never hides an optimistic conflict
+apps/admin-worker test: ok 146 - save route returns 409 revision details and never hides an optimistic conflict
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.173542
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: write routes require CSRF before invoking repository writes
+apps/admin-worker test: ok 147 - write routes require CSRF before invoking repository writes
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.76525
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: delete route reports references and cannot delete without explicit confirmation
+apps/admin-worker test: ok 148 - delete route reports references and cannot delete without explicit confirmation
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 1.681083
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: valid reorder changes YAML manifest order only
+apps/admin-worker test: ok 149 - valid reorder changes YAML manifest order only
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 3.487291
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: duplicate section IDs fails closed with INVALID_SERIES
+apps/admin-worker test: ok 150 - duplicate section IDs fails closed with INVALID_SERIES
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.267125
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: duplicate post references fails closed with INVALID_SERIES
+apps/admin-worker test: ok 151 - duplicate post references fails closed with INVALID_SERIES
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.066333
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: missing Markdown fails closed with INVALID_SERIES
+apps/admin-worker test: ok 152 - missing Markdown fails closed with INVALID_SERIES
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.06075
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: invalid editorial pointer fails closed with INVALID_SERIES
+apps/admin-worker test: ok 153 - invalid editorial pointer fails closed with INVALID_SERIES
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.137666
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: # Subtest: invalid planning status fails closed with INVALID_SERIES
+apps/admin-worker test: ok 154 - invalid planning status fails closed with INVALID_SERIES
+apps/admin-worker test:   ---
+apps/admin-worker test:   duration_ms: 0.058916
+apps/admin-worker test:   type: 'test'
+apps/admin-worker test:   ...
+apps/admin-worker test: 1..154
+apps/admin-worker test: # tests 154
+apps/admin-worker test: # suites 0
+apps/admin-worker test: # pass 154
+apps/admin-worker test: # fail 0
+apps/admin-worker test: # cancelled 0
+apps/admin-worker test: # skipped 0
+apps/admin-worker test: # todo 0
+apps/admin-worker test: # duration_ms 2232.237375
+apps/admin-worker test: Done
+
+> gcake-dev@0.1.0 test:distribution /Users/caiyijun/project/gcake-dev
+> node --import tsx --test scripts/publishing/distribution*.test.ts scripts/publishing/substack-browser.test.ts
+
+TAP version 13
+# (node:5059) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: file handoff → real Chrome saved editor → SQLite state → anonymous public read, without newsletter or duplicate publish
+ok 1 - file handoff → real Chrome saved editor → SQLite state → anonymous public read, without newsletter or duplicate publish
+  ---
+  duration_ms: 15647.480125
+  type: 'test'
+  ...
+# Subtest: attended draft uses coordinator intent before writes and records exact saved evidence
+ok 2 - attended draft uses coordinator intent before writes and records exact saved evidence
+  ---
+  duration_ms: 24.779292
+  type: 'test'
+  ...
+# Subtest: attended stale draft reply retains remote identity and cannot replay a write on retry
+ok 3 - attended stale draft reply retains remote identity and cannot replay a write on retry
+  ---
+  duration_ms: 1.757083
+  type: 'test'
+  ...
+# Subtest: publish transport cannot create a draft and anonymous mismatch prevents verified
+ok 4 - publish transport cannot create a draft and anonymous mismatch prevents verified
+  ---
+  duration_ms: 2.346167
+  type: 'test'
+  ...
+# Subtest: file handoff rejects stale request replies and timeout never reissues a write request
+ok 5 - file handoff rejects stale request replies and timeout never reissues a write request
+  ---
+  duration_ms: 86.113875
+  type: 'test'
+  ...
+# Subtest: a browser write without durable intent is rejected before emitting a request
+ok 6 - a browser write without durable intent is rejected before emitting a request
+  ---
+  duration_ms: 0.27075
+  type: 'test'
+  ...
+# Subtest: anonymous readback bypasses stale edge HTML while retaining article canonical identity
+ok 7 - anonymous readback bypasses stale edge HTML while retaining article canonical identity
+  ---
+  duration_ms: 5.436875
+  type: 'test'
+  ...
+# Subtest: handoff binds complete current source, durable intent, remote ID and expiry
+ok 8 - handoff binds complete current source, durable intent, remote ID and expiry
+  ---
+  duration_ms: 0.988208
+  type: 'test'
+  ...
+# Subtest: reply requires actual complete body and saved assets, never reconstructs expected text
+ok 9 - reply requires actual complete body and saved assets, never reconstructs expected text
+  ---
+  duration_ms: 22.026833
+  type: 'test'
+  ...
+# Subtest: publication evidence must explicitly disable email and App delivery and scheduling
+ok 10 - publication evidence must explicitly disable email and App delivery and scheduling
+  ---
+  duration_ms: 0.266834
+  type: 'test'
+  ...
+# Subtest: reply preserves exact envelope, is exclusive and private
+ok 11 - reply preserves exact envelope, is exclusive and private
+  ---
+  duration_ms: 35.216375
+  type: 'test'
+  ...
+# Subtest: a create handoff cannot be replayed after a remote identity has already been saved
+ok 12 - a create handoff cannot be replayed after a remote identity has already been saved
+  ---
+  duration_ms: 0.324667
+  type: 'test'
+  ...
+# Subtest: all articles include first public backfill, nested posts and every excluded source without provider writes
+ok 13 - all articles include first public backfill, nested posts and every excluded source without provider writes
+  ---
+  duration_ms: 68.939625
+  type: 'test'
+  ...
+# Subtest: duplicate slug and invalid sources are fully reported; empty source has no operations
+ok 14 - duplicate slug and invalid sources are fully reported; empty source has no operations
+  ---
+  duration_ms: 17.799583
+  type: 'test'
+  ...
+# Subtest: target plans preserve independent versions, original intent and same-ID updates
+ok 15 - target plans preserve independent versions, original intent and same-ID updates
+  ---
+  duration_ms: 0.214166
+  type: 'test'
+  ...
+# Subtest: general policy is explicitly bounded to repository branch publications and zero delivery
+ok 16 - general policy is explicitly bounded to repository branch publications and zero delivery
+  ---
+  duration_ms: 0.2855
+  type: 'test'
+  ...
+# Subtest: malformed and nonportable formal bodies are explicit source blockers before Pages or provider calls
+ok 17 - malformed and nonportable formal bodies are explicit source blockers before Pages or provider calls
+  ---
+  duration_ms: 11.258833
+  type: 'test'
+  ...
+# Subtest: system scheduler uses absolute paths, 15-minute cadence and existing private env file without Codex
+ok 18 - system scheduler uses absolute paths, 15-minute cadence and existing private env file without Codex
+  ---
+  duration_ms: 111.993209
+  type: 'test'
+  ...
+# Subtest: relative paths and incomplete independent acceptance cannot activate
+ok 19 - relative paths and incomplete independent acceptance cannot activate
+  ---
+  duration_ms: 0.29575
+  type: 'test'
+  ...
+# Subtest: cutover can preserve the original shared lock instead of introducing a competing writer namespace
+ok 20 - cutover can preserve the original shared lock instead of introducing a competing writer namespace
+  ---
+  duration_ms: 0.086
+  type: 'test'
+  ...
+# Subtest: native scheduled source verification uses the qualified IPv4 path without weakening TLS or retrying requests
+ok 21 - native scheduled source verification uses the qualified IPv4 path without weakening TLS or retrying requests
+  ---
+  duration_ms: 0.062041
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML datetime date spelling
+ok 22 - anonymous same-ID public verification accepts HTML datetime date spelling
+  ---
+  duration_ms: 27.202542
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML dateTime date spelling
+ok 23 - anonymous same-ID public verification accepts HTML dateTime date spelling
+  ---
+  duration_ms: 3.169875
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML DATETIME date spelling
+ok 24 - anonymous same-ID public verification accepts HTML DATETIME date spelling
+  ---
+  duration_ms: 0.777542
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="2026-10-14T23:01:00Z">October 15</time>
+ok 25 - anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="2026-10-14T23:01:00Z">October 15</time>
+  ---
+  duration_ms: 0.691416
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="invalid">October 15</time>
+ok 26 - anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="invalid">October 15</time>
+  ---
+  duration_ms: 0.844041
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time>October 15</time>
+ok 27 - anonymous verification rejects missing conflicting or wrong-minute dates: <time>October 15</time>
+  ---
+  duration_ms: 0.269791
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z"></time><time dateTime="2026-10-14T23:00:00Z"></time>
+ok 28 - anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z"></time><time dateTime="2026-10-14T23:00:00Z"></time>
+  ---
+  duration_ms: 0.362208
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z" dateTime="2026-10-14T23:01:00Z"></time>
+ok 29 - anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z" dateTime="2026-10-14T23:01:00Z"></time>
+  ---
+  duration_ms: 0.272708
+  type: 'test'
+  ...
+# Subtest: native discovery waits for the selected list before trusting its totals and scans all three scopes
+ok 30 - native discovery waits for the selected list before trusting its totals and scans all three scopes
+  ---
+  duration_ms: 14552.390583
+  type: 'test'
+  ...
+# Subtest: native website-only confirmation waits for the dialog and publishes once with every delivery control off
+ok 31 - native website-only confirmation waits for the dialog and publishes once with every delivery control off
+  ---
+  duration_ms: 1597.76825
+  type: 'test'
+  ...
+# Subtest: published discovery preserves the anonymous public identity before adopting an existing mirror
+ok 32 - published discovery preserves the anonymous public identity before adopting an existing mirror
+  ---
+  duration_ms: 1119.914
+  type: 'test'
+  ...
+# Subtest: native preflight tolerates a bounded eleven-second browser navigation without replay
+ok 33 - native preflight tolerates a bounded eleven-second browser navigation without replay
+  ---
+  duration_ms: 11038.009625
+  type: 'test'
+  ...
+# Subtest: wrong origin or replaced tab stops before executing page code
+ok 34 - wrong origin or replaced tab stops before executing page code
+  ---
+  duration_ms: 1.382042
+  type: 'test'
+  ...
+# Subtest: changed Pages source blocks page mutations
+ok 35 - changed Pages source blocks page mutations
+  ---
+  duration_ms: 0.199292
+  type: 'test'
+  ...
+# Subtest: an asynchronous page mutation is dispatched once and observed without replay
+ok 36 - an asynchronous page mutation is dispatched once and observed without replay
+  ---
+  duration_ms: 52.538125
+  type: 'test'
+  ...
+# Subtest: transport authorizations are distinct
+ok 37 - transport authorizations are distinct
+  ---
+  duration_ms: 1518.173083
+  type: 'test'
+  ...
+# Subtest: native permission failures stop without a page write or any permission activation
+ok 38 - native permission failures stop without a page write or any permission activation
+  ---
+  duration_ms: 1.363375
+  type: 'test'
+  ...
+# Subtest: native scheduler acceptance requires its own real permission evidence
+ok 39 - native scheduler acceptance requires its own real permission evidence
+  ---
+  duration_ms: 7.986125
+  type: 'test'
+  ...
+# Subtest: multiple or missing Chrome candidates require explicit selection
+ok 40 - multiple or missing Chrome candidates require explicit selection
+  ---
+  duration_ms: 1.529458
+  type: 'test'
+  ...
+# Subtest: native same-version verification uses independent public evidence without Chrome or file handoffs
+ok 41 - native same-version verification uses independent public evidence without Chrome or file handoffs
+  ---
+  duration_ms: 31.325333
+  type: 'test'
+  ...
+# Subtest: native readiness requires actual authorized dashboard evidence
+ok 42 - native readiness requires actual authorized dashboard evidence
+  ---
+  duration_ms: 0.473583
+  type: 'test'
+  ...
+# Subtest: same-publication navigation to another article during source proof stops before the write
+ok 43 - same-publication navigation to another article during source proof stops before the write
+  ---
+  duration_ms: 0.480375
+  type: 'test'
+  ...
+# Subtest: another Chrome process cannot reuse the bound window and tab identity
+ok 44 - another Chrome process cannot reuse the bound window and tab identity
+  ---
+  duration_ms: 0.139708
+  type: 'test'
+  ...
+# Subtest: CLI reports a withdrawn original as ineligible, not as a platform outage
+ok 45 - CLI reports a withdrawn original as ineligible, not as a platform outage
+  ---
+  duration_ms: 0.688667
+  type: 'test'
+  ...
+# Subtest: public origin must match full Markdown, canonical, title, date, links and loaded images
+ok 46 - public origin must match full Markdown, canonical, title, date, links and loaded images
+  ---
+  duration_ms: 72.546083
+  type: 'test'
+  ...
+# Subtest: withdrawn current Markdown prevents historical dry run and no platform or D1 is opened
+ok 47 - withdrawn current Markdown prevents historical dry run and no platform or D1 is opened
+  ---
+  duration_ms: 28.618542
+  type: 'test'
+  ...
+# Subtest: profile discovery includes later pages and every publication state without creating articles
+ok 48 - profile discovery includes later pages and every publication state without creating articles
+  ---
+  duration_ms: 14328.18775
+  type: 'test'
+  ...
+# Subtest: native Apple Events DOM: profile discovery includes later pages and every publication state without creating articles
+ok 49 - native Apple Events DOM: profile discovery includes later pages and every publication state without creating articles
+  ---
+  duration_ms: 1613.851542
+  type: 'test'
+  ...
+# Subtest: a visible page whose article count disagrees with publication total is not a complete scan
+ok 50 - a visible page whose article count disagrees with publication total is not a complete scan
+  ---
+  duration_ms: 1176.411333
+  type: 'test'
+  ...
+# Subtest: published update commits the same ID once with email, App and scheduling off
+ok 51 - published update commits the same ID once with email, App and scheduling off
+  ---
+  duration_ms: 14582.880291
+  type: 'test'
+  ...
+# Subtest: native Apple Events DOM: published update commits the same ID once with email, App and scheduling off
+ok 52 - native Apple Events DOM: published update commits the same ID once with email, App and scheduling off
+  ---
+  duration_ms: 1426.047334
+  type: 'test'
+  ...
+# Subtest: native delivery controls reject non-checkbox elements instead of treating missing state as disabled
+ok 53 - native delivery controls reject non-checkbox elements instead of treating missing state as disabled
+  ---
+  duration_ms: 1144.504042
+  type: 'test'
+  ...
+# Subtest: an absent public identity control blocks a published update before draft content changes
+ok 54 - an absent public identity control blocks a published update before draft content changes
+  ---
+  duration_ms: 669.680958
+  type: 'test'
+  ...
+# Subtest: published native update without an editor href uses independently verified original public ID
+ok 55 - published native update without an editor href uses independently verified original public ID
+  ---
+  duration_ms: 827.2615
+  type: 'test'
+  ...
+# Subtest: native draft readback waits for the editor instead of accepting navigation completion as UI readiness
+ok 56 - native draft readback waits for the editor instead of accepting navigation completion as UI readiness
+  ---
+  duration_ms: 970.549292
+  type: 'test'
+  ...
+# Subtest: native metadata verification waits for asynchronously rendered settings fields
+ok 57 - native metadata verification waits for asynchronously rendered settings fields
+  ---
+  duration_ms: 1096.667875
+  type: 'test'
+  ...
+# Subtest: profile authorization is distinct from side-browser receipts
+ok 58 - profile authorization is distinct from side-browser receipts
+  ---
+  duration_ms: 0.89525
+  type: 'test'
+  ...
+# Subtest: same-version profile verification is independent of Codex, login and file handoffs
+ok 59 - same-version profile verification is independent of Codex, login and file handoffs
+  ---
+  duration_ms: 13.40725
+  type: 'test'
+  ...
+# Subtest: profile writes require reviewed controls without lifting general capability flags
+ok 60 - profile writes require reviewed controls without lifting general capability flags
+  ---
+  duration_ms: 0.290375
+  type: 'test'
+  ...
+# Subtest: public HTML identity binds original ID, publication and exact canonical without executing scripts
+ok 61 - public HTML identity binds original ID, publication and exact canonical without executing scripts
+  ---
+  duration_ms: 5.949625
+  type: 'test'
+  ...
+# Subtest: archive identity resolves only one matching original ID and never substitutes another article
+ok 62 - archive identity resolves only one matching original ID and never substitutes another article
+  ---
+  duration_ms: 0.969208
+  type: 'test'
+  ...
+# Subtest: native public identity policy is bound into Substack approvals
+ok 63 - native public identity policy is bound into Substack approvals
+  ---
+  duration_ms: 1639.326083
+  type: 'test'
+  ...
+# Subtest: revoked current target rejects a previously matching controlled trial scope
+ok 64 - revoked current target rejects a previously matching controlled trial scope
+  ---
+  duration_ms: 0.220916
+  type: 'test'
+  ...
+# Subtest: retired target is rejected before CLI source reads or provider access
+ok 65 - retired target is rejected before CLI source reads or provider access
+  ---
+  duration_ms: 1.083667
+  type: 'test'
+  ...
+# Subtest: coordinator rejects a retired target without reading or writing state
+ok 66 - coordinator rejects a retired target without reading or writing state
+  ---
+  duration_ms: 0.1255
+  type: 'test'
+  ...
+# Subtest: publishing center hides retired state while repository preserves identity
+ok 67 - publishing center hides retired state while repository preserves identity
+  ---
+  duration_ms: 0.699292
+  type: 'test'
+  ...
+# Subtest: preparation produces only a Substack target and retains its remote identity
+ok 68 - preparation produces only a Substack target and retains its remote identity
+  ---
+  duration_ms: 29.801125
+  type: 'test'
+  ...
+# Subtest: review digest binds content, title, canonical, date, source revision and named platform
+ok 69 - review digest binds content, title, canonical, date, source revision and named platform
+  ---
+  duration_ms: 0.702375
+  type: 'test'
+  ...
+# Subtest: HTML scripts and event handlers never enter browser clipboard
+ok 70 - HTML scripts and event handlers never enter browser clipboard
+  ---
+  duration_ms: 13.1985
+  type: 'test'
+  ...
+# Subtest: Substack mirror review invalidates earlier canonical-strict receipts
+ok 71 - Substack mirror review invalidates earlier canonical-strict receipts
+  ---
+  duration_ms: 0.195042
+  type: 'test'
+  ...
+# (node:5073) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: D1 locks and checkpoints survive restart, serialize one target, and retain another
+ok 72 - D1 locks and checkpoints survive restart, serialize one target, and retain another
+  ---
+  duration_ms: 10.437916
+  type: 'test'
+  ...
+# Subtest: D1 HTTP failure never retries SQL and does not expose credentials/provider body
+ok 73 - D1 HTTP failure never retries SQL and does not expose credentials/provider body
+  ---
+  duration_ms: 18.771458
+  type: 'test'
+  ...
+# Subtest: metadata recovery retains original attempt identity across restart and settles it once
+ok 74 - metadata recovery retains original attempt identity across restart and settles it once
+  ---
+  duration_ms: 2.299041
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:2b7746f89a25fc565796bec4bf0419587567d260312c217995ed3ed0a8e1e0ce","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-scheduled-out-f0OML9/run-3g19Z3/substack-review.json","externalWriteEnabled":false}
+# Subtest: scheduled policy derives exact operation approvals only after current anonymous Pages proof
+ok 75 - scheduled policy derives exact operation approvals only after current anonymous Pages proof
+  ---
+  duration_ms: 72.593916
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"first","target":"substack","digest":"sha256:0b4cc80050a6ead5e6c0d6e5ec8a6320f6e988e02344fd0cf53e6bd5f4f260b0","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-bItLkb/run-rDoZHl/substack-review.json","externalWriteEnabled":false}
+# {"operation":"dry-run","slug":"second","target":"substack","digest":"sha256:15f3ead9849df33319ceb0f63dbff786a3aea3a0b8b92b7b2986632039297938","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-bItLkb/run-9WGQ36/substack-review.json","externalWriteEnabled":false}
+# Subtest: all-article policy derives separate exact scopes from a clean fixed source without promoting gates
+ok 76 - all-article policy derives separate exact scopes from a clean fixed source without promoting gates
+  ---
+  duration_ms: 514.019791
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"first","target":"substack","digest":"sha256:0b4cc80050a6ead5e6c0d6e5ec8a6320f6e988e02344fd0cf53e6bd5f4f260b0","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-xsTsnP/run-sAkzKo/substack-review.json","externalWriteEnabled":false}
+# {"operation":"dry-run","slug":"first","target":"substack","digest":"sha256:0b4cc80050a6ead5e6c0d6e5ec8a6320f6e988e02344fd0cf53e6bd5f4f260b0","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-xsTsnP/run-zL875g/substack-review.json","externalWriteEnabled":false}
+# Subtest: all plans isolate platform failure and unknown intent without issuing unused write approvals
+ok 77 - all plans isolate platform failure and unknown intent without issuing unused write approvals
+  ---
+  duration_ms: 633.605792
+  type: 'test'
+  ...
+# 請在專用瀏覽器登入，完成後關閉瀏覽器。
+# Subtest: login opens only the configured dashboard without article source or D1 credentials
+ok 78 - login opens only the configured dashboard without article source or D1 credentials
+  ---
+  duration_ms: 17.240042
+  type: 'test'
+  ...
+# Subtest: unchanged round verifies Substack, retains evidence and removes only its owned snapshot
+ok 79 - unchanged round verifies Substack, retains evidence and removes only its owned snapshot
+  ---
+  duration_ms: 31.837875
+  type: 'test'
+  ...
+# Subtest: rate-limit failure is recorded once and stops without replay
+ok 80 - rate-limit failure is recorded once and stops without replay
+  ---
+  duration_ms: 6.127541
+  type: 'test'
+  ...
+# Subtest: uncertain preparation never falls through into publication
+ok 81 - uncertain preparation never falls through into publication
+  ---
+  duration_ms: 6.127083
+  type: 'test'
+  ...
+# Subtest: changed pin or concurrent owner stops before snapshot and never steals lock
+ok 82 - changed pin or concurrent owner stops before snapshot and never steals lock
+  ---
+  duration_ms: 3.001333
+  type: 'test'
+  ...
+# Subtest: planning dispatches no operations and retains only the plan and evidence
+ok 83 - planning dispatches no operations and retains only the plan and evidence
+  ---
+  duration_ms: 9.194334
+  type: 'test'
+  ...
+# Subtest: unanswered side request preserves source and is never replayed
+ok 84 - unanswered side request preserves source and is never replayed
+  ---
+  duration_ms: 14.6785
+  type: 'test'
+  ...
+# Subtest: a merely pending prepare is not permission to publish
+ok 85 - a merely pending prepare is not permission to publish
+  ---
+  duration_ms: 8.479209
+  type: 'test'
+  ...
+# Subtest: unsettled final intent requires attention even if transport returned
+ok 86 - unsettled final intent requires attention even if transport returned
+  ---
+  duration_ms: 6.698917
+  type: 'test'
+  ...
+# Subtest: identical failure stays quiet and recovery becomes one meaningful change
+ok 87 - identical failure stays quiet and recovery becomes one meaningful change
+  ---
+  duration_ms: 20.574583
+  type: 'test'
+  ...
+# Subtest: different source revisions of the same updated article each produce a meaningful completion
+ok 88 - different source revisions of the same updated article each produce a meaningful completion
+  ---
+  duration_ms: 13.64025
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:8b0bd3c81ba7d50008b7b2d9101aa992754e8bd32a36be5d85128ef177288f45","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-trial-review-Lj94VU/review.json","externalWriteEnabled":false}
+# Subtest: controlled trial dry run binds its execution mode without enabling any write
+ok 89 - controlled trial dry run binds its execution mode without enabling any write
+  ---
+  duration_ms: 19.651125
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:8b0bd3c81ba7d50008b7b2d9101aa992754e8bd32a36be5d85128ef177288f45","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-trial-disabled-Co2RXe/review.json","externalWriteEnabled":false}
+# Subtest: trial write disablement stops before browser or D1 access despite a matching approval
+ok 90 - trial write disablement stops before browser or D1 access despite a matching approval
+  ---
+  duration_ms: 9.308
+  type: 'test'
+  ...
+# (node:5191) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Markdown → Substack → D1 → public readback with browser draft updates, images and failure recovery
+ok 91 - Markdown → Substack → D1 → public readback with browser draft updates, images and failure recovery
+  ---
+  duration_ms: 17652.696958
+  type: 'test'
+  ...
+# Subtest: shared workflow denies missing/stale approval before calling either provider
+ok 92 - shared workflow denies missing/stale approval before calling either provider
+  ---
+  duration_ms: 1.138834
+  type: 'test'
+  ...
+# Subtest: shared workflow preserves uncertain publish and retry only verifies with platform isolation
+ok 93 - shared workflow preserves uncertain publish and retry only verifies with platform isolation
+  ---
+  duration_ms: 1.423334
+  type: 'test'
+  ...
+# Subtest: full-mirror requires explicit policy approval before remote writes
+ok 94 - full-mirror requires explicit policy approval before remote writes
+  ---
+  duration_ms: 0.185792
+  type: 'test'
+  ...
+# Subtest: full-mirror date failure survives read-only retry and requires approved same-ID finalize
+ok 95 - full-mirror date failure survives read-only retry and requires approved same-ID finalize
+  ---
+  duration_ms: 1.96125
+  type: 'test'
+  ...
+# Subtest: finalize never creates a missing article or changes an uncertain source revision
+ok 96 - finalize never creates a missing article or changes an uncertain source revision
+  ---
+  duration_ms: 0.255542
+  type: 'test'
+  ...
+# Subtest: publishing the reviewed prepared revision rereads the saved draft without another content update
+ok 97 - publishing the reviewed prepared revision rereads the saved draft without another content update
+  ---
+  duration_ms: 0.244
+  type: 'test'
+  ...
+# Subtest: published Substack revision updates same ID and verifies without another publish
+ok 98 - published Substack revision updates same ID and verifies without another publish
+  ---
+  duration_ms: 0.229166
+  type: 'test'
+  ...
+# Subtest: unknown published update retries anonymous same-ID verification only
+ok 99 - unknown published update retries anonymous same-ID verification only
+  ---
+  duration_ms: 0.164125
+  type: 'test'
+  ...
+# Subtest: historical published Substack match is publicly verified and adopted without writes
+ok 100 - historical published Substack match is publicly verified and adopted without writes
+  ---
+  duration_ms: 0.314667
+  type: 'test'
+  ...
+# Subtest: historical public conflict remains read-only on repeated prepare rather than overwriting an unadopted article
+ok 101 - historical public conflict remains read-only on repeated prepare rather than overwriting an unadopted article
+  ---
+  duration_ms: 0.946833
+  type: 'test'
+  ...
+# Subtest: public readback requires content, image, link, canonical, title and date independently
+ok 102 - public readback requires content, image, link, canonical, title and date independently
+  ---
+  duration_ms: 14.627041
+  type: 'test'
+  ...
+# Subtest: dedicated profile cannot be inside repo or ordinary Chrome profile
+ok 103 - dedicated profile cannot be inside repo or ordinary Chrome profile
+  ---
+  duration_ms: 0.19725
+  type: 'test'
+  ...
+# Subtest: full-mirror verifies exact platform canonical and original link without waiving date
+ok 104 - full-mirror verifies exact platform canonical and original link without waiving date
+  ---
+  duration_ms: 4.559916
+  type: 'test'
+  ...
+# Subtest: displayed original date uses reviewed timezone and refuses unsupported precision
+ok 105 - displayed original date uses reviewed timezone and refuses unsupported precision
+  ---
+  duration_ms: 1.051333
+  type: 'test'
+  ...
+# Subtest: pre-date readback still requires a real public date and leaves final date verification strict
+ok 106 - pre-date readback still requires a real public date and leaves final date verification strict
+  ---
+  duration_ms: 1.139584
+  type: 'test'
+  ...
+# Subtest: approved minute precision is Substack-only and binds approvals while preserving source seconds
+ok 107 - approved minute precision is Substack-only and binds approvals while preserving source seconds
+  ---
+  duration_ms: 3.182458
+  type: 'test'
+  ...
+1..107
+# tests 107
+# suites 0
+# pass 107
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30139.776833
+
+> gcake-dev@0.1.0 test:observability /Users/caiyijun/project/gcake-dev
+> node --import tsx --test test/website-observability.test.ts
+
+TAP version 13
+# Subtest: production HTML measures every reading page once and excludes development/preview
+ok 1 - production HTML measures every reading page once and excludes development/preview
+  ---
+  duration_ms: 8961.339833
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9151.472125

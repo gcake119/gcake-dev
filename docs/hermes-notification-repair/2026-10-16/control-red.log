@@ -1,0 +1,62 @@
+F.EFEFowner: waiting for natural existing-job dry-run
+F.
+======================================================================
+ERROR: test_current_boot_health_and_rejection_boundaries (test_control_saveback.ControlSaveback.test_current_boot_health_and_rejection_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 162, in test_current_boot_health_and_rejection_boundaries
+    from telegram_health import check_current
+ModuleNotFoundError: No module named 'telegram_health'
+
+======================================================================
+ERROR: test_package_contract_rejects_missing_tampered_or_external_evidence (test_control_saveback.ControlSaveback.test_package_contract_rejects_missing_tampered_or_external_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 83, in test_package_contract_rejects_missing_tampered_or_external_evidence
+    import packaging_contract as contract
+ModuleNotFoundError: No module named 'packaging_contract'
+
+======================================================================
+FAIL: test_approved_but_capabilityless_update_never_constructs_supervisor (test_control_saveback.ControlSaveback.test_approved_but_capabilityless_update_never_constructs_supervisor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 144, in test_approved_but_capabilityless_update_never_constructs_supervisor
+    with self.assertRaisesRegex(ValueError, 'telegram-required-capability-missing'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_offline_guard_blocks_external_effects_in_isolated_process (test_control_saveback.ControlSaveback.test_offline_guard_blocks_external_effects_in_isolated_process)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 234, in test_offline_guard_blocks_external_effects_in_isolated_process
+    self.assertEqual(result.returncode,0,result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    from offline_guard import install
+ModuleNotFoundError: No module named 'offline_guard'
+
+
+======================================================================
+FAIL: test_production_approval_refuses_missing_capability_before_persisting (test_control_saveback.ControlSaveback.test_production_approval_refuses_missing_capability_before_persisting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 69, in test_production_approval_refuses_missing_capability_before_persisting
+    with self.assertRaisesRegex(ValueError, 'telegram-required-capability-missing'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_supervisor_never_marks_ready_with_disconnected_telegram (test_control_saveback.ControlSaveback.test_supervisor_never_marks_ready_with_disconnected_telegram)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_control_saveback.py", line 208, in test_supervisor_never_marks_ready_with_disconnected_telegram
+    with self.assertRaisesRegex(ValueError,'telegram-not-connected'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.251s
+
+FAILED (failures=4, errors=2)

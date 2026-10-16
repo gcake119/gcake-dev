@@ -1,0 +1,4 @@
+Error: ERR_PNPM_LOCKFILE_WRITE_FILE
+
+  × resolve package manager dependencies
+  ╰─▶ Failed to write lockfile content: Operation not permitted (os error 1)

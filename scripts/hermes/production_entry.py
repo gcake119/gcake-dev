@@ -70,6 +70,11 @@ class ProductionStore(EntryStore):
         if os.geteuid()!=self.runner_uid:raise PermissionError('hermes-monitor-required')
         return super().monitor(**kwargs)
 
+    def approve(self,manifest,expected_digest):
+        from packaging_contract import require_manifest
+        require_manifest(manifest)
+        return super().approve(manifest,expected_digest)
+
 
 def gateway_environment(original,digest):
     if not isinstance(digest,str) or not re.fullmatch(r'[0-9a-f]{64}',digest):

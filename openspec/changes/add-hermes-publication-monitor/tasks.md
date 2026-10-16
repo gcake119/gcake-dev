@@ -124,3 +124,9 @@ Notification repair closeout: owner-reported single continuation exited 0 with T
 
 - [x] 16.1 Reproduce Durable repository saveback failure on a bare checkout by blocking the installed-only runtime module in the existing relocation acceptance tests; retain local RED matching both failed PR runs.
 - [x] 16.2 Defer installed control imports until actual preparation after local input validation; verify relocation GREEN, complete local workflow gates and unchanged notification runtime before publishing a focused CI fix.
+
+## 17. Installed production control saveback
+
+- [x] 17.1 Define Preserved production control protections scenarios and implementation contract before tasks, snapshot installed source provenance, and record acceptance RED for missing package approval and current-boot readiness guards.
+- [x] 17.2 Save back exact installed approval, owner, package/health and offline proof controls, verify acceptance GREEN and negative guard sensitivity without production operations.
+- [x] 17.3 Pass complete local gates and Spectra validation/analysis, record exact source parity and unchanged production selection/control hashes, and document remaining installation boundaries without commit/push or backup deletion.

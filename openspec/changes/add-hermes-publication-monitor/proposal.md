@@ -74,3 +74,11 @@ Preserve the repaired notification sources, tests, completed requirements and sa
 ## Scoped local commit authorization, 2026-10-15
 
 After completed source saveback, the owner explicitly requested review and a local commit containing only this Hermes notification repair, with no push. This supersedes the earlier commit restriction for this scoped local commit only. Existing unrelated dirty files, production settings, notification history and all backups remain untouched. Production execution, replay and additional delivery are not authorized by this commit.
+
+## Installed control saveback, 2026-10-16
+
+Owner authorizes local preservation and validation of the existing installed update controls after PR #30. Save back exact installed package approval/current-boot health protections and their offline SDK guard dependencies. Extend the existing hermes-update-entry-integration acceptance scenarios and tests; preserve actual production files, selection, job, history and credentials. No production execution, new installation policy, commit or push. The repository remains a source/verification deliverable; historical first-install inputs and consumed notification continuation are not rearmed.
+
+## Scoped control saveback commit authorization, 2026-10-16
+
+After local saveback and verification, the owner authorizes review and one local commit containing only this control saveback, its tests, specification additions and evidence. This supersedes the saveback-stage commit exclusion for this scoped commit only. No push, production management, installation or runtime change is authorized.
