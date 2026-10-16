@@ -140,6 +140,9 @@ test('GitHub read client returns repository-derived posts, series, and deploymen
   }]);
   assert.deepEqual((await client.getPost('hello'))?.series, [{ slug: 'notes', title: 'Notes', sectionId: 'start', position: 0 }]);
   assert.deepEqual((await client.getPost('standalone'))?.series, []);
+  assert.deepEqual((await client.listSeries()).map(({ slug, title, postCount }) => ({ slug, title, postCount })), [{
+    slug: 'notes', title: 'Notes', postCount: 1,
+  }]);
   assert.match((await client.listSeries())[0]?.source ?? '', /slug: notes[\s\S]*slug: hello/);
   assert.equal((await client.getSeries('notes'))?.baseCommitSha, 'commit-main');
   assert.deepEqual(await client.getLatestDeployment(), {

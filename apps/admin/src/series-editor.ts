@@ -14,6 +14,31 @@ export function serializeSeriesManifest(manifest: AdminSeriesManifest): string {
   return YAML.stringify(manifest, { lineWidth: 0 });
 }
 
+export function createSeriesManifest(title: string, slug: string): AdminSeriesManifest {
+  return {
+    slug,
+    title: title.trim(),
+    status: 'planned',
+    featured: false,
+    editorial: { currentPost: undefined, nextPost: undefined },
+    source: { type: 'local' },
+    canonical: { mode: 'local' },
+    sections: [],
+  };
+}
+
+export function updateSeriesMetadata(
+  manifest: AdminSeriesManifest,
+  patch: Partial<Pick<AdminSeriesManifest, 'title' | 'slug'>>,
+): AdminSeriesManifest {
+  return { ...manifest, ...patch };
+}
+
+export function seriesDeleteConfirmation(title: string, postCount: number): string {
+  const articles = postCount > 0 ? ` ${postCount} 篇文章` : '文章';
+  return `確定刪除系列「${title}」？這會刪除系列 manifest，但不會刪除${articles}；原系列文章會成為無系列文章。`;
+}
+
 export function addSeriesSection(manifest: AdminSeriesManifest): AdminSeriesManifest {
   const existingIds = new Set(manifest.sections.map((section) => section.id));
   let chapterNumber = 1;

@@ -5,11 +5,28 @@ import {
   isApiErrorResponse,
   isSessionResponse,
   type ApiErrorResponse,
+  type CreateSeriesRequest,
+  type DeleteSeriesRequest,
   type SessionResponse,
+  type UpdateSeriesRequest,
 } from './index';
 
 test('Admin API contract has a stable Phase 0 version', () => {
   assert.equal(HEALTH_CONTRACT_VERSION, 'v1');
+});
+
+test('Series lifecycle mutation contracts carry repository revisions', () => {
+  const create: CreateSeriesRequest = { title: 'Agents', slug: 'agents', expectedBaseCommitSha: 'commit-a' };
+  const update: UpdateSeriesRequest = {
+    manifest: { slug: 'agents', title: 'Agent Workflows', sections: [] },
+    expectedBlobSha: 'series-a', expectedBaseCommitSha: 'commit-a',
+  };
+  const remove: DeleteSeriesRequest = {
+    expectedBlobSha: 'series-a', expectedBaseCommitSha: 'commit-a', confirmed: true,
+  };
+  assert.equal(create.expectedBaseCommitSha, 'commit-a');
+  assert.equal(update.expectedBlobSha, 'series-a');
+  assert.equal(remove.confirmed, true);
 });
 
 test('Phase 1 API errors use a stable shared envelope', () => {

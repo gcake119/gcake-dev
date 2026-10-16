@@ -40,3 +40,7 @@ for (const [name, mutate] of [
     );
   });
 }
+
+test('series metadata rejects an empty display name on update', () => {
+  assert.throws(() => validateAndSerializeSeries({ ...manifest, title: '   ' }, { existingMarkdownSlugs: new Set(['one']) }), InvalidSeriesError);
+});

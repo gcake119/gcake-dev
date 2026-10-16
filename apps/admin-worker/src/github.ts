@@ -157,6 +157,19 @@ function slugFromPath(path: string): string {
   return path.slice(path.lastIndexOf('/') + 1).replace(/\.(mdx?|ya?ml)$/i, '');
 }
 
+function seriesSummary(source: string, fallbackSlug: string): { title: string; postCount: number } {
+  const manifest = YAML.parse(source) as {
+    title?: unknown;
+    sections?: Array<{ posts?: unknown[] }>;
+  } | undefined;
+  return {
+    title: typeof manifest?.title === 'string' ? manifest.title : fallbackSlug,
+    postCount: Array.isArray(manifest?.sections)
+      ? manifest.sections.reduce((count, section) => count + (Array.isArray(section.posts) ? section.posts.length : 0), 0)
+      : 0,
+  };
+}
+
 export class GitHubAppReadClient {
   readonly #installationTokens: InstallationTokenProvider;
   readonly #fetch: typeof fetch;
@@ -498,29 +511,25 @@ export class GitHubAppReadClient {
   async listSeries(): Promise<readonly SeriesSource[]> {
     const snapshot = await this.#snapshot();
     const entries = snapshot.tree.filter((entry) => entry.type === 'blob' && /^src\/content\/series\/[^/]+\.ya?ml$/.test(entry.path));
-    return Promise.all(
-      entries.map(async (entry) => ({
-        slug: slugFromPath(entry.path),
-        path: entry.path,
-        source: await this.#readBlob(entry.sha),
-        baseBlobSha: entry.sha,
-        baseCommitSha: snapshot.commitSha,
-      })),
-    );
+    return Promise.all(entries.map(async (entry) => {
+      const slug = slugFromPath(entry.path);
+      const source = await this.#readBlob(entry.sha);
+      return {
+        slug, ...seriesSummary(source, slug), path: entry.path, source,
+        baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
+      };
+    }));
   }
   async getSeries(slug: string): Promise<SeriesSource | undefined> {
     const snapshot = await this.#snapshot();
-    const entry = snapshot.tree.find(
-      (candidate) =>
-        candidate.type === 'blob' && /^src\/content\/series\/[^/]+\.ya?ml$/.test(candidate.path) && slugFromPath(candidate.path) === slug,
-    );
+    const entry = snapshot.tree.find((candidate) => candidate.type === 'blob'
+      && /^src\/content\/series\/[^/]+\.ya?ml$/.test(candidate.path)
+      && slugFromPath(candidate.path) === slug);
     if (!entry) return undefined;
+    const source = await this.#readBlob(entry.sha);
     return {
-      slug,
-      path: entry.path,
-      source: await this.#readBlob(entry.sha),
-      baseBlobSha: entry.sha,
-      baseCommitSha: snapshot.commitSha,
+      slug, ...seriesSummary(source, slug), path: entry.path, source,
+      baseBlobSha: entry.sha, baseCommitSha: snapshot.commitSha,
     };
   }
   /** Observe artifact identity, not the pre-publication workflow trigger SHA. */

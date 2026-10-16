@@ -35,6 +35,7 @@ async function handler(
     oauth: noOAuth,
     sessions,
     githubWrites: writer,
+    github: { listPosts: async () => [], getPost: async () => undefined, listSeries: async () => [], getSeries: async (slug) => ['missing', 'agent-workflows', 'new-series'].includes(slug) ? undefined : ({ slug, title: slug, postCount: 0, path: `src/content/series/${slug}.yaml`, source: '', baseBlobSha: 'blob', baseCommitSha: 'base' }), getLatestDeployment: async () => undefined },
     seriesValidator,
     allowedGitHubUserIds: new Set(['119']),
     oauthStateSecret: 'secret',
@@ -82,7 +83,7 @@ test('series route saves exactly one canonical YAML file with optimistic revisio
     validateAndSerialize: () => ({ path: 'src/content/series/ai-camp.yaml', yaml: 'slug: ai-camp\nsections: []\n' }),
   });
   const response = await handle(new Request('https://admin.test/api/v1/series/ai-camp', {
-    method: 'POST',
+    method: 'PUT',
     headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
     body: JSON.stringify({
       expectedBlobSha: 'series-old',
@@ -100,6 +101,107 @@ test('series route saves exactly one canonical YAML file with optimistic revisio
       source: 'slug: ai-camp\nsections: []\n',
     }],
   }]);
+});
+
+test('series create writes an empty canonical manifest and expects target absence', async () => {
+  const requests: Parameters<GitHubContentWriter['save']>[0][] = [];
+  const handle = await handler({
+    save: async (request) => {
+      requests.push(request);
+      return { commitSha: 'commit-new', paths: request.files.map((file) => file.path) };
+    },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  }, {
+    validateAndSerialize: (manifest) => ({
+      path: `src/content/series/${manifest.slug}.yaml`,
+      yaml: `slug: ${manifest.slug}\ntitle: ${manifest.title}\nstatus: planned\nsections: []\n`,
+    }),
+  });
+  const response = await handle(new Request('https://admin.test/api/v1/series', {
+    method: 'POST',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({ title: 'Agent Workflows', slug: 'agent-workflows', expectedBaseCommitSha: 'commit-old' }),
+  }));
+  assert.equal(response.status, 201);
+  assert.deepEqual(requests, [{
+    expectedBaseCommitSha: 'commit-old',
+    message: 'Create series agent-workflows',
+    files: [{
+      path: 'src/content/series/agent-workflows.yaml',
+      source: 'slug: agent-workflows\ntitle: Agent Workflows\nstatus: planned\nsections: []\n',
+    }],
+  }]);
+});
+
+test('series rename is one delete-and-create save request with preserved manifest order', async () => {
+  const requests: Parameters<GitHubContentWriter['save']>[0][] = [];
+  const handle = await handler({
+    save: async (request) => {
+      requests.push(request);
+      return { commitSha: 'commit-new', paths: request.files.map((file) => file.path) };
+    },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  }, {
+    validateAndSerialize: (manifest) => ({
+      path: `src/content/series/${manifest.slug}.yaml`,
+      yaml: 'slug: new-series\nsections:\n  - id: start\n    posts:\n      - slug: one\n      - slug: two\n',
+    }),
+  });
+  const response = await handle(new Request('https://admin.test/api/v1/series/old-series', {
+    method: 'PUT',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      expectedBlobSha: 'series-old', expectedBaseCommitSha: 'commit-old',
+      manifest: { slug: 'new-series', title: 'Series', status: 'active', sections: [{ id: 'start', posts: [{ slug: 'one' }, { slug: 'two' }] }] },
+    }),
+  }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(requests[0]?.files, [
+    { path: 'src/content/series/old-series.yaml', expectedBlobSha: 'series-old' },
+    { path: 'src/content/series/new-series.yaml', source: 'slug: new-series\nsections:\n  - id: start\n    posts:\n      - slug: one\n      - slug: two\n' },
+  ]);
+});
+
+test('series delete requires confirmation and deletes only the manifest path', async () => {
+  const requests: Parameters<GitHubContentWriter['save']>[0][] = [];
+  const handle = await handler({
+    save: async (request) => {
+      requests.push(request);
+      return { commitSha: 'commit-new', paths: request.files.map((file) => file.path) };
+    },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const request = (confirmed: boolean) => new Request('https://admin.test/api/v1/series/agents', {
+    method: 'DELETE',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({ expectedBlobSha: 'series-old', expectedBaseCommitSha: 'commit-old', confirmed }),
+  });
+  assert.equal((await handle(request(false))).status, 400);
+  assert.equal(requests.length, 0);
+  assert.equal((await handle(request(true))).status, 200);
+  assert.deepEqual(requests[0]?.files, [{ path: 'src/content/series/agents.yaml', expectedBlobSha: 'series-old' }]);
+});
+
+test('series conflict returns current revision details and creates no silent overwrite', async () => {
+  const handle = await handler({
+    save: async () => { throw new RepositoryConflictError(
+      'SERIES_CONFLICT', 'src/content/series/agents.yaml', 'series-old', 'series-new', 'commit-new',
+    ); },
+    deletePost: async () => ({ kind: 'confirmation-required' }),
+  });
+  const response = await handle(new Request('https://admin.test/api/v1/series/agents', {
+    method: 'DELETE',
+    headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({ expectedBlobSha: 'series-old', expectedBaseCommitSha: 'commit-old', confirmed: true }),
+  }));
+  assert.equal(response.status, 409);
+  assert.deepEqual(await response.json(), {
+    error: {
+      code: 'SERIES_CONFLICT',
+      message: '系列已在 GitHub 更新，沒有覆蓋較新版本。',
+      details: { currentBlobSha: 'series-new', currentCommitSha: 'commit-new' },
+    },
+  });
 });
 
 test('coherent article-plus-series save validates YAML before one Git transaction', async () => {
@@ -291,3 +393,37 @@ test('delete route reports references and cannot delete without explicit confirm
   assert.equal(referenced.status, 409);
   assert.equal((await referenced.json()).error.code, 'REFERENCED_RESOURCE');
 });
+
+test('post save cannot smuggle a post deletion through an omitted source', async () => {
+  let writes = 0;
+  const handle = await handler({ save: async () => { writes++; return { commitSha: 'bad', paths: [] }; }, deletePost: async () => ({ kind: 'confirmation-required' }) });
+  const response = await handle(new Request('https://admin.test/api/v1/posts/article', {
+    method: 'POST', headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({ message: 'Delete', expectedBaseCommitSha: 'base', files: [{ path: 'src/content/posts/article.md', expectedBlobSha: 'blob' }] }),
+  }));
+  assert.equal(response.status, 400);
+  assert.equal(writes, 0);
+});
+
+for (const method of ['PUT', 'DELETE']) test(`missing series ${method} returns 404 without writes`, async () => {
+  let writes = 0;
+  const handle = await handler({ save: async () => { writes++; return { commitSha: 'bad', paths: [] }; }, deletePost: async () => ({ kind: 'confirmation-required' }) });
+  const response = await handle(new Request('https://admin.test/api/v1/series/missing', {
+    method, headers: { cookie: 'gcake_session=session', 'x-csrf-token': 'csrf', 'content-type': 'application/json' },
+    body: JSON.stringify({ manifest: { slug: 'missing', title: 'Missing', sections: [] }, expectedBlobSha: 'blob', expectedBaseCommitSha: 'base', confirmed: true }),
+  }));
+  assert.equal(response.status, 404);
+  assert.equal(writes, 0);
+});
+
+for (const [method, path] of [['POST', '/series'], ['PUT', '/series/demo'], ['DELETE', '/series/demo']] as const) {
+  test(`series ${method} rejects absent auth and invalid CSRF before writing`, async () => {
+    let writes = 0;
+    const handle = await handler({ save: async () => { writes++; return { commitSha: 'bad', paths: [] }; }, deletePost: async () => ({ kind: 'confirmation-required' }) });
+    for (const [headers, expected] of [[{}, 401], [{cookie: 'gcake_session=session', 'x-csrf-token': 'wrong'}, 403]] as const) {
+      const response = await handle(new Request('https://admin.test/api/v1'+path, { method, headers, body: '{}' }));
+      assert.equal(response.status, expected);
+    }
+    assert.equal(writes, 0);
+  });
+}

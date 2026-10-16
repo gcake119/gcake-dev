@@ -568,7 +568,7 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
           const pathsAreBounded = requested.files.every(
             (file) => postPath.test(file.path) || /^src\/content\/series\/[a-z0-9][a-z0-9-]*\.ya?ml$/.test(file.path),
           );
-          if (postFiles.length !== 1 || !pathsAreBounded) {
+          if (postFiles.length !== 1 || typeof postFiles[0]?.source !== 'string' || !pathsAreBounded) {
             return jsonError(400, 'VALIDATION_FAILED', '儲存路徑不在允許的文章或系列範圍內。');
           }
           const seriesFiles = requested.files.filter((file) => file.path.startsWith('src/content/series/'));
@@ -578,6 +578,7 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
           const files = await Promise.all(
             requested.files.map(async (file) => {
               if (!file.path.startsWith('src/content/series/')) return file;
+              if (typeof file.source !== 'string') throw new InvalidSeriesError(['系列來源內容不可為空']);
               const manifest = YAML.parse(file.source) as SeriesManifestInput;
               const validated = await dependencies.seriesValidator!.validateAndSerialize(manifest);
               if (validated.path !== file.path) throw new InvalidSeriesError(['系列 slug 與檔案路徑不一致']);
@@ -669,82 +670,102 @@ export function createPhase1Handler(dependencies: Phase1Dependencies) {
       }
     }
 
-    if (request.method === 'POST' && url.pathname.startsWith('/api/v1/series/')) {
+    if ((request.method === 'POST' || request.method === 'PUT' || request.method === 'DELETE')
+      && (url.pathname === '/api/v1/series' || url.pathname.startsWith('/api/v1/series/'))) {
       const rawToken = cookieValue(request, 'gcake_session');
       const session = rawToken ? await dependencies.sessions.findByRawToken(rawToken) : undefined;
       if (!session || session.expiresAt <= (dependencies.now?.() ?? Date.now())) return jsonError(401, 'UNAUTHENTICATED', '請先登入。');
-      try {
-        requireCsrf(request, session);
-      } catch {
-        return jsonError(403, 'FORBIDDEN', '安全驗證失敗，請重新整理後再試。');
-      }
+      try { requireCsrf(request, session); } catch { return jsonError(403, 'FORBIDDEN', '安全驗證失敗，請重新整理後再試。'); }
       if (!dependencies.githubWrites || !dependencies.seriesValidator) return jsonError(503, 'GITHUB_API_FAILED', '系列寫入服務尚未設定。');
+      const saveSeries = async (input: SaveContentRequest) => {
+        if (dependencies.releases)
+          await dependencies.releases.queue.assertSeriesWrites(await dependencies.releases.git.snapshot(), input.files);
+        const saved = await dependencies.githubWrites!.save(input);
+        if (dependencies.releases) {
+          try { await dependencies.releases.queue.ingest(await dependencies.releases.git.snapshot()); }
+          catch { /* Preserve successful Git result; next refresh reconciles. */ }
+        }
+        return saved;
+      };
       try {
         const slug = url.pathname.slice('/api/v1/series/'.length);
-        if (!SAFE_SLUG.test(slug)) return jsonError(404, 'SERIES_NOT_FOUND', '找不到這個系列。');
-        const payload = (await request.json()) as {
-          manifest?: SeriesManifestInput;
-          expectedBlobSha?: string;
-          expectedBaseCommitSha?: string;
-        };
-        if (
-          !payload.manifest ||
-          payload.manifest.slug !== slug ||
-          typeof payload.expectedBlobSha !== 'string' ||
-          typeof payload.expectedBaseCommitSha !== 'string'
-        ) {
+        const payload = await request.json() as Record<string, unknown>;
+        if (request.method === 'POST' && url.pathname === '/api/v1/series') {
+          if (typeof payload.slug !== 'string' || !SAFE_SLUG.test(payload.slug)
+            || typeof payload.title !== 'string' || !payload.title.trim()
+            || typeof payload.expectedBaseCommitSha !== 'string') {
+            return jsonError(400, 'VALIDATION_FAILED', '系列名稱、slug 或修訂版格式不正確。');
+          }
+          const existing = await dependencies.github?.getSeries(payload.slug);
+          if (existing) return Response.json({ error: { code: 'SERIES_CONFLICT', message: '系列 slug 已存在。', details: { currentBlobSha: existing.baseBlobSha, currentCommitSha: existing.baseCommitSha } } }, { status: 409 });
+          const manifest: SeriesManifestInput = {
+            slug: payload.slug,
+            title: payload.title.trim(),
+            status: 'planned',
+            featured: false,
+            editorial: { currentPost: undefined, nextPost: undefined },
+            source: { type: 'local' },
+            canonical: { mode: 'local' },
+            sections: [],
+          };
+          const validated = await dependencies.seriesValidator.validateAndSerialize(manifest);
+          const saved = await saveSeries({
+            expectedBaseCommitSha: payload.expectedBaseCommitSha,
+            message: `Create series ${payload.slug}`,
+            files: [{ path: validated.path, source: validated.yaml }],
+          });
+          return Response.json(saved, { status: 201 });
+        }
+
+        if (!slug || !SAFE_SLUG.test(slug)) return jsonError(404, 'SERIES_NOT_FOUND', '找不到這個系列。');
+        if (typeof payload.expectedBlobSha !== 'string' || typeof payload.expectedBaseCommitSha !== 'string') {
+          return jsonError(400, 'VALIDATION_FAILED', '系列修訂版格式不正確。');
+        }
+        const existing = await dependencies.github?.getSeries(slug);
+        if (dependencies.github && !existing) return jsonError(404, 'SERIES_NOT_FOUND', '找不到這個系列。');
+        const oldPath = existing?.path ?? `src/content/series/${slug}.yaml`;
+        if (request.method === 'DELETE') {
+          if (payload.confirmed !== true) return jsonError(400, 'CONFIRMATION_REQUIRED', '請明確確認刪除系列；文章不會被刪除。');
+          return Response.json(await saveSeries({
+            expectedBaseCommitSha: payload.expectedBaseCommitSha,
+            message: `Delete series ${slug}`,
+            files: [{ path: oldPath, expectedBlobSha: payload.expectedBlobSha }],
+          }));
+        }
+
+        const manifest = payload.manifest as SeriesManifestInput | undefined;
+        if (!manifest || typeof manifest.slug !== 'string' || !SAFE_SLUG.test(manifest.slug)) {
           return jsonError(400, 'VALIDATION_FAILED', '系列儲存資料格式不正確。');
         }
-        const validated = await dependencies.seriesValidator.validateAndSerialize(payload.manifest);
-        const files = [
-          {
-            path: validated.path,
-            expectedBlobSha: payload.expectedBlobSha,
-            source: validated.yaml,
-          },
-        ];
-        if (dependencies.releases && files.some((f) => f.path.startsWith('src/content/series/')))
-          await dependencies.releases.queue.assertSeriesWrites(await dependencies.releases.git.snapshot(), files);
-        const saved = await dependencies.githubWrites.save({
-          expectedBaseCommitSha: payload.expectedBaseCommitSha,
-          message: `Update series ${slug}`,
-          files,
-        });
-        if (dependencies.releases) {
-          try {
-            await dependencies.releases.queue.ingest(await dependencies.releases.git.snapshot());
-          } catch {
-            /* Preserve successful Git result. */
-          }
+        const validated = await dependencies.seriesValidator.validateAndSerialize(manifest);
+        const renamed = manifest.slug !== slug;
+        if (renamed) {
+          const target = await dependencies.github?.getSeries(manifest.slug);
+          if (target) return Response.json({ error: { code: 'SERIES_CONFLICT', message: '目標系列 slug 已存在。', details: { currentBlobSha: target.baseBlobSha, currentCommitSha: target.baseCommitSha } } }, { status: 409 });
         }
-        return Response.json(saved);
+        return Response.json(await saveSeries({
+          expectedBaseCommitSha: payload.expectedBaseCommitSha,
+          message: renamed ? `Rename series ${slug} to ${manifest.slug}` : `Update series ${slug}`,
+          files: renamed
+            ? [
+                { path: oldPath, expectedBlobSha: payload.expectedBlobSha },
+                { path: validated.path, source: validated.yaml },
+              ]
+            : [{ path: oldPath, expectedBlobSha: payload.expectedBlobSha, source: validated.yaml }],
+        }));
       } catch (error) {
-        if (error instanceof Error && error.message === 'RELEASE_IDENTITY_LOCKED')
-          return jsonError(409, 'ARTICLE_CONFLICT', '文章已有發布承諾或連載紀錄，不能改名或刪除；請先確認公開狀態。');
         if (error instanceof Error && error.message === 'STARTED_SERIES_ORDER_LOCKED')
-          return jsonError(409, 'SERIES_CONFLICT', '連載已開始，篇序已鎖定；請先完成重新驗證與人工衝突確認。');
+          return jsonError(409, 'SERIES_CONFLICT', '連載已開始，不能變更系列識別、刪除系列或改動篇序。');
         if (error instanceof InvalidSeriesError) {
-          return Response.json(
-            {
-              error: {
-                code: 'INVALID_SERIES',
-                message: '系列資料未通過驗證。',
-                details: { issues: error.issues },
-              },
-            },
-            { status: 400 },
-          );
+          return Response.json({ error: { code: 'INVALID_SERIES', message: '系列資料未通過驗證。', details: { issues: error.issues } } }, { status: 400 });
         }
         if (error && typeof error === 'object' && 'code' in error && (error as { code?: unknown }).code === 'SERIES_CONFLICT') {
-          return Response.json(
-            {
-              error: {
-                code: 'SERIES_CONFLICT',
-                message: '系列已在 GitHub 更新，沒有覆蓋較新版本。',
-              },
-            },
-            { status: 409 },
-          );
+          const conflict = error as { currentBlobSha?: unknown; currentCommitSha?: unknown };
+          return Response.json({ error: {
+            code: 'SERIES_CONFLICT',
+            message: '系列已在 GitHub 更新，沒有覆蓋較新版本。',
+            details: { currentBlobSha: conflict.currentBlobSha, currentCommitSha: conflict.currentCommitSha },
+          } }, { status: 409 });
         }
         return jsonError(502, 'GITHUB_API_FAILED', '目前無法儲存系列。');
       }

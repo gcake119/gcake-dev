@@ -3,11 +3,14 @@ import test from 'node:test';
 import {
   addSeriesSection,
   addSeriesPost,
+  createSeriesManifest,
   moveSeriesPost,
   moveSeriesSection,
   parseSeriesManifest,
   removeEmptySeriesSection,
   serializeSeriesManifest,
+  seriesDeleteConfirmation,
+  updateSeriesMetadata,
   updateSeriesSection,
 } from './series-editor';
 
@@ -55,4 +58,27 @@ test('a standalone post can be added through the manifest without article frontm
   assert.deepEqual(updated.sections[0]?.posts, [{ slug: 'standalone', status: 'draft' }]);
   assert.match(yaml, /slug: standalone/);
   assert.doesNotMatch(yaml, /frontmatter|section:|order:/);
+});
+
+test('new series defaults are canonical and contain no articles', () => {
+  assert.deepEqual(createSeriesManifest('Agent Workflows', 'agent-workflows'), {
+    slug: 'agent-workflows', title: 'Agent Workflows', status: 'planned', featured: false,
+    editorial: { currentPost: undefined, nextPost: undefined },
+    source: { type: 'local' }, canonical: { mode: 'local' }, sections: [],
+  });
+});
+
+test('series title and slug edits preserve membership, order, and unknown fields', () => {
+  const original = parseSeriesManifest('slug: old-series\ntitle: Old\nstatus: active\ncustom: keep\neditorial:\n  currentPost: one\nsections:\n  - id: start\n    title: Start\n    status: active\n    posts:\n      - slug: one\n        status: draft\n      - slug: two\n        status: planned\n');
+  const updated = updateSeriesMetadata(original, { title: 'New', slug: 'new-series' });
+  assert.equal(updated.title, 'New');
+  assert.equal(updated.slug, 'new-series');
+  assert.equal(updated.custom, 'keep');
+  assert.deepEqual(updated.editorial, { currentPost: 'one' });
+  assert.deepEqual(updated.sections[0]?.posts.map((post) => post.slug), ['one', 'two']);
+});
+
+test('series deletion confirmation explicitly says articles remain', () => {
+  assert.match(seriesDeleteConfirmation('Agent Workflows', 3), /不會刪除 3 篇文章/);
+  assert.match(seriesDeleteConfirmation('Empty', 0), /不會刪除文章/);
 });

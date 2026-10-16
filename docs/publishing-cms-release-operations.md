@@ -60,3 +60,7 @@ Actions editorial-release environment 僅允許 main。設定 RELEASE_WORKER_URL
 新版重試在原 actions-write 授權與 Worker retry gate 下，重新核對同一 SHA 的失敗 run，再呼叫 `rerun-failed-jobs`。較新的其他 run、成功或未能證實的 run 不會被重試；不呼叫 workflow dispatch 或新的文章提交。手動全 workflow rerun 仍應避免。GitHub API 合約參考：[workflow jobs](https://docs.github.com/en/rest/actions/workflow-jobs)、[failed-job recovery](https://docs.github.com/en/rest/actions/workflow-runs#re-run-failed-jobs-from-a-workflow-run)。
 
 本機測試以假 GitHub／saved-site 回應驗證，不使用正式 token、不調整 production gates、不查寫 D1、不推送或部署。公開頁的 canonical、文章 SHA-256、發布時間與 RSS GUID 仍須通過既有獨立驗證，才能標示 verified-public。推送前核對修補範圍；正式 rollout 另需確認現有 D1、gate 與 Worker／workflow 版本，不能把本機通過視為 Production 驗收。
+
+## 歷史單篇公開驗收工具來源回存（２０２６－１０－１６）
+
+`scripts/hermes/public_release_acceptance.py` 與其 fixture tests 已由舊驗收工作樹原樣回存。它只針對固定的歷史首篇，使用隔離公開 Git 與無憑證靜態 GET，拒絕 GitHub REST／GraphQL／內部 JSON API；公開頁／RSS 與 scheduled／部署 provenance 分別判斷。來源不足保持 unconfirmed，不重發、不重跑 workflow。這不是正式 Hermes 通用監控入口，也不要求重建已完成 job。舊 shell 入口只保存於 docs/worktree-closeout/2026-10-16/historical，不能照抄執行。回存及工作樹保留依據見該目錄 README。
