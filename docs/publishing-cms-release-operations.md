@@ -64,3 +64,7 @@ Actions editorial-release environment 僅允許 main。設定 RELEASE_WORKER_URL
 ## 歷史單篇公開驗收工具來源回存（２０２６－１０－１６）
 
 `scripts/hermes/public_release_acceptance.py` 與其 fixture tests 已由舊驗收工作樹原樣回存。它只針對固定的歷史首篇，使用隔離公開 Git 與無憑證靜態 GET，拒絕 GitHub REST／GraphQL／內部 JSON API；公開頁／RSS 與 scheduled／部署 provenance 分別判斷。來源不足保持 unconfirmed，不重發、不重跑 workflow。這不是正式 Hermes 通用監控入口，也不要求重建已完成 job。舊 shell 入口只保存於 docs/worktree-closeout/2026-10-16/historical，不能照抄執行。回存及工作樹保留依據見該目錄 README。
+
+## PR ＃32 CMS 正式部署已完成（２０２６－１０－１６）
+
+另案取得明確部署授權後，已從 `6f02e56` 部署 CMS，正式 version 為 `ded9864d-4748-4143-96b4-87e80b73d871`，１００％ 流量。保留 `RELEASE_WRITE_ENABLED=true` 與所有既有開關、bindings；先備份 D1，本次無 migration。版本、靜態資產、健康端點及正式介面查看已驗證，未操作內容寫入，也未更動 Hermes 或 Substack 排程。完整範圍、私人備份定位與回復基準見 [部署與結案紀錄](publishing-cms-deployment-20261016.md)。本次成功保留開關，不代表日後可直接使用 repo 預設部署；每次仍須重新核對現行開關與發布狀態。
