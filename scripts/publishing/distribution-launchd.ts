@@ -18,9 +18,7 @@ export function renderLaunchAgent(options:LaunchAgentOptions):string{
  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict>\n<key>Label</key><string>${xml(options.label)}</string>\n<key>ProgramArguments</key><array>${args.map(a=>'<string>'+xml(a)+'</string>').join('')}</array>\n<key>WorkingDirectory</key><string>${xml(options.runtime)}</string>\n<key>EnvironmentVariables</key><dict><key>PATH</key><string>${xml(path.dirname(options.node)+':/usr/bin:/bin:/usr/sbin:/sbin')}</string></dict>\n<key>StartInterval</key><integer>900</integer>\n<key>RunAtLoad</key><false/>\n<key>KeepAlive</key><false/>\n<key>ProcessType</key><string>Background</string>\n<key>ThrottleInterval</key><integer>60</integer>\n<key>StandardOutPath</key><string>${xml(path.join(base,'logs/stdout.log'))}</string>\n<key>StandardErrorPath</key><string>${xml(path.join(base,'logs/stderr.log'))}</string>\n</dict></plist>\n`;
 }
 export function assertStandaloneAcceptance(value:unknown):void{
- if((value as {executionMode?:string})?.executionMode==='anonymous-only'){assertAnonymousAcceptance(value);return;}
- const a=value as {status?:string;transport?:string;profileVerified?:boolean;nativePermissionsVerified?:boolean;readOnlyRound?:string;inFlight?:number};
- if(!a||a.status!=='passed'||!['profile','macos-chrome'].includes(a.transport??'')||(a.transport==='profile'?a.profileVerified!==true:a.nativePermissionsVerified!==true)||a.readOnlyRound!=='completed'||a.inFlight!==0)throw Error('DISTRIBUTION_STANDALONE_ACCEPTANCE_REQUIRED');
+ assertAnonymousAcceptance(value);
 }
 export async function prepareLaunchAgent(options:LaunchAgentOptions){
  const text=renderLaunchAgent(options);const base=options.privateDirectory;

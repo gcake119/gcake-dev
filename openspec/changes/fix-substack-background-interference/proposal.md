@@ -31,3 +31,7 @@ The user explicitly requires human-action items to notify their existing Hermes 
 ## Follow-up: Public identity format repair
 
 The user authorizes diagnosis and repair of the two held articles while preserving original IDs, zero Email/App delivery and no Chrome interference. Live anonymous HTML shows a single script#preloads-json of application/json type replacing the legacy inline JSON.parse string. Both public pages and archive identify the original IDs 220011124 and 220473117 under publication 11352259. Extend inert parsing without weakening identity or full-content checks, then explicitly verify only those two current source revisions and let the existing coordinator settle their D1 dispositions. Modify scripts/publishing/substack-public-identity.ts and scripts/publishing/distribution-public-identity.test.ts; preserve existing background holds and notification semantics.
+
+## PR33 review corrections
+
+Require anonymous-only acceptance at scheduler install and execution, preserve durable manual holds omitted from source inventory in Hermes attention, and recheck background eligibility under the per-target writer lock. These close three review findings without changing the running private installation, Chrome, article state or delivery.

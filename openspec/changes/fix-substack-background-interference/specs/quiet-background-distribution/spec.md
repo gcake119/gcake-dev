@@ -104,3 +104,32 @@ The verifier SHALL accept a unique designated application/json identity record o
 - **GIVEN** identity parses correctly but current public content or date does not match the source
 - **WHEN** the operator verifies the article
 - **THEN** it stays blocked for human action on the original ID without attempting a write or loosening verification
+
+### Requirement: Reviewed scheduler boundaries
+
+Scheduler activation and execution SHALL require anonymous-only acceptance with zero browser access and zero article writes. Human-action snapshots SHALL include every durable manual hold, even when its source is missing or ineligible, and SHALL clear only after complete durable-state evidence. Background eligibility SHALL be enforced while owning the target lock; rejection SHALL preserve the current state and unresolved evidence without a public read.
+
+#### Scenario: Legacy receipt is presented
+- **GIVEN** a previously accepted native or profile receipt without anonymous-only evidence
+- **WHEN** scheduler installation or runtime validation checks it
+- **THEN** it rejects the receipt before a round starts
+
+#### Scenario: Held source disappears
+- **GIVEN** a durable held article whose source is deleted or ineligible
+- **WHEN** a completed round omits that article from its execution results
+- **THEN** the article remains in the Hermes attention snapshot without any retry
+
+#### Scenario: Clear evidence is unavailable
+- **GIVEN** an existing human-action snapshot
+- **WHEN** a round omits the held article and a complete durable hold read is unavailable or fails
+- **THEN** the previous snapshot is preserved
+
+#### Scenario: Confirmed durable resolution
+- **GIVEN** all durable holds have been explicitly resolved and current round results contain no attended blockers
+- **WHEN** a complete successful round reads the durable hold set
+- **THEN** it clears the active attention snapshot without a delivery
+
+#### Scenario: Hold appears before lock acquisition
+- **GIVEN** a background verification was planned and its target becomes held before it obtains the target lock
+- **WHEN** the background verifier obtains the lock
+- **THEN** it refuses verification, preserves the original hold and diagnostics, and releases its lock without public or browser access

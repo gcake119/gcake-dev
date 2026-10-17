@@ -55,3 +55,35 @@ test('notification queue failure is visible without leaving the sync lock or sou
   assert.equal(result.cleanup.source,'removed');await assert.rejects(fs.access(f.options.lock));
  }finally{await f.cleanup();}
 });
+
+test('production scheduler validation rejects old receipts before any network access',async()=>{
+ const {productionDependencies}=await import('./sync-distribution');const f=await fixture();
+ const db={prepare:()=>{throw Error('NETWORK_FORBIDDEN');}} as never;
+ try{
+  await fs.writeFile(f.options.configFile,JSON.stringify({unattended:{enabled:true,scope:'all-formal-markdown',repository:'gcake119/gcake-dev',branch:'main',policy:'pages-first-no-newsletter',targets:['substack']},substack:{ui:{origin:'https://gcakedev.substack.com',publicationPolicy:'full-mirror'}}}));
+  // The old factory requires syntactically valid credentials even for local validation.
+  const saved={...process.env};Object.assign(process.env,{CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),DISTRIBUTION_D1_DATABASE_ID:'a'.repeat(36),CLOUDFLARE_API_TOKEN:'fixture-only'});
+  try{
+   const deps=productionDependencies(f.runtime,db);
+   await fs.writeFile(f.options.acceptanceFile,JSON.stringify({status:'passed',transport:'profile',profileVerified:true,readOnlyRound:'completed',inFlight:0,providerStates:[{target:'substack',status:'verified'}]}));
+   await assert.rejects(deps.validate(f.options.configFile,f.options.acceptanceFile),/ANONYMOUS_ACCEPTANCE/);
+  }finally{for(const key of ['CLOUDFLARE_ACCOUNT_ID','DISTRIBUTION_D1_DATABASE_ID','CLOUDFLARE_API_TOKEN'])if(saved[key]===undefined)delete process.env[key];else process.env[key]=saved[key];}
+ }finally{await f.cleanup();}
+});
+
+test('production notification includes inventory-omitted D1 holds and failed reads cannot clear the feed',async()=>{
+ const {DatabaseSync}=await import('node:sqlite');const {SqliteD1Database}=await import('./sqlite-d1');const {D1PublicationRepository}=await import('../../apps/admin-worker/src/publication-operations');const {productionDependencies}=await import('./sync-distribution');
+ const f=await fixture();const database=new DatabaseSync(':memory:');let closed=false;
+ try{
+  database.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/0003_publication_operations.sql',import.meta.url),'utf8'));
+  const db=new SqliteD1Database(database),repo=new D1PublicationRepository(db),file=path.join(f.root,'attention.json');
+  const state={postSlug:'deleted-source',target:'substack' as const,sourceRevision:'r1',status:'manual_required' as const,lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS',updatedAt:'now'};
+  await repo.putState(state);await fs.writeFile(f.options.configFile,JSON.stringify({unattended:{notifyViaHermes:true}}));
+  const deps=productionDependencies(f.runtime,db,file),round={status:'completed',results:[]};
+  assert.equal((await deps.notify!(round,f.options.configFile)).status,'queued');
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[{slug:'deleted-source',code:'DISTRIBUTION_MANUAL_REQUIRED'}]);
+  await repo.putState({...state,status:'verified'});await deps.notify!(round,f.options.configFile);assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[]);
+  await repo.putState(state);await deps.notify!(round,f.options.configFile);const before=await fs.readFile(file,'utf8');
+  database.close();closed=true;await assert.rejects(deps.notify!(round,f.options.configFile));assert.equal(await fs.readFile(file,'utf8'),before);
+ }finally{if(!closed)database.close();await f.cleanup();}
+});

@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import type {D1DatabaseLike} from '../../apps/admin-worker/src/media';
 import {publishAttentionSnapshot,HERMES_ATTENTION_FILE,type AttentionRound} from './distribution-attention';
 import path from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
@@ -110,12 +111,12 @@ export function assertAnonymousAcceptance(value:unknown):void{
  const a=value as {status?:string;executionMode?:string;transport?:string;browserAccess?:boolean;articleWrites?:number;readOnlyRound?:string;inFlight?:number;providerStates?:{target:string;status:string}[]};
  if(!a||a.status!=='passed'||a.executionMode!=='anonymous-only'||a.transport!=='anonymous-public'||a.browserAccess!==false||a.articleWrites!==0||a.readOnlyRound!=='completed'||a.inFlight!==0||!Array.isArray(a.providerStates)||a.providerStates.length!==1||a.providerStates[0]?.target!=='substack'||!['verified','manual_required','attended_required'].includes(a.providerStates[0]?.status))throw Error('DISTRIBUTION_ANONYMOUS_ACCEPTANCE_REQUIRED');
 }
-export function productionDependencies(runtime:string):SyncDependencies{
- const db=new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
- const query=async(sql:string)=>(await db.prepare(sql).all()).results;
+export function productionDependencies(runtime:string,database?:D1DatabaseLike,attentionFile=HERMES_ATTENTION_FILE):SyncDependencies{
+ const db=database??new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
+ const query=async<T=unknown>(sql:string)=>(await db.prepare(sql).all<T>()).results;
  return {
-  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;return config.unattended?.notifyViaHermes===true?publishAttentionSnapshot(HERMES_ATTENTION_FILE,round):{status:'disabled'};},
-  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));if(accepted.executionMode==='anonymous-only'){assertAnonymousAcceptance(accepted);return;}if(accepted.status!=='passed'||!Array.isArray(accepted.providerStates)||!config.unattended.targets.every((t:string)=>accepted.providerStates.some((s:{target:string;status:string})=>s.target===t&&s.status==='verified')))throw Error('DISTRIBUTION_LIVE_ACCEPTANCE_REQUIRED');},
+  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;if(config.unattended?.notifyViaHermes!==true)return {status:'disabled'};const holds=await query<{post_slug:string}>("SELECT post_slug FROM publication_target_states WHERE target = 'substack' AND status = 'manual_required'");return publishAttentionSnapshot(attentionFile,round,holds.map(row=>({slug:String(row.post_slug)})));},
+  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));assertAnonymousAcceptance(accepted);},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   snapshot:destination=>snapshotDistribution(destination,runtime),
   plan:async(source,configFile,out)=>prepareAllDistribution(source,JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig,out,async(slug,target)=>({state:(await repo.listStates(slug)).find(s=>s.target===target),checkpoint:await repo.runtime.checkpoint(slug,target),locked:!!await db.prepare('SELECT owner FROM publication_locks WHERE post_slug = ? AND target = ?').bind(slug,target).first()})),

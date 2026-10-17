@@ -140,7 +140,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
       }
     }
     const coordinator = new DistributionCoordinator(repository, substack);
-    const state = await coordinator.run(article, namedTarget, operation as 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval);
+    const state = await coordinator.run(article, namedTarget, operation as 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval, background);
     console.log(JSON.stringify({ operation, ...(namedTarget === 'substack' ? { substackPolicy: config.substack.ui.publicationPolicy ?? 'strict-source' } : {}), state }));
     if (['failed', 'manual_required', 'uncertain'].includes(state.status)) process.exitCode = 1;
   } finally { await context?.close(); }

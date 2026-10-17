@@ -23,3 +23,10 @@
 - [x] 5.1 Implement Inert public identity format compatibility with genuine RED from observed designated JSON data, preserve the legacy format and reject malformed/duplicate/mixed identities; verify distribution-public-identity.test.ts and exact captured anonymous HTML.
 - [x] 5.2 Pass affected full local gates and prepare a fresh pinned Hermes-enabled runtime while preserving browser-free background holds and event sender; verify source hashes, immutable prior installation and idle LaunchAgent cutover.
 - [x] 5.3 Explicitly reconcile only the two held original articles through full anonymous coordinator verification under the shared lock; verify exact original IDs, current source receipts, zero Substack writes/Email/App/browser calls, settled D1 state and normal background plan eligibility.
+
+## 6. PR33 review corrections
+
+- [x] 6.1 Enforce Reviewed scheduler boundaries for legacy receipts: reproduce install/runtime fallback acceptance, require anonymous-only receipts unconditionally and verify launchd/production validation regressions.
+- [x] 6.2 Preserve omitted durable manual holds in Hermes attention: reproduce deleted/ineligible-source omission, read the complete durable hold set before clear and verify temporary-file/local-database notification tests including read failure.
+- [x] 6.3 Enforce background eligibility under the target lock: reproduce a hold installed between transport selection and coordinator lock acquisition, preserve exact state/checkpoint on rejection and verify coordinator/transport acceptance tests with zero public/browser calls.
+- [x] 6.4 Pass full pnpm test/check/build:all/release:dry-run and prepare only the review fixes for push; verify primary dirty files and live runtime hashes remain unchanged before the separate remote CI/review/merge operation.

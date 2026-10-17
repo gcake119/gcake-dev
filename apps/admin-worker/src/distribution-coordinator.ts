@@ -38,7 +38,7 @@ export class DistributionCoordinator {
     const current = (await this.repository.listStates(article.slug)).find(s => s.target === target);
     return { target, slug: article.slug, sourceRevision: article.sourceRevision, newsletter: 'skip', externalWriteEnabled: false, operation: current?.remoteId ? 'update-draft' : 'create-draft', remoteId: current?.remoteId, canonicalUrl: article.canonicalUrl, publishedAt: article.publishedAt };
   }
-  async run(article: DistributionArticle, target: DistributionTarget, operation: 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval?: DistributionApproval): Promise<PublicationTargetState> {
+  async run(article: DistributionArticle, target: DistributionTarget, operation: 'prepare' | 'publish' | 'verify' | 'retry' | 'finalize', approval?: DistributionApproval, background = false): Promise<PublicationTargetState> {
     if (target !== 'substack') throw new Error('DISTRIBUTION_TARGET_UNSUPPORTED');
     if (!article.publishedAt || !Number.isFinite(Date.parse(article.publishedAt)) || Date.parse(article.publishedAt) > Date.now()) throw new Error('DISTRIBUTION_PUBLISHED_AT_INVALID');
     if (operation === 'prepare' || operation === 'publish' || operation === 'finalize') {
@@ -53,6 +53,7 @@ export class DistributionCoordinator {
     if (!await runtime.acquire(article.slug, target, owner, this.now())) throw new Error('DISTRIBUTION_LOCKED');
     let current: PublicationTargetState | undefined;
     let remote: RemoteArticle | undefined;
+    let eligible = !background;
     const save = async (status: PublicationTargetState['status'], code?: string) => {
       const state: PublicationTargetState = { ...current, postSlug: article.slug, target, sourceRevision: (await runtime.checkpoint(article.slug, target))?.sourceRevision ?? article.sourceRevision, status, remoteId: remote?.id ?? current?.remoteId, remoteUrl: remote?.url ?? current?.remoteUrl, verifiedAt: status === 'verified' ? this.now() : undefined, lastErrorCode: code, updatedAt: this.now() };
       await this.repository.putState(state); current = state; return state;
@@ -63,6 +64,13 @@ export class DistributionCoordinator {
       if (current?.remoteId && !current.remoteUrl) throw new Error('SUBSTACK_REMOTE_STATE_MISSING');
       if (!this.substack) throw new Error('SUBSTACK_NOT_CONFIGURED');
       const cp = await runtime.checkpoint(article.slug, target);
+      if (background) {
+        if (current?.status === 'manual_required') throw new Error('DISTRIBUTION_MANUAL_REQUIRED');
+        let publicIdentity = false;
+        try { const url = new URL(current?.remoteUrl ?? ''); publicIdentity = url.origin === 'https://gcakedev.substack.com' && !url.username && !url.password && !url.search && !url.hash && /^\/p\/[a-z0-9-]+$/.test(url.pathname) && !!current?.remoteId; } catch {}
+        if (operation !== 'verify' || cp || !publicIdentity || current?.sourceRevision !== article.sourceRevision || !['verified', 'published'].includes(current.status)) throw new Error('SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
+        eligible = true;
+      }
       if (cp && cp.sourceRevision !== article.sourceRevision) throw new Error('SUBSTACK_RECONCILIATION_REVISION_MISMATCH');
       if (cp && cp.substackPolicy !== this.substack.publicationPolicy) throw new Error('SUBSTACK_RECONCILIATION_POLICY_MISMATCH');
       if (operation === 'finalize') {
@@ -137,6 +145,8 @@ export class DistributionCoordinator {
       remote = await this.substack.verify(remote, article) ?? remote;
       const result = await save('verified'); await runtime.clear(article.slug, target); return result;
     } catch (error) {
+      // A rejected background plan must not rewrite the state or settle evidence.
+      if (!eligible) throw error;
       const checkpoint = await runtime.checkpoint(article.slug, target);
       return await save(checkpoint ? 'uncertain' : 'manual_required', boundedDistributionError(error));
     } finally { await runtime.release(article.slug, target, owner); }

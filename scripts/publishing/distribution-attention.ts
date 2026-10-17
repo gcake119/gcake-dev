@@ -6,12 +6,16 @@ export const HERMES_ATTENTION_FILE='/Users/Shared/gcake-substack-hermes/input/st
 export interface AttentionRound {status:string;results:{slug:string;target:string;operation:string;status:string;code?:string}[]}
 const reasons=new Set(['DISTRIBUTION_MANUAL_REQUIRED','SUBSTACK_BACKGROUND_ATTENDED_REQUIRED']);
 const issueCode=(r:AttentionRound['results'][number])=>r.status==='manual_required'?'DISTRIBUTION_MANUAL_REQUIRED':reasons.has(r.code??'')?r.code:undefined;
-export async function publishAttentionSnapshot(file:string,round:AttentionRound){
+export async function publishAttentionSnapshot(file:string,round:AttentionRound,durableHolds?:{slug:string}[]){
  // Incomplete source/round evidence cannot resolve a previously recorded hold.
  if(round.results.some(r=>!issueCode(r)&&r.status!=='verified')||round.status!=='completed'&&!round.results.length)return {status:'retained'};
- const issues=[...new Map(round.results.filter(r=>r.target==='substack'&&!!issueCode(r)).map(r=>{
+ // Initial owner seeding can announce observed issues, but never replace an existing
+ // snapshot or clear anything without a complete durable-hold read.
+ if(durableHolds===undefined){try{await fs.access(file);return {status:'retained'};}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}if(!round.results.some(r=>r.target==='substack'&&!!issueCode(r)))return {status:'retained'};}
+ const candidates=[...round.results.filter(r=>r.target==='substack'&&!!issueCode(r)).map(r=>({slug:r.slug,code:issueCode(r)!})),...(durableHolds??[]).map(r=>({slug:r.slug,code:'DISTRIBUTION_MANUAL_REQUIRED'}))];
+ const issues=[...new Map(candidates.map(r=>{
   if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.slug)||r.slug.length>180)throw Error('HERMES_ATTENTION_INPUT_INVALID');
-  return [r.slug,{slug:r.slug,code:issueCode(r)!}] as const;
+  return [r.slug,r] as const;
  })).values()].sort((a,b)=>a.slug.localeCompare(b.slug));
  if(issues.length>100)throw Error('HERMES_ATTENTION_INPUT_INVALID');
  const temporary=path.join(path.dirname(file),'.status-'+randomUUID());

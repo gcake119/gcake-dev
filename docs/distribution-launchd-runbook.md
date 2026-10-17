@@ -72,3 +72,11 @@ notifyViaHermes=true 的正式執行完成後，將公開 slug 與標準化原�
 每個新的問題集合先記錄 durable intent，再嘗試一次傳送。相同問題集合跨重啟保持安靜；明確成功且有 message ID 才記 sent。skipped、partial、沒有 message ID、錯誤或逾時均保持 unknown／待確認，不自動重送；任何 transport acknowledgement 都不等於真人已讀。Hermes selector 改變時停止，不偷偷改用其他 runtime 或 recipient。
 
 啟用需要具系統密碼的 owner：先核對 candidate pin、既有安全排程與 Hermes selector，再安裝 root-owned sender、特定帳號 ACL 與事件工作。從最近一小時內的真實完成輪次產生首次待處理通知，取得 Hermes transport receipt 後才切換持續 producer。沒有真實傳送收據時保留原安全排程，不自行清除 unknown 或重跑一次性啟用。部分啟用失敗保留 ledger／收據供人工對帳，不能批次刪除或重播。
+
+## PR33 審查補強
+
+此排程的安裝及執行收據一律要求 anonymous-only；舊 profile／macos-chrome 成功收據不能代用。背景執行取得文章鎖後會再次檢查人工暫停、來源版本、公開身分及 checkpoint，拒絕時保留原狀態與診斷。
+
+Hermes producer 在更新快照前讀取所有 D1 Substack 人工暫停，包含已刪除或不符合目前來源清單的文章。缺少完整持續狀態證據、讀取失敗或輪次失敗時不能清除既有通知快照；首次 owner seed 只能建立尚不存在的非空快照。
+
+本段對應 Git 中的審查修正；本次合併不更新、不重啟已固定版本的私人安裝，後續安裝需另行驗證與切換。
