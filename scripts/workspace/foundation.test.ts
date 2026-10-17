@@ -133,3 +133,39 @@ test('editorial release deploys only newly committed revisions with isolated Pag
   assert.equal(workflow.jobs.deploy.environment.name,'github-pages');
   assert.deepEqual(workflow.jobs.deploy.concurrency,{group:'pages','cancel-in-progress':false});
 });
+
+test('main PR validation selects each shared gate once and retains editorial rehearsal', async () => {
+  const directory = new URL('../../.github/workflows/', import.meta.url);
+  const workflows = await Promise.all((await readdir(directory)).filter((name) => /\.ya?ml$/.test(name))
+    .map(async (name) => YAML.parse(await readFile(new URL(name, directory), 'utf8'))));
+  const selected = workflows.filter((workflow) => workflow.on?.pull_request?.branches?.includes('main'));
+  assert.equal(selected.length, 1, 'one PR must select one complete validation workflow');
+  const workflow = selected[0];
+  assert.equal(workflow.env.EDITORIAL_RELEASE_ENABLED, 'false');
+  assert.equal(workflow.env.HERMES_RSS_NOTIFY_ENABLED, 'false');
+  const commands = Object.values(workflow.jobs).flatMap((job: any) => {
+    assert.notEqual(job['continue-on-error'], true);
+    return job.steps.flatMap((step: any) => {
+      assert.notEqual(step['continue-on-error'], true);
+      return (step.run ?? '').split('\n').map((line: string) => line.trim());
+    });
+  });
+  for (const gate of ['pnpm install --frozen-lockfile', 'pnpm exec playwright install --with-deps chrome',
+    'pnpm test', 'pnpm check', 'pnpm build:all', 'pnpm release:dry-run', 'pnpm editorial:rehearse']) {
+    assert.equal(commands.filter((command) => command === gate).length, 1, `${gate} must run once`);
+  }
+});
+
+test('complete tests select the release queue once without removing its coverage', () => {
+  const groups = rootPackage.scripts.test.match(/pnpm test:[\w-]+/g) ?? [];
+  const selectedTests = groups.flatMap((command: string) =>
+    rootPackage.scripts[command.replace('pnpm ', '')].split(/\s+/).filter((argument: string) => argument.endsWith('.test.ts')));
+  assert.equal(selectedTests.filter((path: string) => path === 'src/lib/publishing/release-queue.test.ts').length, 1);
+});
+
+test('editorial validation retains main and manual entrypoints without feature push or PR duplication', async () => {
+  const workflow = YAML.parse(await readFile(new URL('../../.github/workflows/validate-editorial.yml', import.meta.url), 'utf8'));
+  assert.deepEqual(workflow.on.push.branches, ['main']);
+  assert.ok(Object.hasOwn(workflow.on, 'workflow_dispatch'));
+  assert.equal(workflow.on.pull_request, undefined);
+});

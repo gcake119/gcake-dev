@@ -18,7 +18,7 @@ test('manual Pages has no queue writer, even when legacy flag is true',async()=>
  assert.match(workflow.jobs.deploy.steps[0].run,/test "\$current" = "\$SOURCE_REVISION"/);
 });
 test('PR CI validates the candidate without deployment credentials or production writes',async()=>{
- const workflow=YAML.parse(await fs.readFile('.github/workflows/validate-editorial.yml','utf8'));
+ const workflow=YAML.parse(await fs.readFile('.github/workflows/validate-pr.yml','utf8'));
  assert.deepEqual(workflow.on.pull_request.branches,['main']);
  assert.equal(workflow.on.pull_request_target,undefined);
  assert.deepEqual(workflow.permissions,{contents:'read'});
@@ -28,8 +28,9 @@ test('PR CI validates the candidate without deployment credentials or production
  assert.equal(workflow.jobs.validate.environment,undefined);
  const checkout=workflow.jobs.validate.steps.find((step:any)=>step.uses?.startsWith('actions/checkout@'));
  assert.equal(checkout.with['persist-credentials'],false);
+ assert.equal(checkout.with['fetch-depth'],0,'release validation requires full history');
  const run=workflow.jobs.validate.steps.map((step:any)=>step.run??'').join('\n');
- for(const command of ['pnpm test','pnpm check','pnpm build','pnpm editorial:rehearse'])assert.ok(run.includes(command));
+ for(const command of ['pnpm test','pnpm check','pnpm build:all','pnpm release:dry-run','pnpm editorial:rehearse'])assert.ok(run.includes(command));
  assert.doesNotMatch(JSON.stringify(workflow),/secrets\.|deploy-pages@|wrangler|git push|--live/);
 });
 
@@ -100,4 +101,46 @@ test('D1 delivery rejects a stale Pages artifact after a concurrent CMS edit wit
   assert.equal(run('a'.repeat(40)).status,0);
   assert.notEqual(run('b'.repeat(40)).status,0);
  }finally{await fs.rm(dir,{recursive:true,force:true});}
+});
+
+// Execute the checked-in run scripts with local command fixtures. This proves Bash
+// exit propagation; action execution and GitHub status reporting remain remote evidence.
+test('PR run scripts stop on shared, dry-run or rehearsal failure without provider access', async () => {
+ const workflow=YAML.parse(await fs.readFile('.github/workflows/validate-pr.yml','utf8'));
+ const job=workflow.jobs.validate;
+ assert.equal(job.if,undefined,'every change type requires the complete union');
+ assert.equal(job['continue-on-error'],undefined);
+ assert.equal(workflow.on.pull_request.paths,undefined);
+ assert.equal(workflow.on.pull_request['paths-ignore'],undefined);
+ const steps=job.steps.filter((step:any)=>step.run);
+ for(const step of steps) {
+  assert.equal(step.if,undefined,'necessary checks must not be conditionally skipped');
+  assert.equal(step['continue-on-error'],undefined);
+  assert.equal(step.shell,undefined,'use runner default Bash fail-fast semantics');
+ }
+ const commands=['install --frozen-lockfile','exec playwright install --with-deps chrome',
+  'test','check','build:all','release:dry-run','editorial:rehearse'];
+ const dir=await fs.mkdtemp(join(tmpdir(),'gcake-pr-shell-'));
+ try {
+  await fs.writeFile(join(dir,'pnpm'),`#!/bin/bash
+[[ "$EDITORIAL_RELEASE_ENABLED" == false && "$HERMES_RSS_NOTIFY_ENABLED" == false ]] || exit 92
+printf '%s\\n' "$*" >> "$TRACE"
+[[ "$*" != "$FAIL_COMMAND" ]] || exit 73
+`,{mode:0o700});
+  // The Linux namespace preparation is acknowledged locally, never run via sudo.
+  await fs.writeFile(join(dir,'sudo'),`#!/bin/bash
+[[ "$*" == 'install -d -m 1777 /private/tmp' ]] || exit 93
+`,{mode:0o700});
+  const script=steps.map((step:any)=>step.run).join('\n');
+  for(const failure of ['',...commands]) {
+   const trace=join(dir,'trace');await fs.writeFile(trace,'');
+   const result=spawnSync('/bin/bash',['--noprofile','--norc','-e','-o','pipefail','-c',script],{
+    cwd:dir,encoding:'utf8',env:{PATH:dir,TRACE:trace,FAIL_COMMAND:failure,...workflow.env},
+   });
+   assert.equal(result.error,undefined);
+   assert.equal(result.status,failure?73:0,`${failure || 'success'}: ${result.stderr}`);
+   const observed=(await fs.readFile(trace,'utf8')).trim().split('\n');
+   assert.deepEqual(observed,failure?commands.slice(0,commands.indexOf(failure)+1):commands);
+  }
+ } finally {await fs.rm(dir,{recursive:true,force:true});}
 });

@@ -11,6 +11,10 @@ concurrency:
   group: validate-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  EDITORIAL_RELEASE_ENABLED: 'false'
+  HERMES_RSS_NOTIFY_ENABLED: 'false'
+
 jobs:
   validate:
     name: validate
@@ -20,6 +24,7 @@ jobs:
       - name: Checkout PR merge candidate
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup pnpm
@@ -54,3 +59,6 @@ jobs:
 
       - name: Local release simulation without provider writes
         run: pnpm release:dry-run
+
+      - name: Rehearse disposable static deployment and notification deduplication
+        run: pnpm editorial:rehearse
