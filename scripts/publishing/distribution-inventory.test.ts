@@ -49,3 +49,21 @@ test('malformed and nonportable formal bodies are explicit source blockers befor
   assert.equal(report.entries.find(e=>e.slug==='no-date')?.reason,'DISTRIBUTION_SOURCE_INVALID');assert.equal(report.entries.find(e=>e.slug==='component-body')?.reason,'DISTRIBUTION_NONPORTABLE_BODY');
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
+
+test('manual-required target stays held across source changes and retained checkpoints until attended resolution',()=>{
+ const held={postSlug:'first',target:'substack' as const,status:'manual_required' as const,sourceRevision:'r1',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/first',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS',updatedAt:'now'};
+ for(const revision of ['r1','r2'])for(const checkpoint of [undefined,{postSlug:'first',target:'substack' as const,sourceRevision:revision,operation:'metadata' as const,createdAt:'now'}]){
+  assert.deepEqual(planTarget(revision,held,checkpoint),{operations:[],reason:'DISTRIBUTION_MANUAL_REQUIRED'});
+ }
+ assert.deepEqual(planTarget('r1',{...held,status:'verified'}).operations,['verify']);
+ assert.equal(held.lastErrorCode,'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS');
+});
+
+test('background plans only unchanged public verification and defers all browser work',()=>{
+ const state={postSlug:'first',target:'substack' as const,status:'verified' as const,sourceRevision:'r1',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/first',updatedAt:'now'};
+ for(const status of ['verified','published'] as const)assert.deepEqual(planTarget('r1',{...state,status},undefined,false,true),{operations:['verify']});
+ for(const item of [undefined,{...state,sourceRevision:'r0'},{...state,status:'prepare_ready' as const},{...state,remoteUrl:'https://gcakedev.substack.com/publish/post/123'},{...state,remoteUrl:'https://other.example/p/first'}]){
+  assert.deepEqual(planTarget('r1',item,undefined,false,true),{operations:[],reason:'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED'});
+ }
+ assert.deepEqual(planTarget('r1',state,{postSlug:'first',target:'substack',sourceRevision:'r1',operation:'metadata',createdAt:'now'},false,true),{operations:[],reason:'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED'});
+});

@@ -48,3 +48,27 @@ macOS 使用者須登入、電腦醒著且指定 Chrome 開啟。權限、登入
 此機器已觀察到 Node 自動嘗試多個網路位址時，來源請求在連線階段逾時，而指定 IPv4 可連續取得來源。新 LaunchAgent 使用 --no-network-family-autoselection 與 --dns-result-order=ipv4first；保留 TLS 驗證、原憑證檔與無自動寫入重試。此設定只控制同步程序的連線路徑，不修改系統 DNS 或代理。
 
 切換必須使用新私人目錄、獨立 runtime 副本與新雜湊清單，保存原 PR27 安裝供回復。先通過完整本機 gates、真正的原生三清單掃描與同 ID 匿名讀回，再切換；不得把人工啟動的一輪稱為自動排程驗收。新文章實際公開發佈的場域證據，需等下一篇符合條件的正式原文，不能為驗收提前發佈未到期內容。
+
+## 2026／10／17 安靜背景同步
+
+本節依使用者指示取代上方「背景直接操作既有 Chrome」的執行方式。系統排程只做不需登入的公開文章驗證，不開啟或操控 Chrome，也不切頁、重整或切到前景。原 transport 與登入綁定保留給明確前景操作；不另開瀏覽器、不匯出登入資料。
+
+manual_required 是持續人工暫停狀態。下一輪、來源版本更新或殘留 checkpoint 都不解除暫停；原錯誤、文章 ID 與未知意圖保留。須明確前景處理並更新為 verified 後，背景才恢復同版本匿名驗證。不要為了排程顯示成功而直接修改狀態。沒有現成安全的一鍵解除指令；使用既有 reviewed dry-run／精確 revision approval／前景 distribution:run 流程處理，不在背景發送 retry。
+
+一般背景規劃只允許同版本、已 verified 或 published、具有已知公開身分且沒有 checkpoint 的 verify。新文章、來源更新、草稿與日期復原記為 SUBSTACK_BACKGROUND_ATTENDED_REQUIRED；原本需要自動同步的新內容會暫停等待前景處理。公開身分解析支援既有內嵌 JSON 字串與新版唯一的 application/json preloads 資料；若資料缺漏、重複、格式錯誤或身分不符，仍保持人工暫停。解除誤判須明確執行原 ID 的匿名全文驗證，不會自動解除其他人工暫停。
+
+sync-distribution 的 production dispatch 強制帶 --background；run-distribution 在讀取來源或平台前拒絕背景 prepare／publish／finalize／retry／login，且不得退回 attended handoff 或普通瀏覽器。transport 在匿名驗證前再讀目前持續狀態與 checkpoint，避免舊計畫重新放行人工暫停。
+
+新安裝接受 executionMode=anonymous-only、transport=anonymous-public、browserAccess=false、articleWrites=0、readOnlyRound=completed、inFlight=0 的真實驗收收據。providerStates 允許明確記錄 manual_required／attended_required；這只證明背景安全暫停，不能冒稱文章驗證通過。禁止用舊 native 成功紀錄冒充新版本驗收。首次真實唯讀預檢可使用專屬 dependencies 只跳過「尚未產生的驗收收據」檢查，保留 pin、政策、來源及 D1 稽核；完成後正式 CLI 必須讀新收據。保留舊安裝與回滾證據，但舊版會恢復干擾，不能自動回滾啟用。
+
+## Hermes 待人工處理通知
+
+使用者 2026／10／17 補充授權：需要人工處理的項目透過既有 Hermes Telegram home channel 通知。原本 round 結果的 meaningful／quiet 只是一個標記，並不會真正發訊息；新增通知 producer 必須獨立處理現有人工暫停，即使先前標記 quiet 也要首次通知。
+
+notifyViaHermes=true 的正式執行完成後，將公開 slug 與標準化原因寫到固定共享輸入檔，不匯出憑證。已知人工暫停與需前景操作會合併通知；一般來源／稽核失敗不得把舊人工暫停清空。confirmed clear 不發訊息，但允許日後相同問題重新通知。
+
+傳送器由原 hermes 帳號執行，使用已選用正式 release 的 Hermes 官方 send_message_tool 與該帳號設定的 Telegram home。獨立 WatchPaths 檔案事件工作沒有 StartInterval，不建立新時間輪詢器、不重啟 gateway、不改既有 Hermes job。輸入只授權 hermes 讀取，收據只額外授權主使用者讀取，SQLite 發送 ledger 保持 Hermes-private。
+
+每個新的問題集合先記錄 durable intent，再嘗試一次傳送。相同問題集合跨重啟保持安靜；明確成功且有 message ID 才記 sent。skipped、partial、沒有 message ID、錯誤或逾時均保持 unknown／待確認，不自動重送；任何 transport acknowledgement 都不等於真人已讀。Hermes selector 改變時停止，不偷偷改用其他 runtime 或 recipient。
+
+啟用需要具系統密碼的 owner：先核對 candidate pin、既有安全排程與 Hermes selector，再安裝 root-owned sender、特定帳號 ACL 與事件工作。從最近一小時內的真實完成輪次產生首次待處理通知，取得 Hermes transport receipt 後才切換持續 producer。沒有真實傳送收據時保留原安全排程，不自行清除 unknown 或重跑一次性啟用。部分啟用失敗保留 ledger／收據供人工對帳，不能批次刪除或重播。

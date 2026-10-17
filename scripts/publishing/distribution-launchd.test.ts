@@ -12,3 +12,9 @@ test('native scheduled source verification uses the qualified IPv4 path without 
  assert.ok(xml.includes('<string>--dns-result-order=ipv4first</string>'));
  assert.ok(!xml.includes('NODE_TLS_REJECT_UNAUTHORIZED'));
 });
+
+test('browser-free acceptance permits held targets without pretending they are verified or needing native permissions',()=>{
+ const accepted={status:'passed',executionMode:'anonymous-only',transport:'anonymous-public',browserAccess:false,articleWrites:0,readOnlyRound:'completed',inFlight:0,providerStates:[{target:'substack',status:'manual_required'}]};
+ assert.doesNotThrow(()=>assertStandaloneAcceptance(accepted));
+ for(const patch of [{browserAccess:true},{articleWrites:1},{inFlight:1},{readOnlyRound:'not_run'},{providerStates:[]},{providerStates:[{target:'substack',status:'uncertain'}]}])assert.throws(()=>assertStandaloneAcceptance({...accepted,...patch}),/ACCEPTANCE/);
+});

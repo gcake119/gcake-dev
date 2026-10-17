@@ -14,7 +14,7 @@ import { assertPagesPublication } from './pages-publication';
 export interface DistributionConfig {
   substack: { transport?: 'profile' | 'macos-chrome'; profileContractReviewed?: boolean; macosChrome?: {processId?:number;windowId:number;tabId:number;automationApproved:boolean;contractReviewed:boolean}; writeEnabled: boolean; profile: string; ui: SubstackUiContract };
   trial?: { sourceCommit?: string; writeEnabled: boolean; slug: string; sourceRevision: string; substackOrigin: string; digests: Record<DistributionTarget, string>; sessionDirectory: string };
-  unattended?: { enabled: boolean; slug?: string; scope?: 'all-formal-markdown'; repository?: 'gcake119/gcake-dev'; branch?: 'main'; policy: 'pages-first-no-newsletter'; targets: DistributionTarget[] };
+  unattended?: { notifyViaHermes?: boolean; enabled: boolean; slug?: string; scope?: 'all-formal-markdown'; repository?: 'gcake119/gcake-dev'; branch?: 'main'; policy: 'pages-first-no-newsletter'; targets: DistributionTarget[] };
 }
 export function assertCurrentTargetPolicy(config: DistributionConfig, target: DistributionTarget) {
   if (config.unattended && !config.unattended.targets.includes(target)) throw new Error('DISTRIBUTION_TARGET_AUTHORIZATION_REVOKED');
@@ -34,7 +34,10 @@ export function reviewDigest(article: ReturnType<typeof articleFromBundle>, targ
 }
 async function json<T>(file: string): Promise<T> { return JSON.parse(await fs.readFile(path.resolve(file), 'utf8')) as T; }
 export async function main(args = process.argv.slice(2), profileOpener = openSubstackProfile, root = process.cwd()) {
-  const cleanArgs = args.filter(arg => arg !== '--');
+  const background=args.includes('--background');
+  if(args.filter(arg=>arg==='--background').length>1)throw Error('DISTRIBUTION_ARGUMENT_INVALID');
+  const cleanArgs = args.filter(arg => arg !== '--'&&arg!=='--background');
+  if(background&&(cleanArgs[0]!=='verify'||cleanArgs[cleanArgs.indexOf('--mode')+1]!=='controlled-trial'))throw Error('SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
   const [operation, slug, target] = cleanArgs;
   const flags = cleanArgs.slice(operation === 'login' ? 2 : 3);
   if (operation === 'login' && slug !== 'substack') throw new Error('DISTRIBUTION_LOGIN_SUBSTACK_ONLY');
@@ -107,6 +110,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
   try {
     const repository = new D1PublicationRepository(new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID ?? '', process.env.DISTRIBUTION_D1_DATABASE_ID ?? '', process.env.CLOUDFLARE_API_TOKEN ?? ''));
     let substack: SubstackBrowserAdapter | undefined;
+    if(background&&!['profile','macos-chrome'].includes(config.substack.transport??''))throw Error('SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
     if (namedTarget === 'substack') {
       if (trialMode && ['profile','macos-chrome'].includes(config.substack.transport??'')) {
         if (operation === 'publish') {
@@ -114,7 +118,7 @@ export async function main(args = process.argv.slice(2), profileOpener = openSub
           if(!state?.remoteId||state.sourceRevision!==article.sourceRevision||!['prepare_ready','verified'].includes(state.status))throw Error('SUBSTACK_TRIAL_PREPARED_DRAFT_REQUIRED');
         }
         const {createProfileTransport}=await import('./substack-profile');
-        const selected=await createProfileTransport(article,operation as 'prepare'|'publish'|'verify'|'retry'|'finalize',repository,config,root,profileOpener,()=>assertPagesPublication(bundle));
+        const selected=await createProfileTransport(article,operation as 'prepare'|'publish'|'verify'|'retry'|'finalize',repository,config,root,profileOpener,()=>assertPagesPublication(bundle),undefined,background);
         substack=selected.adapter;context=selected.context;
       } else if (trialMode) {
         if (operation === 'publish') {

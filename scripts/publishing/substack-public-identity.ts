@@ -1,9 +1,22 @@
+import {parseHTML} from 'linkedom';
 const origin='https://gcakedev.substack.com';
 function payload(html:string):Record<string,any>{
  if(html.length>4_000_000)throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');
- const rows=[...html.matchAll(/window\._preloads\s*=\s*JSON\.parse\(\s*("(?:\\.|[^"\\])*")\s*\)/g)];
- if(rows.length!==1)throw Error('SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS');
- try{const data=JSON.parse(JSON.parse(rows[0][1]));if(!data||typeof data!=='object'||Array.isArray(data))throw Error();return data;}catch{throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');}
+ // Parse inert data only. Never evaluate the executable hydration wrapper.
+ const {document}=parseHTML(html);
+ const designated=[...document.querySelectorAll('[id="preloads-json"]')];
+ const legacy=[...document.querySelectorAll('script')].filter(script=>!script.hasAttribute('type')||['text/javascript','application/javascript','module'].includes((script.getAttribute('type')??'').trim().toLowerCase())).flatMap(script=>[...(script.textContent??'').matchAll(/window\._preloads\s*=\s*JSON\.parse\(\s*("(?:\\.|[^"\\])*")\s*\)/g)]);
+ if(designated.length>1||legacy.length>1||designated.length&&legacy.length||!designated.length&&!legacy.length)throw Error('SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS');
+ let data:unknown;
+ if(designated.length){
+  const node=designated[0];
+  if(node.localName!=='script'||(node.getAttribute('type')??'').trim().toLowerCase()!=='application/json')throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');
+  try{data=JSON.parse(node.textContent??'');}catch{throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');}
+ }else{
+  try{data=JSON.parse(JSON.parse(legacy[0][1]));}catch{throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');}
+ }
+ if(!data||typeof data!=='object'||Array.isArray(data))throw Error('SUBSTACK_PUBLIC_IDENTITY_INVALID');
+ return data as Record<string,any>;
 }
 function post(value:any,publicationId:number){
  if(!Number.isSafeInteger(publicationId)||publicationId<=0||!value||!Number.isSafeInteger(value.id)||value.id<=0||value.publication_id!==publicationId||typeof value.canonical_url!=='string')throw Error('SUBSTACK_PUBLIC_IDENTITY_MISMATCH');

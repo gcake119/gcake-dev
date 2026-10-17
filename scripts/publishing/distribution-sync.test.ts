@@ -22,3 +22,36 @@ test('a merely pending prepare is not permission to publish',async()=>{const f=a
 test('unsettled final intent requires attention even if transport returned',async()=>{const f=await fixture();try{let reads=0;f.deps.audit=async()=>({locks:[],checkpoints:[],intents:reads++?[{id:'preserved'}]:[]});const r=await runSyncRound(f.options,f.deps);assert.equal(r.status,'attention');}finally{await f.cleanup();}});
 test('identical failure stays quiet and recovery becomes one meaningful change',async()=>{const f=await fixture();try{f.deps.execute=async()=>{throw Error('SUBSTACK_RATE_LIMITED');};assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'quiet');f.deps.execute=async()=>({status:'verified'});assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'quiet');}finally{await f.cleanup();}});
 test('different source revisions of the same updated article each produce a meaningful completion',async()=>{const f=await fixture();try{let revision=0;f.deps.plan=async(source)=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r'+(++revision),run:{sourceRoot:source,configFile:'scope',commands:[{target:'substack',operation:'prepare'}],recoveries:[]}}]} as never);assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');}finally{await f.cleanup();}});
+
+test('manual-held article remains skipped across restarted rounds and repeated result stays quiet',async()=>{
+ const {planTarget}=await import('./distribution-inventory');const f=await fixture();
+ const held={postSlug:'article',target:'substack' as const,status:'manual_required' as const,sourceRevision:'r1',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/article',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS',updatedAt:'now'};
+ const original=JSON.stringify(held);
+ try{
+  f.deps.plan=async()=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r1',targets:{substack:planTarget('r1',held,undefined,false,true)}}]} as never);
+  const first=await runSyncRound(f.options,f.deps),second=await runSyncRound(f.options,f.deps);
+  assert.deepEqual(f.calls,['snapshot','snapshot']);assert.equal(JSON.stringify(held),original);
+  assert.equal(first.results[0].code,'DISTRIBUTION_MANUAL_REQUIRED');assert.equal(first.notification,'meaningful');assert.equal(second.notification,'quiet');
+  assert.equal(second.status,'attention');assert.equal(second.cleanup.source,'removed');
+ }finally{await f.cleanup();}
+});
+
+test('Hermes receives held results even when repeated round fingerprint is quiet',async()=>{
+ const f=await fixture();const notices:unknown[]=[];
+ try{
+  f.deps.plan=async()=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r1',targets:{substack:{operations:[],reason:'DISTRIBUTION_MANUAL_REQUIRED'}}}]} as never);
+  f.deps.notify=async result=>{notices.push(result);return {status:'queued'};};
+  await runSyncRound(f.options,f.deps);const second=await runSyncRound(f.options,f.deps);
+  assert.equal(second.notification,'quiet');assert.equal(notices.length,2);assert.equal(second.hermes?.status,'queued');
+  assert.deepEqual(f.calls,['snapshot','snapshot']);
+ }finally{await f.cleanup();}
+});
+test('notification queue failure is visible without leaving the sync lock or source snapshot',async()=>{
+ const f=await fixture();try{
+  f.deps.notify=async()=>{throw Error('private-path-or-secret');};
+  const result=await runSyncRound(f.options,f.deps);
+  assert.equal(result.status,'attention');assert.equal(result.hermes?.status,'failed');
+  assert.equal(result.hermes?.code,'HERMES_ATTENTION_QUEUE_UNAVAILABLE');
+  assert.equal(result.cleanup.source,'removed');await assert.rejects(fs.access(f.options.lock));
+ }finally{await f.cleanup();}
+});

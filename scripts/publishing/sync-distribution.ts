@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {publishAttentionSnapshot,HERMES_ATTENTION_FILE,type AttentionRound} from './distribution-attention';
 import path from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -14,6 +15,7 @@ type Run=NonNullable<Plan['articles'][number]['run']>;
 type Command=Run['commands'][number]|Run['recoveries'][number];
 type Audit={locks:unknown[];checkpoints:unknown[];intents:unknown[]};
 export interface SyncDependencies {
+ notify?(round:AttentionRound,configFile:string):Promise<{status:string;code?:string}>;
  validate(configFile:string,acceptanceFile:string):Promise<void>;
  audit():Promise<Audit>;
  snapshot(destination:string):Promise<{sourceRoot:string;sourceCommit:string}>;
@@ -97,17 +99,27 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
   const saved=JSON.parse(await fs.readFile(path.join(options.lock,'owner.json'),'utf8'));if(saved.owner!==owner)throw Error('DISTRIBUTION_ROUND_OWNER_MISMATCH');await fs.rm(options.lock,{recursive:true});
  }
  if(!directory)throw Error('DISTRIBUTION_ROUND_SETUP_FAILED');
- return JSON.parse(await fs.readFile(path.join(directory,'result.json'),'utf8')) as {directory:string;status:string;results:typeof results;cleanup:{source:string};notification:string};
+ const result=JSON.parse(await fs.readFile(path.join(directory,'result.json'),'utf8')) as {directory:string;status:string;results:typeof results;cleanup:{source:string};notification:string;hermes?:{status:string;code?:string}};
+ if(options.execute&&deps.notify){
+  try{result.hermes=await deps.notify(result,options.configFile);}catch{result.status='attention';result.hermes={status:'failed',code:'HERMES_ATTENTION_QUEUE_UNAVAILABLE'};}
+  const temporary=path.join(directory,'result-'+owner+'.json');await save(temporary,result);await fs.rename(temporary,path.join(directory,'result.json'));
+ }
+ return result;
+}
+export function assertAnonymousAcceptance(value:unknown):void{
+ const a=value as {status?:string;executionMode?:string;transport?:string;browserAccess?:boolean;articleWrites?:number;readOnlyRound?:string;inFlight?:number;providerStates?:{target:string;status:string}[]};
+ if(!a||a.status!=='passed'||a.executionMode!=='anonymous-only'||a.transport!=='anonymous-public'||a.browserAccess!==false||a.articleWrites!==0||a.readOnlyRound!=='completed'||a.inFlight!==0||!Array.isArray(a.providerStates)||a.providerStates.length!==1||a.providerStates[0]?.target!=='substack'||!['verified','manual_required','attended_required'].includes(a.providerStates[0]?.status))throw Error('DISTRIBUTION_ANONYMOUS_ACCEPTANCE_REQUIRED');
 }
 export function productionDependencies(runtime:string):SyncDependencies{
  const db=new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
  const query=async(sql:string)=>(await db.prepare(sql).all()).results;
  return {
-  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));if(accepted.status!=='passed'||!Array.isArray(accepted.providerStates)||!config.unattended.targets.every((t:string)=>accepted.providerStates.some((s:{target:string;status:string})=>s.target===t&&s.status==='verified')))throw Error('DISTRIBUTION_LIVE_ACCEPTANCE_REQUIRED');},
+  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;return config.unattended?.notifyViaHermes===true?publishAttentionSnapshot(HERMES_ATTENTION_FILE,round):{status:'disabled'};},
+  validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));if(accepted.executionMode==='anonymous-only'){assertAnonymousAcceptance(accepted);return;}if(accepted.status!=='passed'||!Array.isArray(accepted.providerStates)||!config.unattended.targets.every((t:string)=>accepted.providerStates.some((s:{target:string;status:string})=>s.target===t&&s.status==='verified')))throw Error('DISTRIBUTION_LIVE_ACCEPTANCE_REQUIRED');},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   snapshot:destination=>snapshotDistribution(destination,runtime),
   plan:async(source,configFile,out)=>prepareAllDistribution(source,JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig,out,async(slug,target)=>({state:(await repo.listStates(slug)).find(s=>s.target===target),checkpoint:await repo.runtime.checkpoint(slug,target),locked:!!await db.prepare('SELECT owner FROM publication_locks WHERE post_slug = ? AND target = ?').bind(slug,target).first()})),
-  execute:async(slug,command,run)=>{await distribution([command.operation,slug,command.target,'--config',run.configFile,'--receipt',command.receiptFile,'--approval',command.approvalFile,'--mode','controlled-trial','--source-root',run.sourceRoot],undefined,runtime);const state=(await repo.listStates(slug)).find(s=>s.target===command.target);if(!state)throw Error('DISTRIBUTION_RESULT_MISSING');return state;},
+  execute:async(slug,command,run)=>{await distribution([command.operation,slug,command.target,'--background','--config',run.configFile,'--receipt',command.receiptFile,'--approval',command.approvalFile,'--mode','controlled-trial','--source-root',run.sourceRoot],undefined,runtime);const state=(await repo.listStates(slug)).find(s=>s.target===command.target);if(!state)throw Error('DISTRIBUTION_RESULT_MISSING');return state;},
  };
 }
 export async function main(args=process.argv.slice(2)){
@@ -115,7 +127,7 @@ export async function main(args=process.argv.slice(2)){
  for(let i=0;i<args.length;i++){if(args[i]==='--execute'){if(execute)throw Error('DISTRIBUTION_ARGUMENT_INVALID');execute=true;continue;}if(!['--config','--pin','--acceptance','--out','--lock'].includes(args[i])||values.has(args[i])||!args[i+1]||args[i+1].startsWith('--'))throw Error('DISTRIBUTION_ARGUMENT_INVALID');values.set(args[i],args[++i]);}
  for(const key of ['--config','--pin','--acceptance','--out','--lock'])if(!values.has(key))throw Error('DISTRIBUTION_SYNC_USAGE');
  const runtime=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
- await verifyRuntimePin(runtime,values.get('--pin')!,['scripts/publishing/sync-distribution.ts','scripts/publishing/distribution-handoff.ts']);
+ await verifyRuntimePin(runtime,values.get('--pin')!,['scripts/publishing/sync-distribution.ts','scripts/publishing/distribution-handoff.ts','scripts/publishing/distribution-attention.ts']);
  const result=await runSyncRound({runtime,pin:values.get('--pin')!,configFile:values.get('--config')!,acceptanceFile:values.get('--acceptance')!,output:values.get('--out')!,lock:values.get('--lock')!,execute},productionDependencies(runtime));console.log(JSON.stringify(result));if(result.status==='attention')process.exitCode=1;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{console.error(boundedDistributionError(error));process.exitCode=1;});

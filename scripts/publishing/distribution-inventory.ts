@@ -35,9 +35,15 @@ export function assertGeneralPolicy(config:DistributionConfig):void{
   ||p.policy!=='pages-first-no-newsletter'||!Array.isArray(p.targets)||!p.targets.length||new Set(p.targets).size!==p.targets.length||p.targets.some(t=>!['substack'].includes(t))
   ||config.substack.ui.origin!=='https://gcakedev.substack.com'||config.substack.ui.publicationPolicy!=='full-mirror')throw Error('UNATTENDED_POLICY_REQUIRED');
 }
-export function planTarget(revision:string,state?:PublicationTargetState,checkpoint?:WriteCheckpoint,locked=false):{operations:('prepare'|'publish'|'verify'|'retry')[];reason?:string;recovery?:'finalize'}{
+export function planTarget(revision:string,state?:PublicationTargetState,checkpoint?:WriteCheckpoint,locked=false,background=false):{operations:('prepare'|'publish'|'verify'|'retry')[];reason?:string;recovery?:'finalize'}{
  const blocked=(reason:string)=>({operations:[],reason});
  if(locked)return blocked('DISTRIBUTION_LOCKED');
+ if(state?.status==='manual_required')return blocked('DISTRIBUTION_MANUAL_REQUIRED');
+ if(background){
+  let publicIdentity=false;
+  try{const url=new URL(state?.remoteUrl??'');publicIdentity=url.origin==='https://gcakedev.substack.com'&&!url.username&&!url.password&&!url.search&&!url.hash&&/^\/p\/[a-z0-9-]+$/.test(url.pathname)&&!!state?.remoteId;}catch{}
+  return !checkpoint&&publicIdentity&&state?.sourceRevision===revision&&['verified','published'].includes(state.status)?{operations:['verify']}:blocked('SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
+ }
  if(checkpoint){
   if(checkpoint.sourceRevision!==revision)return blocked('DISTRIBUTION_INTENT_REVISION_MISMATCH');
   return {operations:['retry'],...(checkpoint.target==='substack'&&checkpoint.operation==='metadata'&&state?.remoteId&&state.remoteUrl?{recovery:'finalize' as const}:{})};
