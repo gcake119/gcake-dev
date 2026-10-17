@@ -17,7 +17,7 @@ export async function prepareAllDistribution(root:string,config:DistributionConf
  for(const entry of inventory.entries.filter(e=>e.status==='eligible')){
   const targets:Partial<Record<DistributionTarget,ReturnType<typeof planTarget>>>= {},selection:Partial<Record<DistributionTarget,('prepare'|'publish'|'verify'|'retry')[]>>={};
   for(const target of config.unattended!.targets){
-   try{const snapshot=await readTarget(entry.slug,target);targets[target]=planTarget(entry.sourceRevision!,snapshot.state,snapshot.checkpoint,snapshot.locked);}
+   try{const snapshot=await readTarget(entry.slug,target);targets[target]=planTarget(entry.sourceRevision!,snapshot.state,snapshot.checkpoint,snapshot.locked,true);}
    catch(error){targets[target]={operations:[],reason:boundedDistributionError(error)};}
    if(targets[target]!.operations.length)selection[target]=targets[target]!.operations;
   }

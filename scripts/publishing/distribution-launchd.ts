@@ -4,7 +4,7 @@ import os from 'node:os';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
-import {verifyRuntimePin} from './sync-distribution';
+import {verifyRuntimePin,assertAnonymousAcceptance} from './sync-distribution';
 import {assertGeneralPolicy} from './distribution-inventory';
 import {boundedDistributionError} from '../../apps/admin-worker/src/distribution-runtime';
 const exec=promisify(execFile);
@@ -18,13 +18,12 @@ export function renderLaunchAgent(options:LaunchAgentOptions):string{
  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict>\n<key>Label</key><string>${xml(options.label)}</string>\n<key>ProgramArguments</key><array>${args.map(a=>'<string>'+xml(a)+'</string>').join('')}</array>\n<key>WorkingDirectory</key><string>${xml(options.runtime)}</string>\n<key>EnvironmentVariables</key><dict><key>PATH</key><string>${xml(path.dirname(options.node)+':/usr/bin:/bin:/usr/sbin:/sbin')}</string></dict>\n<key>StartInterval</key><integer>900</integer>\n<key>RunAtLoad</key><false/>\n<key>KeepAlive</key><false/>\n<key>ProcessType</key><string>Background</string>\n<key>ThrottleInterval</key><integer>60</integer>\n<key>StandardOutPath</key><string>${xml(path.join(base,'logs/stdout.log'))}</string>\n<key>StandardErrorPath</key><string>${xml(path.join(base,'logs/stderr.log'))}</string>\n</dict></plist>\n`;
 }
 export function assertStandaloneAcceptance(value:unknown):void{
- const a=value as {status?:string;transport?:string;profileVerified?:boolean;nativePermissionsVerified?:boolean;readOnlyRound?:string;inFlight?:number};
- if(!a||a.status!=='passed'||!['profile','macos-chrome'].includes(a.transport??'')||(a.transport==='profile'?a.profileVerified!==true:a.nativePermissionsVerified!==true)||a.readOnlyRound!=='completed'||a.inFlight!==0)throw Error('DISTRIBUTION_STANDALONE_ACCEPTANCE_REQUIRED');
+ assertAnonymousAcceptance(value);
 }
 export async function prepareLaunchAgent(options:LaunchAgentOptions){
  const text=renderLaunchAgent(options);const base=options.privateDirectory;
  const realRuntime=await fs.realpath(options.runtime);await fs.mkdir(base,{recursive:true,mode:0o700});const realBase=await fs.realpath(base);const rel=path.relative(realRuntime,realBase);if(!rel||rel!=='..'&&!rel.startsWith('..'+path.sep)&&!path.isAbsolute(rel))throw Error('DISTRIBUTION_LAUNCHD_OUTSIDE_GIT');
- await verifyRuntimePin(options.runtime,path.join(base,'runtime-sha256.json'),['scripts/publishing/distribution-launchd.ts','scripts/publishing/substack-profile.ts','scripts/publishing/sync-distribution.ts','scripts/publishing/macos-chrome.ts','scripts/publishing/macos-chrome-page.ts','scripts/publishing/native-chrome-preflight.ts','scripts/publishing/substack-public-identity.ts']);
+ await verifyRuntimePin(options.runtime,path.join(base,'runtime-sha256.json'),['scripts/publishing/distribution-attention.ts','scripts/publishing/distribution-launchd.ts','scripts/publishing/substack-profile.ts','scripts/publishing/sync-distribution.ts','scripts/publishing/macos-chrome.ts','scripts/publishing/macos-chrome-page.ts','scripts/publishing/native-chrome-preflight.ts','scripts/publishing/substack-public-identity.ts']);
  const config=JSON.parse(await fs.readFile(path.join(base,'unattended.json'),'utf8'));assertGeneralPolicy(config);if(config.substack.transport==='macos-chrome'?config.substack.macosChrome?.automationApproved!==true||config.substack.macosChrome?.contractReviewed!==true:config.substack.transport!=='profile'||config.substack.profileContractReviewed!==true)throw Error('SUBSTACK_PROFILE_CONTRACT_UNREVIEWED');
  const credential=await fs.stat(options.credentials);if(!credential.isFile()||(credential.mode&0o077)!==0)throw Error('DISTRIBUTION_CREDENTIAL_FILE_PRIVATE_REQUIRED');
  const logDir=path.join(base,'logs');await fs.mkdir(logDir,{recursive:true,mode:0o700});await fs.chmod(logDir,0o700);

@@ -1,3 +1,4 @@
+import {planTarget} from './distribution-inventory';
 import {anonymousArchiveResolver} from './substack-public-identity';
 import type {BrowserContext} from 'playwright';
 import type {DistributionArticle} from '../../apps/admin-worker/src/distribution-coordinator';
@@ -5,8 +6,13 @@ import type {RuntimePublicationRepository} from '../../apps/admin-worker/src/dis
 import type {DistributionConfig} from './run-distribution';
 import {AttendedSubstackAdapter,anonymousSubstackReader,type AttendedOperation} from './substack-attended';
 import {PlaywrightSubstackAdapter,openSubstackProfile,type PublicDomEvidence} from './substack-browser';
-export async function createProfileTransport(article:DistributionArticle,operation:AttendedOperation,repository:RuntimePublicationRepository,config:DistributionConfig,runtime:string,opener= openSubstackProfile,beforeWrite:()=>Promise<unknown>=async()=>{},reader:(remote:{id:string;url:string})=>Promise<PublicDomEvidence>=anonymousSubstackReader(config.substack.ui)){
+export async function createProfileTransport(article:DistributionArticle,operation:AttendedOperation,repository:RuntimePublicationRepository,config:DistributionConfig,runtime:string,opener= openSubstackProfile,beforeWrite:()=>Promise<unknown>=async()=>{},reader:(remote:{id:string;url:string})=>Promise<PublicDomEvidence>=anonymousSubstackReader(config.substack.ui),background=false){
  if(!['profile','macos-chrome'].includes(config.substack.transport??''))throw Error('SUBSTACK_PROFILE_TRANSPORT_REQUIRED');
+ if(background){
+  const current=(await repository.listStates(article.slug)).find(s=>s.target==='substack');
+  const planned=planTarget(article.sourceRevision,current,await repository.runtime.checkpoint(article.slug,'substack'),false,true);
+  if(operation!=='verify'||planned.operations[0]!=='verify')throw Error(planned.reason??'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
+ }
  const state=operation==='retry'?(await repository.listStates(article.slug)).find(s=>s.target==='substack'):undefined;
  if(operation==='verify'||operation==='retry'&&state?.remoteUrl&&/^\/p\//.test(new URL(state.remoteUrl).pathname)){
   // Reuse full public verification only; this exchange can never produce a file request or perform UI writes.

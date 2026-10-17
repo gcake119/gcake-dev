@@ -49,11 +49,18 @@ test('all plans isolate platform failure and unknown intent without issuing unus
   const report=await prepareAllDistribution(root,all as never,out,async(slug,target)=>{
    return {locked:false,checkpoint:{postSlug:slug,target,sourceRevision:bundle.sourceRevision,operation:'publish',createdAt:'now'}};
   },prove as never);
-  const run=report.articles[0].run!;assert.deepEqual(run.commands.map(c=>[c.target,c.operation]),[['substack','retry']]);assert.equal(run.recoveries.length,0);
-  const scoped=JSON.parse(await fs.readFile(run.configFile,'utf8'));assert.equal(scoped.trial.writeEnabled,false);assert.equal(scoped.substack.writeEnabled,false);
-  assert.ok(!(await fs.readdir(run.directory)).some(file=>file.includes('prepare-approval')||file.includes('publish-approval')));
+  assert.equal(report.articles[0].run,undefined);assert.equal(report.articles[0].targets.substack?.reason,'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
   const metadata=await prepareAllDistribution(root,all as never,out,async(slug,target)=>({locked:false,state:{postSlug:slug,target,sourceRevision:bundle.sourceRevision,status:'uncertain',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/first',updatedAt:'now'},checkpoint:{postSlug:slug,target,sourceRevision:bundle.sourceRevision,operation:'metadata',substackPolicy:'full-mirror',createdAt:'now'}}),prove as never);
-  assert.equal(metadata.articles[0].run!.recoveries.length,1);assert.equal(metadata.articles[0].run!.recoveries[0].operation,'finalize');
+  assert.equal(metadata.articles[0].run,undefined);assert.equal(metadata.articles[0].targets.substack?.reason,'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
+  const manual=await prepareAllDistribution(root,all as never,out,async(slug,target)=>({locked:false,state:{postSlug:slug,target,sourceRevision:bundle.sourceRevision,status:'manual_required',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/first',updatedAt:'now'}}),prove as never);
+  assert.equal(manual.articles[0].run,undefined);assert.equal(manual.articles[0].targets.substack?.reason,'DISTRIBUTION_MANUAL_REQUIRED');
+  const fresh=await prepareAllDistribution(root,all as never,out,async()=>({locked:false}),prove as never);
+  assert.equal(fresh.articles[0].run,undefined);assert.equal(fresh.articles[0].targets.substack?.reason,'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED');
+  assert.equal((await fs.readdir(out)).length,0);
+  const verified=await prepareAllDistribution(root,all as never,out,async(slug,target)=>({locked:false,state:{postSlug:slug,target,sourceRevision:bundle.sourceRevision,status:'verified',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/first',updatedAt:'now'}}),prove as never);
+  const run=verified.articles[0].run!;assert.deepEqual(run.commands.map(c=>c.operation),['verify']);assert.deepEqual(run.recoveries,[]);
+  const scoped=JSON.parse(await fs.readFile(run.configFile,'utf8'));assert.equal(scoped.trial.writeEnabled,false);assert.equal(scoped.substack.writeEnabled,false);
+  assert.ok(!(await fs.readdir(run.directory)).some(file=>file.includes('prepare-approval')||file.includes('publish-approval')||file.includes('finalize-approval')));
   await fs.writeFile(path.join(root,'src/content/posts/first.md'),'changed');await assert.rejects(prepareAllDistribution(root,all as never,out,async()=>({locked:false})),/NOT_FIXED_MAIN/);
  }finally{await fs.rm(root,{recursive:true,force:true});await fs.rm(out,{recursive:true,force:true});}
 });

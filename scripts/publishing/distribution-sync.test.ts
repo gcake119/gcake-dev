@@ -22,3 +22,68 @@ test('a merely pending prepare is not permission to publish',async()=>{const f=a
 test('unsettled final intent requires attention even if transport returned',async()=>{const f=await fixture();try{let reads=0;f.deps.audit=async()=>({locks:[],checkpoints:[],intents:reads++?[{id:'preserved'}]:[]});const r=await runSyncRound(f.options,f.deps);assert.equal(r.status,'attention');}finally{await f.cleanup();}});
 test('identical failure stays quiet and recovery becomes one meaningful change',async()=>{const f=await fixture();try{f.deps.execute=async()=>{throw Error('SUBSTACK_RATE_LIMITED');};assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'quiet');f.deps.execute=async()=>({status:'verified'});assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'quiet');}finally{await f.cleanup();}});
 test('different source revisions of the same updated article each produce a meaningful completion',async()=>{const f=await fixture();try{let revision=0;f.deps.plan=async(source)=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r'+(++revision),run:{sourceRoot:source,configFile:'scope',commands:[{target:'substack',operation:'prepare'}],recoveries:[]}}]} as never);assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');assert.equal((await runSyncRound(f.options,f.deps)).notification,'meaningful');}finally{await f.cleanup();}});
+
+test('manual-held article remains skipped across restarted rounds and repeated result stays quiet',async()=>{
+ const {planTarget}=await import('./distribution-inventory');const f=await fixture();
+ const held={postSlug:'article',target:'substack' as const,status:'manual_required' as const,sourceRevision:'r1',remoteId:'123',remoteUrl:'https://gcakedev.substack.com/p/article',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS',updatedAt:'now'};
+ const original=JSON.stringify(held);
+ try{
+  f.deps.plan=async()=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r1',targets:{substack:planTarget('r1',held,undefined,false,true)}}]} as never);
+  const first=await runSyncRound(f.options,f.deps),second=await runSyncRound(f.options,f.deps);
+  assert.deepEqual(f.calls,['snapshot','snapshot']);assert.equal(JSON.stringify(held),original);
+  assert.equal(first.results[0].code,'DISTRIBUTION_MANUAL_REQUIRED');assert.equal(first.notification,'meaningful');assert.equal(second.notification,'quiet');
+  assert.equal(second.status,'attention');assert.equal(second.cleanup.source,'removed');
+ }finally{await f.cleanup();}
+});
+
+test('Hermes receives held results even when repeated round fingerprint is quiet',async()=>{
+ const f=await fixture();const notices:unknown[]=[];
+ try{
+  f.deps.plan=async()=>({inventory:{entries:[]},articles:[{slug:'article',sourceRevision:'r1',targets:{substack:{operations:[],reason:'DISTRIBUTION_MANUAL_REQUIRED'}}}]} as never);
+  f.deps.notify=async result=>{notices.push(result);return {status:'queued'};};
+  await runSyncRound(f.options,f.deps);const second=await runSyncRound(f.options,f.deps);
+  assert.equal(second.notification,'quiet');assert.equal(notices.length,2);assert.equal(second.hermes?.status,'queued');
+  assert.deepEqual(f.calls,['snapshot','snapshot']);
+ }finally{await f.cleanup();}
+});
+test('notification queue failure is visible without leaving the sync lock or source snapshot',async()=>{
+ const f=await fixture();try{
+  f.deps.notify=async()=>{throw Error('private-path-or-secret');};
+  const result=await runSyncRound(f.options,f.deps);
+  assert.equal(result.status,'attention');assert.equal(result.hermes?.status,'failed');
+  assert.equal(result.hermes?.code,'HERMES_ATTENTION_QUEUE_UNAVAILABLE');
+  assert.equal(result.cleanup.source,'removed');await assert.rejects(fs.access(f.options.lock));
+ }finally{await f.cleanup();}
+});
+
+test('production scheduler validation rejects old receipts before any network access',async()=>{
+ const {productionDependencies}=await import('./sync-distribution');const f=await fixture();
+ const db={prepare:()=>{throw Error('NETWORK_FORBIDDEN');}} as never;
+ try{
+  await fs.writeFile(f.options.configFile,JSON.stringify({unattended:{enabled:true,scope:'all-formal-markdown',repository:'gcake119/gcake-dev',branch:'main',policy:'pages-first-no-newsletter',targets:['substack']},substack:{ui:{origin:'https://gcakedev.substack.com',publicationPolicy:'full-mirror'}}}));
+  // The old factory requires syntactically valid credentials even for local validation.
+  const saved={...process.env};Object.assign(process.env,{CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),DISTRIBUTION_D1_DATABASE_ID:'a'.repeat(36),CLOUDFLARE_API_TOKEN:'fixture-only'});
+  try{
+   const deps=productionDependencies(f.runtime,db);
+   await fs.writeFile(f.options.acceptanceFile,JSON.stringify({status:'passed',transport:'profile',profileVerified:true,readOnlyRound:'completed',inFlight:0,providerStates:[{target:'substack',status:'verified'}]}));
+   await assert.rejects(deps.validate(f.options.configFile,f.options.acceptanceFile),/ANONYMOUS_ACCEPTANCE/);
+  }finally{for(const key of ['CLOUDFLARE_ACCOUNT_ID','DISTRIBUTION_D1_DATABASE_ID','CLOUDFLARE_API_TOKEN'])if(saved[key]===undefined)delete process.env[key];else process.env[key]=saved[key];}
+ }finally{await f.cleanup();}
+});
+
+test('production notification includes inventory-omitted D1 holds and failed reads cannot clear the feed',async()=>{
+ const {DatabaseSync}=await import('node:sqlite');const {SqliteD1Database}=await import('./sqlite-d1');const {D1PublicationRepository}=await import('../../apps/admin-worker/src/publication-operations');const {productionDependencies}=await import('./sync-distribution');
+ const f=await fixture();const database=new DatabaseSync(':memory:');let closed=false;
+ try{
+  database.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/0003_publication_operations.sql',import.meta.url),'utf8'));
+  const db=new SqliteD1Database(database),repo=new D1PublicationRepository(db),file=path.join(f.root,'attention.json');
+  const state={postSlug:'deleted-source',target:'substack' as const,sourceRevision:'r1',status:'manual_required' as const,lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_AMBIGUOUS',updatedAt:'now'};
+  await repo.putState(state);await fs.writeFile(f.options.configFile,JSON.stringify({unattended:{notifyViaHermes:true}}));
+  const deps=productionDependencies(f.runtime,db,file),round={status:'completed',results:[]};
+  assert.equal((await deps.notify!(round,f.options.configFile)).status,'queued');
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[{slug:'deleted-source',code:'DISTRIBUTION_MANUAL_REQUIRED'}]);
+  await repo.putState({...state,status:'verified'});await deps.notify!(round,f.options.configFile);assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[]);
+  await repo.putState(state);await deps.notify!(round,f.options.configFile);const before=await fs.readFile(file,'utf8');
+  database.close();closed=true;await assert.rejects(deps.notify!(round,f.options.configFile));assert.equal(await fs.readFile(file,'utf8'),before);
+ }finally{if(!closed)database.close();await f.cleanup();}
+});
