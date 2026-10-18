@@ -1,12 +1,13 @@
 ---
 title: 當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？
 description: 鐵人賽文章網站由 AI 協作實作，我如何從產品需求、候選方案與使用情境理解 Astro 的選型理由，以及目前能參與技術選型到什麼程度。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - ai-assisted-development
   - system-design
   - developer-learning
+publishedAt: 2026-10-19T07:00:00+08:00
 ---
 
 30 篇鐵人賽文章寫完後，我想把這些 Markdown 做成自己的系列閱讀網站。

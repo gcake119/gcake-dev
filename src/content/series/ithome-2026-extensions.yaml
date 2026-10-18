@@ -23,7 +23,7 @@ sections:
         status: published
         workingTitle: 原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？
       - slug: ithome-2026-astro-choice
-        status: ready
+        status: published
         workingTitle: 當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？
       - slug: ithome-2026-publishing-in-production
         status: ready
