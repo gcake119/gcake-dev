@@ -82,3 +82,9 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 12.1 Reproduce source/media and remote-main checks exceeding the existing Budgets end during a large inventory contract before implementation; assert bounded exit, cancelled media and zero provider dispatch through existing round acceptance.
 - [x] 12.2 Bound the complete source check by the remaining round budget, cancel media/remote reads, retain incomplete coverage and intent safety, then run focused acceptance and all five local gates before updating the same PR. Keep original review findings, deployment and Admin archive evidence separate.
+
+
+## 13. PR #41 re-review result-media deadline
+
+- [x] 13.1 Reproduce a completed same-ID update whose result-media read exceeds the round budget using the existing executor/SQLite/PNG fixture; assert cancellation, bounded exit, retained original intent and no replay under the existing finite-budget and unknown-outcome contracts.
+- [x] 13.2 Share the remaining round cancellation with executor media verification, then verify focused and complete local gates before updating the PR; retain prior review and runtime evidence without deployment or Admin archive changes.

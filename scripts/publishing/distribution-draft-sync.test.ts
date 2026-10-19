@@ -353,3 +353,29 @@ for(const stage of ['source','main','media'] as const)test('round deadline bound
   assert.equal((await f.repo.bySlug('trial'))?.intent,before?.intent);
  }finally{await running;f.db.close();await fs.rm(root,{recursive:true,force:true});}
 });
+
+
+test('round deadline cancels post-executor media verification and retains the unknown update',async(t)=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-result-media-deadline-'));let running:Promise<unknown>|undefined;let watchdog:ReturnType<typeof setTimeout>|undefined;
+ try{
+  const png=await fs.readFile(new URL('../../public/brand/gcake-dev-logo-96.png',import.meta.url));const image='https://source.example/qualified.png';
+  const {readImageDigest}=await import('./substack-draft-media');const m=await readImageDigest(image,(async()=>new Response(Uint8Array.from(png),{headers:{'content-type':'image/png'}})) as typeof fetch);
+  const desired={...source('b'),media:[m],article:{...source('b').article,body:source('b').article.body+'\n\n![required alt]('+image+')'}};
+  let cancelled=false,mediaReads=0;const actions:string[]=[];
+  const fetcher=(async(_input,options)=>new Promise<Response>((resolve,reject)=>{mediaReads++;const timer=setTimeout(()=>resolve(new Response(Uint8Array.from(png),{headers:{'content-type':'image/png'}})),6000);options?.signal?.addEventListener('abort',()=>{cancelled=true;clearTimeout(timer);reject(options.signal!.reason);},{once:true});})) as typeof fetch;
+  t.mock.method(globalThis,'fetch',fetcher);
+  await fs.mkdir(root+'/source/src/content/posts',{recursive:true});await fs.writeFile(root+'/source/src/content/posts/trial.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:2500,maxRoundMs:3000,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/evidence',mediaProfile:'original-sha256-png-v1'}}));
+  const {runDraftSyncRound}=await import('./substack-draft-round');
+  running=runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},assertMain:async()=>{},readSource:async()=>desired,fetcher,execute:async(file,q,evidence)=>{
+   const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;
+   if(r.action==='draft-update'){before=structuredClone(f.post);await fixtureBeforeVerdict(file,q.directory,before);f.post.content=expectedContent(desired);f.post.images=[{src:image,alt:'required alt',loaded:true}];}
+   await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post,...(before?{before,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}:{})}));
+   await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
+  }});
+  const result=await Promise.race([running,new Promise<string>(resolve=>{watchdog=setTimeout(()=>resolve('still-running'),4500);})]);
+  assert.notEqual(result,'still-running');assert.equal(mediaReads,1);assert.equal(cancelled,true);
+  const state=(await f.repo.bySlug('trial'))!;assert.equal(state.remoteId,'123');assert.equal(state.intent?.action,'update-draft');assert.equal(state.draftSync?.status,'reconciliation-required');assert.equal(state.contentVerifiedRevision,source().sourceRevision);
+  assert.deepEqual(actions,['draft-read','draft-read','draft-update']);
+ }finally{clearTimeout(watchdog);await running;f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});

@@ -89,3 +89,6 @@ PR #41 regressions：沿用既有 scope／撤銷、盤點公平續行、未決�
 
 
 PR #41 re-review source deadline：既有 Budgets end during a large inventory 情境新增三個 round 驗收，分別以慢來源／main／媒體重現逾時，確認整輪有界返回、媒體 abort、晚來源不啟動 main、零 provider dispatch 與原 intent 保留；真實 RED／GREEN 及錯誤 fixture 限制見 pr41-rereview-20261020.md。局部草稿＋API 56 項通過。
+
+
+PR #41 result-media deadline：同一個 existing ordinary executor／SQLite／PNG seam 先保存同 ID，再延遲實際 fixture 結果圖片讀取。RED 為整輪逾時仍未返回；GREEN 為媒體 abort、有界返回、未決 update intent 與舊 saved revision 保留，且不重播或繼續 provider 讀取。局部合計 57 項，詳見 pr41-rereview-20261020.md。

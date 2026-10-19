@@ -23,6 +23,10 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
  if(!Number.isSafeInteger(initial.maxArticles)||initial.maxArticles<1||initial.maxArticles>20||!Number.isSafeInteger(initial.timeoutMs)||initial.timeoutMs<100||initial.timeoutMs>600000)throw Error('SUBSTACK_DRAFT_BUDGET_INVALID');
  const budget=initial.maxRoundMs??60000;if(!Number.isSafeInteger(budget)||budget<initial.timeoutMs||budget>840000)throw Error('SUBSTACK_DRAFT_BUDGET_INVALID');
  const deadline=Date.now()+budget,repo=new ScheduleRepository(db),records=await repo.list();
+ const fetchWithinRound=(async(input,options)=>{
+  const remaining=deadline-Date.now();if(remaining<=0)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
+  return (deps.fetcher??fetch)(input,{...options,signal:AbortSignal.any([AbortSignal.timeout(remaining),...(options?.signal?[options.signal]:[])])});
+ }) as typeof fetch;
  const files=await listLocalPostFiles(path.join(root,'src/content/posts'));
  const slugs=new Set(records.map(s=>s.slug));
  for(const f of files){const status=matter(await fs.readFile(f.path,'utf8')).data.status;if(['ready','published'].includes(status))slugs.add(f.slug);}
@@ -39,7 +43,7 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
    const expired=new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>{const error=Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');controller.abort(error);reject(error);},remaining);});
    const fetchSource=(async(input,options)=>{
     controller.signal.throwIfAborted();
-    return (deps.fetcher??fetch)(input,{...options,signal:AbortSignal.any([controller.signal,...(options?.signal?[options.signal]:[])])});
+    return fetchWithinRound(input,{...options,signal:AbortSignal.any([controller.signal,...(options?.signal?[options.signal]:[])])});
    }) as typeof fetch;
    const work=async()=>{
     const source=await (deps.readSource??buildDraftSource)(root,slug,fetchSource);controller.signal.throwIfAborted();
@@ -62,7 +66,7 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
     await authority();
     exchange??=await FileAttendedExchange.create<DraftExchangeRequest>(path.join(path.dirname(root),'draft-sessions'),root,Math.min(initial.timeoutMs,Math.max(1,deadline-Date.now())),250,async file=>{
      const check=async()=>{await authority();const latest=await readSource();if(!latest||JSON.stringify(latest)!==JSON.stringify(source))throw Error('SUBSTACK_SOURCE_CHANGED');const state=await repo.bySlug(slug);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');return state;};
-     await replyWithDraftExecutor(file,{policy:initial,source,timeoutMs:Math.min(initial.timeoutMs,Math.max(1,deadline-Date.now())),check,execute:deps.execute});
+     await replyWithDraftExecutor(file,{policy:initial,source,fetcher:fetchWithinRound,timeoutMs:Math.min(initial.timeoutMs,Math.max(1,deadline-Date.now())),check,execute:deps.execute});
     });
     return exchange.exchange(r);
    },authority)):{find:async()=>{throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');},read:async()=>{throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');},create:async()=>{throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');},update:async()=>{throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');}};
