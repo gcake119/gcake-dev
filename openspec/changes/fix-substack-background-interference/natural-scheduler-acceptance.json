@@ -1,0 +1,69 @@
+{
+  "acceptedRuntimeCommit": "b10d3525e2106d63b2e6f0030ccc61d855fdb5b5",
+  "firstNaturalVerificationCompletedTaipei": "2026-10-17T13:28:41.074000+08:00",
+  "observedLaunchAgentRuns": 2,
+  "lastExitCode": 0,
+  "kickstartIssued": false,
+  "articleIds": [
+    "220011124",
+    "220473117"
+  ],
+  "articleWrites": 0,
+  "newsletterDelivery": "not_sent",
+  "hermesIssueCount": 0,
+  "hermesStatus": "clear",
+  "hermesHumanReceiptConfirmed": false,
+  "sharedLockReleased": true,
+  "rounds": [
+    {
+      "round": "round-RPsiSp",
+      "sourceCommit": "b10d3525e2106d63b2e6f0030ccc61d855fdb5b5",
+      "verifiedAt": "2026-10-17T05:28:41.074Z",
+      "operations": [
+        "verify",
+        "verify"
+      ],
+      "statuses": [
+        "verified",
+        "verified"
+      ],
+      "cleanup": {
+        "source": "removed"
+      },
+      "notification": "quiet",
+      "d1Locks": 0,
+      "d1Checkpoints": 0,
+      "d1Intents": 0
+    },
+    {
+      "round": "round-oYkbrB",
+      "sourceCommit": "b10d3525e2106d63b2e6f0030ccc61d855fdb5b5",
+      "verifiedAt": "2026-10-17T05:45:26.424Z",
+      "operations": [
+        "verify",
+        "verify"
+      ],
+      "statuses": [
+        "verified",
+        "verified"
+      ],
+      "cleanup": {
+        "source": "removed"
+      },
+      "notification": "quiet",
+      "d1Locks": 0,
+      "d1Checkpoints": 0,
+      "d1Intents": 0
+    }
+  ],
+  "evidenceSha256": {
+    "source.json": "edd3b6818e93a2afc6f7f8079595f64fc3b7924703371a1ec8e5ee684008377d",
+    "preflight.json": "a6849da7e2aecb70befca907530c54ef80c380ed0e949d2ade87c5234fe0ecd7",
+    "post-cutover.json": "e7627f228647111643be34ff44d3effc7d9b9df7419aa162438354100f904a37",
+    "natural-acceptance.json": "8308c45d1257d4446cf6819359b241c49ffba08c58e6cb15f3192922baa3553d",
+    "natural-launchctl.txt": "f5ba33391983a088c407a09da86911f96e67ddc5916bfa04de9caf8d78e93ba7",
+    "hermes-after.json": "82061c5d3ead8fa779a1317b8241c4fabdb66cb1e45d70f3cc29ca9e8cd35823"
+  },
+  "sourceAndValidation": "Merged tree equals reviewed 10a6ce5; full local checks and both PR checks passed. Installed boundary tests 34 passed, isolated Hermes sender tests 7 passed.",
+  "rollback": "Previous installed-identity-repair-20261017 and exact previous-safe-agent.plist retained; no runtime is deleted by this closeout."
+}

@@ -88,3 +88,7 @@ notifyViaHermes=true 的正式執行完成後，將公開 slug 與標準化原�
 Hermes producer 在更新快照前讀取所有 D1 Substack 人工暫停，包含已刪除或不符合目前來源清單的文章。缺少完整持續狀態證據、讀取失敗或輪次失敗時不能清除既有通知快照；首次 owner seed 只能建立尚不存在的非空快照。
 
 本段對應 Git 中的審查修正；本次合併不更新、不重啟已固定版本的私人安裝，後續安裝需另行驗證與切換。
+
+## PR33 自然輪次歷史（2026／10／17）
+
+當日已完成私人安裝與兩輪自然驗證，與人工啟動驗證分開。原 ID、無寫入／無重寄及舊版本回復證據見 [自然排程結案](../openspec/changes/fix-substack-background-interference/natural-scheduler-verification.md) 與原樣保存的 [機器摘要](../openspec/changes/fix-substack-background-interference/natural-scheduler-acceptance.json)。這是該日版本的證據，不是現行版本或新政策 5.3 的驗收；不應重新執行原清理清單。
