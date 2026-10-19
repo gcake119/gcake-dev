@@ -14,6 +14,8 @@ export interface ReleasePostSnapshot {
 }
 export interface ReleaseSeriesSnapshot {
   slug: string;
+  paused?: boolean;
+  external?: boolean;
   sections: readonly {
     posts: readonly {
       slug: string;
@@ -52,6 +54,8 @@ export function collectReleaseEligibility(
     seenSeries.add(manifest.slug);
     const references = manifest.sections.flatMap((section) => section.posts);
     const reasons: string[] = [];
+    if (manifest.paused) reasons.push("MANIFEST_PAUSED");
+    if (manifest.external) reasons.push("EXTERNAL_SERIES");
     const localSlugs = new Set<string>();
     for (const ref of references) {
       if (localSlugs.has(ref.slug))

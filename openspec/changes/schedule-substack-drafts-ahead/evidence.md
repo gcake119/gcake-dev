@@ -1,6 +1,6 @@
 # 第一階段本機驗收證據（2026／10／19）
 
-後續真實 Substack UI 驗收、專用草稿及尚未提交的排程預覽另見 [ui-qualification.md](ui-qualification.md)。下述沒有 provider 操作的記錄屬本機實作階段，不能套用到後續 UI 階段。
+後續真實 Substack UI 驗收、專用草稿及尚未提交的排程預覽另見 [ui-qualification.md](ui-qualification.md)。`c1b97b4` 審查後的 6 項修正與本機驗證另見 [audit-fixes.md](audit-fixes.md)。 取消結果的重複對帳與保存失敗恢復補正見 [cancellation-recovery.md](cancellation-recovery.md)。下述沒有 provider 操作的記錄屬本機實作階段，不能套用到後續 UI 階段。
 
 本輪是未提交候選；沒有部署、套用正式 migration、安裝 runtime、更新 pin／私人設定／LaunchAgent、登入 provider 或寄送訂閱通知。正式狀態不由本輪 fixture 推論。
 

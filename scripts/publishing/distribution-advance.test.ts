@@ -72,9 +72,9 @@ test('source slug rename maps the original ID and never creates a replacement',a
 test('image readback must demonstrate every image loaded before any arm',async()=>{const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));f.provider.post!.content.html+='<img src="https://example.com/a.png" alt="A">';await assert.rejects(f.coordinator.run(f.request('arm-schedule',{remoteId:'123'})),/EVIDENCE/);assert.equal(f.provider.calls.includes('arm'),false);}finally{f.close();}});
 test('legacy coordinator cannot adopt a new-policy schedule or its former slug',async()=>{const {D1PublicationRepository}=await import('../../apps/admin-worker/src/publication-operations');const {DistributionCoordinator}=await import('../../apps/admin-worker/src/distribution-coordinator');const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));const coordinator=new DistributionCoordinator(new D1PublicationRepository(new SqliteD1Database(f.db)),undefined);await assert.rejects(coordinator.run({...source().article,publishedAt:'2026-10-01'},'substack','verify'),/SCHEDULE_OWNED/);assert.deepEqual(await new D1PublicationRepository(new SqliteD1Database(f.db)).listStates('trial'),[]);}finally{f.close();}});
 test('confirmed queue adapter uses confirmed overrides, never estimates or paused commitments',async()=>{const {scheduledRuntime}=await import('./scheduled-runtime');const f=await fixture();try{f.db.exec("CREATE TABLE release_queue_runtime (id INTEGER PRIMARY KEY,version INTEGER,document TEXT)");f.db.prepare('INSERT INTO release_queue_runtime VALUES (1,7,?)').run(JSON.stringify({overrides:{trial:'2026-10-22T07:00:00+08:00'},paused:[],releases:[]}));const ports=scheduledRuntime(new SqliteD1Database(f.db),{} as never);const slot=(await ports.readSlot('trial'))!;assert.equal(slot.queueVersion,7);assert.equal(new Date(slot.scheduledAt).toISOString(),at);assert.equal(await ports.readSlot('estimated'),undefined);f.db.prepare('UPDATE release_queue_runtime SET document=?').run(JSON.stringify({overrides:{trial:slot.scheduledAt},paused:['post:trial']}));assert.equal(await ports.readSlot('trial'),undefined);}finally{f.close();}});
-test('foreground handoff refuses stale generation, intent, version and wrong delivery evidence',async()=>{const {validateScheduleHandoff}=await import('./substack-schedule-handoff');const {validateScheduleReply}=await import('./substack-schedule-attended');const {createHash}=await import('node:crypto');const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));let state=(await f.repo.get('schedule-trial'))!;state=await f.repo.save({...state,intent:{id:'one-arm',action:'arm',scheduledAt:at,sourceRevision:source().sourceRevision,createdAt:now}},state.version);const request={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source().sourceCommit,article:source().article,operation:'arm-schedule',action:'schedule-arm',remote:{id:'123',url:'https://gcakedev.substack.com/publish/post/123'},delivery:{email:true,appInbox:true},audience:'everyone',timeZone:'Asia/Taipei',intentId:'one-arm',recordVersion:state.version,scheduledAt:at} as const;
+test('foreground handoff refuses stale generation, intent, version and wrong delivery evidence',async()=>{const {validateScheduleHandoff}=await import('./substack-schedule-handoff');const {validateScheduleReply}=await import('./substack-schedule-attended');const {createHash}=await import('node:crypto');const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));let state=(await f.repo.get('schedule-trial'))!;state=await f.repo.save({...state,intent:{id:'one-arm',action:'arm',scheduledAt:at,slot:f.request('arm-schedule').slot,sourceRevision:source().sourceRevision,createdAt:now}},state.version);const request={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source().sourceCommit,article:source().article,operation:'arm-schedule',action:'schedule-arm',remote:{id:'123',url:'https://gcakedev.substack.com/publish/post/123'},delivery:{email:true,appInbox:true},audience:'everyone',timeZone:'Asia/Taipei',intentId:'one-arm',recordVersion:state.version,scheduledAt:at,slot:f.request('arm-schedule').slot} as const;
  const envelope={version:2,requestId:'unique',slug:'trial',sourceRevision:source().sourceRevision,operation:request.operation,action:request.action,remoteId:'123',expiresAt:Date.now()+60000,scopeDigest:createHash('sha256').update(JSON.stringify(request)).digest('hex'),request} as const;
- validateScheduleHandoff(envelope,state,source());for(const patch of [{version:state.version+1},{intent:{...state.intent!,id:'other'}},{slug:'other'}])assert.throws(()=>validateScheduleHandoff(envelope,{...state,...patch},source()));
+ validateScheduleHandoff(envelope,state,source(),Date.parse(now),f.request('arm-schedule').slot);for(const patch of [{version:state.version+1},{intent:{...state.intent!,id:'other'}},{slug:'other'}])assert.throws(()=>validateScheduleHandoff(envelope,{...state,...patch},source()));
  const reply={...f.provider.post!,state:'scheduled',listEvidence:{draft:false,scheduled:true},scheduledAt:at,timeZone:'Asia/Taipei',email:true,appInbox:true,audience:'everyone'} as const;validateScheduleReply(request,reply);assert.throws(()=>validateScheduleReply(request,{...reply,appInbox:false}),/EVIDENCE/);assert.throws(()=>validateScheduleReply(request,{...reply,scheduledAt:'2026-10-21T22:00:00Z'}),/EVIDENCE/);
  }finally{f.close();}});
 test('real CLI review executes through durable attended intents and rejects a legacy approval',async()=>{const {runScheduledDistribution}=await import('./run-scheduled-distribution');const os=await import('node:os');const path=await import('node:path');const f=await fixture(),directory=await fs.mkdtemp(path.join(os.tmpdir(),'substack-cli-'));try{
@@ -101,3 +101,132 @@ test('public slug correction edits the original identity and durable URL without
 test('wrong anonymous canonical is not public verification and expected pre-due absence is not a failure',async()=>{const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));let reads=0;f.context.readPublic=async()=>{reads++;return {...f.provider.post!,state:'published',publishedAt:at,canonical:'https://gcakedev.substack.com/p/wrong'};};let r=await f.coordinator.observe('schedule-trial',source(),f.request('arm-schedule').slot!,now);assert.equal(reads,0);assert.equal(r.pendingAction,undefined);r=await f.coordinator.observe('schedule-trial',source(),f.request('arm-schedule').slot!,'2026-10-22T00:00:00Z');assert.equal(reads,1);assert.notEqual(r.observedState,'verified');assert.equal(r.observedTime,at);assert.equal(r.pendingAction,'sync-content');}finally{f.close();}});
 test('source or remote drift after unscheduling blocks both replacement and rearm',async()=>{for(const changed of ['source','remote']){const f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));f.setSource(source('b'));let reads=0;f.provider.onRead=()=>{if(++reads===3){if(changed==='source')f.setSource(source('c'));else f.provider.post!.content.html='<p>Concurrent editor change</p>';}};await assert.rejects(f.coordinator.run(f.request('revise-schedule',{remoteId:'123'})),/SOURCE_CHANGED|REMOTE_CONTENT_CHANGED/);assert.equal(f.provider.calls.filter(c=>c==='update-draft').length,1);assert.equal(f.provider.calls.filter(c=>c==='arm').length,1);assert.equal(f.provider.post!.state,'draft');}finally{f.close();}}});
 test('cancellation CLI remains available when source content or media cannot be read',async()=>{const {runScheduledDistribution}=await import('./run-scheduled-distribution');const path=await import('node:path');const os=await import('node:os');const directory=await fs.mkdtemp(path.join(os.tmpdir(),'substack-cancel-')),f=await fixture();try{await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));f.provider.post!.content.html+='<img src="https://example.com/unavailable.png" alt="unavailable">';f.provider.post!.images=[{src:'https://example.com/unavailable.png',alt:'unavailable',loaded:false}];f.db.exec('CREATE TABLE release_queue_runtime (id INTEGER PRIMARY KEY,version INTEGER,document TEXT)');f.db.prepare('INSERT INTO release_queue_runtime VALUES (1,1,?)').run('{"overrides":{}}');const config=path.join(directory,'config.json'),receipt=path.join(directory,'review.json'),approval=path.join(directory,'approval.json');await fs.writeFile(config,JSON.stringify({scheduled:{policyVersion:SCHEDULE_POLICY,writeEnabled:true,transport:'attended'},substack:{ui:{origin:'https://gcakedev.substack.com'}}}));let sourceReads=0;const deps={readSource:async()=>{sourceReads++;throw Error('SOURCE_OR_MEDIA_UNAVAILABLE');},exchange:async(r:import('./substack-schedule-attended').ScheduleExchangeRequest)=>{if(r.action==='schedule-read')return f.provider.read('123');if(r.action==='schedule-remove'){await f.provider.remove('123');return f.provider.read('123');}throw Error('unexpected action');}};const args=['cancel-schedule','trial','substack','--schedule-id','schedule-trial','--config',config];await runScheduledDistribution([...args,'--out',receipt],process.cwd(),new SqliteD1Database(f.db),deps);const review=JSON.parse(await fs.readFile(receipt,'utf8'));await fs.writeFile(approval,JSON.stringify({...review.approvalTemplate,approved:true}));const r=await runScheduledDistribution([...args,'--execute','--receipt',receipt,'--approval',approval],process.cwd(),new SqliteD1Database(f.db),deps);assert.equal(r?.observedState,'cancelled_draft');assert.equal(sourceReads,0);assert.equal(r?.remoteId,'123');}finally{f.close();await fs.rm(directory,{recursive:true,force:true});}});
+
+test('audit regression: adopt an existing schedule and persist its commitment without another arm',async()=>{
+ const f=await fixture();try{
+  f.provider.post={id:'123',slug:'trial',state:'scheduled',saved:true,content:content(source()),scheduledAt:at,timeZone:'Asia/Taipei',email:true,appInbox:true,audience:'everyone',listEvidence:{draft:false,scheduled:true}};
+  const prepared=await f.coordinator.run(f.request('prepare-draft'));assert.equal(prepared.remoteId,'123');assert.equal(prepared.observedTime,at);
+  const armed=await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));assert.equal(armed.observedTime,at);assert.deepEqual(armed.slot,f.request('arm-schedule').slot);assert.equal(armed.armedRevision,source().sourceRevision);assert.equal(armed.delivery,'armed');assert.equal(armed.emailEnabled,true);assert.equal(armed.appInboxEnabled,true);
+  assert.ok(f.provider.calls.every(c=>['find','read'].includes(c)));
+  f.provider.post.state='published';let publicReads=0;const read=f.context.readPublic;f.context.readPublic=async(...args)=>{publicReads++;return read(...args);};
+  const result=await f.coordinator.observe('schedule-trial',source(),armed.slot,'2026-10-22T00:00:00Z');assert.equal(publicReads,1);assert.equal(result.observedState,'verified');assert.equal(result.delivery,'unknown');assert.equal(result.deliveredRevision,source().sourceRevision);
+ }finally{f.close();}
+});
+test('audit regression: a same-content revision to a new time confirms removal before arming',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));
+  f.setSlot({...f.request('arm-schedule').slot!,scheduledAt:'2026-10-25T23:00:00.000Z',reservationId:'fixed:replacement',queueVersion:2});const start=f.provider.calls.length;
+  const result=await f.coordinator.run(f.request('revise-schedule',{remoteId:'123'}));assert.deepEqual(f.provider.calls.slice(start).filter(c=>c!=='read'),['remove','arm']);
+  const calls=f.provider.calls.slice(start);assert.ok(calls.slice(calls.indexOf('remove')+1,calls.indexOf('arm')).includes('read'));assert.equal(result.remoteId,'123');assert.equal(result.observedTime,'2026-10-25T23:00:00.000Z');
+ }finally{f.close();}
+});
+test('audit regression: confirmed cancellation remains quiet after the original due time',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));
+  const cancelled=await f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'}));assert.equal(cancelled.observedState,'cancelled_draft');assert.equal(cancelled.delivery,'not_armed');assert.equal(cancelled.armedRevision,source().sourceRevision);
+  let publicReads=0;f.context.readPublic=async()=>{publicReads++;throw Error('expected unpublished draft');};const writes=f.provider.calls.length;
+  for(const [instant,current] of [['2026-10-22T00:00:00Z',source()],['2026-10-23T00:00:00Z',undefined]] as const){const result=await f.coordinator.observe('schedule-trial',current,f.request('arm-schedule').slot,instant);assert.equal(result.observedState,'cancelled_draft');assert.equal(result.pendingAction,undefined);assert.equal(result.lastErrorCode,undefined);}
+  assert.equal(publicReads,0);assert.equal(f.provider.calls.length,writes);
+ }finally{f.close();}
+});
+test('audit regression: meaningful inline spaces are repaired rather than accepted as no-change',async()=>{
+ const f=await fixture();try{
+  const s=source();s.article.body='Read **this** now.\n\n[Original](https://gcake119.github.io/gcake-dev/posts/trial/)';f.setSource(s);await f.coordinator.run(f.request('prepare-draft'));
+  const expected=content(s);f.provider.post!.content.html=expected.html.replace('Read <strong>this</strong> now.','Read<strong>this</strong>now.');assert.notEqual(f.provider.post!.content.html,expected.html);const start=f.provider.calls.length;
+  const result=await f.coordinator.run(f.request('sync-content',{remoteId:'123'}));assert.equal(result.lastComparison?.result,'verified-edit');assert.ok(result.lastComparison?.differences.includes('body-structure-links-images'));assert.deepEqual(f.provider.post!.content,expected);assert.deepEqual(f.provider.calls.slice(start).filter(c=>c!=='read'),['update-draft']);
+ }finally{f.close();}
+});
+test('audit regression: a waiting arm handoff rejects a postponed, cancelled or expired queue commitment',async()=>{
+ const {validateScheduleHandoff}=await import('./substack-schedule-handoff');const {createHash}=await import('node:crypto');const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));let state=(await f.repo.get('schedule-trial'))!;const slot=f.request('arm-schedule').slot!;
+  state=await f.repo.save({...state,intent:{id:'waiting-arm',action:'arm',scheduledAt:at,slot,sourceRevision:source().sourceRevision,createdAt:now}},state.version);
+  const request={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source().sourceCommit,article:source().article,operation:'arm-schedule',action:'schedule-arm',remote:{id:'123',url:'https://gcakedev.substack.com/publish/post/123'},delivery:{email:true,appInbox:true},audience:'everyone',timeZone:'Asia/Taipei',intentId:'waiting-arm',recordVersion:state.version,scheduledAt:at,slot} as const;
+  const envelope={version:2,requestId:'waiting',slug:'trial',sourceRevision:source().sourceRevision,operation:request.operation,action:request.action,remoteId:'123',expiresAt:Date.parse(at)+60000,scopeDigest:createHash('sha256').update(JSON.stringify(request)).digest('hex'),request} as const;
+  validateScheduleHandoff(envelope,state,source(),Date.parse(now),slot);
+  for(const current of [undefined,{...slot,queueVersion:2},{...slot,scheduledAt:'2026-10-25T23:00:00Z'},{...slot,confirmed:false}])assert.throws(()=>validateScheduleHandoff(envelope,state,source(),Date.parse(now),current),/SLOT_UNCONFIRMED/);
+  assert.throws(()=>validateScheduleHandoff(envelope,state,source(),Date.parse(at),slot),/TIME_INVALID/);assert.equal(f.provider.calls.includes('arm'),false);
+ }finally{f.close();}
+});
+test('audit regression: the foreground proof command freshly reads queue changes while a request waits',async()=>{
+ const {scheduleHandoff}=await import('./substack-schedule-handoff');const {createHash}=await import('node:crypto');const {default:path}=await import('node:path');const {default:os}=await import('node:os');
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'audit-handoff-')),root=await fs.mkdtemp(path.join(os.tmpdir(),'audit-source-')),f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));let state=(await f.repo.get('schedule-trial'))!;const slot=f.request('arm-schedule').slot!;
+  state=await f.repo.save({...state,intent:{id:'waiting',action:'arm',scheduledAt:at,slot,sourceRevision:source().sourceRevision,createdAt:now}},state.version);
+  const request={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source().sourceCommit,article:source().article,operation:'arm-schedule',action:'schedule-arm',remote:{id:'123',url:'https://gcakedev.substack.com/publish/post/123'},delivery:{email:true,appInbox:true},audience:'everyone',timeZone:'Asia/Taipei',intentId:'waiting',recordVersion:state.version,scheduledAt:at,slot};
+  const envelope={version:2,requestId:'waiting',slug:'trial',sourceRevision:source().sourceRevision,operation:request.operation,action:request.action,remoteId:'123',expiresAt:Date.parse(at)+60000,scopeDigest:createHash('sha256').update(JSON.stringify(request)).digest('hex'),request};
+  const file=path.join(directory,'request.json'),config=path.join(directory,'config.json');await fs.writeFile(file,JSON.stringify(envelope));await fs.writeFile(config,JSON.stringify({scheduled:{policyVersion:SCHEDULE_POLICY,writeEnabled:true,transport:'attended',sessionDirectory:directory},substack:{ui:{origin:'https://gcakedev.substack.com'}}}));
+  f.db.exec('CREATE TABLE release_queue_runtime (id INTEGER PRIMARY KEY,version INTEGER,document TEXT)');f.db.prepare('INSERT INTO release_queue_runtime VALUES (1,1,?)').run(JSON.stringify({overrides:{trial:at}}));
+  const values=new Map([['--config',config],['--source-root',root],['--request',file]]),dependencies={database:new SqliteD1Database(f.db),readSource:async()=>source(),assertMain:async()=>{},now:()=>Date.parse(now)};
+  await scheduleHandoff('proof-schedule',values,dependencies);
+  for(const overrides of [{trial:'2026-10-25T23:00:00Z'},{}]){
+   f.db.prepare('UPDATE release_queue_runtime SET version=version+1,document=?').run(JSON.stringify({overrides}));
+   for(const action of ['inspect-schedule','proof-schedule','reply-schedule'])await assert.rejects(scheduleHandoff(action,values,dependencies),/SLOT_UNCONFIRMED/);
+  }
+  await assert.rejects(fs.access(path.join(directory,'reply.json')));assert.equal(f.provider.calls.includes('arm'),false);
+ }finally{f.close();await fs.rm(directory,{recursive:true,force:true});await fs.rm(root,{recursive:true,force:true});}
+});
+test('audit regression: a lost cancellation acknowledgement is reconciled to a quiet cancelled draft',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));f.provider.fail='remove';
+  await assert.rejects(f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'})));f.provider.fail=undefined;f.provider.post!.state='draft';f.provider.post!.listEvidence={draft:true,scheduled:false};delete f.provider.post!.scheduledAt;
+  const cancelled=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(cancelled.observedState,'cancelled_draft');assert.equal(cancelled.delivery,'not_armed');assert.equal(cancelled.intent,undefined);
+  f.context.readPublic=async()=>{throw Error('must not verify a cancelled draft');};const result=await f.coordinator.observe('schedule-trial',source(),f.request('arm-schedule').slot,'2026-10-22T00:00:00Z');assert.equal(result.pendingAction,undefined);assert.equal(result.lastErrorCode,undefined);
+  assert.equal(f.provider.calls.filter(c=>c==='remove').length,1);assert.equal(result.armedRevision,source().sourceRevision);
+ }finally{f.close();}
+});
+test('audit regression: failed removal blocks a same-content revision from issuing a replacement arm',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));f.setSlot({...f.request('arm-schedule').slot!,scheduledAt:'2026-10-25T23:00:00.000Z',queueVersion:2});f.provider.fail='remove';
+  await assert.rejects(f.coordinator.run(f.request('revise-schedule',{remoteId:'123'})),/RECONCILIATION/);assert.equal(f.provider.calls.filter(c=>c==='arm').length,1);assert.equal((await f.repo.get('schedule-trial'))?.intent?.action,'remove');
+ }finally{f.close();}
+});
+
+test('cancel recovery: repeated read-only reconciliation preserves a confirmed cancellation after the former due time',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));const cancelled=await f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'}));const start=f.provider.calls.length;
+  let publicReads=0;f.context.readPublic=async()=>{publicReads++;throw Error('cancelled article is not public');};
+  for(let round=0;round<2;round++){
+   const reconciled=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(reconciled.observedState,'cancelled_draft');assert.equal(reconciled.desiredState,'cancelled');assert.equal(reconciled.delivery,'not_armed');assert.equal(reconciled.intent,undefined);assert.equal(reconciled.observedTime,cancelled.observedTime);assert.equal(reconciled.armedRevision,cancelled.armedRevision);
+   const observed=await f.coordinator.observe('schedule-trial',source(),f.request('arm-schedule').slot,'2026-10-23T00:00:00Z');assert.equal(observed.pendingAction,undefined);assert.equal(observed.lastErrorCode,undefined);assert.equal(observed.observedState,'cancelled_draft');
+  }
+  assert.equal(publicReads,0);assert.ok(f.provider.calls.slice(start).every(c=>c==='read'));
+ }finally{f.close();}
+});
+for(const outcome of ['not-saved','saved-reply-lost'] as const)test('cancel recovery: final save '+outcome+' is reconciled on restart without replaying removal',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));const save=f.repo.save.bind(f.repo);let injected=false;
+  f.repo.save=async(record,previous)=>{if(!injected&&record.observedState==='cancelled_draft'&&!record.intent){injected=true;if(outcome==='saved-reply-lost')await save(record,previous);throw Error('injected final cancellation persistence failure');}return save(record,previous);};
+  await assert.rejects(f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'})));assert.equal(injected,true);assert.equal(f.provider.post!.state,'draft');const durable=(await f.repo.get('schedule-trial'))!;
+  if(outcome==='not-saved')assert.equal(durable.intent?.action,'remove');else assert.equal(durable.observedState,'cancelled_draft');
+  f.repo.save=save;const restartedRepo=new ScheduleRepository(new SqliteD1Database(f.db)),restarted=new ScheduleCoordinator(restartedRepo,new D1DistributionRuntime(new SqliteD1Database(f.db)),f.provider,f.context);const start=f.provider.calls.length;
+  for(let round=0;round<2;round++){const reconciled=await restarted.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(reconciled.observedState,'cancelled_draft');assert.equal(reconciled.delivery,'not_armed');assert.equal(reconciled.intent,undefined);assert.equal(reconciled.remoteId,'123');assert.equal(reconciled.armedRevision,source().sourceRevision);}
+  let publicReads=0;f.context.readPublic=async()=>{publicReads++;throw Error('cancelled draft');};const result=await restarted.observe('schedule-trial',source(),f.request('arm-schedule').slot,'2026-10-23T00:00:00Z');assert.equal(result.pendingAction,undefined);assert.equal(result.lastErrorCode,undefined);assert.equal(publicReads,0);assert.ok(f.provider.calls.slice(start).every(c=>c==='read'));assert.equal(f.provider.calls.filter(c=>c==='remove').length,1);
+ }finally{f.close();}
+});
+test('cancel recovery: an older interrupted draft record retains its cancellation disposition after provider readback',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));const cancelled=await f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'}));
+  await f.repo.save({...cancelled,observedState:'draft_prepared',intent:undefined,pendingAction:'sync-content',lastErrorCode:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'},cancelled.version);
+  const result=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123',source:undefined}));assert.equal(result.observedState,'cancelled_draft');assert.equal(result.intent,undefined);assert.equal(result.pendingAction,undefined);assert.equal(result.lastErrorCode,undefined);assert.equal(result.armedRevision,cancelled.armedRevision);
+ }finally{f.close();}
+});
+for(const outcome of ['still-scheduled','incomplete-draft-readback'] as const)test('cancel recovery: desired cancellation does not hide '+outcome,async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));const previous=(await f.repo.get('schedule-trial'))!;await f.repo.save({...previous,desiredState:'cancelled'},previous.version);
+  if(outcome==='incomplete-draft-readback'){f.provider.post!.state='draft';f.provider.post!.listEvidence=undefined;await assert.rejects(f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'})),/RECONCILIATION/);}
+  else{const result=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(result.observedState,'scheduled');assert.equal(result.pendingAction,'cancel-schedule');assert.equal(result.observedTime,at);}
+  assert.notEqual((await f.repo.get('schedule-trial'))!.observedState,'cancelled_draft');assert.equal(f.provider.calls.filter(c=>c==='remove').length,0);
+ }finally{f.close();}
+});
+test('cancel recovery: cancellation reconciliation resolves only cancellation, retaining outstanding content drift',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));await f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'}));f.setSource(source('b'));const start=f.provider.calls.length;
+  const result=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(result.observedState,'cancelled_draft');assert.equal(result.delivery,'not_armed');assert.equal(result.pendingAction,'sync-content');assert.notEqual(result.contentVerifiedRevision,source('b').sourceRevision);assert.ok(f.provider.calls.slice(start).every(c=>c==='read'));
+ }finally{f.close();}
+});
+test('cancel recovery: a later explicitly authorized rearm is not mistaken for the old cancellation',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));await f.coordinator.run(f.request('cancel-schedule',{remoteId:'123'}));f.provider.fail='arm';await assert.rejects(f.coordinator.run(f.request('arm-schedule',{remoteId:'123'})));f.provider.fail=undefined;
+  const result=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(result.observedState,'scheduled');assert.equal(result.desiredState,'scheduled');assert.equal(result.delivery,'armed');assert.equal(result.intent,undefined);assert.equal(f.provider.calls.filter(c=>c==='arm').length,2);
+ }finally{f.close();}
+});

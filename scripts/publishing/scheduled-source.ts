@@ -21,7 +21,7 @@ export async function buildScheduledSource(root:string,slug:string,fetcher:typeo
  const seriesRoot=path.join(root,'src/content/series');
  const names=await fs.readdir(seriesRoot).catch((e:NodeJS.ErrnoException)=>{if(e.code==='ENOENT')return [];throw e;});
  const manifests=await Promise.all(names.filter(n=>/\.ya?ml$/.test(n)).map(async n=>YAML.parse(await fs.readFile(path.join(seriesRoot,n),'utf8'))));
- const eligibility=collectReleaseEligibility(posts,manifests);
+ const eligibility=collectReleaseEligibility(posts,manifests.map(m=>({...m,paused:m.status==='paused'||m.publication?.status==='paused',external:m.source?.type==='external'})));
  if(eligibility.blockedSeries.some(b=>manifests.find(m=>m.slug===b.seriesSlug)?.sections.some((s:{posts:{slug:string}[]})=>s.posts.some(p=>p.slug===slug))))throw Error('SUBSTACK_SOURCE_SERIES_INCOMPLETE');
  const raw=entries.find(e=>e.file.slug===slug)!.raw,status=matter(raw).data.status;
  if(!['ready','published'].includes(status))throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');

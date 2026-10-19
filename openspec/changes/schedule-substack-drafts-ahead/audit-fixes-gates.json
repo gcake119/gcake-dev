@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "scope": "local audit corrections only; no CI/provider/production acceptance",
+  "baseCommit": "c1b97b4604864bbe949737dde7286a11bb3f1a04",
+  "progress": {
+    "total": 21,
+    "complete": 19,
+    "remaining": 2
+  },
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/pnpm-test-unsandboxed.log",
+      "logSha256": "9701e15d6ba929cb7b01afa95cd8c2e305c30bd7cec40cbeee5ead1b29049d54"
+    },
+    {
+      "command": "pnpm check",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/pnpm-check.log",
+      "logSha256": "40131acef0a5365ac4e2a1bb9e5d5deea6c5ac479ec2073829c1e999bd76b89a"
+    },
+    {
+      "command": "pnpm build:all",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/build-all.log",
+      "logSha256": "0a2a9f43c3e679fc514100bda48975c713362314302d705ab74adeaaf4fc3605"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/release-dry-run-unsandboxed.log",
+      "logSha256": "849e57d472b88fe8742ca45bf00c7fb3e2434f95d3c38f7a680d12cfd83d56aa"
+    },
+    {
+      "command": "spectra validate schedule-substack-drafts-ahead",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/spectra-validate.log",
+      "logSha256": "47730ab64012919fcc5567b56572cd05c518251382e2552a2988355d6bcf24d3"
+    },
+    {
+      "command": "spectra analyze schedule-substack-drafts-ahead --json",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/spectra-analyze.json",
+      "logSha256": "18226cfdb7462c97daee1eba38f5428b1905d7da14990949cb699beaa4de3369"
+    }
+  ],
+  "redEvidence": [
+    {
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/acceptance-red.log",
+      "logSha256": "55d5fe97e18cd956bb48cf986071fb2b2659950acbfed19986f74c3a410b4d22"
+    },
+    {
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/cancel-reconcile-red.log",
+      "logSha256": "33010cb4a3f1bf5f8aead0b3da356c38fac448202058874e75ea59bfac626593"
+    },
+    {
+      "log": "/private/tmp/gcake-substack-audit-fixes-20261019/cancel-source-gone-red.log",
+      "logSha256": "63b9bb47acbb96d69e67fa3e1968d2e3c57eea7e064e704cd681f255c98af190"
+    }
+  ],
+  "firstBehaviorRed": {
+    "tests": 8,
+    "passed": 0,
+    "failed": 8,
+    "coversAuditFindings": 6
+  },
+  "regressionCases": 11,
+  "environmentFailuresRetained": [
+    "/private/tmp/gcake-substack-audit-fixes-20261019/pnpm-test.log",
+    "/private/tmp/gcake-substack-audit-fixes-20261019/release-dry-run.log"
+  ],
+  "existingDirtyDocumentsUnchanged": {
+    "AGENTS.md": "22d855b3747f68f42f31f5704dccab1829962fc62c1b9adb7d3e4157564442f6",
+    "docs/distribution-scripted-runbook.md": "b26ef4f6c51718536e59685fc59a3d64c2896b8f16cc86448f97f0a97f2a595e",
+    "openspec/specs/publishing-operations/spec.md": "d01bb574c6147b96108bdff3449a7896382181fb5b961527da2515564fafb21a"
+  },
+  "productionWrites": false,
+  "providerActions": 0,
+  "subscriberMessagesSent": 0,
+  "pending": [
+    "3.1 committed Scheduled-list readback; owner chose no schedules",
+    "5.3 separately authorized production pilot"
+  ]
+}

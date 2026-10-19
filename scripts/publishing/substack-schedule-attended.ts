@@ -2,11 +2,11 @@ import {parseHTML} from 'linkedom';
 import {assertScheduleMedia,contentFingerprint,type ScheduleProvider,type ScheduleObservation,type ScheduleRequest,expectedContent} from './substack-schedule';
 import type {ScheduledSource} from './scheduled-source';
 import {type ExchangeRequest} from './substack-attended';
-import {ScheduleRepository,SCHEDULE_POLICY} from '../../apps/admin-worker/src/substack-schedules';
+import {ScheduleRepository,SCHEDULE_POLICY,type ConfirmedSlot} from '../../apps/admin-worker/src/substack-schedules';
 export interface ScheduleExchangeRequest extends ExchangeRequest {
  exchangeVersion:2;policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;sourceCommit?:string;
  action:'schedule-find'|'schedule-read'|'schedule-create'|'schedule-update'|'schedule-arm'|'schedule-remove';
- scheduledAt?:string;publishedUpdate?:boolean;html?:string;delivery:{email:boolean;appInbox:boolean};audience:'everyone';timeZone:'Asia/Taipei';
+ scheduledAt?:string;slot?:ConfirmedSlot;publishedUpdate?:boolean;html?:string;delivery:{email:boolean;appInbox:boolean};audience:'everyone';timeZone:'Asia/Taipei';
  intentId?:string;recordVersion:number;
 }
 export function validateScheduleObservation(value:unknown,id?:string,verifyMedia=true):ScheduleObservation{
@@ -34,7 +34,7 @@ export class AttendedScheduleProvider implements ScheduleProvider {
   if(mutation&&(!state.intent||state.intent.action!==mutation||state.remoteId!==id))throw Error('SUBSTACK_SCHEDULE_INTENT_REQUIRED');
   const source=this.request.source;
   const article=source?.article??{slug:this.request.slug,sourceRevision:state.sourceRevision??'',title:'',body:'',canonicalUrl:'https://gcake119.github.io/gcake-dev/posts/'+this.request.slug+'/',assets:[]};
-  const r:ScheduleExchangeRequest={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source?.sourceCommit,action,operation:this.request.operation,article,remote:id?{id,url:'https://gcakedev.substack.com/publish/post/'+id}:undefined,delivery:{email:action==='schedule-arm',appInbox:action==='schedule-arm'},audience:'everyone',timeZone:'Asia/Taipei',intentId:state.intent?.id,recordVersion:state.version,...extra};
+  const r:ScheduleExchangeRequest={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source?.sourceCommit,action,operation:this.request.operation,article,remote:id?{id,url:'https://gcakedev.substack.com/publish/post/'+id}:undefined,delivery:{email:action==='schedule-arm',appInbox:action==='schedule-arm'},audience:'everyone',timeZone:'Asia/Taipei',intentId:state.intent?.id,recordVersion:state.version,...(action==='schedule-arm'?{slot:this.request.slot}:{}),...extra};
   const result=await this.exchange(r);validateScheduleReply(r,result);return result;
  }
  private sameSource(source:ScheduledSource){if(JSON.stringify(source)!==JSON.stringify(this.request.source))throw Error('SUBSTACK_SOURCE_CHANGED');}

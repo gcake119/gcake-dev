@@ -96,10 +96,6 @@ export class ReleaseQueue {
     const result = collectReleaseEligibility(posts, snapshot.series);
     const heldSeries = new Set(result.blockedSeries.map((b) => b.seriesSlug));
     for (const series of snapshot.series) {
-      if (series.paused || series.external) {
-        heldSeries.add(series.slug);
-        result.blockedSeries.push({seriesSlug:series.slug,reasons:[series.paused?'MANIFEST_PAUSED':'EXTERNAL_SERIES']});
-      }
       const refs = series.sections.flatMap((x) => x.posts);
       const started = refs.some((x) => x.status === 'published') || s.data.releases.some((r) => r.seriesSlug === series.slug);
       const order = JSON.stringify(refs.map((x) => x.slug));
