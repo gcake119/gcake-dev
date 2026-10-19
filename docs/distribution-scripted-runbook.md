@@ -104,3 +104,5 @@ pnpm distribution:run prepare-draft article-slug substack --source-root /absolut
 使用者已明確授權 Chrome 的既有 ID 持續草稿寫入，實際媒體 A 與 Git B 恢復均完成全文保存／離開／重載；新建仍停用。一般 worker 僅操作自己的新 Chrome 分頁，在原 timer／鎖／Hermes ledger 下執行，不擴大排程、公開或訂閱者寄送權限。匿名 observer 與此 authenticated draft executor 分開，舊 browser-free 要求仍適用於 observer。
 
 圖片等價僅接受獨立未包超連結的 PNG，最多 8 張、每張 8 MiB；控制程式由 UI 實際指向的託管原圖獨立驗證 SHA256，順序、alt、正文連結、程式碼與其餘內容仍嚴格比對。帶圖片超連結的舊驗收失敗保留，不能用外框正規化掩蓋連結遺失。寫入前父程序重新驗證完整實際基準與權限，負向／缺失判決不得貼上。未知結果留 intent，先同 ID 唯讀對帳，不重貼。範圍、期限、pin、自然驗收及停用見持續驗收紀錄與 launchd runbook；本次沒有啟用任何 schedule write、發布或寄送。
+
+2026／10／20 原草稿清單修正：已發佈清單的實際 `/publish/posts/detail/ID` 與草稿 `/publish/post/ID` 都必須計入，不可由執行者自行採單一網址過濾或固定篇數。原始三清單由同一確定性驗證器在子程序及父控制器檢查，缺漏／身分衝突仍停止；唯讀導覽逾時保留原分頁觀察，不能提前關閉而失去查核機會，也不能重貼。原 ID 221099415 的全文重載與第 10 次自然輪次、正式後台查核均完成，見 [修正驗收](../openspec/changes/automate-substack-draft-content-sync/read-repair-20261020.md)。沿用原內容與媒體比較標準，沒有新增內容寫入、排程／發布／訂閱者寄送或新建授權。

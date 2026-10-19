@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "checkedAt": "2026-10-19T19:35:41.726410+00:00",
+  "baseMain": "f4ea22f097973f4978e7dccbbaddad87bb3c4ec7",
+  "branch": "codex/fix-substack-draft-verification-20261020",
+  "node": "v22.23.3",
+  "focusedTests": {
+    "passed": 53,
+    "failed": 0,
+    "red": "original list acceptance failed on clean main before implementation"
+  },
+  "gates": [
+    {
+      "name": "check",
+      "exitCode": 0,
+      "seconds": 12.85
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "seconds": 109.53
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0,
+      "seconds": 8.83
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 10.59
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 10.38
+    }
+  ],
+  "qualifiedSourceSha256": {
+    "scripts/publishing/substack-draft-executor.ts": "7141cf68e0ed105ba6b2b0ef8df424b2db6b75c28011a16ee035b689753e310e",
+    "scripts/publishing/substack-draft-lists.ts": "c7d067d9040c7e7cd0bbaa4631702d05f941748f704d3878916707abb4ad44ce",
+    "scripts/publishing/substack-draft-activation.ts": "56ebbcb66cb82eacd79519e51a18b4a567832f7f510d43db3974d974e2a7de2d",
+    "scripts/publishing/distribution-draft-sync.test.ts": "9a7ef179546b717c89352256da615c5681fe008d057d0188b1d86d5fd44adedb"
+  },
+  "retainedMainFileSha256": {
+    "scripts/publishing/substack-draft-round.ts": "8e84fec9f0bd67483ef942bc03be0aff4f919f34ad47ed83e80fb10d8556da53",
+    "scripts/publishing/substack-draft-qualification.ts": "42e741bd239155c1cb826538e908349b82e8f388b1f229119210ccdb0b127dcd",
+    "scripts/publishing/substack-draft-sync.ts": "20e706b2e202e0db4de31f02fec44667b8fcc922b20bbda854f98b4f081a550c",
+    "scripts/publishing/substack-draft-media.ts": "5ea45c1226c14cf425dd44b202fb18fa2fcc2d9b22af25d8c07e30d9d0199092",
+    "scripts/publishing/substack-draft-computer-use.ts": "d119126dc298084de5ba2ccb7c0fb76184284f57c392c23ee897bcf95387105b",
+    "apps/admin/src/App.vue": "afe3c1311ffaef95a412f26cb27d5a26d88793f01d3aefa0e24faa871a1976c7",
+    "apps/admin/src/workflow-acceptance.test.ts": "83d3bd49d0461a43951101c1fed2ae187a4ddbd1e6d53a657b906b9eba7c1cd0",
+    ".github/workflows/validate-pr.yml": "048f266f8c95a9ecaf08f67f17303b866e156461b5a121e77e64d2828a9f7715",
+    "pnpm-lock.yaml": "2ed4a9eefd27a8cd417ec03567f3f50866081435c57476fcc27ffd8071386645",
+    "package.json": "c568b49b3a78d0ebb33b3dc02725d0dbdf58bc1fb099f64b6311b0fb2ba61f6b"
+  },
+  "atomicVerdictCodeUnchanged": true,
+  "dirtyCheckoutsUnchanged": true,
+  "standingConfigPinTimerUnchanged": true,
+  "creationEnabled": false,
+  "scheduledWrites": false,
+  "providerOperations": 0,
+  "runtimeInstallation": false,
+  "merge": false,
+  "deployment": false,
+  "historicalLiveAcceptancePin": "154d919567c7eccb6a47674ef88b21b401680d84893a6739f151cb97f44f32ae",
+  "historicalLiveAcceptanceDoesNotQualifyThisAssembledRuntime": true,
+  "ciEvidence": "Exact PR head and GitHub check run; not claimed by local results."
+}

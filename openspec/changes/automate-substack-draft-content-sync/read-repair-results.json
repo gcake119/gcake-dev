@@ -1,0 +1,152 @@
+{
+  "passed": true,
+  "scope": "existing-original-draft-read-repair",
+  "original": {
+    "id": "221099415",
+    "slug": "ithome-2026-template-hardening",
+    "digest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721"
+  },
+  "sourceCommit": "6e8f715fb14a142e43e322d640e40a21e9fc0907",
+  "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+  "localGates": [
+    {
+      "name": "check",
+      "exitCode": 0
+    },
+    {
+      "name": "test",
+      "exitCode": 0
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0
+    }
+  ],
+  "manualRead": {
+    "passed": true,
+    "readOnly": true,
+    "originalId": "221099415",
+    "slug": "ithome-2026-template-hardening",
+    "sourceCommit": "6e8f715fb14a142e43e322d640e40a21e9fc0907",
+    "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+    "digest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721",
+    "expectedDigest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721",
+    "completedAt": "2026-10-19T19:00:39.965Z",
+    "browser": "chrome",
+    "providerWrites": 0
+  },
+  "installation": {
+    "installed": true,
+    "installedAt": "2026-10-19T19:01:00.860Z",
+    "files": [
+      "scripts/publishing/substack-draft-executor.ts",
+      "scripts/publishing/substack-draft-lists.ts",
+      "scripts/publishing/substack-draft-activation.ts"
+    ],
+    "oldPinDigest": "623921bf07fbd55ae37bba9675645b092ae020cbf705d3118c87a8b5840b661d",
+    "pinDigest": "154d919567c7eccb6a47674ef88b21b401680d84893a6739f151cb97f44f32ae",
+    "configSha256": "47c9ce819e25fec7ebec438495947de968712aa15e8d694b657ab30a16a47fdb",
+    "configUnchanged": true,
+    "policyExpiryUnchanged": "2026-11-18T15:44:12.782Z",
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "timerSeconds": 900,
+    "jobReload": false,
+    "kickstart": false,
+    "naturalRunsAtRepair": 9
+  },
+  "naturalRound": {
+    "run": 10,
+    "round": "round-r0UjkD",
+    "exitCode": 0,
+    "status": "completed",
+    "inventory": 6,
+    "requests": [
+      {
+        "id": "221099415",
+        "action": "draft-read",
+        "passed": true,
+        "chromeCalls": 20,
+        "counts": {
+          "draft": 3,
+          "scheduled": 1,
+          "published": 3
+        },
+        "request": "request-69e7eO",
+        "navigationTimeoutObserved": false
+      },
+      {
+        "id": "221099763",
+        "action": "draft-read",
+        "passed": true,
+        "chromeCalls": 16,
+        "counts": {
+          "draft": 3,
+          "scheduled": 1,
+          "published": 3
+        },
+        "request": "request-DWXI9F",
+        "navigationTimeoutObserved": false
+      }
+    ],
+    "originalDraftSync": {
+      "status": "verified",
+      "savedRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+      "desiredRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+      "baselineDigest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721",
+      "checkedAt": "2026-10-19T19:14:43.431Z",
+      "transport": "computer-use"
+    },
+    "providerWrites": 0,
+    "sourceRemoved": true,
+    "locks": 0,
+    "checkpoints": 0,
+    "intents": 0
+  },
+  "preservation": {
+    "sixInitialCommitments": true,
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "configUnchanged": true,
+    "timerSeconds": 900,
+    "timerUnchanged": true,
+    "expiryUnchanged": "2026-11-18T15:44:12.782Z",
+    "jobReload": false,
+    "kickstart": false
+  },
+  "productionUi": {
+    "passed": true,
+    "articleId": "221099415",
+    "displayedCheckTime": "2026/10/20 03:14（台北）",
+    "sync": "已保存並驗證",
+    "publication": "草稿",
+    "delivery": "未安排寄送",
+    "verifiedAt": "2026-10-19T19:18:31.335Z"
+  },
+  "browserCleanup": {
+    "passed": true,
+    "ownedCount": 9,
+    "ownedRemaining": [],
+    "browser": "chrome",
+    "existingTabsUntouched": true
+  },
+  "failedAttemptsRetained": [
+    "request-FCNIkS",
+    "request-Bwt1jy",
+    "request-v6PqYc",
+    "natural-run-8-source-changed",
+    "natural-run-9-navigation-premature-close"
+  ],
+  "limits": [
+    "One completed repaired-runtime natural round; no new content write or media requalification.",
+    "No commit, push or Worker deployment in this repair."
+  ]
+}

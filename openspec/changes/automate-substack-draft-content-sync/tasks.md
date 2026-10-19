@@ -124,3 +124,18 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 19.1 Reproduce the reviewed P1 through actual Vue setup for an already completed old Pages read and pending old success/error replies when creating an unsaved draft, using existing Article changes or identity has not been tracked / Error recovery clears obsolete article evidence contracts. Invalidate old reads and clear all publication evidence at the new-draft context boundary; retain normal saved-article reads.
 - [x] 19.2 Run focused acceptance, all five existing local gates and Spectra/scope checks, retain RED/GREEN and exact candidate evidence, prepare only PR42 update for exact-head CI/Codex review (outcomes recorded on the PR). Preserve Admin archive isolation, production runtime and all schedule/delivery gates.
+
+
+## 20. Original draft read repair — historical qualification 2026-10-20
+
+
+- [x] 20.1 Deliver Deterministic complete draft-list evidence with real RED cases for published-detail links and incomplete/duplicate/protected boundaries, reuse shared child/parent list verifier without weakening full content checks, pin it in activation and pass five existing local gates.
+- [x] 20.2 Qualify same original Chrome full readback against current Git, repair installed runtime pin/receipt linkage under existing locks with exact backups and unchanged expiry/policy/timer, wait a natural round with no reload/kickstart, verify original content/ID/slug, six commitments and disabled creation, and clean owned resources. No schedule/publication/delivery operation, commit/push or Worker deployment.
+
+
+The phase 20 private runtime acceptance predates this clean-main assembly. Its pin and provider receipt remain historical; they do not qualify the assembled PR runtime or authorize changing the standing installation.
+
+## 21. Independent read-repair commit and PR — 2026-10-20
+
+- [x] 21.1 Assemble only the qualified list verifier, child/parent checks, navigation lifetime instructions and scoped evidence on latest main, retaining PR41 atomic verdicts, deadline/media cancellation and PR42 status isolation. Reproduce the original list acceptance before implementation and verify parent rejects forged success on both read and pre-write paths in the existing Node/SQLite seam.
+- [x] 21.2 Complete five existing local gates, validate the exact candidate Spectra artifacts and scope, preserve dirty checkouts and the standing runtime configuration, then prepare one independent commit and authorized PR. Record CI on the exact PR head separately in the PR; do not label historical provider acceptance as new-main runtime qualification or merge/deploy.
