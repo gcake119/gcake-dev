@@ -1,4 +1,12 @@
-# Substack 原生同步與獨立排程
+# Substack 獨立背景觀察與歷史原生安裝
+
+## 現行入口（2026／10／19）
+
+背景只執行 anonymous-only 觀察，保留單一 900 秒工作與共享鎖，provider 寫入關閉；前景操作與單篇首次寄送必須符合 [同步操作手冊](distribution-scripted-runbook.md) 的新政策與精確授權。已部署的通知修正、單篇試行及仍待驗的 5.3，以該手冊引用的版本證據為準。
+
+以下原生安裝及 2026／10／13～17 紀錄按當時範圍保留；其中 Chrome 必須開啟、macos-chrome 收據、Pages 先公開與寄送全關閉等敘述，不能當作現行背景入口或否定後續單篇授權。舊原生成功收據不得替代 anonymous-only 驗收，不能照歷史步驟重新啟用背景 Chrome。此文件不變更正式安裝、設定、寄送 ledger 或既有排程。
+
+## 歷史原生政策
 
 現行同步只允許 Substack。Pages 是正式來源，來源 repo 必須是 gcake119/gcake-dev／main。外部聚合、MDX、未發布、未到日期、重複 slug 或匿名 Pages 不符均保留阻擋。Paragraph 已於 main 撤除，不恢復其 API、排程、文章或未知意圖。
 
