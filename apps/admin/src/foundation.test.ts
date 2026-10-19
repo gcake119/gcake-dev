@@ -18,18 +18,8 @@ test('Admin headings and article preview inherit the project system sans typogra
   const css = await readFile(new URL('./admin.css', import.meta.url), 'utf8');
 
   assert.doesNotMatch(css, /Georgia|Noto Serif TC/);
-  assert.match(css, /\.public-content\s*\{[^}]*font:\s*1rem\/1\.8\s*inherit/);
-});
+  // Actual typography sizes and preview leading are verified in the browser.
 
-test('opening an article or series replaces the content overview with a focused workspace', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, /<section v-if="workspaceMode === 'overview'" class="content-overview"/);
-  assert.match(source, /workspaceMode\.value = 'post'/);
-  assert.match(source, /workspaceMode\.value = 'series'/);
-  assert.match(source, /@click="closeWorkspace">返回內容清單<\/button>/);
-  assert.match(source, /<section v-if="workspaceMode === 'post' && selectedPost" class="editor-panel workspace-panel"/);
-  assert.match(source, /<section v-if="workspaceMode === 'series' && selectedSeries && seriesManifest" class="editor-panel workspace-panel series-editor"/);
 });
 
 test('the publication center follows content editing and preview', async () => {
@@ -49,73 +39,6 @@ test('series ordering exposes a visible drag affordance and dragging state', asy
   assert.match(css, /\.series-order li\.is-dragging/);
 });
 
-test('series sections expose editable fields and guarded structure actions', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, />新增章節<\/button>/);
-  assert.match(source, /<span>章節 ID<\/span>/);
-  assert.match(source, /<span>章節標題<\/span>/);
-  assert.match(source, /<span>章節狀態<\/span>/);
-  assert.match(source, /<option value="planned">規劃中<\/option>/);
-  assert.match(source, /<option value="active">進行中<\/option>/);
-  assert.match(source, /<option value="completed">已完成<\/option>/);
-  assert.match(source, /:disabled="section\.posts\.length > 0"/);
-  assert.match(source, /@click="removeSection\(section\.id\)"/);
-});
-
-test('content workbench creates, labels, and filters standalone posts without a series selector', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, />新增無系列文章<\/button>/);
-  assert.match(source, /<option value="standalone">無系列<\/option>/);
-  assert.match(source, /post\.series\.length .* '無系列'/);
-  assert.match(source, /selectedPost\.series\.length .* '無系列'/);
-  assert.doesNotMatch(source, /文章類型/);
-});
-
-test('new article workspace exposes an explicit editable slug suggestion without autosave', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, /<span>文章標題<\/span><input v-model="newPostTitle"/);
-  assert.match(source, /<span>Slug<\/span>/);
-  assert.match(source, /@click="generateNewPostSlug">產生 slug<\/button>/);
-  assert.doesNotMatch(source, /watch\([^)]*Title[^)]*generate/i);
-});
-
-test('existing article workspace keeps title and slug editable and generates only on explicit action', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, /<input v-model="editorTitle" type="text"/);
-  assert.match(source, /<input v-model="editorSlug" type="text"/);
-  assert.match(source, /@click="generateEditorSlug">產生 slug<\/button>/);
-  assert.doesNotMatch(source, /watch\([^)]*editorTitle[^)]*generateEditorSlug/i);
-});
-
-test('series editor adds standalone posts by changing only its manifest state', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, />加入無系列文章<\/span>/);
-  assert.match(source, /addSeriesPost\(seriesManifest\.value, sectionId/);
-  assert.match(source, /只有系列 YAML 會在儲存時更新/);
-});
-
-test('Series workspace exposes complete lifecycle controls and article counts', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, />新增系列<\/button>/);
-  assert.match(source, /\{\{ item\.postCount \}\} 篇/);
-  assert.match(source, /<span>系列名稱<\/span>/);
-  assert.match(source, /<span>系列 slug<\/span>/);
-  assert.match(source, /method: 'PUT'/);
-  assert.match(source, /@click="deleteSeries">刪除系列<\/button>/);
-});
-
-test('Series delete copy says posts remain and failed saves preserve the working manifest', async () => {
-  const source = await readFile(new URL('./App.vue', import.meta.url), 'utf8');
-
-  assert.match(source, /seriesDeleteConfirmation\(seriesManifest\.value\.title, postCount\)/);
-  assert.match(source, /文章與 Markdown 均保留，現在會顯示為無系列文章/);
-  const failedSave = source.slice(source.indexOf('async function saveSeries'), source.indexOf('function useRepositoryVersion'));
-  assert.match(failedSave, /if \(!response\.ok\)[\s\S]*return;/);
-  assert.ok(failedSave.indexOf('if (!response.ok)') < failedSave.indexOf('seriesDirty.value = false'));
-});
+// Observable creation, lifecycle, recovery and wording cases now render the actual
+// Vue templates in workflow-acceptance.test.ts; domain behavior remains covered
+// by post-series, series-editor, media-cleanup and manual-release suites.

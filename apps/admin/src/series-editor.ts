@@ -36,7 +36,7 @@ export function updateSeriesMetadata(
 
 export function seriesDeleteConfirmation(title: string, postCount: number): string {
   const articles = postCount > 0 ? ` ${postCount} 篇文章` : '文章';
-  return `確定刪除系列「${title}」？這會刪除系列 manifest，但不會刪除${articles}；原系列文章會成為無系列文章。`;
+  return `確定刪除系列「${title}」？這會移除系列設定，但不會刪除${articles}；原系列文章會成為無系列文章。`;
 }
 
 export function addSeriesSection(manifest: AdminSeriesManifest): AdminSeriesManifest {

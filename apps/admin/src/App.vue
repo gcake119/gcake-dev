@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import type {
   ApiErrorResponse,
   DeploymentObservation,
@@ -13,8 +13,9 @@ import type {
   PublicationTarget,
   PublicationTargetState,
 } from '@gcake/admin-contract';
+import { contentStatusLabel, publicationStatusLabel, previewStatusLabel, safeMessage } from './workflow-presentation';
 import { deploymentPresentation } from './deployment';
-import { renderImmediatePreview, type EditorView } from './editor-state';
+import { renderImmediatePreview, nextEditorView, editorViewLabel, type EditorView } from './editor-state';
 import { removedImageUrls, removedMediaRecords } from './media-cleanup';
 import { applyTaipeiSchedule, readScheduleFields, schedulePresentation } from './scheduling';
 import {
@@ -36,6 +37,7 @@ import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePos
 import { requestSlugSuggestion } from './slug-suggestion';
 
 import ReleaseQueuePanel from './ReleaseQueuePanel.vue';
+import { iconPaths } from '../../../src/components/icon-paths';
 import { reviewManualPublication } from './manual-release';
 import type { QueueView } from '@gcake/admin-contract';
 import { releaseEstimate, eligibilityReason, seriesProgress } from './release-presentation';
@@ -57,6 +59,46 @@ const deployment = ref<DeploymentObservation>();
 const message = ref('');
 const dark = ref(false);
 const workspaceMode = ref<WorkspaceMode>('overview');
+const overviewSection = ref<'articles' | 'series' | 'publishing'>('articles');
+const createPostOpen = ref(false);
+const createSeriesOpen = ref(false);
+const saving = ref(false);
+const savedAt = ref('');
+const pendingOverview = ref<'articles' | 'series' | 'publishing'>();
+const overviewScroll = ref(0);
+const recoveryAction = ref('copy');
+const mediaActions = ref<Record<string, string>>({});
+const articleDirty = computed(() => Boolean(selectedPost.value && (
+  !selectedPost.value.baseBlobSha || editorSource.value !== selectedPost.value.source ||
+  editorTitle.value !== selectedPost.value.title || editorSlug.value !== selectedPost.value.slug
+)));
+async function finishOverview(section: 'articles' | 'series' | 'publishing'): Promise<void> {
+  seriesDirty.value = false;
+  selectedSeries.value = undefined;
+  seriesManifest.value = undefined;
+  pendingOverview.value = undefined;
+  workspaceMode.value = 'overview';
+  overviewSection.value = section;
+  await nextTick();
+  window.scrollTo({ top: overviewScroll.value });
+}
+async function selectOverview(section: 'articles' | 'series' | 'publishing'): Promise<void> {
+  const dirty = workspaceMode.value === 'post' ? articleDirty.value : workspaceMode.value === 'series' && seriesDirty.value;
+  if (dirty) { pendingOverview.value = section; return; }
+  await finishOverview(section);
+}
+async function runMediaAction(record: MediaRecord): Promise<void> {
+  const action = mediaActions.value[record.id];
+  if (action === 'copy') await copyMediaUrl(record);
+  else if (action === 'usage') await inspectUsage(record);
+  else if (action === 'replace') { selectedMedia.value = record; replaceElement.value?.click(); }
+  else if (action === 'delete') await deleteSelectedMedia(record);
+}
+function resolveRecovery(): void {
+  if (recoveryAction.value === 'repository') useRepositoryVersion();
+  else if (recoveryAction.value === 'merge') startManualMerge();
+  else void copyOldDraft();
+}
 const selectedPost = ref<PostSource>();
 const selectedSeries = ref<SeriesSource>();
 const seriesManifest = ref<AdminSeriesManifest>();
@@ -86,10 +128,13 @@ const formalPreview = ref<PreviewJob>();
 const formalPreviewMessage = ref('');
 const publicationStates = ref<readonly PublicationTargetState[]>([]);
 const publicationMessage = ref('');
+const recoveryPost = ref<PostSource>();
 const recoveryConflict = ref<{ draft: string; repository: string; detail?: string }>();
 const sourceElement = ref<HTMLTextAreaElement>();
 const previewElement = ref<HTMLElement>();
 const mediaOpen = ref(false);
+const mediaDialogElement = ref<HTMLElement>();
+const mediaButtonElement = ref<HTMLButtonElement>();
 const media = ref<readonly MediaRecord[]>([]);
 const mediaSearch = ref('');
 const mediaMessage = ref('');
@@ -111,9 +156,6 @@ const activeSchedule = computed(() => {
     return undefined;
   }
 });
-const nextViewLabel = computed(() => editorView.value === 'markdown'
-  ? '切換至預覽'
-  : editorView.value === 'rendered' ? '切換至分割' : '切換至 Markdown');
 const filteredPosts = computed(() => filterPostsBySeries(posts.value, seriesFilter.value));
 const availableStandalonePosts = computed(() => {
   const candidates = standalonePosts(posts.value, series.value);
@@ -166,8 +208,34 @@ async function loadMedia(): Promise<void> {
 }
 
 async function openMediaLibrary(): Promise<void> {
+  mediaMessage.value = '';
   mediaOpen.value = true;
+  await nextTick();
+  mediaDialogElement.value?.focus();
   await loadMedia();
+}
+
+function closeMediaLibrary(): void {
+  if (!mediaOpen.value) return;
+  mediaOpen.value = false;
+  mediaButtonElement.value?.focus();
+}
+
+function onMediaKeydown(event: KeyboardEvent): void {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeMediaLibrary();
+  } else if (event.key === 'Tab') {
+    const controls = [...(mediaDialogElement.value?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not([type="file"]), select, a[href], summary') ?? [])];
+    const visibleControls = controls.filter(control => control.getClientRects().length > 0);
+    const first = visibleControls[0];
+    const last = visibleControls.at(-1);
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === mediaDialogElement.value)) {
+      event.preventDefault(); last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault(); first?.focus();
+    }
+  }
 }
 
 async function imageDimensions(file: File): Promise<{ file: File; width: number; height: number }> {
@@ -215,7 +283,7 @@ async function uploadSelectedFile(file: File, replaceId?: string): Promise<Media
     if (!response.ok) throw new Error((result as ApiErrorResponse).error.message);
     const uploaded = result as MediaRecord;
     selectedMedia.value = uploaded;
-    mediaMessage.value = replaceId ? '替代圖片已建立新網址；舊網址仍保留。' : '媒體已上傳，可以插入 Markdown。';
+    mediaMessage.value = replaceId ? '替代圖片已建立新網址；舊網址仍保留。' : '圖片已上傳，可以插入文章。';
     await loadMedia();
     return uploaded;
   } catch (error) {
@@ -251,8 +319,8 @@ function insertMedia(record: MediaRecord): void {
   const alt = record.key.split('/').pop()?.replace(/^[^-]+-|\.[^.]+$/g, '') ?? '圖片';
   const markdown = `![${alt}](${record.url})`;
   editorSource.value = `${editorSource.value}${editorSource.value.endsWith('\n') ? '' : '\n\n'}${markdown}\n`;
-  mediaMessage.value = '已插入 Markdown；文章 alt 文字仍以 Markdown 為準。';
-  mediaOpen.value = false;
+  mediaMessage.value = '圖片已插入文章，可在原文修改圖片說明。';
+  closeMediaLibrary();
 }
 
 async function copyMediaUrl(record: MediaRecord): Promise<void> {
@@ -285,7 +353,7 @@ async function requestMediaDeletion(record: MediaRecord): Promise<{ deleted: boo
 }
 
 async function deleteSelectedMedia(record: MediaRecord): Promise<void> {
-  if (!session.value.authenticated || !window.confirm(`確定刪除 ${record.key}？`)) return;
+  if (!session.value.authenticated || !window.confirm(`確定刪除「${record.key.split('/').pop()}」？`)) return;
   const result = await requestMediaDeletion(record);
   mediaMessage.value = result.deleted
     ? '未使用媒體已刪除。'
@@ -306,26 +374,42 @@ function initializeTheme(): void {
   document.documentElement.dataset.theme = dark.value ? 'dark' : 'light';
 }
 
-function cycleEditorView(): void {
-  editorView.value = editorView.value === 'markdown'
-    ? 'rendered'
-    : editorView.value === 'rendered' ? 'split' : 'markdown';
+let sourcePosition = { start: 0, end: 0, scroll: 0 };
+let previewScroll = 0;
+async function setEditorView(view: EditorView): Promise<void> {
+  if (sourceElement.value && editorView.value !== 'rendered') sourcePosition = {
+    start: sourceElement.value.selectionStart, end: sourceElement.value.selectionEnd, scroll: sourceElement.value.scrollTop,
+  };
+  if (previewElement.value && editorView.value !== 'markdown') previewScroll = previewElement.value.scrollTop;
+  editorView.value = view;
+  await nextTick();
+  if (sourceElement.value && view !== 'rendered') {
+    sourceElement.value.setSelectionRange(sourcePosition.start, sourcePosition.end);
+    sourceElement.value.scrollTop = sourcePosition.scroll;
+  }
+  if (previewElement.value && view !== 'markdown') previewElement.value.scrollTop = previewScroll;
 }
 
 async function openPost(slug: string): Promise<void> {
+  if (workspaceMode.value === 'overview') overviewScroll.value = window.scrollY;
   try {
     const post = await readJson<PostSource>(`/api/v1/posts/${slug}`);
     selectedPost.value = post;
+    savedAt.value = '';
     editorTitle.value = post.title;
     editorSlug.value = post.slug;
+    sourcePosition = { start: 0, end: 0, scroll: 0 };
+    previewScroll = 0;
     editorSlugSuggestionMessage.value = '';
     const key = `gcake:draft:gcake119/gcake-dev:${slug}:${post.baseBlobSha}`;
     const draft = localStorage.getItem(key);
     const prefix = `gcake:draft:gcake119/gcake-dev:${slug}:`;
     const staleKey = Object.keys(localStorage).find((candidate) => candidate.startsWith(prefix) && candidate !== key);
     const staleDraft = staleKey ? localStorage.getItem(staleKey) : null;
+    recoveryPost.value = staleDraft ? post : undefined;
+    recoveryAction.value = 'copy';
     recoveryConflict.value = staleDraft
-      ? { draft: staleDraft, repository: post.source, detail: '瀏覽器草稿來自較舊的 Git 修訂版。' }
+      ? { draft: staleDraft, repository: post.source, detail: '這份暫存來自較舊的文章版本。' }
       : undefined;
     editorSource.value = draft ?? post.source;
     const schedule = readScheduleFields(editorSource.value);
@@ -334,10 +418,13 @@ async function openPost(slug: string): Promise<void> {
     splitRatio.value = Number(localStorage.getItem('gcake:editor:split-ratio') ?? 50);
     syncScroll.value = localStorage.getItem('gcake:editor:sync-scroll') !== 'false';
     editorMessage.value = staleDraft
-      ? 'GitHub 內容已有更新；未自動套用舊草稿。請選擇復原方式。'
-      : draft ? '已復原這個修訂版的瀏覽器草稿；尚未儲存至 Git。' : '';
+      ? '文章內容已有更新；尚未套用舊暫存。請選擇復原方式。'
+      : draft ? '已復原這份暫存；尚未儲存文章。' : '';
     await loadPublicationStates(post);
     workspaceMode.value = 'post';
+    createPostOpen.value = false;
+    await nextTick();
+    window.scrollTo({ top: 0 });
   } catch (error) {
     editorMessage.value = error instanceof Error ? error.message : '無法開啟文章。';
   }
@@ -348,17 +435,20 @@ function createPost(): void {
   const title = newPostTitle.value.trim();
   const baseCommitSha = posts.value[0]?.commitSha ?? series.value[0]?.baseCommitSha;
   if (!title || !/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
-    message.value = '請輸入標題與小寫英文、數字或連字號組成的 slug。';
+    message.value = '請輸入標題，網址代稱只使用小寫英文、數字與連字號。';
     return;
   }
   if (posts.value.some((post) => post.slug === slug)) {
-    message.value = '這個 slug 已經存在。';
+    message.value = '這個網址代稱已經存在，請換一個。';
     return;
   }
   if (!baseCommitSha) {
-    message.value = '目前無法確認 Git 基礎修訂版，請重新載入。';
+    message.value = '目前無法確認文章版本，請重新載入。';
     return;
   }
+  recoveryPost.value = undefined;
+  recoveryConflict.value = undefined;
+  recoveryAction.value = 'copy';
   const source = createStandaloneSource(title);
   selectedPost.value = {
     slug,
@@ -375,7 +465,7 @@ function createPost(): void {
   editorSlug.value = slug;
   editorSlugSuggestionMessage.value = '';
   editorSource.value = source;
-  editorMessage.value = '已建立無系列文章草稿；儲存至 Git 後才會寫入儲存庫。';
+  editorMessage.value = '已建立無系列文章草稿；按下「儲存文章」才會保存。';
   scheduleDate.value = '';
   scheduleTime.value = '09:00';
   publicationStates.value = [];
@@ -395,10 +485,10 @@ async function generateNewPostSlug(): Promise<void> {
     slugSuggestionMessage.value = '請先輸入文章標題。';
   } else if (result.kind === 'suggested') {
     newPostSlug.value = result.slug;
-    slugSuggestionMessage.value = '已填入 slug 建議；你仍可手動修改，尚未儲存。';
+    slugSuggestionMessage.value = '已填入建議的網址代稱；可以自行修改，尚未儲存。';
   } else {
     newPostSlug.value = currentSlug;
-    slugSuggestionMessage.value = '目前無法產生 slug，可以手動輸入。';
+    slugSuggestionMessage.value = '目前無法提供網址代稱建議，可以自行輸入。';
   }
 }
 
@@ -415,10 +505,10 @@ async function generateEditorSlug(): Promise<void> {
     editorSlugSuggestionMessage.value = '請先輸入文章標題。';
   } else if (result.kind === 'suggested') {
     editorSlug.value = result.slug;
-    editorSlugSuggestionMessage.value = '已填入 slug 建議；你仍可手動修改，尚未儲存。';
+    editorSlugSuggestionMessage.value = '已填入建議的網址代稱；可以自行修改，尚未儲存。';
   } else {
     editorSlug.value = currentSlug;
-    editorSlugSuggestionMessage.value = '目前無法產生 slug，可以手動輸入。';
+    editorSlugSuggestionMessage.value = '目前無法提供網址代稱建議，可以自行輸入。';
   }
 }
 
@@ -454,13 +544,17 @@ async function publicationOperation(target: PublicationTarget, operation: Public
 }
 
 async function openSeries(slug: string): Promise<void> {
+  if (workspaceMode.value === 'overview') overviewScroll.value = window.scrollY;
   try {
     const source = await readJson<SeriesSource>(`/api/v1/series/${slug}`);
     selectedSeries.value = source;
     seriesManifest.value = parseSeriesManifest(source.source);
     seriesDirty.value = false;
-    seriesMessage.value = '排序只存在目前畫面；按下儲存後才會寫入 Git 的系列 YAML。';
+    seriesMessage.value = '';
     workspaceMode.value = 'series';
+    createSeriesOpen.value = false;
+    await nextTick();
+    window.scrollTo({ top: 0 });
   } catch (error) {
     seriesMessage.value = error instanceof Error ? error.message : '無法開啟系列。';
   }
@@ -468,7 +562,7 @@ async function openSeries(slug: string): Promise<void> {
 
 async function createSeries(): Promise<void> {
   if (!session.value.authenticated || !repositoryRevision.value) {
-    message.value = '目前沒有可用的 Git 修訂版，請重新整理後再試。';
+    message.value = '目前無法確認內容版本，請重新整理後再試。';
     return;
   }
   const manifest = createSeriesManifest(newSeriesTitle.value, newSeriesSlug.value);
@@ -489,18 +583,18 @@ async function createSeries(): Promise<void> {
   newSeriesSlug.value = '';
   await loadAdmin();
   await openSeries(slug);
-  seriesMessage.value = `空系列已建立（${result.commitSha ?? '新修訂版'}），可以繼續新增章節或文章。`;
+  seriesMessage.value = '空系列已建立，可以繼續新增章節或文章。';
 }
 
 function editSeriesMetadata(patch: Partial<Pick<AdminSeriesManifest, 'title' | 'slug'>>): void {
   if (!seriesManifest.value) return;
   seriesManifest.value = updateSeriesMetadata(seriesManifest.value, patch);
   seriesDirty.value = true;
-  seriesMessage.value = '系列名稱或 slug 尚未儲存；slug 儲存後會同步 rename manifest。';
+  seriesMessage.value = '系列設定尚未儲存；修改網址代稱會一併更新系列網址。';
 }
 
 function closeWorkspace(): void {
-  workspaceMode.value = 'overview';
+  void selectOverview(overviewSection.value);
 }
 
 function movePost(sectionId: string, index: number, delta: -1 | 1): void {
@@ -516,7 +610,7 @@ function addPost(sectionId: string, slug: string): void {
   if (!post) return;
   seriesManifest.value = addSeriesPost(seriesManifest.value, sectionId, { slug, status: post.status });
   seriesDirty.value = true;
-  seriesMessage.value = `已將「${post.title}」加入系列；只有系列 YAML 會在儲存時更新。`;
+  seriesMessage.value = `已將「${post.title}」加入系列；儲存時只更新系列設定。`;
 }
 
 function eventValue(event: Event): string {
@@ -524,10 +618,10 @@ function eventValue(event: Event): string {
 }
 
 function addSection(): void {
-  if (!seriesManifest.value) return;
+  if (!seriesManifest.value || selectedSeriesStarted.value || saving.value) return;
   seriesManifest.value = addSeriesSection(seriesManifest.value);
   seriesDirty.value = true;
-  seriesMessage.value = '已新增空白章節；請確認章節 ID、標題與狀態後儲存。';
+  seriesMessage.value = '已新增空白章節；請確認章節代稱、標題與狀態後儲存。';
 }
 
 function editSection(sectionId: string, patch: Partial<Pick<AdminSeriesSection, 'id' | 'title' | 'status'>>): void {
@@ -577,7 +671,7 @@ function dropPost(sectionId: string, targetIndex: number): void {
 function applySchedule(): void {
   try {
     editorSource.value = applyTaipeiSchedule(editorSource.value, scheduleDate.value, scheduleTime.value);
-    editorMessage.value = `已把排程寫入編輯內容：${scheduleDate.value} ${scheduleTime.value}（Asia／Taipei）。尚未儲存至 Git。`;
+    editorMessage.value = `已把排程寫入編輯內容：${scheduleDate.value} ${scheduleTime.value}（台北時間）。尚未儲存文章。`;
   } catch {
     editorMessage.value = '排程日期或時間無效，請重新確認。';
   }
@@ -585,7 +679,7 @@ function applySchedule(): void {
 
 async function requestFormalPreview(): Promise<void> {
   if (!selectedPost.value || !session.value.authenticated) return;
-  formalPreviewMessage.value = '正在以指定 Git 修訂版建立隔離的 Astro 預覽……';
+  formalPreviewMessage.value = '正在準備目前內容的網站預覽…';
   try {
     const response = await fetch('/api/v1/previews', {
       method: 'POST', credentials: 'same-origin',
@@ -599,10 +693,10 @@ async function requestFormalPreview(): Promise<void> {
     if (!response.ok) throw new Error((result as ApiErrorResponse).error.message);
     formalPreview.value = result as PreviewJob;
     formalPreviewMessage.value = formalPreview.value.status === 'ready'
-      ? `正式預覽已完成，將於 ${new Date(formalPreview.value.expiresAt).toLocaleString('zh-TW')} 到期。`
-      : `正式預覽狀態：${formalPreview.value.status}`;
+      ? `網站預覽已完成，將於 ${new Date(formalPreview.value.expiresAt).toLocaleString('zh-TW')} 到期。`
+      : `網站預覽：${previewStatusLabel(formalPreview.value.status)}`;
   } catch (error) {
-    formalPreviewMessage.value = `${error instanceof Error ? error.message : '正式預覽失敗。'} 請確認基礎修訂版仍可重建，再重試。`;
+    formalPreviewMessage.value = `${error instanceof Error ? error.message : '正式預覽失敗。'} 請重新載入文章後再試。`;
   }
 }
 
@@ -612,18 +706,19 @@ async function publishNow():Promise<void> {
   try {
     const post=selectedPost.value;
     const result=await reviewManualPublication({slug:post.slug,status:post.status,saved:!!post.baseBlobSha,revision:post.baseCommitSha,
-      dirty:editorSource.value!==post.source || editorTitle.value!==post.title},async(path,body)=>{
+      dirty:articleDirty.value},async(path,body)=>{
       if(!session.value.authenticated)throw new Error('請先登入。');
       const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-csrf-token':session.value.csrfToken},body:JSON.stringify(body)});
       const data=await response.json();if(!response.ok)throw new Error(data.error?.message??'發布結果尚未確認，請核對原紀錄。');return data;
     },async(message)=>window.confirm(message));
-    if(result){await openPost(post.slug);editorMessage.value=`${result.state==='awaiting-verification'?'已提交目前內容，等待網站部署與公開驗證。':result.state==='verified-public'?'原發布已確認公開。':'原發布結果仍需核對，請不要重新發布。'} 紀錄：${result.id}`;}
+    if(result){await openPost(post.slug);editorMessage.value=`${result.state==='awaiting-verification'?'已提交目前內容，等待網站更新與公開確認。':result.state==='verified-public'?'原發布已確認公開。':'原發布結果仍需核對，請不要重新發布。'}`;}
   } catch(error){editorMessage.value=error instanceof Error?error.message:'發布結果尚未確認，請核對原紀錄。';}
   finally {manualPublishing.value=false;}
 }
 
 async function finalizePost(): Promise<void> {
-  if (!session.value.authenticated || !selectedPost.value?.baseBlobSha) return;
+  if (!session.value.authenticated || !selectedPost.value?.baseBlobSha || saving.value) return;
+  saving.value = true;
   try {
     const response = await fetch('/api/v1/releases/finalize', {
       method: 'POST',
@@ -644,14 +739,16 @@ async function finalizePost(): Promise<void> {
     await openPost(selectedPost.value.slug);
     const queue = await readJson<QueueView>('/api/v1/releases');
     releaseQueue.value = queue;
-    editorMessage.value = '已確認定稿並儲存 Git；尚未代表公開。';
+    editorMessage.value = '文章已儲存並定稿；公開結果仍需另外確認。';
   } catch (e) {
     editorMessage.value = e instanceof Error ? e.message : '定稿未完成。';
-  }
+  } finally { saving.value = false; }
 }
 
 async function saveSeries(): Promise<void> {
-  if (!selectedSeries.value || !seriesManifest.value || !session.value.authenticated) return;
+  if (!selectedSeries.value || !seriesManifest.value || !session.value.authenticated || saving.value) return;
+  saving.value = true;
+  try {
   const response = await fetch(`/api/v1/series/${selectedSeries.value.slug}`, {
     method: 'PUT', credentials: 'same-origin',
     headers: { 'content-type': 'application/json', 'x-csrf-token': session.value.csrfToken },
@@ -670,7 +767,9 @@ async function saveSeries(): Promise<void> {
   seriesDirty.value = false;
   await loadAdmin();
   await openSeries(savedSlug);
-  seriesMessage.value = `系列 YAML 已儲存至 Git（${result.commitSha ?? '新修訂版'}）；尚未代表公開部署完成。`;
+  seriesMessage.value = '系列已儲存；網站更新與公開結果仍需另外確認。';
+  } catch { seriesMessage.value = '系列尚未儲存，修改仍保留在這裡。請稍後再試。'; }
+  finally { saving.value = false; }
 }
 
 async function deleteSeries(): Promise<void> {
@@ -695,21 +794,29 @@ async function deleteSeries(): Promise<void> {
   seriesManifest.value = undefined;
   workspaceMode.value = 'overview';
   await loadAdmin();
-  message.value = `系列已刪除（${result.commitSha ?? '新修訂版'}）；文章與 Markdown 均保留，現在會顯示為無系列文章。`;
+  message.value = '系列已刪除；文章均保留，現在會顯示為無系列文章。';
 }
 
-function useRepositoryVersion(): void {
-  if (!recoveryConflict.value) return;
-  editorSource.value = recoveryConflict.value.repository;
+async function useRepositoryVersion(): Promise<void> {
+  if (!recoveryConflict.value || !selectedPost.value) return;
+  await openPost(selectedPost.value.slug);
+  if (recoveryPost.value) {
+    selectedPost.value = recoveryPost.value;
+    editorSource.value = recoveryPost.value.source;
+    editorTitle.value = recoveryPost.value.title;
+    editorSlug.value = recoveryPost.value.slug;
+  }
   recoveryConflict.value = undefined;
-  editorMessage.value = '已保留 GitHub 的較新版本。';
+  editorMessage.value = '已載入較新的內容。';
 }
 
 function startManualMerge(): void {
   if (!recoveryConflict.value) return;
+  if (!recoveryPost.value) { editorMessage.value = '較新的內容尚未載入，請先複製目前暫存，再重新開啟文章。'; return; }
+  selectedPost.value = recoveryPost.value;
   editorSource.value = `${recoveryConflict.value.repository}\n\n<!-- 舊草稿，請手動合併 -->\n${recoveryConflict.value.draft}`;
   recoveryConflict.value = undefined;
-  editorMessage.value = '已建立手動合併內容；尚未儲存至 Git。';
+  editorMessage.value = '已將兩份內容放入編輯區，請整理後儲存文章。';
 }
 
 async function copyOldDraft(): Promise<void> {
@@ -719,17 +826,18 @@ async function copyOldDraft(): Promise<void> {
 }
 
 async function saveToGit(): Promise<void> {
-  if (!selectedPost.value || !session.value.authenticated) return;
+  if (!selectedPost.value || !session.value.authenticated || saving.value) return;
+  saving.value = true;
   try {
     const wasNew = !selectedPost.value.baseBlobSha;
     const savedSlug = editorSlug.value.trim();
     const savedTitle = editorTitle.value.trim();
     if (!savedTitle || !/^[a-z0-9][a-z0-9-]*$/.test(savedSlug)) {
-      editorMessage.value = '請輸入標題與小寫英文、數字或連字號組成的 slug。';
+      editorMessage.value = '請輸入標題，網址代稱只使用小寫英文、數字與連字號。';
       return;
     }
     if (savedSlug !== selectedPost.value.slug && posts.value.some((post) => post.slug === savedSlug)) {
-      editorMessage.value = '這個 slug 已經存在。';
+      editorMessage.value = '這個網址代稱已經存在，請換一個。';
       return;
     }
     const savedSource = updatePostTitle(editorSource.value, savedTitle);
@@ -774,15 +882,18 @@ async function saveToGit(): Promise<void> {
     });
     const result = await response.json() as { commitSha?: string; error?: { message?: string; details?: unknown } };
     if (response.status === 409) {
+      try { recoveryPost.value = await readJson<PostSource>(`/api/v1/posts/${selectedPost.value.slug}`); } catch { recoveryPost.value = undefined; }
       recoveryConflict.value = {
         draft: editorSource.value,
-        repository: selectedPost.value.source,
+        repository: recoveryPost.value?.source ?? selectedPost.value.source,
         detail: result.error?.message ?? 'GitHub 內容已更新。',
       };
-      editorMessage.value = '偵測到 Git 衝突，沒有覆蓋較新的版本。';
+      editorMessage.value = '文章已有較新的內容，尚未覆蓋。請選擇保留或整理內容。';
       return;
     }
     if (!response.ok) throw new Error(result.error?.message ?? '無法儲存至 Git。');
+    const savedDraftKey = `gcake:draft:gcake119/gcake-dev:${selectedPost.value.slug}:${selectedPost.value.baseBlobSha}`;
+    localStorage.removeItem(savedDraftKey);
     seriesDirty.value = false;
     const cleanupResults = await Promise.all(cleanupCandidates.map(async (record) => ({
       record,
@@ -800,16 +911,18 @@ async function saveToGit(): Promise<void> {
       await loadAdmin();
       await openPost(savedSlug);
     }
-    editorMessage.value = `已儲存至 Git（${result.commitSha ?? '新修訂版'}）；${cleanupMessage}公開部署仍需另外確認。`;
+    if (!wasNew && !renaming) await openPost(savedSlug);
+    savedAt.value = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+    editorMessage.value = `文章已儲存。${cleanupMessage}公開結果仍需另外確認。`;
     if (mediaOpen.value) await loadMedia();
   } catch (error) {
-    editorMessage.value = error instanceof Error ? error.message : '無法儲存至 Git。';
-  }
+    editorMessage.value = error instanceof Error ? error.message : '無法儲存文章。';
+  } finally { saving.value = false; }
 }
 
 async function requestDelete(): Promise<void> {
   if (!selectedPost.value || !session.value.authenticated) return;
-  if (!window.confirm(`確定要刪除 ${selectedPost.value.slug}？這不會刪除 R2 媒體。`)) return;
+  if (!window.confirm(`確定要刪除「${selectedPost.value.title}」？已上傳的圖片會保留。`)) return;
   const response = await fetch(`/api/v1/posts/${selectedPost.value.slug}`, {
     method: 'DELETE',
     credentials: 'same-origin',
@@ -822,7 +935,7 @@ async function requestDelete(): Promise<void> {
   });
   const result = await response.json() as { error?: { message?: string; details?: { seriesReferences?: string[] } } };
   editorMessage.value = response.ok
-    ? '文章已從 Git 刪除；R2 媒體未被刪除。'
+    ? '文章已刪除；已上傳的圖片仍保留。'
     : `${result.error?.message ?? '無法刪除文章。'}${result.error?.details?.seriesReferences?.length ? ` 引用系列：${result.error.details.seriesReferences.join('、')}` : ''}`;
 }
 
@@ -830,7 +943,7 @@ function autosaveDraft(): void {
   if (!selectedPost.value) return;
   const key = `gcake:draft:gcake119/gcake-dev:${selectedPost.value.slug}:${selectedPost.value.baseBlobSha}`;
   localStorage.setItem(key, editorSource.value);
-  editorMessage.value = '草稿只儲存在這個瀏覽器，尚未儲存至 Git。';
+  editorMessage.value = '已暫存到這台裝置的目前瀏覽器；尚未儲存文章。';
 }
 
 function resizeSplit(delta: number): void {
@@ -887,7 +1000,7 @@ onMounted(() => {
 <template>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Publishing Admin 首頁">
+      <a class="brand" href="#articles" aria-label="Publishing Admin 首頁" @click.prevent="selectOverview('articles')">
         <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
           <rect class="brand-mark__tile" x="2" y="2" width="28" height="28" rx="7" />
           <g class="brand-mark__glyph">
@@ -897,208 +1010,244 @@ onMounted(() => {
           <path class="brand-mark__tail" d="M8.5 20.7c1.45 2.55 3.75 3.9 6.65 3.9 3.05 0 5.35-1.45 6.35-4.1" />
           <circle class="brand-mark__dot" cx="23.4" cy="7.05" r="2.35" />
         </svg>
-        <span><strong>雞蛋糕的開發筆記</strong><small>Publishing Admin</small></span>
+        <span>
+          <strong>雞蛋糕的開發筆記</strong>
+          <small>內容管理</small>
+        </span>
       </a>
+      <nav v-if="state === 'ready'" aria-label="工作區" class="workspace-tabs">
+        <a href="#articles" :aria-current="overviewSection === 'articles' ? 'page' : undefined" @click.prevent="selectOverview('articles')">文章</a>
+        <a href="#series" :aria-current="overviewSection === 'series' ? 'page' : undefined" @click.prevent="selectOverview('series')">系列</a>
+        <a href="#publishing" :aria-current="overviewSection === 'publishing' ? 'page' : undefined" @click.prevent="selectOverview('publishing')">發布管理</a>
+      </nav>
       <button class="theme-button" type="button" :aria-label="dark ? '切換至明亮主題' : '切換至暗色主題'" @click="toggleTheme">
-        <svg v-if="dark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" /></svg>
-        <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z" /></svg>
+        <svg v-if="dark" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path :d="iconPaths.sun"/>
+        </svg>
+        <svg v-else viewBox="0 0 24 24" aria-hidden="true">
+          <path :d="iconPaths.moon"/>
+        </svg>
       </button>
     </header>
-
     <main class="main-content">
       <section v-if="state === 'loading'" class="center-card" aria-live="polite">
-        <p class="eyebrow">正在確認權限</p>
-        <h1>載入管理介面</h1>
-        <p class="muted">只會向伺服器確認登入狀態，不會在瀏覽器保存 GitHub 權杖。</p>
+        <h1>正在開啟內容工作台</h1>
+        <p>請稍候，正在載入文章與系列。</p>
       </section>
-
       <section v-else-if="state === 'signed-out'" class="center-card">
-        <p class="eyebrow">僅限網站擁有者</p>
-        <h1>先以 GitHub 登入</h1>
-        <p class="lead">登入後才能讀取文章、系列與部署狀態。未授權帳號無法看到儲存庫內容。</p>
+        <h1>登入內容工作台</h1>
+        <p>登入後即可管理文章、系列與發布進度。</p>
         <a class="primary-action" href="/api/v1/auth/login">使用 GitHub 登入</a>
       </section>
-
       <section v-else-if="state === 'error'" class="center-card" role="alert">
-        <p class="eyebrow error-text">載入失敗</p>
-        <h1>目前無法開啟管理介面</h1>
-        <p class="lead">{{ message }}</p>
-        <button class="primary-action" type="button" @click="loadAdmin">重新載入</button>
+        <h1>目前無法開啟工作台</h1>
+        <p>{{ safeMessage(message, '載入未完成，請重新整理後再試。') }}</p>
+        <button type="button" class="primary-action" @click="loadAdmin">重新載入</button>
       </section>
-
       <template v-else>
-        <section v-if="workspaceMode === 'overview'" class="content-overview">
-          <div class="hero">
-            <div>
-              <p class="eyebrow">內容工作台</p>
-              <h1>嗨，{{ session.authenticated ? session.user.login : '' }}</h1>
-              <p class="lead">選擇一篇文章或一個系列開始工作。</p>
-            </div>
-            <div v-if="deploymentStatus" class="status-card" :data-state="deployment?.state">
-              <span class="status-dot" aria-hidden="true"></span>
-              <div>
-                <strong>{{ deploymentStatus.git }}</strong>
-                <span>{{ deploymentStatus.deployment }}</span>
-              </div>
-            </div>
+        <section v-if="pendingOverview" class="leave-confirmation" role="alert" aria-labelledby="leave-title">
+          <h2 id="leave-title">目前修改尚未儲存</h2>
+          <p>留在這裡可以繼續編輯；捨棄修改後才會離開。</p>
+          <div role="group" aria-label="離開編輯確認" class="context-actions">
+            <button type="button" class="secondary-action" @click="pendingOverview = undefined">繼續編輯</button>
+            <button type="button" class="secondary-action danger-action" @click="finishOverview(pendingOverview)">捨棄修改並離開</button>
           </div>
-
-          <ReleaseQueuePanel
-            v-if="session.authenticated"
-            :csrf-token="session.csrfToken"
-            @loaded="releaseQueue = $event"
-          />
-
-          <div class="content-grid">
-            <article class="panel posts-panel">
-            <div class="panel-heading">
+        </section>
+        <ReleaseQueuePanel v-if="session.authenticated" v-show="workspaceMode === 'overview' && overviewSection !== 'series'"
+          :csrf-token="session.csrfToken" :compact="overviewSection !== 'publishing'" :series-titles="Object.fromEntries(series.map(item => [item.slug, item.title]))"
+          @loaded="releaseQueue = $event" @view-publishing="selectOverview('publishing')" />
+        <section v-if="workspaceMode === 'overview'" class="content-overview">
+          <article v-if="overviewSection === 'articles'" class="panel posts-panel">
+            <header class="panel-heading">
               <div>
-                <p class="eyebrow">文章</p>
-                <h2>內容清單</h2>
+                <p class="eyebrow">內容工作台</p>
+                <h1>文章</h1>
+                <p class="muted">{{ filteredPosts.length }} 篇文章</p>
               </div>
-              <span class="count">{{ posts.length }} 篇</span>
-            </div>
-            <form class="new-post-form" @submit.prevent="createPost">
-              <label><span>文章標題</span><input v-model="newPostTitle" type="text" required></label>
-              <label><span>Slug</span><input v-model="newPostSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required></label>
-              <button type="button" class="secondary-action" :disabled="slugSuggestionLoading" @click="generateNewPostSlug">產生 slug</button>
-              <button class="secondary-action" type="submit">新增無系列文章</button>
+              <div v-if="!createPostOpen" role="group" aria-label="文章清單操作">
+                <button type="button" class="primary-action" @click="createPostOpen = true">新增文章</button>
+              </div>
+            </header>
+            <form v-if="createPostOpen" class="creation-form new-post-form" @submit.prevent="createPost">
+              <label>
+                <span>文章標題</span>
+                <input v-model="newPostTitle" type="text" required>
+              </label>
+              <label>
+                <span>網址代稱</span>
+                <input v-model="newPostSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required>
+                <small>文章網址最後一段，使用小寫英文、數字與連字號。</small>
+              </label>
+              <details>
+                <summary>需要網址建議？</summary>
+                <button type="button" class="secondary-action" :disabled="slugSuggestionLoading" @click="generateNewPostSlug">建議網址代稱</button>
+                <p v-if="slugSuggestionMessage" role="status">{{ safeMessage(slugSuggestionMessage) }}</p>
+              </details>
+              <div role="group" aria-label="新增文章操作" class="context-actions">
+                <button class="primary-action" type="submit">建立無系列草稿</button>
+                <button class="secondary-action" type="button" @click="createPostOpen = false">取消</button>
+              </div>
             </form>
-            <p v-if="slugSuggestionMessage" class="slug-suggestion-message" aria-live="polite">{{ slugSuggestionMessage }}</p>
             <label class="series-filter">
-              <span>系列篩選</span>
+              <span>依系列篩選</span>
               <select v-model="seriesFilter">
                 <option value="all">全部文章</option>
                 <option value="standalone">無系列</option>
-                <option v-for="item in series" :key="item.slug" :value="item.slug">{{ item.slug }}</option>
+                <option v-for="item in series" :key="item.slug" :value="item.slug">{{ item.title }}</option>
               </select>
             </label>
-            <p v-if="message" class="editor-message" aria-live="polite">{{ message }}</p>
+            <p v-if="message" class="editor-message" aria-live="polite">{{ safeMessage(message) }}</p>
             <ul v-if="filteredPosts.length" class="item-list">
               <li v-for="post in filteredPosts" :key="post.slug">
                 <button class="post-button" type="button" @click="openPost(post.slug)">
                   <span>
                     <strong>{{ post.title }}</strong>
-                    <small>{{ post.series.length ? post.series.map((item) => item.title).join('、') : '無系列' }} · {{ post.path }}</small>
+                    <small>{{ post.series.length ? post.series.map(item => item.title).join('、') : '無系列' }}</small>
                   </span>
-                  <span class="badge">{{ post.status }}</span>
+                  <span class="badge">{{ contentStatusLabel(post.status) }}</span>
                 </button>
               </li>
             </ul>
-            <p v-else class="empty">這個篩選條件目前沒有文章。</p>
-            </article>
-
-            <aside class="panel">
-            <div class="panel-heading">
+            <p v-else class="empty">這個篩選條件目前沒有文章。可以改選其他系列，或新增文章。</p>
+          </article>
+          <article v-if="overviewSection === 'series'" class="panel">
+            <header class="panel-heading">
               <div>
-                <p class="eyebrow">系列</p>
-                <h2>內容系列</h2>
+                <p class="eyebrow">整理寫作脈絡</p>
+                <h1>系列</h1>
+                <p class="muted">{{ series.length }} 組系列</p>
               </div>
-              <span class="count">{{ series.length }} 組</span>
-            </div>
-            <form class="new-series-form" @submit.prevent="createSeries">
-              <label><span>系列名稱</span><input v-model="newSeriesTitle" type="text" required></label>
-              <label><span>系列 slug</span><input v-model="newSeriesSlug" type="text" pattern="[a-z0-9][a-z0-9\-]*" required></label>
-              <button class="secondary-action" type="submit">新增系列</button>
+              <div v-if="!createSeriesOpen" role="group" aria-label="系列清單操作">
+                <button type="button" class="primary-action" @click="createSeriesOpen = true">新增系列</button>
+              </div>
+            </header>
+            <form v-if="createSeriesOpen" class="creation-form new-series-form" @submit.prevent="createSeries">
+              <label>
+                <span>系列名稱</span>
+                <input v-model="newSeriesTitle" type="text" required>
+              </label>
+              <label>
+                <span>網址代稱</span>
+                <input v-model="newSeriesSlug" type="text" pattern="[a-z0-9][a-z0-9-]*" required>
+                <small>系列網址最後一段，使用小寫英文、數字與連字號。</small>
+              </label>
+              <div role="group" aria-label="新增系列操作" class="context-actions">
+                <button class="primary-action" type="submit">建立系列</button>
+                <button class="secondary-action" type="button" @click="createSeriesOpen = false">取消</button>
+              </div>
             </form>
+            <p v-if="message" class="editor-message" role="status">{{ safeMessage(message) }}</p>
             <ul v-if="series.length" class="series-list">
               <li v-for="item in series" :key="item.slug">
-                <button class="post-button" type="button" @click="openSeries(item.slug)">
-                  <span><strong>{{ item.title }}</strong><small>{{ item.slug }}</small></span>
+                <button type="button" class="post-button" @click="openSeries(item.slug)">
+                  <span>
+                    <strong>{{ item.title }}</strong>
+                  </span>
                   <span class="badge">{{ item.postCount }} 篇</span>
                 </button>
               </li>
             </ul>
-            <p v-else class="empty">目前沒有系列。</p>
-            </aside>
-          </div>
+            <p v-else class="empty">目前沒有系列。新增系列後即可加入文章。</p>
+          </article>
+          <details v-if="deploymentStatus && overviewSection === 'publishing'" class="workspace-settings">
+            <summary>網站更新狀態</summary>
+            <p>這是整個網站最近一次更新的狀態，不代表每篇文章都已公開。</p>
+            <p>{{ deploymentStatus.deployment }}</p>
+          </details>
         </section>
-
         <section v-if="workspaceMode === 'series' && selectedSeries && seriesManifest" class="editor-panel workspace-panel series-editor" aria-labelledby="series-editor-title">
-          <p v-if="selectedSeriesProgress">
-            定稿 {{ selectedSeriesProgress.ready }}／{{ selectedSeriesProgress.total }}；Git 已標記公開 {{ selectedSeriesProgress.published }}／{{
-              selectedSeriesProgress.total
-            }}。{{
-              releaseQueue?.blockedSeries.find((s) => s.seriesSlug === selectedSeries!.slug)?.reasons.join('；') ?? '依完整系列資格取得排程'
-            }}
-          </p>
-          <p>
-            {{
-              releaseEstimate(
-                selectedSeriesNext?.releaseAt,
-              )
-            }}；連載開始後篇序鎖定。
-          </p>
           <div class="workspace-navigation">
-            <button type="button" class="back-action" @click="closeWorkspace">返回內容清單</button>
-            <span>系列編輯</span>
+            <a href="#series" @click.prevent="closeWorkspace">返回系列清單</a>
+            <span>{{ seriesDirty ? '有未儲存的修改' : '沒有未儲存的修改' }}</span>
           </div>
           <div class="editor-toolbar">
             <div>
-              <p class="eyebrow">系列編輯器</p>
-              <h2 id="series-editor-title">{{ seriesManifest.title }}</h2>
+              <p class="eyebrow">系列編輯</p>
+              <h1 id="series-editor-title">{{ seriesManifest.title }}</h1>
             </div>
-            <div class="editor-actions">
-              <button type="button" class="secondary-action" @click="addSection">新增章節</button>
-              <button type="button" class="secondary-action danger-action" :disabled="selectedSeriesStarted" @click="deleteSeries">刪除系列</button>
-              <button type="button" class="primary-action compact" :disabled="!seriesDirty" @click="saveSeries">儲存系列 YAML</button>
+            <div class="editor-actions" role="group" aria-label="系列主要操作">
+              <button type="button" class="secondary-action" :disabled="selectedSeriesStarted || saving" @click="addSection">新增章節</button>
+              <button type="button" class="primary-action compact" :disabled="!seriesDirty || saving" @click="saveSeries">儲存系列</button>
             </div>
           </div>
-          <p class="editor-message" aria-live="polite">{{ seriesMessage }}</p>
-          <div class="series-metadata-fields">
-            <label><span>系列名稱</span><input :value="seriesManifest.title" type="text" required @input="editSeriesMetadata({ title: eventValue($event) })"></label>
-            <label><span>系列 slug</span><input :value="seriesManifest.slug" :disabled="selectedSeriesStarted" type="text" pattern="[a-z0-9][a-z0-9\-]*" required @input="editSeriesMetadata({ slug: eventValue($event) })"></label>
-          </div>
-          <p class="series-order-hint">修改 slug 會同步更新 manifest 檔名、後台路徑與公開系列網址；若新 slug 已存在，儲存會被阻止。</p>
-          <p v-if="selectedSeriesStarted" class="series-order-hint">連載已有發布承諾，篇序已鎖定。修改內容仍須重新驗證。</p>
-          <p v-else class="series-order-hint">拖曳左側把手調整文章順序；也可以使用右側上下按鈕。</p>
+          <p v-if="selectedSeriesProgress" class="muted">已定稿 {{ selectedSeriesProgress.ready }}／{{ selectedSeriesProgress.total }} 篇；已標記公開 {{ selectedSeriesProgress.published }}／{{ selectedSeriesProgress.total }} 篇。</p>
+          <p v-if="selectedSeriesStarted" class="lock-note">篇序已鎖定，因為這個系列已開始連載。仍可修改內容，儲存後會重新檢查。</p>
+          <p v-else class="muted">拖曳把手或使用上下按鈕調整篇序，儲存系列後才會生效。</p>
+          <p v-if="seriesMessage" class="editor-message" aria-live="polite">{{ safeMessage(seriesMessage) }}</p>
+          <details class="workspace-settings">
+            <summary>系列設定</summary>
+            <div class="series-metadata-fields">
+              <label>
+                <span>系列名稱</span>
+                <input :value="seriesManifest.title" :disabled="saving" type="text" required @input="editSeriesMetadata({ title: eventValue($event) })">
+              </label>
+              <label>
+                <span>網址代稱</span>
+                <input :value="seriesManifest.slug" :disabled="selectedSeriesStarted || saving" type="text" pattern="[a-z0-9][a-z0-9-]*" @input="editSeriesMetadata({ slug: eventValue($event) })">
+              </label>
+            </div>
+            <p class="muted">修改網址代稱會更新系列網址；已開始連載的系列不能修改。</p>
+            <details class="danger-settings">
+              <summary>刪除系列</summary>
+              <p>刪除系列會保留所有文章，文章將改為無系列。</p>
+              <div role="group" aria-label="刪除系列操作">
+                <button type="button" class="secondary-action danger-action" :disabled="selectedSeriesStarted" @click="deleteSeries">刪除系列</button>
+              </div>
+              <p v-if="selectedSeriesStarted" class="muted">已開始連載，無法刪除這個系列。</p>
+            </details>
+          </details>
           <section v-for="(section, sectionIndex) in seriesManifest.sections" :key="section.id" class="series-section">
-            <div class="series-section-heading">
-              <div class="series-section-fields">
-                <label>
-                  <span>章節 ID</span>
-                  <input :value="section.id" type="text" autocomplete="off" @input="editSection(section.id, { id: eventValue($event) })">
-                </label>
-                <label class="section-title-field">
-                  <span>章節標題</span>
-                  <input :value="section.title" type="text" @input="editSection(section.id, { title: eventValue($event) })">
-                </label>
-                <label>
-                  <span>章節狀態</span>
-                  <select :value="section.status" @change="editSection(section.id, { status: eventValue($event) })">
-                    <option value="planned">規劃中</option>
-                    <option value="active">進行中</option>
-                    <option value="completed">已完成</option>
-                  </select>
-                </label>
-              </div>
-              <div class="section-actions" aria-label="章節操作">
-                <button type="button" :aria-label="`將 ${section.title} 往上移`" :disabled="selectedSeriesStarted || sectionIndex === 0" @click="moveSection(sectionIndex, -1)">↑</button>
-                <button type="button" :aria-label="`將 ${section.title} 往下移`" :disabled="selectedSeriesStarted || sectionIndex === seriesManifest.sections.length - 1" @click="moveSection(sectionIndex, 1)">↓</button>
-                <button type="button" class="danger-action" :aria-label="`刪除 ${section.title}`" :disabled="section.posts.length > 0" :title="section.posts.length > 0 ? '請先移出章節內的文章' : '刪除空白章節'" @click="removeSection(section.id)">刪除</button>
-              </div>
-            </div>
+            <header class="series-section-heading">
+              <h2>{{ section.title }}</h2>
+              <details>
+                <summary>章節設定</summary>
+                <div class="series-section-fields">
+                  <label>
+                    <span>章節代稱</span>
+                    <input :value="section.id" type="text" :disabled="selectedSeriesStarted" @input="editSection(section.id, { id: eventValue($event) })">
+                  </label>
+                  <label>
+                    <span>章節標題</span>
+                    <input :value="section.title" :disabled="saving" type="text" @input="editSection(section.id, { title: eventValue($event) })">
+                  </label>
+                  <label>
+                    <span>章節進度</span>
+                    <select :value="section.status" :disabled="saving" @change="editSection(section.id, { status: eventValue($event) })">
+                      <option value="planned">規劃中</option>
+                      <option value="active">進行中</option>
+                      <option value="completed">已完成</option>
+                    </select>
+                  </label>
+                </div>
+                <div v-if="!selectedSeriesStarted" role="group" aria-label="章節排序操作" class="section-actions">
+                  <button type="button" :aria-label="`將 ${section.title} 往上移`" :disabled="sectionIndex === 0" @click="moveSection(sectionIndex, -1)">往上移</button>
+                  <button type="button" :aria-label="`將 ${section.title} 往下移`" :disabled="sectionIndex === seriesManifest.sections.length - 1" @click="moveSection(sectionIndex, 1)">往下移</button>
+                </div>
+                <details v-if="!selectedSeriesStarted">
+                  <summary>移除空白章節</summary>
+                  <p v-if="section.posts.length">請先移出章節內的文章。</p>
+                  <div role="group" aria-label="移除章節操作">
+                    <button type="button" class="danger-action secondary-action" :disabled="section.posts.length > 0" @click="removeSection(section.id)">刪除空白章節</button>
+                  </div>
+                </details>
+              </details>
+            </header>
             <ol class="series-order">
-              <li
-                v-for="(post, index) in section.posts"
-                :key="post.slug"
-                :class="{ 'is-dragging': draggedSeriesPost?.sectionId === section.id && draggedSeriesPost?.index === index }"
-                :draggable="!selectedSeriesStarted"
-                title="拖曳調整順序"
-                @dragstart="draggedSeriesPost = { sectionId: section.id, index }"
-                @dragend="draggedSeriesPost = undefined"
-                @dragover.prevent
-                @drop.prevent="dropPost(section.id, index)"
-              >
-                <span class="drag-handle" aria-hidden="true">⠿</span>
-                <span class="series-post-copy"><strong>{{ post.workingTitle || post.slug }}</strong><small>{{ post.slug }} · {{ post.status }}</small></span>
-                <span class="order-actions">
-                  <button type="button" :aria-label="`將 ${post.slug} 往上移`" :disabled="selectedSeriesStarted || index === 0" @click="movePost(section.id, index, -1)">↑</button>
-                  <button type="button" :aria-label="`將 ${post.slug} 往下移`" :disabled="selectedSeriesStarted || index === section.posts.length - 1" @click="movePost(section.id, index, 1)">↓</button>
+              <li v-for="(post, index) in section.posts" :key="post.slug" :class="{ 'is-dragging': draggedSeriesPost?.sectionId === section.id && draggedSeriesPost?.index === index, 'is-locked': selectedSeriesStarted }" :draggable="!selectedSeriesStarted" @dragstart="draggedSeriesPost = { sectionId: section.id, index }" @dragend="draggedSeriesPost = undefined" @dragover.prevent @drop.prevent="dropPost(section.id, index)">
+                <span v-if="!selectedSeriesStarted" class="drag-handle" aria-hidden="true">⠿</span>
+                <span v-else class="post-ordinal">{{ index + 1 }}</span>
+                <span class="series-post-copy">
+                  <strong>{{ post.workingTitle || posts.find(item => item.slug === post.slug)?.title || '未命名文章' }}</strong>
+                  <small>{{ contentStatusLabel(post.status) }}</small>
+                </span>
+                <span v-if="!selectedSeriesStarted" class="order-actions" role="group" :aria-label="`調整第 ${index + 1} 篇順序`">
+                  <button type="button" aria-label="往上移" :disabled="index === 0" @click="movePost(section.id, index, -1)">↑</button>
+                  <button type="button" aria-label="往下移" :disabled="index === section.posts.length - 1" @click="movePost(section.id, index, 1)">↓</button>
                 </span>
               </li>
             </ol>
-            <label v-if="availableStandalonePosts.length" class="add-series-post">
+            <label v-if="availableStandalonePosts.length && !selectedSeriesStarted" class="add-series-post">
               <span>加入無系列文章</span>
               <select value="" @change="addPost(section.id, eventValue($event))">
                 <option value="" disabled>選擇文章</option>
@@ -1107,180 +1256,240 @@ onMounted(() => {
             </label>
           </section>
         </section>
-
         <section v-if="workspaceMode === 'post' && selectedPost" class="editor-panel workspace-panel" aria-labelledby="editor-title">
           <div class="workspace-navigation">
-            <button type="button" class="back-action" @click="closeWorkspace">返回內容清單</button>
-            <span>{{ selectedPost.status }}</span>
+            <a href="#articles" @click.prevent="closeWorkspace">返回文章清單</a>
+            <span class="badge">{{ contentStatusLabel(selectedPost.status) }}</span>
           </div>
           <div class="editor-toolbar">
             <div>
-              <p class="eyebrow">文章編輯器</p>
+              <p class="eyebrow">文章編輯</p>
               <h1 id="editor-title">{{ editorTitle }}</h1>
-              <p class="workspace-path">src/content/posts/{{ editorSlug }}.md</p>
-              <p class="post-series-status">系列：{{ selectedPost.series.length ? selectedPost.series.map((item) => item.title).join('、') : '無系列' }}</p>
+              <p class="save-state" aria-live="polite">
+                {{ saving ? '正在儲存…' : articleDirty ? '有未儲存的修改' : '文章已儲存' }}
+                <span v-if="savedAt && !articleDirty"> · {{ savedAt }}</span>
+              </p>
             </div>
-            <div class="editor-actions">
-              <label class="sync-control">
-                <input v-model="syncScroll" type="checkbox" @change="persistSync">
-                同步捲動
-              </label>
-              <button type="button" class="secondary-action" @click="autosaveDraft">暫存到瀏覽器</button>
-              <button type="button" class="secondary-action" @click="openMediaLibrary">媒體庫</button>
-              <button type="button" class="secondary-action danger-action" :disabled="!selectedPost.baseBlobSha" @click="requestDelete">刪除文章</button>
-              <button type="button" class="secondary-action" @click="saveToGit">儲存至 Git</button>
-              <button v-if="selectedPost.status==='ready'" type="button" class="secondary-action" :disabled="manualPublishing || !selectedPost.baseBlobSha" @click="publishNow">{{ manualPublishing?'處理發布中…':'立即發布（單次人工）' }}</button>
-              <button type="button" class="primary-action compact" @click="cycleEditorView">{{ nextViewLabel }}</button>
+            <div class="editor-actions" role="group" aria-label="文章主要操作">
+              <button type="button" class="primary-action" :disabled="saving || manualPublishing" @click="saveToGit">{{ saving ? '儲存中…' : '儲存文章' }}</button>
             </div>
           </div>
-          <div class="editor-metadata">
-            <label><span>文章標題</span><input v-model="editorTitle" type="text" required></label>
-            <label><span>Slug</span><input v-model="editorSlug" type="text" inputmode="url" pattern="[a-z0-9][a-z0-9-]*" required></label>
-            <button type="button" class="secondary-action" :disabled="editorSlugSuggestionLoading || !editorTitle.trim()" @click="generateEditorSlug">產生 slug</button>
-          </div>
-          <p v-if="editorSlugSuggestionMessage" class="slug-suggestion-message" aria-live="polite">{{ editorSlugSuggestionMessage }}</p>
-          <p v-if="editorMessage" class="editor-message" aria-live="polite">{{ editorMessage }}</p>
-          <section class="schedule-panel" aria-label="自動排程">
-            <div>
-              <h3>自動排程</h3>
-              <p>{{ releaseEstimate(selectedCandidate?.estimatedAt) }}</p>
-              <p>{{ selectedPost.status === 'draft' ? '草稿尚未定稿，尚未取得候選資格。' : selectedPost.status === 'published' ? '文章已標記公開，請以公開驗證紀錄確認結果。' : eligibilityReason(selectedCandidate?.reason) }}</p>
-              <p>確認定稿並儲存 Git 後取得候選資格；正式發布未啟用時仍不公開。</p>
-            </div>
-            <button
-              type="button"
-              class="secondary-action"
-              :disabled="!selectedPost.baseBlobSha || selectedPost.status === 'published'"
-              @click="finalizePost"
-            >
-              確認定稿並儲存 Git
-            </button>
-          </section>
-          <details>
-            <summary>進階：既有手動公開日期</summary>
-            <section class="schedule-panel" aria-labelledby="schedule-title">
-              <div>
-                <p class="eyebrow">Asia／Taipei 排程</p>
-                <h3 id="schedule-title">公開時間</h3>
-              </div>
-              <label>日期<input v-model="scheduleDate" type="date" /></label>
-              <label>時間<input v-model="scheduleTime" type="time" /></label>
-              <button type="button" class="secondary-action" @click="applySchedule">套用到文章</button>
-              <div v-if="activeSchedule" class="schedule-state" :data-state="activeSchedule.state">
-                <strong>{{ activeSchedule.label }}</strong
-                ><span>{{ activeSchedule.detail }}</span>
-              </div>
-              <p v-else class="muted">公開文章需先到達排程時間，且之後有一次成功的靜態部署；Git 儲存本身不等於公開。</p>
-            </section>
-          </details>
+          <p v-if="editorMessage" class="editor-message" aria-live="polite">{{ safeMessage(editorMessage) }}</p>
           <div v-if="recoveryConflict" class="conflict-panel" role="alert">
             <div>
-              <strong>需要處理內容衝突</strong>
-              <p>{{ recoveryConflict.detail }} 系統沒有自動覆蓋 GitHub 的較新內容。</p>
+              <h2>文章有較新的版本</h2>
+              <p>目前修改仍在這裡。先複製備份，或選擇要使用的內容。</p>
             </div>
-            <div class="conflict-actions">
-              <button type="button" class="secondary-action" @click="copyOldDraft">複製舊草稿</button>
-              <button type="button" class="secondary-action" @click="useRepositoryVersion">載入 GitHub 版本</button>
-              <button type="button" class="primary-action compact" @click="startManualMerge">手動合併</button>
+            <div class="recovery-choice">
+              <label>
+                處理方式
+                <select v-model="recoveryAction">
+                  <option value="copy">複製目前暫存</option>
+                  <option value="repository">載入較新的內容</option>
+                  <option value="merge">合併兩份內容再編輯</option>
+                </select>
+              </label>
+              <div role="group" aria-label="版本衝突處理">
+                <button type="button" class="secondary-action" @click="resolveRecovery">執行選擇</button>
+              </div>
             </div>
+          </div>
+          <div class="editor-view-tools">
+            <div class="editor-icon-tools" role="group" aria-label="文章編輯工具">
+              <button type="button" class="icon-action" :aria-label="`目前是${editorViewLabel(editorView)}，切換至${editorViewLabel(nextEditorView(editorView))}`" :title="`目前是${editorViewLabel(editorView)}，切換至${editorViewLabel(nextEditorView(editorView))}`" @click="setEditorView(nextEditorView(editorView))">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path :d="iconPaths[editorView === 'markdown' ? 'eye' : editorView === 'rendered' ? 'split' : 'code']" />
+                </svg>
+              </button>
+              <button ref="mediaButtonElement" type="button" class="icon-action" aria-label="插入圖片" title="插入圖片" @click="openMediaLibrary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path :d="iconPaths.image" />
+                </svg>
+              </button>
+            </div>
+            <span class="current-view" aria-live="polite">{{ editorViewLabel(editorView) }}</span>
+            <label v-if="editorView === 'split'" class="sync-control">
+              <input v-model="syncScroll" type="checkbox" @change="persistSync">
+              左右同步捲動
+            </label>
           </div>
           <div v-if="preview.limitations.length" class="limitation" role="alert">
             {{ preview.limitations[0]?.message }}
-            <button type="button" class="secondary-action" @click="requestFormalPreview">建立正式 Astro 預覽</button>
+            <a href="#website-preview">前往網站預覽</a>
           </div>
-          <div class="formal-preview-panel" aria-live="polite">
-            <span>{{ formalPreviewMessage || '正式預覽會使用目前未儲存內容、指定基礎修訂版與真實 Astro 設定；不會提交到 main。' }}</span>
-            <a v-if="formalPreview?.status === 'ready' && formalPreview.url" class="primary-action compact" :href="formalPreview.url" target="_blank" rel="noreferrer">開啟正式預覽</a>
-            <button v-else type="button" class="secondary-action" @click="requestFormalPreview">建立正式預覽</button>
+          <div class="editor-workspace" :data-view="editorView" :style="{ '--split-ratio': `${splitRatio}%` }" @paste="onEditorPaste" @dragover.prevent @drop.prevent="onEditorDrop">
+            <textarea ref="sourceElement" v-show="editorView !== 'rendered'" v-model="editorSource" class="source-editor" :disabled="saving" aria-label="文章原文" spellcheck="false" @scroll="onSourceScroll"></textarea>
+            <div v-if="editorView === 'split'" class="split-divider" role="separator" aria-label="調整編輯器與預覽寬度" aria-orientation="vertical" :aria-valuenow="splitRatio" tabindex="0" @pointerdown="startDividerDrag" @keydown.left.prevent="resizeSplit(-5)" @keydown.right.prevent="resizeSplit(5)"></div>
+            <article ref="previewElement" v-show="editorView !== 'markdown'" class="content-preview public-content" aria-label="即時預覽" v-html="preview.html" @scroll="onPreviewScroll"></article>
           </div>
-          <div
-            class="editor-workspace"
-            :data-view="editorView"
-            :style="{ '--split-ratio': `${splitRatio}%` }"
-            @paste="onEditorPaste"
-            @dragover.prevent
-            @drop.prevent="onEditorDrop"
-          >
-            <textarea
-              ref="sourceElement"
-              v-show="editorView !== 'rendered'"
-              v-model="editorSource"
-              class="source-editor"
-              aria-label="Markdown 原始碼"
-              spellcheck="false"
-              @scroll="onSourceScroll"
-            ></textarea>
-            <div
-              v-if="editorView === 'split'"
-              class="split-divider"
-              role="separator"
-              aria-label="調整編輯器與預覽寬度"
-              aria-orientation="vertical"
-              :aria-valuenow="splitRatio"
-              tabindex="0"
-              @pointerdown="startDividerDrag"
-              @keydown.left.prevent="resizeSplit(-5)"
-              @keydown.right.prevent="resizeSplit(5)"
-            ></div>
-            <article
-              ref="previewElement"
-              v-show="editorView !== 'markdown'"
-              class="content-preview public-content"
-              aria-label="即時預覽"
-              v-html="preview.html"
-              @scroll="onPreviewScroll"
-            ></article>
-          </div>
+          <details class="workspace-settings article-settings" aria-labelledby="article-settings-title">
+            <summary id="article-settings-title">文章設定</summary>
+            <section class="settings-section" aria-labelledby="basic-settings-title">
+              <div class="settings-section-heading">
+                <h3 id="basic-settings-title">基本資料</h3>
+                <p>標題與所屬系列，會顯示在文章清單。</p>
+              </div>
+              <div class="settings-fields">
+                <label>
+                  <span>文章標題</span>
+                  <input v-model="editorTitle" type="text" :disabled="saving" required>
+                </label>
+                <div class="readonly-field">
+                  <span>所屬系列</span>
+                  <p>{{ selectedPost.series.length ? selectedPost.series.map(item => item.title).join('、') : '無系列' }}</p>
+                  <small>文章歸屬請到系列頁調整。</small>
+                </div>
+              </div>
+            </section>
+            <section class="settings-section" aria-labelledby="url-settings-title">
+              <div class="settings-section-heading">
+                <h3 id="url-settings-title">文章網址</h3>
+                <p>已公開的文章，請謹慎修改網址。</p>
+              </div>
+              <div class="settings-fields">
+                <label>
+                  <span>網址代稱</span>
+                  <input v-model="editorSlug" type="text" :disabled="saving" inputmode="url" pattern="[a-z0-9][a-z0-9-]*" required aria-describedby="article-url-help">
+                </label>
+                <p id="article-url-help" class="field-help">這是文章網址的最後一段；修改後，文章網址也會改變。</p>
+                <div role="group" aria-label="文章網址建議">
+                  <button type="button" class="secondary-action" :disabled="saving || editorSlugSuggestionLoading || !editorTitle.trim()" @click="generateEditorSlug">建議網址代稱</button>
+                </div>
+                <p v-if="editorSlugSuggestionMessage" role="status">{{ safeMessage(editorSlugSuggestionMessage) }}</p>
+              </div>
+            </section>
+            <p class="settings-save-hint">修改完成後，請按上方「儲存文章」。</p>
+          </details>
+          <details class="workspace-settings article-management" aria-labelledby="article-management-title">
+            <summary id="article-management-title">其他管理</summary>
+            <section class="management-row">
+              <div>
+                <h3>裝置備份</h3>
+                <p>只保存在目前瀏覽器，不會儲存到網站或發布。</p>
+              </div>
+              <div role="group" aria-label="暫存操作">
+                <button type="button" class="secondary-action" @click="autosaveDraft">暫存到這台裝置</button>
+              </div>
+            </section>
+            <section class="management-row danger-settings">
+              <div>
+                <h3>刪除文章</h3>
+                <p>已上傳的圖片會保留，刪除前還需要確認。</p>
+              </div>
+              <div role="group" aria-label="刪除文章操作">
+                <button type="button" class="secondary-action danger-action" :disabled="!selectedPost.baseBlobSha || saving" @click="requestDelete">刪除文章</button>
+              </div>
+            </section>
+          </details>
+          <details class="workspace-settings" id="website-preview">
+            <summary>檢查網站實際版面</summary>
+            <p>網站預覽會使用目前內容，不會直接公開，也不會先儲存文章。</p>
+            <p v-if="formalPreviewMessage" aria-live="polite">{{ safeMessage(formalPreviewMessage) }}</p>
+            <div class="context-actions" role="group" aria-label="網站預覽操作">
+              <a v-if="formalPreview?.status === 'ready' && formalPreview.url" class="primary-action" :href="formalPreview.url" target="_blank" rel="noreferrer">開啟網站預覽</a>
+              <button type="button" class="secondary-action" @click="requestFormalPreview">建立網站預覽</button>
+            </div>
+          </details>
           <section class="publishing-center" aria-labelledby="publishing-title">
-            <div class="publishing-heading">
-              <div><p class="eyebrow">完稿後設定</p><h3 id="publishing-title">發佈中心</h3></div>
-              <p>儲存 Git 不會自動觸發外部平台。</p>
-            </div>
-            <div class="target-grid">
-              <article>
-                <strong>GitHub Pages</strong><span class="badge">{{ targetState('github_pages')?.status || 'not_configured' }}</span>
-                <small>僅觀察部署與公開驗證。</small>
-              </article>
-              <article>
-                <strong>Substack</strong><span class="badge">{{ targetState('substack')?.status || 'manual_required' }}</span>
-                <small>未設定穩定寫入介面，維持人工處理。</small>
-                <button type="button" class="secondary-action" @click="publicationOperation('substack', 'publish')">查看人工處理狀態</button>
-              </article>
-            </div>
-            <p v-if="publicationMessage" class="editor-message" aria-live="polite">{{ publicationMessage }}</p>
+            <details class="workspace-settings">
+              <summary id="publishing-title">發布設定與結果</summary>
+              <p>儲存文章不會直接發布。定稿後，符合條件便會加入排程。</p>
+              <p>{{ contentStatusLabel(selectedPost.status) }} · {{ releaseEstimate(selectedCandidate?.estimatedAt) }}</p>
+              <p>{{ selectedPost.status === 'draft' ? '完成文章後，請確認定稿。' : selectedPost.status === 'published' ? '文章已標記公開，實際結果仍以公開確認紀錄為準。' : eligibilityReason(selectedCandidate?.reason) }}</p>
+              <div v-if="selectedPost.status === 'draft'" role="group" aria-label="定稿操作">
+                <button type="button" class="secondary-action" :disabled="saving || !selectedPost.baseBlobSha" @click="finalizePost">確認定稿</button>
+                <p class="muted">定稿時會一併儲存；新文章請先儲存一次。</p>
+              </div>
+              <details v-if="selectedPost.status === 'ready'">
+                <summary>立即發布這篇文章</summary>
+                <p>這是人工例外操作。使用目前已儲存的內容；公開仍需網站更新與查證，不代表其他平台已同步或寄送通知。</p>
+                <div role="group" aria-label="人工發布操作">
+                  <button type="button" class="secondary-action" :disabled="manualPublishing || saving || articleDirty || !selectedPost.baseBlobSha" @click="publishNow">{{ manualPublishing ? '正在處理…' : '立即發布' }}</button>
+                </div>
+                <p v-if="articleDirty" class="muted">請先儲存目前修改，再進行發布。</p>
+              </details>
+              <details>
+                <summary>舊文章的公開日期</summary>
+                <p>這是舊文章保留的日期設定；一般排程請到發布管理調整。</p>
+                <section class="schedule-panel">
+                  <label>
+                    日期
+                    <input v-model="scheduleDate" type="date">
+                  </label>
+                  <label>
+                    時間
+                    <input v-model="scheduleTime" type="time">
+                  </label>
+                  <div role="group" aria-label="文章日期操作">
+                    <button type="button" class="secondary-action" @click="applySchedule">套用到文章</button>
+                  </div>
+                  <p v-if="activeSchedule" class="schedule-state">{{ safeMessage(activeSchedule.label) }} · {{ safeMessage(activeSchedule.detail) }}</p>
+                </section>
+              </details>
+              <div class="target-grid">
+                <article>
+                  <strong>GitHub Pages</strong>
+                  <span class="badge">{{ publicationStatusLabel(targetState('github_pages')?.status ?? 'not_configured') }}</span>
+                  <small>網站更新與公開確認分開記錄。</small>
+                </article>
+                <article>
+                  <strong>Substack</strong>
+                  <span class="badge">{{ publicationStatusLabel(targetState('substack')?.status ?? 'manual_required') }}</span>
+                  <small>外部平台的發布與通知，請依人工處理紀錄確認。</small>
+                  <div role="group" aria-label="Substack 狀態查詢">
+                    <button type="button" class="secondary-action" @click="loadPublicationStates()">重新查看狀態</button>
+                  </div>
+                </article>
+              </div>
+              <p v-if="publicationMessage" class="editor-message" aria-live="polite">{{ safeMessage(publicationMessage) }}</p>
+            </details>
           </section>
         </section>
-
-        <div v-if="mediaOpen" class="dialog-backdrop" @click.self="mediaOpen = false">
-          <section class="media-dialog" role="dialog" aria-modal="true" aria-labelledby="media-title">
+        <div v-if="mediaOpen" class="dialog-backdrop" @click.self="closeMediaLibrary" @keydown="onMediaKeydown">
+          <section ref="mediaDialogElement" class="media-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="media-title" aria-describedby="media-drop-help" @paste="onEditorPaste" @dragover.prevent @drop.prevent="onEditorDrop">
             <header class="media-header">
               <div>
-                <p class="eyebrow">R2 媒體</p>
+                <p class="eyebrow">文章圖片</p>
                 <h2 id="media-title">媒體庫</h2>
               </div>
-              <button type="button" class="secondary-action" aria-label="關閉媒體庫" @click="mediaOpen = false">關閉</button>
+              <div role="group" aria-label="媒體庫主要操作" class="context-actions">
+                <button type="button" class="primary-action" @click="pickerElement?.click()">上傳圖片</button>
+                <button type="button" class="secondary-action" @click="closeMediaLibrary">關閉</button>
+              </div>
             </header>
+            <p id="media-drop-help" class="media-drop-help">可以直接貼上圖片，或將圖片拖入這裡。貼上或拖入後，圖片會插入目前文章。</p>
             <div class="media-tools">
               <label>
                 <span>搜尋媒體</span>
                 <input v-model="mediaSearch" type="search" @input="loadMedia">
               </label>
-              <button type="button" class="primary-action compact" @click="pickerElement?.click()">選擇圖片上傳</button>
               <input ref="pickerElement" class="visually-hidden" type="file" accept="image/webp,image/png,image/svg+xml" @change="onFileChange">
             </div>
-            <p v-if="mediaMessage" class="editor-message" aria-live="polite">{{ mediaMessage }}</p>
+            <p v-if="mediaMessage" class="editor-message" aria-live="polite">{{ safeMessage(mediaMessage) }}</p>
             <ul class="media-grid">
               <li v-for="item in media" :key="item.id" class="media-card">
-                <img :src="item.url" :alt="`媒體預覽 ${item.key}`">
+                <img :src="item.url" :alt="`圖片預覽 ${item.key.split('/').pop()}`">
                 <strong>{{ item.key.split('/').pop() }}</strong>
                 <small>{{ item.width }}×{{ item.height }} · {{ Math.ceil(item.size / 1024) }} KB</small>
-                <div class="media-card-actions">
-                  <button type="button" @click="insertMedia(item)">插入</button>
-                  <button type="button" @click="copyMediaUrl(item)">複製網址</button>
-                  <button type="button" @click="inspectUsage(item)">查看使用</button>
-                  <button type="button" @click="selectedMedia = item; replaceElement?.click()">替換</button>
-                  <button type="button" class="danger-action" @click="deleteSelectedMedia(item)">刪除</button>
+                <div class="media-card-actions" role="group" :aria-label="`圖片操作 ${item.key.split('/').pop()}`">
+                  <button type="button" @click="insertMedia(item)">插入文章</button>
                 </div>
+                <details>
+                  <summary>圖片管理</summary>
+                  <label>
+                    處理方式
+                    <select v-model="mediaActions[item.id]">
+                      <option value="" disabled>請選擇</option>
+                      <option value="copy">複製圖片網址</option>
+                      <option value="usage">查看使用位置</option>
+                      <option value="replace">替換圖片</option>
+                      <option value="delete">刪除圖片</option>
+                    </select>
+                  </label>
+                  <div role="group" :aria-label="`管理圖片 ${item.key.split('/').pop()}`">
+                    <button type="button" class="secondary-action" :disabled="!mediaActions[item.id]" @click="runMediaAction(item)">執行選擇</button>
+                  </div>
+                </details>
               </li>
             </ul>
             <p v-if="!media.length" class="empty">沒有符合條件的媒體。</p>

@@ -9,7 +9,7 @@ const labels: Record<string, string> = {
   'verification-unknown': '驗證異常',
   paused: '已暫停',
 };
-export const releaseLabel = (state: string) => labels[state] ?? state;
+export const releaseLabel = (state: string) => labels[state] ?? '狀態待確認';
 export function releaseEstimate(at?: string, locked = false) {
   if (!at) return '尚無預計時段';
   return (
@@ -42,5 +42,4 @@ export const eligibilityReason = (code?: string) =>
     LEGACY_SCHEDULE_REQUIRES_ADOPTION: '保留舊日期；請明確選擇自動排程後才納入候選。',
     MISSED_FIXED_SLOT: '固定時段已錯過，請取消固定並重新預覽。',
   })[code ?? ''] ??
-  code ??
-  '符合候選資格';
+  (code ? '排程條件待確認，請查看文章與系列狀態。' : '符合排程條件');
