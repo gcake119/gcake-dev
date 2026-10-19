@@ -41,3 +41,34 @@ test('omitted source does not clear a durable hold and clear requires a complete
   assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[]);
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
+
+test('series preparation and content holds preserve specific reasons through the Hermes consumer and restart',async()=>{
+ const {execFileSync}=await import('node:child_process');const root=await fs.mkdtemp(path.join(os.tmpdir(),'attention-reasons-'));const file=path.join(root,'status.json');
+ try{
+  const results=[{slug:'new-series-draft',target:'substack',operation:'prepare-draft',status:'manual_required',code:'SUBSTACK_DRAFT_PREPARATION_REQUIRED'},{slug:'existing-public',target:'substack',operation:'sync-content',status:'manual_required',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'}];
+  await publishAttentionSnapshot(file,{status:'attention',results},[{slug:'existing-public'}]);
+  const issues=JSON.parse(await fs.readFile(file,'utf8')).issues;
+  assert.deepEqual(issues,[{slug:'existing-public',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'},{slug:'new-series-draft',code:'SUBSTACK_DRAFT_PREPARATION_REQUIRED'}]);
+  const consume=()=>JSON.parse(execFileSync('python3',['-B','-c',`import json,os,sys
+from pathlib import Path
+sys.path.insert(0,sys.argv[2])
+import substack_attention as p
+sent=[]
+r=Path(sys.argv[1]);result=p.consume(r/'status.json',r/'events.sqlite',r/'receipt.json',os.getuid(),lambda message:(sent.append(message) or {'success':True,'message_id':123}))
+print(json.dumps({'result':result,'sent':sent}))`,root,path.resolve('scripts/hermes')],{encoding:'utf8'}));
+  const first=consume();assert.equal(first.result.status,'sent');assert.match(first.sent[0],/待備稿/);assert.match(first.sent[0],/內容.*同步/);assert.doesNotMatch(first.sent[0],/身分|已暫停自動重試|發文失敗/);
+  await publishAttentionSnapshot(file,{status:'attention',results},[{slug:'existing-public'}]);assert.equal(consume().result.status,'quiet');
+ }finally{await fs.rm(root,{recursive:true,force:true});}
+});
+
+test('specific durable schedule reasons survive omitted inventory and unknown reasons cannot replace the feed',async()=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'attention-durable-reasons-'));const file=path.join(root,'status.json');
+ try{
+  await publishAttentionSnapshot(file,{status:'completed',results:[]},[{slug:'cancelled-source',code:'SUBSTACK_SCHEDULE_CANCEL_REQUIRED'},{slug:'postponed-source',code:'SUBSTACK_SCHEDULE_POSTPONE_REQUIRED'},{slug:'unknown-arm',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}]);
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues.map((r:{code:string})=>r.code),['SUBSTACK_SCHEDULE_CANCEL_REQUIRED','SUBSTACK_SCHEDULE_POSTPONE_REQUIRED','SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED']);
+  const before=await fs.readFile(file,'utf8');await assert.rejects(publishAttentionSnapshot(file,{status:'completed',results:[]},[{slug:'secret',code:'PRIVATE_ERROR_TEXT'}]),/INVALID/);assert.equal(await fs.readFile(file,'utf8'),before);
+  await publishAttentionSnapshot(file,{status:'attention',results:[{slug:'unknown-arm',target:'substack',operation:'sync-content',status:'manual_required',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'}]},[{slug:'unknown-arm',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}]);
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[{slug:'unknown-arm',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}]);
+
+ }finally{await fs.rm(root,{recursive:true,force:true});}
+});

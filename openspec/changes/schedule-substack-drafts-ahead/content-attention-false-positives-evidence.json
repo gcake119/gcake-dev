@@ -1,0 +1,91 @@
+{
+  "recordedAt": "2026-10-19T08:09:52.770441+00:00",
+  "scope": "local-only owner-confirmed legacy content-attention false positives",
+  "ownerApprovedRule": "Unchanged-source description/presentation differences stay quiet; confirmed meaningful provider/source changes remain actionable; failed reads are inconclusive, never inferred edits.",
+  "candidateFiles": {
+    "apps/admin-worker/src/substack-schedules.ts": "41274fcae760f3ff336125755b237ecd8d69ed7db9b100200371418b23a11fa6",
+    "scripts/publishing/distribution-advance.test.ts": "0184e837060ed562a730d9a37881c1d3b618bdc751cbd376e8d40c3792215b38",
+    "scripts/publishing/distribution-scheduled.test.ts": "f16c6f78f66767d0784193006a19af4947ea550890f6a44743511ccea7018768",
+    "scripts/publishing/observe-substack-schedules.ts": "509f5b6a14ad92d0b4496ecd72f015a9c76c3dba0eefe30345c323f940f87e38",
+    "scripts/publishing/substack-schedule.ts": "a7d95af32e0fc7ec47d131dd794fa42944621bceb89903bc0c01dbbc09380549"
+  },
+  "red": {
+    "coordinatorAcceptanceCases": 12,
+    "failed": 12,
+    "pipelineAcceptanceCases": 1,
+    "pipelineFailed": 1,
+    "logs": [
+      "red.log",
+      "red-observer.log"
+    ]
+  },
+  "green": {
+    "command": "node --import tsx --test scripts/publishing/distribution-advance.test.ts scripts/publishing/distribution-scheduled.test.ts",
+    "passed": 87,
+    "failed": 0,
+    "log": "green-final.log"
+  },
+  "requiredLocalGates": [
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "seconds": 93.662,
+      "log": "/private/tmp/gcake-content-attention-fix-20261019/test.log",
+      "sha256": "bdf61b41cb3eb21ce1c92f3839554a68a1f58bd4b09c0aa6082a9e2f3d67215c"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "seconds": 7.216,
+      "log": "/private/tmp/gcake-content-attention-fix-20261019/check.log",
+      "sha256": "594c1d062577724df3bc6eddabc8fefaf9a21d51435f1a48f474c5d4c80165c2"
+    },
+    {
+      "command": "pnpm build:all",
+      "exitCode": 0,
+      "seconds": 6.382,
+      "log": "/private/tmp/gcake-content-attention-fix-20261019/build-all.log",
+      "sha256": "0a9be13a08ddf3212b5e5afa32591a31d51f3b9cbc3b9d161d85a8d8c0a1f75d"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "exitCode": 0,
+      "seconds": 9.956,
+      "log": "/private/tmp/gcake-content-attention-fix-20261019/release-dry-run.log",
+      "sha256": "90007c57f60c94e72d2548a70174bb67f0ddb95d005cc287eccd5731754721ed"
+    }
+  ],
+  "gateInputsChangedDuringRun": false,
+  "spectra": {
+    "validate": "passed",
+    "analyzeFindings": 0,
+    "deprecatedStrictFlagUsed": false
+  },
+  "diffCheck": "passed",
+  "unrelatedPreexistingDirtyFilesPreserved": {
+    "openspec/changes/schedule-substack-drafts-ahead/attention-cutover-evidence.json": "a92ff76ed56c5c80fc6fae2b605083dcf9663a3c2c759ad6c4b659928904ce5a",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-cutover-verification.json": "8fe8708d6aa52e9fc376dc9595aee33d2aff18121fe1fc56bcfe55f3b76fc09f",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-reasons-evidence.json": "c2ed6201bde9cfc4e05ced7d35530e2adf19f5ebcb4fdfd96eb93dc25fda73c7",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-reasons.md": "8f1642f0a4863612456ff5d2acefc116284ae80435c95bbe126d3605ab9e9f5e",
+    "openspec/changes/schedule-substack-drafts-ahead/content-sync-20261019.json": "954b842454043da1126674c0363c5dac810c70f235e0719b3b3b583936bacc36",
+    "openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md": "8bc72a7e2e07151122a9f9760681cb6b5f208ab151c26e7e9f77bb918ccc1140",
+    "AGENTS.md": "22d855b3747f68f42f31f5704dccab1829962fc62c1b9adb7d3e4157564442f6",
+    "docs/distribution-scripted-runbook.md": "b26ef4f6c51718536e59685fc59a3d64c2896b8f16cc86448f97f0a97f2a595e",
+    "openspec/specs/publishing-operations/spec.md": "d01bb574c6147b96108bdff3449a7896382181fb5b961527da2515564fafb21a",
+    "scripts/hermes/substack_attention.py": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e",
+    "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+    "scripts/publishing/distribution-attention.ts": "170de69351fb0125c51b6155e5249f3d0cdb33b26c7c3a6c5d049859fcec878a",
+    "scripts/publishing/distribution-sync.test.ts": "aa5271215f46d45ad4acb526c23be833389b3ad26e0c0869e5b77c4a4c1816d4",
+    "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa"
+  },
+  "runtimeCutOver": false,
+  "providerOperations": 0,
+  "schedulesCreatedOrModified": 0,
+  "liveMessagesSent": 0,
+  "committed": false,
+  "pushed": false,
+  "pilot53": "pending future actual provider publication and delivery evidence",
+  "queueVersionFalsePostpone": "separate existing finding; not changed by this correction",
+  "durableLogs": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a1518e-95c8-7770-8173-0f10b276aee5/content-attention-false-positives"
+}

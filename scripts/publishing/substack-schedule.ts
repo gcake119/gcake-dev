@@ -38,6 +38,19 @@ export function contentFingerprint(content:ScheduleContent):string{
  return hash({title:norm(content.title),description:content.description===undefined?undefined:norm(content.description),tree:Array.from(document.body.childNodes).flatMap(n=>visit(n)).filter(x=>typeof x!=='string'||x.trim())});
 }
 
+// Attention ignores only observed editor presentation; strict save/readback fingerprints stay unchanged.
+function attentionContentFingerprint(content:ScheduleContent):string{
+ const {document}=parseHTML('<html><body>'+content.html+'</body></html>');
+ for(const code of document.querySelectorAll('pre > code')){
+  const last=code.lastElementChild;
+  if(last?.tagName==='BR'&&last.classList.contains('ProseMirror-trailingBreak')&&last.previousElementSibling?.tagName==='CODE')last.remove();
+  let end:Node|null=code.lastChild;while(end?.nodeType===1&&(end as Element).tagName==='CODE')end=end.lastChild;
+  // The anonymous renderer represents one terminal empty editor line as LF + one space.
+  if(end?.nodeType===3)end.textContent=(end.textContent??'').replace(/\n $/,'\n');
+ }
+ return contentFingerprint({...content,description:undefined,html:document.body.innerHTML});
+}
+
 export function assertScheduleMedia(e:ScheduleObservation){
  const {document}=parseHTML('<html><body>'+e.content.html+'</body></html>');const images=Array.from(document.querySelectorAll('img')).map(i=>({src:i.getAttribute('src')??'',alt:i.getAttribute('alt')??''}));
  const sorted=(items:{src:string;alt:string}[])=>JSON.stringify(items.map(i=>[i.src,i.alt]).sort());
@@ -160,22 +173,49 @@ export class ScheduleCoordinator {
   }catch(error){const code=error instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(error.message)?error.message:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED';if(state){state=await this.repo.save({...state,observedState:state.intent?'reconciliation_required':state.observedState,pendingAction:code==='SUBSTACK_SCHEDULE_TOO_LATE'?'reconcile-schedule':'sync-content',lastErrorCode:code,updatedAt:this.context.now()},state.version);}throw Error(code);
   }finally{for(const slug of acquired)await this.runtime.release(slug,'substack',owner);}
  }
- private async verifyPublic(state:ScheduleRecord,source:ScheduledSource,date:string):Promise<Partial<ScheduleRecord>>{
-  const e=await this.context.readPublic(state.remoteId!,publicUrl(state.slug));this.readValid(e,state.remoteId!);
+ private async verifyPublic(state:ScheduleRecord,source:ScheduledSource,date:string,evidence?:ScheduleObservation):Promise<Partial<ScheduleRecord>>{
+  const e=evidence??await this.context.readPublic(state.remoteId!,publicUrl(state.slug));this.readValid(e,state.remoteId!);
   if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!e.publishedAt||!date||!Number.isFinite(Date.parse(date))||minute(e.publishedAt)!==minute(date)||contentFingerprint(e.content)!==contentFingerprint(expectedContent(source)))throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
   let originalSite:NonNullable<ScheduleRecord['originalSite']>={status:'not_checked'};try{originalSite=await this.context.readOriginalSite?.(source)??originalSite;}catch{originalSite={status:'unavailable'};}
-  return {originalSite:{...originalSite,dateDiffersFromSubstack:!!source.article.publishedAt&&minute(source.article.publishedAt)!==minute(date)},observedState:'verified',contentVerifiedRevision:source.sourceRevision,sourceRevision:source.sourceRevision,sourceCommit:source.sourceCommit,contentDigest:contentFingerprint(e.content),publicationMinute:minute(date),deliveredRevision:state.deliveredRevision??state.armedRevision,delivery:state.delivery==='not_armed'?'not_armed':'unknown',verifiedAt:this.context.now()};
+  return {verification:{status:'verified',checkedAt:this.context.now()},originalSite:{...originalSite,dateDiffersFromSubstack:!!source.article.publishedAt&&minute(source.article.publishedAt)!==minute(date)},observedState:'verified',contentVerifiedRevision:source.sourceRevision,sourceRevision:source.sourceRevision,sourceCommit:source.sourceCommit,contentDigest:contentFingerprint(e.content),publicationMinute:minute(date),deliveredRevision:state.deliveredRevision??state.armedRevision,delivery:state.delivery==='not_armed'?'not_armed':'unknown',verifiedAt:this.context.now()};
+ }
+ private async observePublic(state:ScheduleRecord,source:ScheduledSource,now:string,legacyVerificationHold:boolean):Promise<Partial<ScheduleRecord>>{
+  const inconclusive=(code:string):Partial<ScheduleRecord>=>({verification:{status:'inconclusive',checkedAt:now,code}});
+  let e:ScheduleObservation;
+  try{e=await this.context.readPublic(state.remoteId!,publicUrl(state.slug));}
+  catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
+  if(e?.id&&e.id!==state.remoteId)return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
+  try{this.readValid(e,state.remoteId!);}catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
+  const date=state.publicationMinute??state.observedTime;
+  if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
+  if(!date||!Number.isFinite(Date.parse(date))||!e.publishedAt||!Number.isFinite(Date.parse(e.publishedAt)))return inconclusive('SUBSTACK_PUBLICATION_TIME_UNCONFIRMED');
+  if(minute(e.publishedAt)!==minute(date))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
+  const expected=expectedContent(source);
+  try{
+   if(attentionContentFingerprint(e.content)!==attentionContentFingerprint(expected))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH',verification:{status:'content_difference',checkedAt:now}};
+  }catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
+  const clearFalseHold=legacyVerificationHold?{pendingAction:undefined,lastErrorCode:undefined}:{};
+  // A description/presentation-only result does not promote the full verified revision/digest.
+  if(contentFingerprint(e.content)!==contentFingerprint(expected))return {...clearFalseHold,verification:{status:'presentation_only',checkedAt:now}};
+  return {...await this.verifyPublic(state,source,date,e),...clearFalseHold};
  }
  async observe(id:string,source:ScheduledSource|undefined,slot:ConfirmedSlot|undefined,now:string):Promise<ScheduleRecord>{
   let state=await this.repo.get(id);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');const owner=randomUUID();if(!await this.runtime.acquire(state.slug,'substack',owner,now))return state;
   try{state=(await this.repo.get(id))!;
-   if(state.intent||state.lastErrorCode)return state;
+   const legacyVerificationHold=state.lastErrorCode==='SUBSTACK_PUBLIC_EVIDENCE_MISMATCH'&&state.pendingAction==='sync-content';
+   if(state.intent||state.lastErrorCode&&!legacyVerificationHold)return state;
    let patch:Partial<ScheduleRecord>={};
    if(state.observedState==='cancelled_draft'&&!source)patch={};
    else if(!source)patch={pendingAction:state.observedState==='scheduled'?'cancel-schedule':'sync-content',desiredState:state.observedState==='scheduled'?'cancelled':state.desiredState};
-   else if(source.slug!==state.slug||source.sourceRevision!==(state.contentVerifiedRevision??state.sourceRevision)&&contentFingerprint(expectedContent(source))!==state.contentDigest)patch={pendingAction:'sync-content',desiredRevision:source.sourceRevision};
-   else if(state.observedState==='scheduled'&&(!state.observedTime||Date.parse(now)<Date.parse(state.observedTime))&&(!slot||JSON.stringify(slot)!==JSON.stringify(state.slot)))patch={pendingAction:slot?'postpone-schedule':'cancel-schedule',desiredTime:slot?.scheduledAt};
-   else if(state.observedState!=='cancelled_draft'&&state.remoteId&&(state.observedState==='verified'||state.observedState==='published_unverified'||state.observedTime&&Date.parse(now)>=Date.parse(state.observedTime))){try{patch=await this.verifyPublic(state,source,state.publicationMinute??state.observedTime!);}catch{patch={pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_EVIDENCE_MISMATCH'};}}
+   else if(source.slug!==state.slug||source.sourceRevision!==(state.contentVerifiedRevision??state.sourceRevision)&&contentFingerprint(expectedContent(source))!==state.contentDigest)patch={pendingAction:'sync-content',desiredRevision:source.sourceRevision,verification:{status:'content_difference',checkedAt:now},lastErrorCode:undefined};
+   else if(state.observedState==='scheduled'&&(!state.observedTime||Date.parse(now)<Date.parse(state.observedTime))){
+    // Queue revisions do not change an already armed provider's article or actual instant.
+    // Foreground validateScheduleCommitment deliberately keeps its exact version check.
+    const sameTime=slot?.confirmed===true&&slot.slug===state.slug&&Number.isFinite(Date.parse(slot.scheduledAt))&&Date.parse(slot.scheduledAt)===Date.parse(state.observedTime??'');
+    if(!sameTime)patch={pendingAction:slot?'postpone-schedule':'cancel-schedule',desiredTime:slot?.scheduledAt};
+    else if(state.pendingAction==='postpone-schedule')patch={pendingAction:undefined,desiredTime:slot!.scheduledAt};
+   }
+   else if(state.observedState!=='cancelled_draft'&&state.remoteId&&(state.observedState==='verified'||state.observedState==='published_unverified'||state.observedTime&&Date.parse(now)>=Date.parse(state.observedTime)))patch=await this.observePublic(state,source,now,legacyVerificationHold);
    return await this.repo.save({...state,...patch,updatedAt:now},state.version);
   }finally{await this.runtime.release(state.slug,'substack',owner);}
  }

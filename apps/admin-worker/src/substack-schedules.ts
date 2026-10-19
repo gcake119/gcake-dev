@@ -9,6 +9,7 @@ export interface ScheduleRecord {
  observedState:'draft_prepared'|'scheduled'|'cancelled_draft'|'published_unverified'|'verified'|'reconciliation_required';
  desiredState?:'draft'|'scheduled'|'cancelled';desiredRevision?:string;desiredTime?:string;observedTime?:string;observedRevision?:string;contentDigest?:string;
  originalSite?:{status:'not_checked'|'not_published'|'unavailable'|'mismatch'|'verified';publishedAt?:string;dateDiffersFromSubstack?:boolean};
+ verification?:{status:'verified'|'presentation_only'|'content_difference'|'identity_difference'|'inconclusive';checkedAt:string;code?:string};
  lastComparison?:{sourceRevision:string;observedDigest:string;expectedDigest:string;mode:'draft'|'scheduled'|'public';differences:string[];result:'verified-no-change'|'pending-edit'|'verified-edit'};
  armedRevision?:string;deliveredRevision?:string;publicationMinute?:string;contentVerifiedRevision?:string;verifiedAt?:string;
  emailEnabled?:boolean;appInboxEnabled?:boolean;slot?:ConfirmedSlot;intent?:ScheduleIntent;pendingAction?:string;lastErrorCode?:string;delivery:'not_armed'|'armed'|'unknown'|'provider_reported';updatedAt:string;

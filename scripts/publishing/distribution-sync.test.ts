@@ -88,3 +88,18 @@ test('production notification includes inventory-omitted D1 holds and failed rea
  }finally{if(!closed)database.close();await f.cleanup();}
 });
 test('scheduled observation reuses the existing round and attention without any command dispatch',async()=>{const f=await fixture();try{f.deps.plan=async()=>({inventory:{entries:[]},articles:[]} as never);f.deps.observeSchedules=async()=>[{slug:'missing-original',target:'substack',operation:'cancel-schedule',status:'manual_required',code:'DISTRIBUTION_MANUAL_REQUIRED'}];const first=await runSyncRound(f.options,f.deps),second=await runSyncRound(f.options,f.deps);assert.equal(first.status,'attention');assert.equal(first.results[0].operation,'cancel-schedule');assert.equal(second.notification,'quiet');assert.deepEqual(f.calls,['snapshot','snapshot']);}finally{await f.cleanup();}});
+
+test('production scheduled durable holds retain content and recovery reasons instead of a legacy generic fallback',async()=>{
+ const {DatabaseSync}=await import('node:sqlite');const {SqliteD1Database}=await import('./sqlite-d1');const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');const {D1PublicationRepository}=await import('../../apps/admin-worker/src/publication-operations');const {productionDependencies}=await import('./sync-distribution');
+ const f=await fixture(),sql=new DatabaseSync(':memory:');let closed=false;
+ try{
+  for(const name of ['0003_publication_operations.sql','0007_substack_schedules.sql'])sql.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/'+name,import.meta.url),'utf8'));
+  const db=new SqliteD1Database(sql),repo=new ScheduleRepository(db),file=path.join(f.root,'attention.json');
+  await new D1PublicationRepository(db).putState({postSlug:'content',target:'substack',status:'manual_required',sourceRevision:'r1',updatedAt:'now'});
+  for(const slug of ['content','unknown-arm'])await repo.save({policyVersion:'scheduled-source-first-delivery-v1',scheduleId:slug,slug,remoteId:slug==='content'?'123':'124',version:0,observedState:'draft_prepared',delivery:'not_armed',pendingAction:'sync-content',...(slug==='content'?{lastErrorCode:'SUBSTACK_PUBLIC_EVIDENCE_MISMATCH'}:{}),...(slug==='unknown-arm'?{intent:{id:'retained',action:'arm' as const,createdAt:'now'}}:{}),updatedAt:'now'},0);
+  await fs.writeFile(f.options.configFile,JSON.stringify({scheduled:{policyVersion:'scheduled-source-first-delivery-v1'},unattended:{notifyViaHermes:true}}));
+  const deps=productionDependencies(f.runtime,db,file);await deps.notify!({status:'completed',results:[]},f.options.configFile);
+  assert.deepEqual(JSON.parse(await fs.readFile(file,'utf8')).issues,[{slug:'content',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'},{slug:'unknown-arm',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}]);
+  const before=await fs.readFile(file,'utf8');sql.close();closed=true;await assert.rejects(deps.notify!({status:'completed',results:[]},f.options.configFile));assert.equal(await fs.readFile(file,'utf8'),before);
+ }finally{if(!closed)sql.close();await f.cleanup();}
+});
