@@ -138,4 +138,10 @@ The phase 20 private runtime acceptance predates this clean-main assembly. Its p
 ## 21. Independent read-repair commit and PR — 2026-10-20
 
 - [x] 21.1 Assemble only the qualified list verifier, child/parent checks, navigation lifetime instructions and scoped evidence on latest main, retaining PR41 atomic verdicts, deadline/media cancellation and PR42 status isolation. Reproduce the original list acceptance before implementation and verify parent rejects forged success on both read and pre-write paths in the existing Node/SQLite seam.
-- [x] 21.2 Complete five existing local gates, validate the exact candidate Spectra artifacts and scope, preserve dirty checkouts and the standing runtime configuration, then prepare one independent commit and authorized PR. Record CI on the exact PR head separately in the PR; do not label historical provider acceptance as new-main runtime qualification or merge/deploy.
+- [x] 21.2 Complete five existing local gates, validate the exact candidate Spectra artifacts and scope, preserve dirty checkouts and the standing runtime configuration, then prepare an independent commit and authorized PR. Record CI on the exact PR head separately in the PR; do not label historical provider acceptance as new-main runtime qualification or merge/deploy.
+
+
+## 22. PR43 unqualified creation review findings
+
+- [x] 22.1 Reproduce both ordinary and direct unsupported discovery/creation dispatch before changing behavior. Restrict the qualified executor to existing-ID read/update, reject both unsupported actions for either creation flag value, preserve identity/intent and remove unreachable provider instructions. Keep generic coordinator scaffolding and all existing read/update protections.
+- [x] 22.2 Complete all five existing local gates, candidate Spectra/scope/preservation checks and a scoped review-fix commit. Recheck CI on the new exact PR head separately; no provider/runtime/configuration/creation activation or merge/deploy.

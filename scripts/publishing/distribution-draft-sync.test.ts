@@ -414,3 +414,21 @@ for(const stage of ['read','update'] as const)test('parent independently rejects
   else {assert.deepEqual(actions,['draft-read','draft-read','draft-update']);assert.equal(denied,true);assert.equal(state.intent?.action,'update-draft');assert.equal(state.draftSync?.status,'reconciliation-required');}
  }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
 });
+
+for(const action of ['draft-find','draft-create'] as const)for(const allowCreate of [false,true])test('ordinary existing-ID executor rejects '+action+' with allowCreate='+allowCreate,async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-existing-id-only-'));let dispatched=0;
+ try{
+  const old=(await f.repo.bySlug('trial'))!;const state=await f.repo.save({...old,remoteId:undefined,remoteUrl:undefined,editUrl:undefined,intent:action==='draft-create'?{id:'unqualified-create',action:'create',sourceRevision:source().sourceRevision,expectedDigest:contentFingerprint(expectedContent(source())),createdAt:now}:undefined},old.version);
+  const {FileAttendedExchange}=await import('./substack-attended'),{ComputerUseDraftPort}=await import('./substack-draft-computer-use'),{replyWithDraftExecutor}=await import('./substack-draft-executor');
+  const exchange=await FileAttendedExchange.create<DraftExchangeRequest>(root+'/requests',root+'/source',1000,10,async file=>replyWithDraftExecutor(file,{policy:{...f.policy,allowCreate,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/evidence'},source:source(),timeoutMs:1000,check:async()=>state,execute:async()=>{dispatched++;throw Error('UNQUALIFIED_DISPATCH');}}));
+  const port=new ComputerUseDraftPort(source(),f.repo,exchange.exchange,async()=>{});
+  await assert.rejects(action==='draft-find'?port.find(source()):port.create(source()),/SUBSTACK_DRAFT_CREATION_DISABLED/);assert.equal(dispatched,0);const after=(await f.repo.bySlug('trial'))!;assert.equal(after.remoteId,undefined);assert.deepEqual(after.intent,state.intent);
+ }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+for(const action of ['draft-find','draft-create'] as const)test('direct executor rejects unqualified '+action+' before any process',async()=>{
+ const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-direct-disabled-'));
+ try{
+  const request=root+'/request.json';await fs.writeFile(request,JSON.stringify({request:{action,article:source().article}}));const executable=root+'/sentinel.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`require('node:fs').writeFileSync(${JSON.stringify(root+'/spawned')},'yes');`,{mode:0o700});
+  const {executeDraftRequest}=await import('./substack-draft-executor');await assert.rejects(executeDraftRequest(request,{directory:root,executor:executable,timeoutMs:1000},root+'/observation.json'),/SUBSTACK_DRAFT_CREATION_DISABLED/);await assert.rejects(fs.access(root+'/spawned'),{code:'ENOENT'});
+ }finally{await fs.rm(root,{recursive:true,force:true});}
+});

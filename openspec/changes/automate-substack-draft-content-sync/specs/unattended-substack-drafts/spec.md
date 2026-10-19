@@ -484,3 +484,9 @@ Unattended draft synchronization SHALL validate all three observed lists with th
 - **GIVEN** explicit scoped repair authorization and complete local gates
 - **WHEN** Chrome fully reloads the same original and the unchanged timer later runs the repaired runtime naturally
 - **THEN** complete content and exact slug/ID match current Git, creation remains disabled, schedules/publication/delivery commitments remain unchanged and owned resources are cleaned, without manual kickstart or fabricated provider evidence
+
+
+#### Scenario: Unsupported creation flags cannot expand the ordinary executor
+- **GIVEN** the qualified ordinary integration supports existing draft IDs and creation is not qualified
+- **WHEN** discovery of a new identity or draft creation is requested, even with a creation flag set to true
+- **THEN** both controller and direct executor reject before any browser process, preserve the original identity and pending intent, and require separately qualified creation support rather than infer permission from an empty discovery reply
