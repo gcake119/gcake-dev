@@ -8,11 +8,11 @@ import {
   saveSplitPreferences,
 } from './editor-state';
 
-test('one control cycles markdown → rendered → split → markdown without source or position loss', () => {
+test('direct mode selection preserves source and position without a fixed cycle', () => {
   const editor = new EditorState('# Title\n\nBody', 8, 240);
-  assert.equal(editor.cycleView(), 'rendered');
-  assert.equal(editor.cycleView(), 'split');
-  assert.equal(editor.cycleView(), 'markdown');
+  assert.equal(editor.setView('split'), 'split');
+  assert.equal(editor.setView('rendered'), 'rendered');
+  assert.equal(editor.setView('markdown'), 'markdown');
   assert.equal(editor.source, '# Title\n\nBody');
   assert.equal(editor.cursorPosition, 8);
   assert.equal(editor.readingPosition, 240);
@@ -41,7 +41,7 @@ test('immediate preview renders portable Markdown fixtures and reports unsupport
 
   const mdx = renderImmediatePreview('# Demo\n\n<InteractiveChart client:load />');
   assert.equal(mdx.limitations[0]?.code, 'UNSUPPORTED_MDX');
-  assert.match(mdx.limitations[0]?.message ?? '', /正式 Astro 預覽/);
+  assert.match(mdx.limitations[0]?.message ?? '', /網站預覽/);
   assert.equal(mdx.source, '# Demo\n\n<InteractiveChart client:load />');
 });
 

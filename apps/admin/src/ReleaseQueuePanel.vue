@@ -1,13 +1,36 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick } from 'vue';
 import type { QueueView, QueueControl, ReleaseRecord, OverridePreview } from '@gcake/admin-contract';
+import { publicationStatusLabel, safeMessage } from './workflow-presentation';
 import { createPreviewRequests } from './release-preview';
 import { releaseLabel, releaseEstimate, eligibilityReason } from './release-presentation';
-const props = defineProps<{ csrfToken: string }>();
-const emit = defineEmits<{ loaded: [QueueView] }>();
+const props = defineProps<{ csrfToken: string; compact?: boolean; seriesTitles?: Record<string, string> }>();
+const emit = defineEmits<{ loaded: [QueueView]; 'view-publishing': [] }>();
 const queue = ref<QueueView>();
 const message = ref('');
 const busy = ref(false);
+const queueActions = ref<Record<string, string>>({});
+const recordActions = ref<Record<string, string>>({});
+const knownFixed = ref<Record<string, string>>({});
+const seriesGroups = computed(() => [...new Set(queue.value?.items.map(i => i.seriesSlug).filter((v): v is string => Boolean(v)))].map(slug => ({slug, title: props.seriesTitles?.[slug] ?? '所屬系列', paused: queue.value?.items.some(i => i.seriesSlug === slug && i.seriesPaused) ?? false})));
+function isFixed(slug: string): boolean { return Boolean(knownFixed.value[slug]) && Date.parse(knownFixed.value[slug]) > Date.now(); }
+function cancelOverride() { clearPreview(); overrideSlug.value = ''; }
+async function applyQueueAction(slug: string) {
+  const action = queueActions.value[slug];
+  const item = queue.value?.items.find(i => i.slug === slug);
+  if (!item) return;
+  if (action === 'time') await openOverride(slug, item.estimatedAt);
+  else if (action === 'pause') await control({action: item.postPaused ? 'resume' : 'pause', slug});
+  else if (action === 'auto') await control({action:'adopt-auto',slug});
+  else if (action === 'cancel' && isFixed(slug)) await control({action:'cancel-override',slug});
+}
+async function applyRecordAction(record: ReleaseRecord) {
+  const action = recordActions.value[record.id];
+  if (action === 'check') await operation('reverify', record.id);
+  else if (action === 'retry') await operation('retry', record.id);
+  else if (action === 'unlock') unlock(record.slug);
+}
+
 const tab = ref('預計發布');
 const detail = ref<ReleaseRecord>();
 const preview = ref<OverridePreview>();
@@ -57,6 +80,7 @@ async function request(path: string, body?: unknown) {
 }
 async function load() {
   clearPreview();
+  knownFixed.value = {};
   busy.value = true;
   try {
     queue.value = await request('');
@@ -69,10 +93,13 @@ async function load() {
   }
 }
 async function control(input: QueueControl) {
+  if (busy.value) return;
   clearPreview();
   busy.value = true;
   try {
     queue.value = await request('/action', input);
+    knownFixed.value = input.action === 'override' && input.releaseAt ? { [input.slug]: input.releaseAt } : {};
+    if (input.action === 'override') overrideSlug.value = '';
     emit('loaded', queue.value!);
     clearPreview();
     message.value = '操作已保存；預計時段不代表已公開。';
@@ -83,6 +110,7 @@ async function control(input: QueueControl) {
   }
 }
 async function operation(path: string, id: string) {
+  if (busy.value) return;
   busy.value = true;
   try {
     detail.value = await request('/' + path, { id });
@@ -102,6 +130,8 @@ async function showDetail(id: string) {
   }
 }
 async function previewSlot() {
+  if (busy.value) return;
+  busy.value = true;
   try {
     const result = await previewRequests.run<OverridePreview>(() => request('/preview', {
       slug: overrideSlug.value,
@@ -113,303 +143,193 @@ async function previewSlot() {
     }
   } catch (e) {
     message.value = e instanceof Error ? e.message : '預覽失敗。';
-  }
+  } finally { busy.value = false; }
 }
 function unlock(slug: string) {
-  if (window.confirm('僅能解除確認未寫入 Git 的衝突承諾。確認重新計算此文章的預計時段？'))
+  if (window.confirm('確認重新計算這篇文章的發布時間？只有確定尚未儲存發布內容的衝突才能解除。'))
     void control({ action: 'unlock', slug, confirmed: true });
 }
 onMounted(load);
 defineExpose({ load });
 </script>
 <template>
-  <section class="panel release-queue" aria-labelledby="release-queue-title">
-    <div class="panel-heading">
+  <section class="panel release-queue" :class="{ 'release-compact': props.compact }" aria-labelledby="release-queue-title">
+    <header class="panel-heading">
       <div>
-        <p class="eyebrow">Publishing Center</p>
-        <h2 id="release-queue-title">長期發布排程</h2>
+        <p class="eyebrow">{{ props.compact ? '發布摘要' : '發布管理' }}</p>
+        <h2 id="release-queue-title">{{ props.compact ? '接下來的發布安排' : '發布進度與安排' }}</h2>
       </div>
-      <button class="secondary-action" type="button" :disabled="busy" @click="load">重新整理排程</button>
-    </div>
-    <p v-if="message" role="status">{{ message }}</p>
-    <p v-if="!queue && !message">正在載入排程……</p>
+      <a v-if="props.compact" href="#publishing" @click.prevent="emit('view-publishing')">前往發布管理</a>
+      <div v-else role="group" aria-label="排程查詢操作">
+        <button class="secondary-action" type="button" :disabled="busy" @click="load">重新整理</button>
+      </div>
+    </header>
+    <p v-if="message" role="status">{{ safeMessage(message, '目前無法完成排程操作，請重新查看狀態後再試。') }}</p>
+    <p v-if="!queue && !message" role="status">正在載入發布安排…</p>
     <template v-if="queue">
-      <div class="release-overview">
+      <dl class="release-summary">
+        <div>
+          <dt>下一篇</dt>
+          <dd>{{ queue.plan[0] ? queue.items.find(i => i.slug === queue!.plan[0].slug)?.title : '尚無待發布文章' }}</dd>
+        </div>
+        <div>
+          <dt>預計發布時間</dt>
+          <dd>{{ releaseEstimate(queue.plan[0]?.releaseAt) }}</dd>
+        </div>
+        <div>
+          <dt>需處理</dt>
+          <dd>
+            <a v-if="props.compact" href="#publishing" @click.prevent="tab = '需處理'; emit('view-publishing')">{{ needsAttention.length }} 篇</a>
+            <span v-else>{{ needsAttention.length }} 篇</span>
+          </dd>
+        </div>
+      </dl>
+      <p v-if="props.compact" class="release-note">預計時間不代表已公開；有待處理項目時，請到發布管理查看。</p>
+      <template v-else>
         <div class="release-policy">
-          <strong>{{ queue.enabled ? '正式發布已啟用' : '正式發布尚未啟用' }}</strong>
-          <span>每週一、四 07:00 起 · Asia／Taipei</span>
-          <small>預計時段仍需等待部署及公開驗證。</small>
+          <strong>{{ queue.enabled ? '自動發布已啟用' : '自動發布尚未啟用' }}</strong>
+          <span>每週一、四，台北時間 07:00 起</span>
+          <p>預計時間仍需等待網站更新與公開確認。</p>
         </div>
-        <dl class="release-summary">
-          <div><dt>下一篇</dt><dd>{{ queue.plan[0] ? queue.items.find((i) => i.slug === queue!.plan[0].slug)?.title : '尚無候選文章' }}</dd></div>
-          <div><dt>預計時段</dt><dd>{{ releaseEstimate(queue.plan[0]?.releaseAt) }}</dd></div>
-          <div><dt>需處理</dt><dd>{{ needsAttention.length }} 篇</dd></div>
-        </dl>
-      </div>
-      <nav aria-label="發布視圖" class="release-tabs">
-        <button
-          class="secondary-action"
-          v-for="name in ['預計發布', '執行紀錄', '需處理']"
-          :key="name"
-          type="button"
-          :aria-pressed="tab === name"
-          @click="tab = name"
-        >
-          {{ name }}
-        </button>
-      </nav>
-      <ul v-if="tab === '預計發布' || tab === '需處理'" class="release-list">
-        <li v-for="item in tab === '需處理' ? needsAttention : plannedItems" :key="item.slug">
-          <div>
-            <strong class="release-title">{{ item.title }}</strong
-            ><span class="release-context">{{ item.seriesSlug ? '系列：' + item.seriesSlug + '／第 ' + ((item.order ?? 0) + 1) + ' 篇' : '獨立文章' }}</span
-            ><span class="release-time">{{
-              releaseEstimate(
-                item.estimatedAt,
-                ['committed-slot', 'publishing', 'awaiting-verification', 'verified-public', 'failed', 'verification-unknown'].includes(
-                  item.state,
-                ),
-              )
-            }}</span
-            ><span class="release-state">{{ releaseLabel(item.state) }} · {{ eligibilityReason(item.reason) }}</span>
-          </div>
-          <div class="release-actions">
-            <button
-              class="secondary-action"
-              type="button"
-              :disabled="busy"
-              @click="
-                control({
-                  action: item.postPaused ? 'resume' : 'pause',
-                  slug: item.slug,
-                })
-              "
-            >
-              {{ item.postPaused ? '恢復' : '暫停' }}</button
-            ><button
-              class="secondary-action"
-              v-if="item.seriesSlug"
-              type="button"
-              :disabled="busy"
-              @click="
-                control({
-                  action: item.seriesPaused ? 'resume' : 'pause',
-                  scope: 'series',
-                  slug: item.seriesSlug,
-                })
-              "
-            >
-              {{ item.seriesPaused ? '恢復系列' : '暫停系列' }}</button
-            ><button
-              class="secondary-action"
-              v-if="item.reason === 'LEGACY_SCHEDULE_REQUIRES_ADOPTION'"
-              type="button"
-              @click="control({ action: 'adopt-auto', slug: item.slug })"
-            >
-              採用自動排程</button
-            ><button
-              class="secondary-action"
-              type="button"
-              @click="openOverride(item.slug, item.estimatedAt)"
-            >
-              指定時段</button
-            ><button class="secondary-action" type="button" @click="control({ action: 'cancel-override', slug: item.slug })">
-              取消固定
-            </button>
-          </div>
-        </li>
-      </ul>
-      <ul v-else class="release-list">
-        <li v-for="r in queue.releases" :key="r.id">
-          <div>
-            <strong>{{ queue.items.find((i) => i.slug === r.slug)?.title ?? r.slug }}</strong
-            ><span>{{ r.unlockedAt ? '已解除承諾，保留紀錄' : releaseLabel(r.state) }} · {{ releaseEstimate(r.slot, true) }}</span
-            ><span
-              >頁面：{{ r.pageVerifiedAt ? '已驗證' : '未確認' }}／RSS：{{
-                r.rssGuid ? '已出現' : '未確認'
-              }}／Telegram：外部監控／未回報</span
-            >
-          </div>
-          <div class="release-actions">
-            <button class="secondary-action" type="button" @click="showDetail(r.id)">查看時間線</button
-            ><button class="secondary-action" type="button" :disabled="busy" @click="operation('reverify', r.id)">檢查公開狀態</button
-            ><button class="secondary-action" type="button" :disabled="busy || !queue.enabled" @click="operation('retry', r.id)">
-              安全重試</button
-            ><button
-              class="secondary-action"
-              v-if="
-                r.state === 'failed' && ['GIT_CONFLICT', 'ELIGIBILITY_CHANGED'].includes(r.error ?? '') && !r.unlockedAt && !r.commitSha
-              "
-              type="button"
-              @click="unlock(r.slug)"
-            >
-              解除衝突鎖定
-            </button>
-          </div>
-        </li>
-      </ul>
-      <p v-if="tab === '執行紀錄' && !queue.releases.length">尚無發布執行紀錄。</p>
-      <p class="release-note">Telegram 通知由外部監控處理，目前未回報。</p>
-      <details class="release-blocked" v-for="blocked in queue.blockedSeries" :key="blocked.seriesSlug">
-        <summary>{{ blocked.seriesSlug }}：系列待完成</summary>
-        <ul>
-          <li v-for="reason in blocked.reasons" :key="reason">{{ reason }}</li>
+        <label class="release-view">
+          查看內容
+          <select v-model="tab" aria-label="發布視圖">
+            <option>預計發布</option>
+            <option>執行紀錄</option>
+            <option>需處理</option>
+          </select>
+        </label>
+        <ul v-if="tab !== '執行紀錄'" class="release-list">
+          <li v-for="item in tab === '需處理' ? needsAttention : plannedItems" :key="item.slug">
+            <div class="release-item-copy">
+              <strong class="release-title">{{ item.title }}</strong>
+              <span class="release-context">{{ item.seriesSlug ? (props.seriesTitles?.[item.seriesSlug] ?? '系列文章') + '／第 ' + ((item.order ?? 0) + 1) + ' 篇' : '獨立文章' }}</span>
+              <span class="release-time">{{ releaseEstimate(item.estimatedAt, ['committed-slot', 'publishing', 'awaiting-verification', 'verified-public', 'failed', 'verification-unknown'].includes(item.state)) }}</span>
+              <span class="release-state">{{ releaseLabel(item.state) }} · {{ eligibilityReason(item.reason) }}</span>
+            </div>
+            <div class="release-actions" role="group" :aria-label="`發布文章操作 ${item.title}`">
+              <details class="queue-more">
+                <summary>查看與調整</summary>
+                <p>{{ releaseLabel(item.state) }} · {{ eligibilityReason(item.reason) }}</p>
+                <p v-if="isFixed(item.slug)">已固定時間：{{ releaseEstimate(knownFixed[item.slug]) }}</p>
+                <p v-else class="release-note">尚無固定時間的確認結果，因此不提供取消固定的操作。</p>
+                <label>
+                  處理方式
+                  <select v-model="queueActions[item.slug]">
+                    <option value="" disabled>請選擇</option>
+                    <option value="time">調整發布時間</option>
+                    <option value="pause">{{ item.postPaused ? '恢復這篇的排程' : '暫停這篇的排程' }}</option>
+                    <option v-if="item.reason === 'LEGACY_SCHEDULE_REQUIRES_ADOPTION'" value="auto">採用自動安排</option>
+                    <option v-if="isFixed(item.slug)" value="cancel">恢復自動安排</option>
+                  </select>
+                </label>
+                <button class="secondary-action" type="button" :disabled="busy || !queueActions[item.slug]" @click="applyQueueAction(item.slug)">執行選擇</button>
+              </details>
+            </div>
+          </li>
         </ul>
-      </details>
-      <form v-if="overrideSlug" class="release-override" @submit.prevent="previewSlot">
-        <p class="eyebrow">時段調整</p>
-        <h3>{{ queue.items.find((i) => i.slug === overrideSlug)?.title ?? overrideSlug }}</h3>
-        <label>預計發布日期<input ref="overrideInput" v-model="overrideDate" type="date" required @input="clearPreview" /></label>
-        <p>週一或週四 07:00 起；先預覽衝突與後續日期。</p>
-        <button class="secondary-action" type="submit">預覽變動</button>
-        <div v-if="preview" class="release-preview">
-          <p v-if="preview.conflicts.length" role="alert">無法確認：{{ preview.conflicts.join('、') }}</p>
-          <h4>預覽結果 · 影響 {{ preview.affected.length }} 篇</h4>
-          <p class="release-note">以下變動尚未保存。確認後才固定時段；取消固定會重新依自動排程估算。</p>
-          <ul class="release-changes">
-            <li v-for="change in preview.affected" :key="change.slug">
-              <strong>{{ queue.items.find((i) => i.slug === change.slug)?.title ?? change.slug }}</strong>
-              <dl><div><dt>原時段</dt><dd>{{ releaseEstimate(change.before) }}</dd></div>
-              <div><dt>調整後</dt><dd>{{ releaseEstimate(change.after) }}</dd></div></dl>
-            </li>
+        <p v-if="tab === '需處理' && !needsAttention.length" class="empty">目前沒有需要處理的文章。</p>
+        <p v-if="tab === '預計發布' && !plannedItems.length" class="empty">目前沒有待發布文章，請先完成文章並確認定稿。</p>
+        <ul v-if="tab === '執行紀錄'" class="release-list">
+          <li v-for="r in queue.releases" :key="r.id">
+            <div>
+              <strong>{{ queue.items.find(i => i.slug === r.slug)?.title ?? '文章發布紀錄' }}</strong>
+              <span>{{ r.unlockedAt ? '已解除原安排，保留紀錄' : releaseLabel(r.state) }} · {{ releaseEstimate(r.slot, true) }}</span>
+              <span>公開頁面：{{ r.pageVerifiedAt ? '已確認' : '待確認' }}／訂閱更新：{{ r.rssGuid ? '已出現' : '待確認' }}／Telegram：尚未回報</span>
+            </div>
+            <div class="release-actions" role="group" aria-label="發布紀錄操作">
+              <button type="button" class="secondary-action" @click="showDetail(r.id)">查看時間線</button>
+              <details>
+                <summary>檢查與恢復</summary>
+                <label>
+                  處理方式
+                  <select v-model="recordActions[r.id]">
+                    <option value="" disabled>請選擇</option>
+                    <option value="check">檢查公開結果</option>
+                    <option v-if="queue.enabled && r.state === 'failed'" value="retry">重試失敗的發布</option>
+                    <option v-if="r.state === 'failed' && ['GIT_CONFLICT', 'ELIGIBILITY_CHANGED'].includes(r.error ?? '') && !r.unlockedAt && !r.commitSha" value="unlock">重新安排衝突文章</option>
+                  </select>
+                </label>
+                <p class="release-note">結果未知時先檢查公開頁面，不直接重複發布。</p>
+                <button type="button" class="secondary-action" :disabled="busy || !recordActions[r.id]" @click="applyRecordAction(r)">執行選擇</button>
+              </details>
+            </div>
+          </li>
+        </ul>
+        <p v-if="tab === '執行紀錄' && !queue.releases.length" class="empty">尚無發布紀錄。</p>
+        <details v-if="seriesGroups.length" class="series-release-settings">
+          <summary>整個系列的安排</summary>
+          <p class="release-note">這裡的暫停只影響本站安排，不代表 Substack 已解除排程。</p>
+          <div v-for="group in seriesGroups" :key="group.slug" class="series-release-row">
+            <strong>{{ group.title }}</strong>
+            <div role="group" :aria-label="`系列排程操作 ${group.title}`">
+              <button type="button" class="secondary-action" :disabled="busy" @click="control({action: group.paused ? 'resume' : 'pause',scope:'series',slug:group.slug})">{{ group.paused ? '恢復整個系列' : '暫停整個系列' }}</button>
+            </div>
+          </div>
+        </details>
+        <p class="release-note">Telegram 通知由外部監控處理，目前未回報。</p>
+        <details v-for="blocked in queue.blockedSeries" :key="blocked.seriesSlug" class="release-blocked">
+          <summary>{{ props.seriesTitles?.[blocked.seriesSlug] ?? '系列' }}：仍有待完成內容</summary>
+          <ul>
+            <li v-for="reason in blocked.reasons" :key="reason">{{ safeMessage(reason, '請查看系列內尚未定稿、缺少內容或狀態不一致的文章。') }}</li>
           </ul>
-          <button
-            class="primary-action"
-            type="button"
-            :disabled="busy || preview.conflicts.length > 0"
-            @click="
-              control({
-                action: 'override',
-                slug: overrideSlug,
-                releaseAt: preview.releaseAt,
-                version: preview.version,
-                revision: preview.revision,
-              })
-            "
-          >
-            確認固定時段
-          </button>
-        </div>
-      </form>
-      <section v-if="detail" aria-label="發布事件時間線">
-        <h3>發布時間線</h3>
-        <p>release id：{{ detail.id }}</p>
-        <p>
-          Git：{{ detail.commitSha ?? detail.sourceRevision }}／部署：{{ detail.deployment?.state ?? '未觀察' }}／最後驗證：{{
-            detail.verifiedAt ?? detail.pageVerifiedAt ?? '未確認'
-          }}
-        </p>
-        <p>
-          RSS GUID：{{ detail.rssGuid ?? '尚未出現' }}／下次檢查：{{ detail.nextRetryAt ?? '未安排' }}／錯誤：{{ detail.error ?? '無' }}
-        </p>
-        <ol>
-          <li v-for="(e, i) in detail.events" :key="i">{{ e.at }}　{{ e.type }}　{{ e.detail }}</li>
-        </ol>
-      </section>
+        </details>
+        <form v-if="overrideSlug" class="release-override" @submit.prevent="previewSlot">
+          <p class="eyebrow">調整發布時間</p>
+          <h3>{{ queue.items.find(i => i.slug === overrideSlug)?.title ?? '選定文章' }}</h3>
+          <template v-if="!preview">
+            <label>
+              預計發布日期
+              <input ref="overrideInput" v-model="overrideDate" type="date" required @input="clearPreview">
+            </label>
+            <p>週一或週四，台北時間 07:00 起。先查看與其他文章的安排是否衝突。</p>
+            <div role="group" aria-label="時間調整預覽操作" class="context-actions">
+              <button class="primary-action" type="submit" :disabled="busy">查看影響</button>
+              <button class="secondary-action" type="button" @click="cancelOverride">取消</button>
+            </div>
+          </template>
+          <div v-else class="release-preview">
+            <p v-if="preview.conflicts.length" role="alert">目前無法調整：{{ preview.conflicts.map(reason => safeMessage(reason, '這個時間已有安排或不符合發布條件，請返回修改。')).join('、') }}</p>
+            <h4>影響 {{ preview.affected.length }} 篇文章</h4>
+            <p class="release-note">尚未儲存。確認後才會固定時間。</p>
+            <ul class="release-changes">
+              <li v-for="change in preview.affected" :key="change.slug">
+                <strong>{{ queue.items.find(i => i.slug === change.slug)?.title ?? '受影響文章' }}</strong>
+                <dl>
+                  <div>
+                    <dt>原時間</dt>
+                    <dd>{{ releaseEstimate(change.before) }}</dd>
+                  </div>
+                  <div>
+                    <dt>調整後</dt>
+                    <dd>{{ releaseEstimate(change.after) }}</dd>
+                  </div>
+                </dl>
+              </li>
+            </ul>
+            <div role="group" aria-label="確認時間調整操作" class="context-actions">
+              <button type="button" class="primary-action" :disabled="busy || preview.conflicts.length > 0" @click="control({action:'override',slug:overrideSlug,releaseAt:preview.releaseAt,version:preview.version,revision:preview.revision})">確認調整</button>
+              <button type="button" class="secondary-action" @click="clearPreview">返回修改</button>
+            </div>
+          </div>
+        </form>
+        <section v-if="detail" class="release-timeline" aria-label="發布事件時間線">
+          <h3>發布時間線</h3>
+          <p>公開結果：{{ releaseLabel(detail.state) }}。網站更新：{{ publicationStatusLabel(detail.deployment?.state) }}。</p>
+          <p>最後確認：{{ detail.verifiedAt ?? detail.pageVerifiedAt ?? '尚未確認' }}／下次檢查：{{ detail.nextRetryAt ?? '未安排' }}</p>
+          <p v-if="detail.error">{{ safeMessage(detail.error, '處理遇到問題，請先檢查公開結果，再依目前狀態處理。') }}</p>
+          <ol>
+            <li v-for="(event, i) in detail.events" :key="i">
+              {{ new Date(event.at).toLocaleString('zh-TW', {timeZone:'Asia/Taipei'}) }}
+              {{ releaseLabel(event.type) }}
+              <span v-if="event.detail">　{{ safeMessage(event.detail, '處理紀錄已保留，請以目前公開狀態為準。') }}</span>
+            </li>
+          </ol>
+        </section>
+      </template>
     </template>
   </section>
 </template>
 <style scoped>
-.release-queue {
-  margin-block: 1.5rem;
-  padding: 1.25rem;
-  min-width: 0;
-}
-.release-tabs,
-.release-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-}
-.release-tabs {
-  margin-block: 1rem;
-}
-.release-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.release-list > li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border-bottom: 1px solid var(--rule);
-  align-items: flex-start;
-  padding-block: 1rem;
-}
-.release-list span,
-.release-list small {
-  display: block;
-  margin-top: 0.35rem;
-}
-.release-list > li > div:first-child {
-  min-width: 0;
-}
-.release-queue p,
-.release-queue li {
-  overflow-wrap: anywhere;
-}
-.release-queue button {
-  padding: 0.45rem 0.75rem;
-  cursor: pointer;
-}
-.release-queue button:focus-visible,
-.release-queue input:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 3px;
-}
-.release-tabs button[aria-pressed='true'] {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-}
-.release-override {
-  margin-block: 1rem;
-}
-.release-override input {
-  display: block;
-  margin-top: 0.5rem;
-}
-.release-overview { border-bottom: 1px solid var(--rule); padding-block: 1rem 1.5rem; }
-.release-policy { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1rem; }
-.release-policy strong { font-size: .95rem; }
-.release-policy span, .release-policy small, .release-note, .release-context, .release-state { color: var(--muted); font-size: .82rem; }
-.release-policy small { flex-basis: 100%; }
-.release-summary { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) auto; gap: 1.25rem; margin: 1.5rem 0 0; }
-.release-summary dt, .release-changes dt { color: var(--muted); font-size: .75rem; margin-bottom: .4rem; }
-.release-summary dd, .release-changes dd { margin: 0; }
-.release-summary dd { font-weight: 650; line-height: 1.6; }
-.release-list > li { gap: 2rem; padding-block: 1.5rem; }
-.release-title { display: block; font-size: 1.05rem; line-height: 1.6; }
-.release-list .release-time { color: var(--accent); font-size: .95rem; font-weight: 650; margin-block: .75rem .25rem; }
-.release-actions { max-width: 21rem; justify-content: flex-end; }
-.release-queue button { min-height: 44px; font-size: .82rem; }
-.release-blocked { padding-block: .6rem; color: var(--muted); font-size: .85rem; }
-.release-override { border: 1px solid var(--rule); background: var(--paper-deep); padding: 1.5rem; margin-block: 2rem; }
-.release-override h3 { font-size: 1.15rem; line-height: 1.6; margin: 0 0 1.25rem; }
-.release-override label { display: block; font-size: .82rem; color: var(--muted); }
-.release-override input { min-height: 44px; padding: .5rem .75rem; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); border-radius: 5px; font: inherit; }
-.release-override > p:not(.eyebrow) { color: var(--muted); font-size: .82rem; }
-.release-preview { margin-top: 1.5rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
-.release-preview h4 { font-size: 1rem; margin: 0; }
-.release-changes { padding: 0; list-style: none; margin: 1rem 0; }
-.release-changes > li { border-bottom: 1px solid var(--rule); padding-block: 1rem; }
-.release-changes strong { font-size: .9rem; line-height: 1.6; }
-.release-changes dl { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-block: .75rem 0; }
-.release-changes dd { font-size: .85rem; line-height: 1.6; }
-.release-changes dl > div:last-child dd { color: var(--accent); font-weight: 650; }
-@media (max-width: 640px) {
-  .release-list > li {
-    flex-direction: column;
-  }
-  .release-summary, .release-changes dl { grid-template-columns: 1fr; }
-  .release-actions { width: 100%; }
-  .release-actions button { flex: 1 1 auto; }
-  .panel-heading {
-    flex-wrap: wrap;
-  }
-  .release-queue {
-    padding: 1rem;
-  }
-}
+.release-queue{padding:var(--space-20) 0;min-width:0}.release-compact{border-bottom:1px solid var(--rule);margin-bottom:var(--space-32)}.release-compact h2{font-size:var(--text-heading)}.release-summary{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) auto;gap:var(--space-20);margin:var(--space-16) 0}.release-summary dt{font-size:var(--text-small);line-height:1.7;color:var(--muted)}.release-summary dd{margin:0;font-weight:650;line-height:1.6}.release-policy{margin-block:var(--space-24);color:var(--ink-soft)}.release-policy span{margin-left:var(--space-16)}.release-policy p,.release-note,.release-context,.release-state{font-size:var(--text-small);line-height:1.7;color:var(--muted)}.release-view{display:grid;gap:var(--space-4);max-width:15rem}.release-list{list-style:none;padding:0;margin:var(--space-16) 0}.release-list>li{display:flex;justify-content:space-between;gap:var(--space-32);padding:var(--space-24) 0;border-bottom:1px solid var(--rule)}.release-list span{display:block;margin-top:var(--space-4)}.release-item-copy{min-width:0;flex:1}.release-title{font-size:var(--text-body)}.release-time{color:var(--accent);font-weight:650}.release-actions{display:flex;align-items:start;gap:var(--space-8);max-width:22rem}.queue-more{min-width:7rem}.release-actions details{max-width:16rem}.release-actions select{width:100%}.release-queue select,.release-queue input{min-height:var(--control-size);border:1px solid var(--rule);border-radius:var(--radius-control);background:var(--paper);color:var(--ink);font:inherit;font-size:var(--text-body);padding:var(--space-8) var(--space-8);max-width:100%}.release-queue label{display:grid;gap:var(--space-8);font-size:var(--text-small);line-height:1.7;color:var(--muted)}.release-queue summary{min-height:var(--control-size);cursor:pointer;color:var(--accent);padding:var(--space-8) 0}.release-queue button{min-height:var(--control-size);font-size:var(--text-body)}.series-release-settings,.release-blocked{border-top:1px solid var(--rule);margin-top:var(--space-16);padding-top:var(--space-8)}.series-release-row{display:flex;align-items:center;justify-content:space-between;gap:var(--space-16);padding:var(--space-16) 0}.release-override,.release-timeline{padding:var(--space-24);margin-top:var(--space-24);background:var(--paper-deep);border:1px solid var(--rule)}.release-override h3{font-size:var(--text-heading)}.release-preview{margin-top:var(--space-16)}.release-changes{list-style:none;padding:0}.release-changes>li{padding:var(--space-16) 0;border-bottom:1px solid var(--rule)}.release-changes dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-16)}.release-changes dd{margin:0}.release-changes dt{font-size:var(--text-small);line-height:1.7;color:var(--muted)}.queue-item-detail{margin-top:var(--space-16);font-size:var(--text-small);line-height:1.7}.release-timeline{overflow-wrap:anywhere}@media(max-width:760px){.release-summary{grid-template-columns:1fr}.release-list>li{flex-direction:column;gap:var(--space-16)}.release-actions{max-width:100%;flex-wrap:wrap}.release-policy span{display:block;margin-left:0}.series-release-row{align-items:start;flex-direction:column}.release-changes dl{grid-template-columns:1fr}.release-override{padding:var(--space-16)}}
 </style>

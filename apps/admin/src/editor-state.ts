@@ -1,5 +1,13 @@
 export type EditorView = 'markdown' | 'rendered' | 'split';
 
+export function nextEditorView(view: EditorView): EditorView {
+  return view === 'markdown' ? 'rendered' : view === 'rendered' ? 'split' : 'markdown';
+}
+
+export function editorViewLabel(view: EditorView): string {
+  return { markdown: '原文', rendered: '預覽', split: '並排' }[view];
+}
+
 export interface SplitPreferences {
   readonly ratio: number;
   readonly syncScroll: boolean;
@@ -57,8 +65,8 @@ export class EditorState {
     this.readingPosition = readingPosition;
   }
 
-  cycleView(): EditorView {
-    this.view = this.view === 'markdown' ? 'rendered' : this.view === 'rendered' ? 'split' : 'markdown';
+  setView(view: EditorView): EditorView {
+    this.view = view;
     return this.view;
   }
 
@@ -142,7 +150,7 @@ export function renderImmediatePreview(source: string): {
     html: renderPortableMarkdown(articleBody),
     limitations: hasMdx ? [{
       code: 'UNSUPPORTED_MDX',
-      message: '即時預覽不支援互動式 MDX，請使用正式 Astro 預覽確認結果。',
+      message: '部分互動內容無法在此顯示，請建立網站預覽確認。',
     }] : [],
   };
 }

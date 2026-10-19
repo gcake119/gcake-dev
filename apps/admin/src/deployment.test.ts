@@ -4,23 +4,23 @@ import { deploymentPresentation } from './deployment';
 
 test('deployment observation never promotes a Git save into publication proof', () => {
   assert.deepEqual(deploymentPresentation('pending'), {
-    git: '已儲存至 Git',
-    deployment: '等待部署',
+    git: '內容已儲存',
+    deployment: '等待網站更新',
     publiclyVerified: false,
   });
   assert.deepEqual(deploymentPresentation('building'), {
-    git: '已儲存至 Git',
-    deployment: '正在建置',
+    git: '內容已儲存',
+    deployment: '正在準備網站',
     publiclyVerified: false,
   });
   assert.deepEqual(deploymentPresentation('deployed'), {
-    git: '已儲存至 Git',
-    deployment: '部署完成，尚未驗證公開結果',
+    git: '內容已儲存',
+    deployment: '網站已更新，公開結果尚待確認',
     publiclyVerified: false,
   });
   assert.deepEqual(deploymentPresentation('failed'), {
-    git: '已儲存至 Git',
-    deployment: '部署失敗',
+    git: '內容已儲存',
+    deployment: '網站更新未完成',
     publiclyVerified: false,
   });
 });
