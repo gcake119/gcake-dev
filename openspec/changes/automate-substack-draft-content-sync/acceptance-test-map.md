@@ -97,3 +97,5 @@ PR #41 result-media deadline：同一個 existing ordinary executor／SQLite／P
 後台狀態與 Pages 交付：既有 substack-status.test.ts 驗證同源 GET、分頁、逾時回應忽略、401 清除、503 保留舊資料與三種狀態獨立呈現；workflow-acceptance.test.ts 使用實際 Vue setup／模板驗證列表與文章掛載、無寫入按鈕、狀態與歷史時間、換文章清除。publication-routes.test.ts 經實際 Worker entrypoint 驗證 owner／no-store、舊紀錄 stale、唯讀方法拒絕、Pages 現行紀錄／錯 commit／缺 RSS／解鎖／模糊及讀取失敗；本機不注入正式故障。歷史桌機／390px、明暗主題與正式環境證據分別保留於 frontend-ui、frontend-production、publication-read-fix、pages-current 的具日期紀錄。
 
 合併候選的舊發布查詢競態：既有 Error recovery clears obsolete article evidence／Switching articles 情境，以實際 Vue setup 同時發出兩篇查詢，讓前篇成功／失敗晚到，驗證後篇 rows、Pages 與錯誤訊息不被覆寫。真實 RED 為 acceptance 蓋掉 next；序號控制後 GREEN。保留 PR41 無 intent 對帳路徑測試。
+
+PR42 P1：既有 Article changes or identity has not been tracked／Error recovery clears obsolete article evidence 情境，以實際 Vue setup 驗收 createPost 的文章身分切換；三項真實 RED 分別為已完成的舊 Pages 殘留、晚到成功污染 rows／Pages、晚到錯誤污染 message。reset 同時清除及使世代失效後，含原閱讀流程的 63 項聚焦驗收通過。

@@ -472,7 +472,7 @@ function createPost(): void {
   editorMessage.value = '已建立無系列文章草稿；按下「儲存文章」才會保存。';
   scheduleDate.value = '';
   scheduleTime.value = '09:00';
-  publicationStates.value = [];
+  resetPublicationEvidence();
   workspaceMode.value = 'post';
 }
 
@@ -517,12 +517,15 @@ async function generateEditorSlug(): Promise<void> {
 }
 
 let publicationReadGeneration = 0;
-async function loadPublicationStates(post = selectedPost.value): Promise<void> {
-  const generation = ++publicationReadGeneration;
-  if (!post) return;
+function resetPublicationEvidence(): number {
   publicationMessage.value = '';
   publicationStates.value = [];
   pagesStatus.value = undefined;
+  return ++publicationReadGeneration;
+}
+async function loadPublicationStates(post = selectedPost.value): Promise<void> {
+  const generation = resetPublicationEvidence();
+  if (!post) return;
   try {
     const result = await readJson<{ states: readonly PublicationTargetState[]; pages?:PagesPublicationStatus }>(`/api/v1/publications/${post.slug}?sourceRevision=${encodeURIComponent(post.baseCommitSha)}`);
     if (generation !== publicationReadGeneration) return;

@@ -118,3 +118,9 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 18.1 Assemble only the deployed status UI, legacy reader repair and Pages evidence onto clean merged main, preserving PR41 fixes and unrelated dirty checkouts. Reproduce and fix late publication replies under the existing article-switch scenario using the actual Vue setup acceptance.
 - [x] 18.2 Complete five required local gates and Spectra/diff/scope checks, retain exact candidate provenance and historical production limits, and prepare an independent commit for authorized push and PR review. CI/Codex outcomes are recorded on the exact PR head, not claimed by this local gate. No merge/deploy or scheduling/delivery activation.
+
+
+## 19. PR #42 new draft publication evidence isolation
+
+- [x] 19.1 Reproduce the reviewed P1 through actual Vue setup for an already completed old Pages read and pending old success/error replies when creating an unsaved draft, using existing Article changes or identity has not been tracked / Error recovery clears obsolete article evidence contracts. Invalidate old reads and clear all publication evidence at the new-draft context boundary; retain normal saved-article reads.
+- [x] 19.2 Run focused acceptance, all five existing local gates and Spectra/scope checks, retain RED/GREEN and exact candidate evidence, prepare only PR42 update for exact-head CI/Codex review (outcomes recorded on the PR). Preserve Admin archive isolation, production runtime and all schedule/delivery gates.

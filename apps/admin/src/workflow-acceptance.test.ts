@@ -501,3 +501,19 @@ test('publication history ignores earlier replies after a newer article query co
   assert.equal(s.publicationMessage.value,'');
  });
 });
+
+
+for(const timing of ['completed','late-success','late-error']) test(`new-draft-publication-isolation: ${timing} old Pages evidence cannot appear on an unsaved draft`,async()=>{
+ await withActualWorkspace(async s=>{
+  const old=()=>Response.json({states:[{postSlug:'acceptance',target:'github_pages',status:'verified'}],pages:{source:'release-queue',state:'verified-public',historyCount:1,deployment:{state:'deployed'},verification:{state:'verified',verifiedAt:'2026-10-19T00:46:59Z',publicUrl:'https://gcake119.github.io/gcake-dev/posts/acceptance/'}}});
+  let reply!:(value:Response)=>void;
+  globalThis.fetch=timing==='completed'?async()=>old():()=>new Promise(resolve=>{reply=resolve;});
+  const reading=s.loadPublicationStates();if(timing==='completed')await reading;
+  s.posts.value=[{...post,commitSha:'saved-main'}];s.newPostTitle.value='新草稿';s.newPostSlug.value='fresh';s.createPost();
+  assert.equal(s.selectedPost.value.slug,'fresh');assert.equal(s.selectedPost.value.baseBlobSha,undefined);
+  assert.equal(s.pagesStatus.value,undefined,'old saved Pages proof must clear immediately');
+  if(timing!=='completed'){reply(timing==='late-error'?Response.json({error:{message:'舊文章的錯誤'}},{status:503}):old());await reading;}
+  assert.deepEqual(s.publicationStates.value,[]);assert.equal(s.pagesStatus.value,undefined);assert.equal(s.publicationMessage.value,'');
+  assert.equal(s.pagesSummary.value,undefined,'new unsaved article must not link another article as verified');
+ });
+});
