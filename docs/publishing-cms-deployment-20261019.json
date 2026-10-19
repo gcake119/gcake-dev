@@ -1,0 +1,2716 @@
+{
+  "recordType": "historical-production-deployment-evidence",
+  "evidenceDate": "2026-10-19",
+  "sourceCommit": "1f3e8cf413beadc687db0dbb58ad21994aa70a1c",
+  "sourceWasClean": true,
+  "reviewedHead": "4c9dff2e1abc8262d3fce141cb3c7930e00de9c1",
+  "pullRequest": "https://github.com/gcake119/gcake-dev/pull/38",
+  "worker": "gcake-admin-worker-production",
+  "url": "https://gcake-admin-worker-production.wwhowbuhow.workers.dev/",
+  "workerVersionId": "2b8c3127-662a-4463-925e-598925a8e8f8",
+  "deploymentId": "7f9d4a6b-448b-4012-92b2-b8020a311a55",
+  "tag": "pr38-1f3e8cf",
+  "trafficPercentAtVerification": 100,
+  "deployedAtUtc": "2026-10-19T14:37:34.926533Z",
+  "deployedAtTaipei": "2026-10-19T22:37:34.926533+08:00",
+  "previousWorkerVersionId": "cee040da-ac51-4f32-81e5-aaabf71daaf4",
+  "mainCI": {
+    "commit": "1f3e8cf413beadc687db0dbb58ad21994aa70a1c",
+    "url": "https://github.com/gcake119/gcake-dev/actions/runs/39267964824",
+    "conclusion": "success",
+    "completedAtUtc": "2026-10-19T14:22:31Z",
+    "checks": [
+      "完整測試（含 editorial 與 Hermes）",
+      "pnpm check",
+      "pnpm build",
+      "一次性靜態站及通知去重演練"
+    ]
+  },
+  "codeReview": {
+    "commit": "4c9dff2e1abc8262d3fce141cb3c7930e00de9c1",
+    "status": "completed",
+    "hasFindings": false,
+    "unresolvedFindings": false,
+    "resolvedThreadCount": 3,
+    "summaryUrl": "https://github.com/gcake119/gcake-dev/pull/38#issuecomment-6268553167"
+  },
+  "healthAtVerification": "HTTP 200 / ok",
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "348797dd026d92a06dd650c4ae731f0de83a40d902517bebec4946d7be7a0e40"
+    },
+    {
+      "path": "assets/index-Ccs2ogNW.js",
+      "sha256": "ee84fdcb625de2bd5b7c10582c7bea73a996199b3f456483bf47b729a564708a"
+    },
+    {
+      "path": "assets/index-fVLqfW1i.css",
+      "sha256": "610ff0111f5fea8087fca9c88c9444c9c7f30160a4149a1ab56adaa479acb06f"
+    }
+  ],
+  "allBindingsPlainVarsAndSecretNamesUnchanged": true,
+  "gates": {
+    "RELEASE_WRITE_ENABLED": "true",
+    "SUBSTACK_WRITE_ENABLED": "false",
+    "PARAGRAPH_WRITE_ENABLED": "false"
+  },
+  "migrationsApplied": false,
+  "pendingMigrationsAtVerification": false,
+  "uncommittedSubstackFilesIncluded": false,
+  "substackRuntimeJavaScriptUnchangedFromPreviousProduction": true,
+  "substackSourceDifference": "One pre-existing ScheduleRecord interface property differs from deployed PR35; TypeScript emitted JavaScript was verified identical.",
+  "localAdminTests": 64,
+  "localVisualStates": 64,
+  "productionAcceptance": {
+    "checks": 40,
+    "failures": [],
+    "results": [
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-articles"
+      },
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-articles"
+      },
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-articles"
+      },
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-articles"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增文章操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-post-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增文章操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "需要網址建議？"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-new-article"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增文章操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-post-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增文章操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "需要網址建議？"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-new-article"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增文章操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-post-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增文章操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "需要網址建議？"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-new-article"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增文章操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-post-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增文章操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "依系列篩選"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "需要網址建議？"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-new-article"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-article-settings"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-article-settings"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "文章主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "暫存操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除文章操作"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-article-settings"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "文章主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "暫存操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除文章操作"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-article-settings"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "搜尋媒體"
+          }
+        ],
+        "media": {
+          "cardGaps": [],
+          "headerGap": 16,
+          "overflow": false
+        },
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-media"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "搜尋媒體"
+          }
+        ],
+        "media": {
+          "cardGaps": [],
+          "headerGap": 16,
+          "overflow": false
+        },
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-media"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "文章主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "暫存操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除文章操作"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          },
+          {
+            "gap": 16,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "搜尋媒體"
+          }
+        ],
+        "media": {
+          "cardGaps": [],
+          "headerGap": 16,
+          "overflow": false
+        },
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-media"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "文章主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章網址建議"
+          },
+          {
+            "gap": 16,
+            "name": "暫存操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除文章操作"
+          },
+          {
+            "gap": 16,
+            "name": "網站預覽操作"
+          },
+          {
+            "gap": 16,
+            "name": "文章日期操作"
+          },
+          {
+            "gap": 16,
+            "name": "Substack 狀態查詢"
+          },
+          {
+            "gap": 16,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": null,
+            "name": "settings-fields"
+          },
+          {
+            "gap": 12,
+            "name": "schedule-panel"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 4,
+            "name": "文章編輯工具"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "媒體庫主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "文章標題"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "搜尋媒體"
+          }
+        ],
+        "media": {
+          "cardGaps": [],
+          "headerGap": 16,
+          "overflow": false
+        },
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "文章設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "其他管理"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查網站實際版面"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "發布設定與結果"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "舊文章的公開日期"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-media"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-series-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增系列操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1280,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-new-series"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-series-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增系列操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1280,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-new-series"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-series-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增系列操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-new-series"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "新增系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "creation-form new-series-form"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "新增系列操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-new-series"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          },
+          {
+            "gap": 16,
+            "name": "章節排序操作"
+          },
+          {
+            "gap": 16,
+            "name": "移除章節操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "章節排序操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "調整第 1 篇順序"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "移除空白章節"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-series-unlocked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          },
+          {
+            "gap": 16,
+            "name": "章節排序操作"
+          },
+          {
+            "gap": 16,
+            "name": "移除章節操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "章節排序操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "調整第 1 篇順序"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "移除空白章節"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-series-unlocked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          },
+          {
+            "gap": 16,
+            "name": "章節排序操作"
+          },
+          {
+            "gap": 16,
+            "name": "移除章節操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "章節排序操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "調整第 1 篇順序"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "移除空白章節"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-series-unlocked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          },
+          {
+            "gap": 16,
+            "name": "章節排序操作"
+          },
+          {
+            "gap": 16,
+            "name": "移除章節操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "章節排序操作"
+          },
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "調整第 1 篇順序"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "移除空白章節"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-series-unlocked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-series-locked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-series-locked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-series-locked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 8,
+            "name": "系列主要操作"
+          },
+          {
+            "gap": 16,
+            "name": "刪除系列操作"
+          }
+        ],
+        "forms": [
+          {
+            "gap": 12,
+            "name": "series-section-fields"
+          }
+        ],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "系列主要操作"
+          }
+        ],
+        "labels": [
+          {
+            "gap": 8,
+            "name": "系列名稱"
+          },
+          {
+            "gap": 8,
+            "name": "網址代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節代稱"
+          },
+          {
+            "gap": 8,
+            "name": "章節標題"
+          },
+          {
+            "gap": 8,
+            "name": "章節進度"
+          }
+        ],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "系列設定"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "刪除系列"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "章節設定"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-series-locked"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-publishing"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-publishing"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布文章操作 正式開賽後，我怎麼知道自動發文真的完成了？"
+          },
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 從「可以 fork」到「真的能接手」，模板還缺哪些東西？"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-publishing"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布文章操作 正式開賽後，我怎麼知道自動發文真的完成了？"
+          },
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 從「可以 fork」到「真的能接手」，模板還缺哪些東西？"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-publishing"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "forms": [],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-date-form"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "forms": [],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-date-form"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布文章操作 正式開賽後，我怎麼知道自動發文真的完成了？"
+          },
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 從「可以 fork」到「真的能接手」，模板還缺哪些東西？"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？"
+          },
+          {
+            "gap": 16,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "forms": [],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-date-form"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布文章操作 正式開賽後，我怎麼知道自動發文真的完成了？"
+          },
+          {
+            "gap": 16,
+            "name": "發布列操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 從「可以 fork」到「真的能接手」，模板還缺哪些東西？"
+          },
+          {
+            "gap": 16,
+            "name": "發布文章操作 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？"
+          },
+          {
+            "gap": 16,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "forms": [],
+        "groups": [
+          {
+            "count": 2,
+            "gap": 8,
+            "name": "時間調整預覽操作"
+          }
+        ],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "查看與調整"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": null,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-date-form"
+      },
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 1280,
+        "surface": "production-1280-light-records-timeline"
+      },
+      {
+        "actions": [],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 1265,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 1280,
+        "surface": "production-1280-dark-records-timeline"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "系列排程操作 2026 鐵人賽幕後"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "light",
+        "viewport": 390,
+        "surface": "production-390-light-records-timeline"
+      },
+      {
+        "actions": [
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "發布紀錄操作"
+          },
+          {
+            "gap": 16,
+            "name": "系列排程操作 2026 鐵人賽幕後"
+          }
+        ],
+        "forms": [],
+        "groups": [],
+        "labels": [],
+        "media": null,
+        "pageWidth": 375,
+        "shortControls": [],
+        "summaries": [
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "檢查與恢復"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "整個系列的安排"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "範例：後續學習系列：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 107.78125,
+            "name": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天：仍有待完成內容"
+          },
+          {
+            "gap": 12,
+            "height": 46.59375,
+            "name": "網站更新狀態"
+          }
+        ],
+        "theme": "dark",
+        "viewport": 390,
+        "surface": "production-390-dark-records-timeline"
+      }
+    ],
+    "retention": [
+      {
+        "width": 1280,
+        "theme": "light",
+        "cycleSourceUnchanged": true
+      },
+      {
+        "width": 1280,
+        "theme": "dark",
+        "cycleSourceUnchanged": true
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "cycleSourceUnchanged": true
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "cycleSourceUnchanged": true
+      },
+      {
+        "width": 1280,
+        "theme": "light",
+        "mediaSourceUnchanged": true,
+        "focus": "插入圖片"
+      },
+      {
+        "width": 1280,
+        "theme": "dark",
+        "mediaSourceUnchanged": true,
+        "focus": "插入圖片"
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "mediaSourceUnchanged": true,
+        "focus": "插入圖片"
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "mediaSourceUnchanged": true,
+        "focus": "插入圖片"
+      }
+    ]
+  },
+  "evidenceFileDigests": {
+    "production-acceptance/deployment-result.json": "674d75115b32caac1df63db3b589fbac1d875e294cce0b371858fb0f8be0b05f",
+    "production-acceptance/production-matrix.json": "bb14cd278253be15d74f94d9c73a7c3422e17fd3a73472160ba9822091b0a55a",
+    "pr38-main-ci-result.json": "cbf96b98c433a7aa7f99b9ae3f9f4b58c7202397aff411a26c662c2bf194c804",
+    "pr38-final-rereview-result.json": "a65e8854ef0ea3f9a791bcb3c1091488a6302620b205bda5318eb0e68ddeece0"
+  },
+  "limits": [
+    "媒體庫正式資料為空，未新增或上傳圖片",
+    "未儲存文章、系列或排程，未執行發布、通知或刪除",
+    "正常登入與佇列讀回可能更新 session／runtime metadata，不宣稱零資料庫寫入",
+    "本機 Python HTTP 客戶端曾回 403；curl 與正式瀏覽器讀取成功，線上產物雜湊一致",
+    "正式讀取較慢造成一個等待逾時；媒體庫需在開啟前切換主題，重做後最終 40 組皆通過",
+    "本機 64 項行為測試、64 組版面與正式 40 組畫面是不同驗證層；不宣稱完整 WCAG、獨立人工接受或正式寫入／通知驗收。"
+  ],
+  "backfillOnly": true,
+  "newDeploymentDuringBackfill": false,
+  "newProviderOrContentWritesDuringBackfill": false
+}

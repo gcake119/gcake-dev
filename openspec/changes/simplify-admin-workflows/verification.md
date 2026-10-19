@@ -202,3 +202,17 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 - 推送前 pnpm test 完整通過；含實際 Vue script 的 pnpm check：219 files、0 errors／warnings／hints；pnpm build:all 通過。型別暫存檔已移除。發布模擬／本機演練的輸入未受本次三行工作區狀態清理影響，沿用前輪相同腳本、鎖檔及設定的成功證據，不為回報重跑。Spectra analyze／validate、diff check 通過。
 - 沒有 CSS／模板幾何變更，CSS 仍是 index-fVLqfW1i.css，沿用 64 組桌面／手機與明暗量測。新候選將以獨立 commit 更新同一 PR，再觸發 Codex 審查並核對其 CI；最終結果保留在 PR 摘要與交付收據，不能用舊候選結果替代。
 - 本輪僅 App.vue 三行、既有驗收測試及本 change 文件；沒有 Substack、後端、原稿、套件或 workflow 變更，未合併、未部署。
+
+
+## 正式部署與驗收結案（2026-10-19）
+
+使用者後續授權合併、正式部署及本輪文件回填。先前未推送／未部署的段落保留其當時語境；本節補充已完成結果，不回寫歷史失敗為成功。
+
+- main 合併 commit：`1f3e8cf413beadc687db0dbb58ad21994aa70a1c`；與審查 head `4c9dff2e1abc8262d3fce141cb3c7930e00de9c1` 檔案樹完全相同。該 head CI 與 Codex 重新審查皆通過、三個討論完成；[main CI](https://github.com/gcake119/gcake-dev/actions/runs/39267964824) 也全部通過。
+- 正式 Worker Version：`2b8c3127-662a-4463-925e-598925a8e8f8`；Deployment：`7f9d4a6b-448b-4012-92b2-b8020a311a55`；tag `pr38-1f3e8cf`，UTC `2026-10-19T14:37:34.926533Z`，Asia／Taipei 2026-10-19 22：37：34。驗收讀回為 100％ 流量。
+- 由乾淨指定來源建置，部署一次成功；正式 health HTTP 200，HTML／JS／CSS 與建置逐位元組相同。完整 SHA-256、設定及 40 組量測見 [專案部署紀錄](../../../docs/publishing-cms-deployment-20261019.md) 與 [結構化證據](../../../docs/publishing-cms-deployment-20261019.json)。
+- 正式驗收為 1280×900／390×844 × 明暗，各 10 種狀態，共 40 組、0 失敗；檢視循環後原文不變，四組媒體庫關閉皆回入口。先前 64 項 Admin 測試與 64 組本機版面是不同驗證層，未混算。
+- 部署前後普通變數、D1／R2 綁定及 secret 名稱一致；本站發布 true，Substack／Paragraph 寫入 false。無待套 migration，本次未套 migration；未納入未提交 Substack 工作。相對正式 PR35 的唯一後端差異為既有型別欄位，輸出的 Substack JavaScript 已證明相同。
+- 正式媒體庫為空，未上傳或加入假圖；只查看／展開／取消，未儲存內容、排程、公開、通知或刪除。登入／佇列查看可能更新 session／runtime metadata，不宣稱零 D1 寫入、完整 WCAG 或獨立人工接受。
+- Python HTTP 403、非同步等待與 modal 遮罩造成的無效讀值保留限制，重做後才計入 40 組通過。既有原生確認框驗收限制仍保留，沒有因回填文件擴大宣稱。
+- 本輪僅新增部署紀錄／精簡收據、更新設計文件入口、本節及 tasks 結案項目；沒有新的產品 requirement 或行為變更，因此沿用已完成 Gherkin／TDD，不新增需求、測試層、ADR 或 CI。此次文件 commit 不推送、不再次部署，也不 archive change。

@@ -57,3 +57,10 @@
 - [x] 10.1 Reproduce Discarded series edits stay discarded through actual series editing, leave/continue/discard and subsequent article-save requests before implementation.
 - [x] 10.2 Clear pending series state at the workspace leave boundary, preserving continue-editing behavior and independent article saves.
 - [x] 10.3 Run complete local gates before pushing and record re-review findings plus the exact-candidate handoff for CI and Codex, without Substack changes, merge or deployment.
+
+
+## 11. Production evidence backfill
+
+- [x] 11.1 Record the deployed main commit, actual Worker/Deployment IDs, preserved production gates and matching assets in project documents; verify against saved provider readback and SHA-256 receipts without redeployment.
+- [x] 11.2 Record 40 production viewport/theme states separately from 64 local behavior tests and 64 local visual states, retaining empty-media, read-only-content and tool-failure limits; verify all recorded measurements and evidence references.
+- [x] 11.3 Commit only the production evidence documents and this change's completion records after JSON/link consistency, Spectra analyze/validate and staged scope checks; preserve Substack work, with no push, new deployment or archive.
