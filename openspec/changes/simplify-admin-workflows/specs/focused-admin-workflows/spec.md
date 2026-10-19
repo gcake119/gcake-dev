@@ -181,3 +181,28 @@ Article and series creation, article settings, series sections, publishing contr
 - **GIVEN** the owner is signed out or the workspace cannot load in either viewport and theme
 - **WHEN** the owner reads the explanation and available next action
 - **THEN** the action retains 16px after the explanation, is at least 44px high and remains reachable without horizontal scrolling
+
+
+### Requirement: Article-scoped recovery and uninterrupted image editing
+Recovery choices SHALL use the currently opened article and its loaded source revision. Opening another article or creating a new draft SHALL discard recovery state belonging to the previous article. Merging an older browser draft SHALL present both versions for manual editing and SHALL retain the current article identity for subsequent save. Successful image paste/drop directly in the body SHALL preserve the current editing focus; inserting from an open media dialog SHALL close the dialog and return focus to the image entry control. Neither flow SHALL save or publish automatically.
+
+#### Scenario: Merge an older browser draft
+- **GIVEN** a stored browser draft from an older version of the current article
+- **WHEN** the owner opens the article and chooses to merge both versions
+- **THEN** both versions appear for editing and a subsequent save targets the current article and its latest loaded revision
+
+#### Scenario: Recover another article after a conflict
+- **GIVEN** a recovery conflict on one article and an older browser draft for a different article
+- **WHEN** the owner opens the different article and chooses to merge
+- **THEN** only that article's versions are combined and its subsequent save cannot target the previous article
+
+#### Scenario: Continue typing after a body image paste or drop
+- **GIVEN** the body editor has keyboard focus and the media dialog is closed
+- **WHEN** an image pasted or dropped into the body finishes uploading
+- **THEN** the image appears in the working content and keyboard focus remains in the body so typing can continue without another click
+
+
+#### Scenario: Start a new article after recovery
+- **GIVEN** recovery choices for a previous article
+- **WHEN** the owner creates a new article draft
+- **THEN** the new draft has no previous recovery prompt and merging cannot replace its identity or content with the previous article

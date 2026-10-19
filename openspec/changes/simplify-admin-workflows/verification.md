@@ -179,3 +179,15 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 ### 本輪獨立提交整理
 
 使用者後續明確授權將本輪間距、設計文件與 Spectra 驗收紀錄整理為獨立 commit。僅選取兩個後台樣式檔、設計規範與本 change 的 design／spec／tasks／verification，共 7 個檔案；不納入本機 QA host、其他 Substack change 或後端變更。提交前逐檔 SHA-256 與上一輪驗證清單完全相符，因此沿用 59 項測試、建置與 64 組版面驗收，不重跑未改動的程式。另確認 Spectra 與 staged diff，主工作區內容保持不變；只將完成的 commit 匯入本機既有後台分支，不切換 main，不推送、不部署。
+
+
+## PR #38 CI 與審查修正
+
+- 原候選 fed0adb 的 [CI 39261671313](https://github.com/gcake119/gcake-dev/actions/runs/39261671313) 全部通過：完整測試、Astro／TypeScript、全部建置、發布模擬與本機演練；無正式部署。
+- Codex 審查完成並提出兩個 P2：[舊暫存合併狀態](https://github.com/gcake119/gcake-dev/pull/38#discussion_r4314500787)、[正文貼圖焦點](https://github.com/gcake119/gcake-dev/pull/38#discussion_r4314500792)。不是無問題通過。
+- 先補 Article-scoped recovery and uninterrupted image editing 的 Gherkin，再以既有 actual-workspace harness 重現：第一次舊暫存合併缺少草稿、跨文章合併後 POST 錯送到前一篇、正文貼圖後 focus 變成圖片按鈕；三項真實 RED。另測得新增文章殘留前一篇 recovery conflict，第四項 RED。沒有新增測試層、套件或 CI。
+- 修正根因：成功開啟文章時，復原版本和預設選擇重新依當前文章初始化；新增文章清空前一篇復原狀態。關閉已關閉的媒體庫不再移動焦點，開啟中的 dialog 插圖仍正常關閉並回到入口。
+- GREEN：完整 Admin 63／63 通過，測到後續儲存仍送往目前文章及其載入版本；直接正文貼上／拖入保持焦點，從 dialog 插入仍回入口；既有失敗／非圖片保留內容情境也通過。
+- 推送前完整本機 gate 全部通過：pnpm test、pnpm check（暫時抽出實際 Vue script，219 files，0 errors／warnings／hints）、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse、Spectra analyze／validate、diff check。型別暫存檔已精準移除。Hermes 仍有既有 SQLite ResourceWarning，完整測試 exit 0，沒有忽略失敗。
+- App.vue 僅 6 行實作增補，CSS／模板幾何未變；原 64 組視覺驗收沿用，這次以實際 Vue script 的行為驗收補足。沒有任何 Substack 後端、腳本、原稿、依賴或 workflow 變更。
+- 本輪作為後續獨立修正 commit 更新同一 PR。原始 CI 通過與本機 GREEN 不代表新候選 CI 或重新審查已完成；新候選結果另存 PR 交付收據。未合併、未啟用自動合併、未部署。

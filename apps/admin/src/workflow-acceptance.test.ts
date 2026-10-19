@@ -190,6 +190,7 @@ async function withActualWorkspace(run: (state: any) => Promise<void>) {
   await writeFile(url,ts.transpileModule(compiled,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText);
   const originalWindow=globalThis.window;
   const originalFetch=globalThis.fetch;
+  const originalStorage=globalThis.localStorage;
   try {
     const component=(await import(url.href+'?t='+Date.now())).default;
     let state:any;
@@ -203,6 +204,7 @@ async function withActualWorkspace(run: (state: any) => Promise<void>) {
     await run(state);
   } finally {
     globalThis.fetch=originalFetch;
+    Object.assign(globalThis,{localStorage:originalStorage});
     Object.assign(globalThis,{window:originalWindow});
     await unlink(url);
   }
@@ -313,5 +315,79 @@ test('actual-media-paste-drop: images insert after upload while failed and non-i
       await s.onEditorPaste({clipboardData:{files:[]},preventDefault(){assert.fail('text paste must remain native');}});
       assert.equal(s.editorSource.value,before);
     } finally {globalThis.createImageBitmap=bitmap;}
+  });
+});
+
+
+for (const priorConflict of [false, true]) {
+  test(`actual-stale-draft: merge and save stay on the opened article after prior conflict=${priorConflict}`, async () => {
+    await withActualWorkspace(async s => {
+      const beta={...post,slug:'beta',title:'第二篇',source:'# 第二篇較新內容',baseBlobSha:'beta-blob',baseCommitSha:'beta-revision'};
+      const storage:Record<string,any>={
+        'gcake:draft:gcake119/gcake-dev:beta:older-blob':'第二篇的舊暫存',
+        getItem(key:string){return this[key]??null;},
+      };
+      Object.assign(globalThis,{localStorage:storage});
+      const writes:{url:string;body:any}[]=[];
+      globalThis.fetch=async(url,options)=>{
+        if(options?.method==='POST'){
+          writes.push({url:String(url),body:JSON.parse(String(options.body))});
+          return new Response(JSON.stringify({error:{message:priorConflict&&writes.length===1?'ARTICLE_CONFLICT':'目前無法儲存'}}),{status:priorConflict&&writes.length===1?409:503});
+        }
+        return new Response(JSON.stringify(String(url).includes('publications')?{states:[]}:String(url).endsWith('/beta')?beta:{...post,source:'# 第一篇較新內容',baseCommitSha:'first-revision'}));
+      };
+      if(priorConflict)await s.saveToGit();
+      await s.openPost('beta');
+      s.recoveryAction.value='merge';
+      s.resolveRecovery();
+      assert.match(s.editorSource.value,/第二篇較新內容/);
+      assert.match(s.editorSource.value,/第二篇的舊暫存/);
+      assert.doesNotMatch(s.editorSource.value,/第一篇/);
+      await s.saveToGit();
+      assert.equal(writes.at(-1)?.url,'/api/v1/posts/beta');
+      assert.equal(writes.at(-1)?.body.expectedBaseCommitSha,'beta-revision');
+      assert.equal(writes.at(-1)?.body.files[0].expectedBlobSha,'beta-blob');
+    });
+  });
+}
+
+test('actual-body-media-focus: direct paste and drop preserve editing focus while dialog insertion restores entry focus', async () => {
+  await withActualWorkspace(async s => {
+    const bitmap=globalThis.createImageBitmap;
+    globalThis.createImageBitmap=async()=>({width:10,height:10,close(){}}) as any;
+    let focused='body';
+    s.mediaButtonElement.value={focus(){focused='image';}};
+    try {
+      globalThis.fetch=async(_url,init)=>new Response(JSON.stringify(init?.method==='POST'
+        ?{id:'image',key:'picture.png',url:'/focus-image.png',width:10,height:10,size:5}:{media:[]}));
+      const file=new File(['image'],'picture.png',{type:'image/png'});
+      for(const kind of ['paste','drop']){
+        s.mediaOpen.value=false;focused='body';
+        const event={clipboardData:{files:[file]},dataTransfer:{files:[file]},preventDefault(){}};
+        await(kind==='paste'?s.onEditorPaste(event):s.onEditorDrop(event));
+        assert.match(s.editorSource.value,/focus-image.png/);
+        assert.equal(focused,'body',`${kind} moved focus away from typing`);
+      }
+      s.mediaOpen.value=true;
+      await s.onEditorPaste({clipboardData:{files:[file]},preventDefault(){}});
+      assert.equal(s.mediaOpen.value,false);
+      assert.equal(focused,'image');
+    } finally {globalThis.createImageBitmap=bitmap;}
+  });
+});
+
+
+test('actual-new-article: creating a draft clears recovery choices from the previous article',async()=>{
+  await withActualWorkspace(async s=>{
+    s.recoveryConflict.value={draft:'前一篇暫存',repository:'前一篇新內容'};
+    s.recoveryPost.value={...post,slug:'previous',source:'前一篇新內容'};
+    s.posts.value=[{...post,commitSha:'new-revision'}];
+    s.newPostTitle.value='新文章';s.newPostSlug.value='fresh';
+    s.createPost();
+    assert.equal(s.editorSlug.value,'fresh');
+    assert.equal(s.recoveryConflict.value,undefined);
+    s.startManualMerge();
+    assert.equal(s.selectedPost.value.slug,'fresh');
+    assert.doesNotMatch(s.editorSource.value,/前一篇/);
   });
 });

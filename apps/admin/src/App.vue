@@ -213,6 +213,7 @@ async function openMediaLibrary(): Promise<void> {
 }
 
 function closeMediaLibrary(): void {
+  if (!mediaOpen.value) return;
   mediaOpen.value = false;
   mediaButtonElement.value?.focus();
 }
@@ -402,6 +403,8 @@ async function openPost(slug: string): Promise<void> {
     const prefix = `gcake:draft:gcake119/gcake-dev:${slug}:`;
     const staleKey = Object.keys(localStorage).find((candidate) => candidate.startsWith(prefix) && candidate !== key);
     const staleDraft = staleKey ? localStorage.getItem(staleKey) : null;
+    recoveryPost.value = staleDraft ? post : undefined;
+    recoveryAction.value = 'copy';
     recoveryConflict.value = staleDraft
       ? { draft: staleDraft, repository: post.source, detail: '這份暫存來自較舊的文章版本。' }
       : undefined;
@@ -440,6 +443,9 @@ function createPost(): void {
     message.value = '目前無法確認文章版本，請重新載入。';
     return;
   }
+  recoveryPost.value = undefined;
+  recoveryConflict.value = undefined;
+  recoveryAction.value = 'copy';
   const source = createStandaloneSource(title);
   selectedPost.value = {
     slug,

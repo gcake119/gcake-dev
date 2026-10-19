@@ -43,3 +43,10 @@
 - [x] 8.1 Specify Consistent spacing across Admin surfaces and record rendered RED measurements before CSS changes; use the existing local browser host and existing tests without a new CI layer.
 - [x] 8.2 Correct shared form/disclosure/action spacing across article, series, publishing and populated media without changing business actions.
 - [x] 8.3 Verify desktop/390px and both themes across forms, settings, scheduling, populated/empty media and failure feedback; record real boundaries/screenshots, run Admin tests/build and Spectra checks, and preserve unrelated Substack changes. No push or deployment.
+
+
+## 9. PR review regressions
+
+- [x] 9.1 Reproduce stale browser-draft merge, cross-article recovery and direct-body image focus regressions using the existing actual-workspace acceptance harness before implementation.
+- [x] 9.2 Implement Article-scoped recovery and uninterrupted image editing: scope recovery state to each opened article and restore media entry focus only when a dialog was actually open; preserve existing dialog close and failed upload behavior.
+- [x] 9.3 Run affected acceptance tests, complete local gates before pushing a candidate, and record CI/review evidence while excluding Substack changes. No merge or deployment.
