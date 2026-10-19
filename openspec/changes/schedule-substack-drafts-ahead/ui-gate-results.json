@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "scope": "foreground private-draft UI qualification; no schedule/publication/send commitment",
+  "draft": {
+    "id": "221081849",
+    "slug": "substack-ui-qualification-20261019",
+    "state": "draft",
+    "savedAndReloaded": true
+  },
+  "publishedIdsBeforeAndAfter": [
+    "221069931",
+    "220473117",
+    "220011124"
+  ],
+  "committedProviderSchedules": 0,
+  "publicationActions": 0,
+  "sendActions": 0,
+  "existingDirtyFilesExtended": [
+    "docs/distribution-scripted-runbook.md",
+    "openspec/changes/schedule-substack-drafts-ahead/candidate-sha256.json",
+    "openspec/changes/schedule-substack-drafts-ahead/evidence.md",
+    "openspec/changes/schedule-substack-drafts-ahead/tasks.md",
+    "scripts/publishing/distribution-attended.test.ts",
+    "scripts/publishing/substack-browser.ts",
+    "scripts/publishing/substack-schedule-attended.ts",
+    "scripts/publishing/substack-schedule-handoff.ts",
+    "scripts/publishing/substack-schedule.ts"
+  ],
+  "otherExistingDirtyInputsUnchanged": true,
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/pnpm-test.log",
+      "logSha256": "17e96a9fa617c0b019569e2cab014c38ecc5b134a0dda45557651d6471898fc6"
+    },
+    {
+      "command": "pnpm check",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/pnpm-check.log",
+      "logSha256": "638977326ff9d4ad5f49b18d059119d2c87687e5c385f5ac87fa047607a2f8fc"
+    },
+    {
+      "command": "pnpm build:all",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/build-all.log",
+      "logSha256": "6358c6af0e86a68d54c2f58e5a6ff86bd17acf19f15aa43767340af050b4a229"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/release-dry-run.log",
+      "logSha256": "f8dfb5bdcf84b5a177ec840219c5e65d07df14edf1024a095936345e2ce27a2c"
+    },
+    {
+      "command": "spectra validate",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/validate-final.log",
+      "logSha256": "47730ab64012919fcc5567b56572cd05c518251382e2552a2988355d6bcf24d3"
+    },
+    {
+      "command": "spectra analyze",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-ui-20261019/analyze-final.log",
+      "logSha256": "14a99d60c936b2786a6eb736d632f5128348b9e9a6cca5007a04a329719f0c49"
+    }
+  ],
+  "pending": [
+    "3.1 committed Scheduled-list readback; deferred by owner decision not to create any schedule",
+    "5.3 production activation pilot"
+  ],
+  "screenshots": [
+    "ui-evidence/no-schedules.png",
+    "ui-evidence/proposed-preview-only.png"
+  ],
+  "ownerDecision": {
+    "noScheduleCreation": true,
+    "readbackDeferred": true,
+    "reply": "維持不建立任何排程，這項讀回保留待驗"
+  }
+}

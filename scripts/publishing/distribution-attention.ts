@@ -8,7 +8,7 @@ const reasons=new Set(['DISTRIBUTION_MANUAL_REQUIRED','SUBSTACK_BACKGROUND_ATTEN
 const issueCode=(r:AttentionRound['results'][number])=>r.status==='manual_required'?'DISTRIBUTION_MANUAL_REQUIRED':reasons.has(r.code??'')?r.code:undefined;
 export async function publishAttentionSnapshot(file:string,round:AttentionRound,durableHolds?:{slug:string}[]){
  // Incomplete source/round evidence cannot resolve a previously recorded hold.
- if(round.results.some(r=>!issueCode(r)&&r.status!=='verified')||round.status!=='completed'&&!round.results.length)return {status:'retained'};
+ if(round.results.some(r=>!issueCode(r)&&!['verified','observed'].includes(r.status))||round.status!=='completed'&&!round.results.length)return {status:'retained'};
  // Initial owner seeding can announce observed issues, but never replace an existing
  // snapshot or clear anything without a complete durable-hold read.
  if(durableHolds===undefined){try{await fs.access(file);return {status:'retained'};}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}if(!round.results.some(r=>r.target==='substack'&&!!issueCode(r)))return {status:'retained'};}

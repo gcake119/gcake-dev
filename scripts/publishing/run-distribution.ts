@@ -12,6 +12,7 @@ import { AttendedSubstackAdapter, FileAttendedExchange, anonymousSubstackReader 
 import { assertPagesPublication } from './pages-publication';
 
 export interface DistributionConfig {
+  scheduled?: {policyVersion:'scheduled-source-first-delivery-v1';writeEnabled:boolean;observeEnabled?:boolean;transport?:'attended';sessionDirectory?:string};
   substack: { transport?: 'profile' | 'macos-chrome'; profileContractReviewed?: boolean; macosChrome?: {processId?:number;windowId:number;tabId:number;automationApproved:boolean;contractReviewed:boolean}; writeEnabled: boolean; profile: string; ui: SubstackUiContract };
   trial?: { sourceCommit?: string; writeEnabled: boolean; slug: string; sourceRevision: string; substackOrigin: string; digests: Record<DistributionTarget, string>; sessionDirectory: string };
   unattended?: { notifyViaHermes?: boolean; enabled: boolean; slug?: string; scope?: 'all-formal-markdown'; repository?: 'gcake119/gcake-dev'; branch?: 'main'; policy: 'pages-first-no-newsletter'; targets: DistributionTarget[] };
@@ -34,6 +35,8 @@ export function reviewDigest(article: ReturnType<typeof articleFromBundle>, targ
 }
 async function json<T>(file: string): Promise<T> { return JSON.parse(await fs.readFile(path.resolve(file), 'utf8')) as T; }
 export async function main(args = process.argv.slice(2), profileOpener = openSubstackProfile, root = process.cwd()) {
+  const {SCHEDULED_OPERATIONS,runScheduledDistribution}=await import('./run-scheduled-distribution');
+  if(SCHEDULED_OPERATIONS.includes(args[0] as never))return runScheduledDistribution(args,root);
   const background=args.includes('--background');
   if(args.filter(arg=>arg==='--background').length>1)throw Error('DISTRIBUTION_ARGUMENT_INVALID');
   const cleanArgs = args.filter(arg => arg !== '--'&&arg!=='--background');

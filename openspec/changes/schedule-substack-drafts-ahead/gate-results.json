@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "scope": "local-only; no CI/provider/production acceptance",
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/pnpm-test-unsandboxed.log",
+      "logSha256": "5f35e2c35ddd71d0a2c3be77f46002d608bb5d4e9e86ffff47f3bdd17697f114"
+    },
+    {
+      "command": "pnpm test:distribution after shared handoff edits",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/distribution-final.log",
+      "logSha256": "fb92251b7b2b0846d6bddc5ba20a24fb974489a81d89dfb38fc845120b0faff7"
+    },
+    {
+      "command": "final affected scheduled/attended/sync/coordinator suites",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/affected-final-candidate.log",
+      "logSha256": "a81cdcd24d1a4cb7930318613fef16d1bd1f61cb0beb1c44051983283876a0ce"
+    },
+    {
+      "command": "pnpm check final frozen code",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/check-final-frozen.log",
+      "logSha256": "66410577aee162613b4c62636b1532deb37751a566501c8bdda52180def8bd72"
+    },
+    {
+      "command": "pnpm build:all",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/build-all.log",
+      "logSha256": "edc4dd089d9128cc6e5ea6b06487cbb62592020cc50e05fb93eca66fd9736e47"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/release-dry-run.log",
+      "logSha256": "5be6fd1fa40e6c659167cba687ddc5b4681f473e380e5e96822deddf9bdb7b6a"
+    },
+    {
+      "command": "spectra validate",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/spectra-final-validate.log",
+      "logSha256": "47730ab64012919fcc5567b56572cd05c518251382e2552a2988355d6bcf24d3"
+    },
+    {
+      "command": "spectra analyze",
+      "result": "passed",
+      "log": "/private/tmp/gcake-substack-apply-20261019/spectra-final-analyze.log",
+      "logSha256": "14a99d60c936b2786a6eb736d632f5128348b9e9a6cca5007a04a329719f0c49"
+    }
+  ],
+  "evidenceReuse": "Full pnpm test passed; subsequent changes are confined to distribution scripts/tests. Final affected suites and frozen-source check cover them. Build and release rehearsal inputs affecting their scenarios remain unchanged. No duplicate CI workflow or Docker environment added.",
+  "preservedDirtySpecMatchesBackup": true,
+  "productionWrites": false,
+  "pendingTasks": [
+    "3.1 current provider UI qualification",
+    "5.3 authorized production pilot and ordinary subsequent observation"
+  ],
+  "finalAffectedSuite": {
+    "passed": 78,
+    "failed": 0,
+    "skipped": 0,
+    "log": "affected-final-candidate.log"
+  },
+  "progress": {
+    "total": 15,
+    "complete": 13,
+    "remaining": 2
+  }
+}

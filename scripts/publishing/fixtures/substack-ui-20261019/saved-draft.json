@@ -1,0 +1,8 @@
+{
+  "id": "221081849",
+  "slug": "substack-ui-qualification-20261019",
+  "description": "前景介面驗收專用；保持草稿，不發布、不排程、不寄送。",
+  "html": "<h2>介面驗收專用</h2><p>這是未發布的驗收草稿，用來核對儲存、網址與排程預覽。請勿發布或寄送通知。</p><ul><li><p>保留相同文章 ID</p></li><li><p>不確認正式排程</p></li></ul><p><a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://gcake119.github.io/gcake-dev/posts/ithome-2026-astro-choice/\">原文與最新版本</a></p><pre><code><code>console.log(\"draft-only\");</code></code></pre>",
+  "saved": true,
+  "title": "Substack 排程介面驗收（請勿發布）2026-10-19"
+}
