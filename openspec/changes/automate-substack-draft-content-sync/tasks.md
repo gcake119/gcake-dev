@@ -88,3 +88,39 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 13.1 Reproduce a completed same-ID update whose result-media read exceeds the round budget using the existing executor/SQLite/PNG fixture; assert cancellation, bounded exit, retained original intent and no replay under the existing finite-budget and unknown-outcome contracts.
 - [x] 13.2 Share the remaining round cancellation with executor media verification, then verify focused and complete local gates before updating the PR; retain prior review and runtime evidence without deployment or Admin archive changes.
+
+
+## 14. Read-only frontend integration — 2026-10-20
+
+- [x] 14.1 Deliver Read-only frontend status integration: connect the deployed list/per-slug GET APIs through a cancellable same-origin reader and render independent sync/publication/delivery states, check time, unknown receipt and attention within the deployed existing admin layout. Start with failing behavior and actual Vue template acceptance tests; cover unavailable/expired/untracked/stale-response/page boundaries. No provider mutation controls, timer or dependency.
+- [x] 14.2 Complete affected required local gates and Chrome UI acceptance at desktop/390px in both themes, including normal and important failure states, actual request-method evidence, cleanup and scope preservation. Record local fixture versus real production API evidence honestly and deliver the worktree/diff and UI handoff; no commit/push/deploy without separate authority.
+
+
+## 15. Authorized production frontend rollout — 2026-10-20
+
+- [x] 15.1 Deliver Production frontend delivery preserves draft-only authority: verify exact qualified frontend hashes and passing-gate provenance, prepare isolated current-backend plus frontend-assets candidate, preserve live config/bindings and rollback identity, complete production dry-run and deploy once after checking current version. No migration or provider operation.
+- [x] 15.2 Verify actual deployed bytes, production Chrome list/detail/refresh GET requests and three independent states at desktop/390px, compare immutable six-record commitments and disabled creation/config, clean owned browser resources and record version, screenshots and real-versus-local evidence. No overrides, scheduling, publishing, notification, commit or push.
+
+
+## 16. Legacy publication read repair — 2026-10-20
+
+- [x] 16.1 Deliver Legacy publication history reads without write authority: reproduce the omitted production reader in Worker entrypoint and stale-error UI behavior with existing tests, wire persisted readStates only, enforce owner/no-store/failure distinctions and reject production legacy mutations, then pass all existing required local gates. No migration or fabricated verification.
+- [x] 16.2 Deploy the qualified scoped reader/UI repair preserving current vars/bindings and rollback identity, use Chrome actual production GET and independent Substack states to prove the configuration error is resolved, compare six original commitments/config and clean owned resources. Preserve disabled creation, schedules, published articles and delivery; no commit/push.
+
+
+## 17. Current Pages evidence — 2026-10-20
+
+- [x] 17.1 Deliver Current Pages publication evidence is visible independently: add failing current-runtime/actual-template acceptance cases, project only persisted active release/matching deployment/page-RSS proof into an additive pages response, distinguish missing/unlocked/ambiguous/unavailable states and clear old article evidence; pass all five existing local gates without new write authority or fresh verification.
+- [x] 17.2 Deploy the scoped qualified projection/UI using preserved production configuration and current version guard, verify real published and unpublished article states in Chrome at desktop/390px, assert current Pages release records and six Substack commitments/config unchanged, save evidence and clean owned tabs/viewport. No migration, scheduling, publication, subscriber operation, commit or push.
+
+
+## 18. Clean status feature commit and PR — 2026-10-20
+
+- [x] 18.1 Assemble only the deployed status UI, legacy reader repair and Pages evidence onto clean merged main, preserving PR41 fixes and unrelated dirty checkouts. Reproduce and fix late publication replies under the existing article-switch scenario using the actual Vue setup acceptance.
+- [x] 18.2 Complete five required local gates and Spectra/diff/scope checks, retain exact candidate provenance and historical production limits, and prepare an independent commit for authorized push and PR review. CI/Codex outcomes are recorded on the exact PR head, not claimed by this local gate. No merge/deploy or scheduling/delivery activation.
+
+
+## 19. PR #42 new draft publication evidence isolation
+
+- [x] 19.1 Reproduce the reviewed P1 through actual Vue setup for an already completed old Pages read and pending old success/error replies when creating an unsaved draft, using existing Article changes or identity has not been tracked / Error recovery clears obsolete article evidence contracts. Invalidate old reads and clear all publication evidence at the new-draft context boundary; retain normal saved-article reads.
+- [x] 19.2 Run focused acceptance, all five existing local gates and Spectra/scope checks, retain RED/GREEN and exact candidate evidence, prepare only PR42 update for exact-head CI/Codex review (outcomes recorded on the PR). Preserve Admin archive isolation, production runtime and all schedule/delivery gates.

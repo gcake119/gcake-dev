@@ -159,3 +159,39 @@ async function readDraftStatus(slug: string, signal?: AbortSignal) {
 三個既有 HTML／JS／CSS 雜湊、正式變數與 bindings、六篇 Substack 身分／排程／寄送承諾及同步設定雜湊都與部署前一致。沒有 migration、排程／文章寫入、發布或通知。正常 OAuth 登入會建立 CMS session，因此不宣稱整個驗收零 D1 寫入。
 
 部署與證據細節見 [正式部署驗收](../openspec/changes/automate-substack-draft-content-sync/api-production-20261020.md)；完整同步資格／圖片支援見 [持續同步驗收](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md)。前端 API 與同步 runtime 是不同交付層；圖片目前支援獨立 PNG，原圖雜湊、順序、alt 與連結均須驗證，無需增加前端寫入端點。
+
+
+## 已實作的後台介面（2026／10／20）
+
+候選前端在「發布管理」讀取列表，在已儲存文章的發布資訊讀取單篇。共用 SubstackStatusPanel.vue 與 substack-status.ts，請求固定 GET、same-origin、no-store。進入畫面與手動「重新讀取狀態」時讀取，分頁每頁 50 筆；本次不新增 60 秒輪詢或同步 timer。
+
+三欄獨立顯示「草稿同步／發布／寄送」，含台北查核時間、原 Substack 編號及「尚無實收證據」。503／網路錯誤保留並標示上次資料；401 清空私有狀態並提供正常登入；404 顯示尚未追蹤。切換文章或離開畫面時取消舊請求並忽略晚到回應。獨立的發布／身分待處理提示不會因草稿 verified 消失。
+
+Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415 單篇／刷新，三次新端點請求皆 200 與 no-store。當時 ID 221099763 回報 inconclusive，畫面如實顯示「驗證未完成」，不推定寄送失敗或自動重試寫入。既有舊發布查詢另有「發佈中心尚未設定。」訊息，未改動該舊流程。
+
+此為隔離 worktree 的實作與候選介面驗收；正式前端尚未部署、沒有 commit／push。真實 API 驗收只在自建 Chrome 分頁暫時載入候選 JS／CSS，正式 HTML、登入、API 與部署資產均維持原版本；分頁與覆寫已清除。詳細範圍、故障模擬與證據見 [前端介面驗收](../openspec/changes/automate-substack-draft-content-sync/frontend-ui-20261020.md)。
+
+
+## 已正式部署的後台介面（2026／10／20 01：37 台北）
+
+後續明確授權後，前端已正式部署。正式 version `534184e5-b51c-4afe-a8d2-61a66ab53b8c`，100％流量。進入 [正式後台](https://gcake-admin-worker-production.wwhowbuhow.workers.dev/) 的「發布管理」查看列表，或開啟文章的「發布設定與結果」查看單篇；「重新讀取狀態」只發 GET，不啟動同步或寄送。
+
+本次 Chrome 使用實際正式 Document／資產，兩端點及刷新皆 200／no-store，三種狀態獨立呈現；桌機與手機明暗主題通過。六篇原 ID、slug、既有排程與寄送承諾、私有同步設定皆保留，新建仍停用。既有舊發布查詢「發佈中心尚未設定。」訊息未改，新 Substack API 獨立成功。沒有新增真人實收證據。
+
+前一節的候選預覽屬歷史紀錄；最新部署及驗收見 [正式前端驗收](../openspec/changes/automate-substack-draft-content-sync/frontend-production-20261020.md)。
+
+
+## 舊發布紀錄查詢已修正（2026／10／20）
+
+正式 version `099cf828-63ac-41c9-aadf-5ce8e4f1b707` 已接通舊 `/api/v1/publications/:slug?sourceRevision=…` 的既有歷史唯讀讀取。先前「發佈中心尚未設定。」來自 Worker 遺漏讀取器接線，已以正式 Chrome 200／no-store 及實際畫面驗收修復。缺少 Pages 歷史顯示「尚無發布紀錄」，不推定公開狀態。真實儲存讀取失敗仍顯示錯誤，production 舊操作沒有啟用。
+
+新 Substack 列表與單篇端點、三種獨立狀態保持原有契約；新建仍停用，六篇原身分／既有排程／寄送承諾未變。詳見 [舊查詢修正與驗收](../openspec/changes/automate-substack-draft-content-sync/publication-read-fix-20261020.md)。
+
+
+## GitHub Pages 已接上現行發布證據（2026／10／20）
+
+正式 version `b7019878-d470-4558-9d68-ebaee8a7fe4a` 的既有 `GET /api/v1/publications/:slug?sourceRevision=…` 除相容舊 states 外，新增 pages 物件，來源為 release_queue_runtime。Pages 的發布紀錄、對應部署與文章／RSS 公開驗證分開呈現，不再只憑空的舊 Pages 表顯示無紀錄。
+
+`pages.source=release-queue`；`state` 為當前有效發布狀態或 not-recorded；`historyCount` 保留解鎖歷史數。`deployment.state` 只採相同發布 commit 的部署；`verification.state` 為 verified／page-only／incomplete／not-verified，時間取已保存的 verifiedAt／pageVerifiedAt，publicUrl 只在完整證據時提供。無關 main commit 不會令歷史查核變 stale；畫面明確標示這是已保存的結果，不代表現在內容重新驗證。
+
+此查詢只有 D1 SELECT，沒有 ingest、重新驗證、發布或 provider 存取。未發布稿仍顯示無紀錄；多個有效身分與讀取失敗維持 503，不當成空清單。Substack 兩個唯讀 API 與同步／發布／寄送三狀態維持原契約，新建仍停用。詳見 [Pages 現行紀錄正式驗收](../openspec/changes/automate-substack-draft-content-sync/pages-current-20261020.md)。

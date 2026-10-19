@@ -129,8 +129,8 @@ export class PublicationOperations {
     private readonly now: () => string = () => new Date().toISOString(),
   ) {}
 
-  async readStates(postSlug: string, currentRevision: string): Promise<readonly PublicationTargetState[]> {
-    return (await this.repository.listStates(postSlug)).filter(state => state.target === 'github_pages' || state.target === 'substack').map((state) => state.sourceRevision !== currentRevision
+  async readStates(postSlug: string, currentRevision: string): Promise<readonly (PublicationTargetState & {target: PublicationTarget})[]> {
+    return (await this.repository.listStates(postSlug)).filter((state): state is PublicationTargetState & {target: PublicationTarget} => state.target === 'github_pages' || state.target === 'substack').map((state) => state.sourceRevision !== currentRevision
       ? { ...state, status: 'stale' as const }
       : state);
   }

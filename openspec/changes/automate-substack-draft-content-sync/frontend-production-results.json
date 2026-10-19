@@ -1,0 +1,272 @@
+{
+  "passed": true,
+  "deployment": {
+    "version": "534184e5-b51c-4afe-a8d2-61a66ab53b8c",
+    "deployment": "26b32954-da5d-47ba-b168-3adba74d269a",
+    "createdOn": "2026-10-19T17:37:50.270099Z",
+    "percentage": 100,
+    "resourcesIdentical": true,
+    "rollbackVersion": "66a6ea7d-8d71-49a7-b91a-67cd2a095f9c"
+  },
+  "frontendDeployed": true,
+  "responseOverrides": false,
+  "qualifiedCandidateUnchanged": true,
+  "reusedLocalGates": [
+    {
+      "name": "check",
+      "exitCode": 0,
+      "reused": "check-final.log",
+      "allInputMtimesBeforeCheckStart": true
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "seconds": 88.7
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0,
+      "seconds": 7.67
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 9.66
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 9.77
+    }
+  ],
+  "publicChecks": {
+    "assets": [
+      {
+        "path": "index.html",
+        "sha256": "8ed6c126aa4c2122d62e5a3b3027a3af6d18df9e8046d6262795c76d523bc91c",
+        "matched": true
+      },
+      {
+        "path": "assets/index-EBQCjx1N.css",
+        "sha256": "a246324e9ac9d3993ba24ce72f2c11fc8fbe7a00fc239ccbcbe75d6156e79c0e",
+        "matched": true
+      },
+      {
+        "path": "assets/index-DVBQ00qb.js",
+        "sha256": "133073588be1006b37a5ed204ef09f5f0101fed694e4750dba899b4ee31ea7dd",
+        "matched": true
+      }
+    ],
+    "health": {
+      "status": "ok",
+      "service": "gcake-admin-worker",
+      "contractVersion": "v1"
+    },
+    "anonymous": [
+      {
+        "path": "/api/v1/substack/drafts",
+        "status": 401,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 401,
+        "cacheControl": "no-store"
+      }
+    ]
+  },
+  "chrome": {
+    "checkedAt": "2026-10-19T17:39:32.475Z",
+    "requests": [
+      {
+        "requestId": "90572.9",
+        "path": "/api/v1/auth/session",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.12",
+        "path": "/api/v1/posts",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.13",
+        "path": "/api/v1/series",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.14",
+        "path": "/api/v1/github/deployments/latest",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.15",
+        "path": "/api/v1/releases",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.16",
+        "path": "/api/v1/substack/drafts",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.17",
+        "path": "/api/v1/posts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.18",
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.19",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "90572.22",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET"
+      }
+    ],
+    "responses": [
+      {
+        "requestId": "90572.16",
+        "path": "/api/v1/substack/drafts",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "90572.19",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "90572.22",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      }
+    ],
+    "cases": [
+      {
+        "name": "production-desktop-dark",
+        "width": 1728,
+        "height": 907,
+        "scrollWidth": 1713
+      },
+      {
+        "name": "production-desktop-light",
+        "width": 1728,
+        "height": 907,
+        "scrollWidth": 1713
+      },
+      {
+        "name": "production-mobile-light",
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 375
+      },
+      {
+        "name": "production-mobile-dark",
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 375
+      },
+      {
+        "name": "production-original-single-refresh"
+      }
+    ],
+    "records": [
+      {
+        "id": "221069931",
+        "slug": "ithome-2026-astro-choice",
+        "sync": "excluded",
+        "checkedAt": "2026-10-19T17:25:21.267Z",
+        "publication": "verified",
+        "confirmedTime": null,
+        "delivery": "not_armed",
+        "receipt": "unknown"
+      },
+      {
+        "id": "220011124",
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "sync": "excluded",
+        "checkedAt": "2026-10-19T17:25:24.164Z",
+        "publication": "verified",
+        "confirmedTime": null,
+        "delivery": "not_armed",
+        "receipt": "unknown"
+      },
+      {
+        "id": "221098688",
+        "slug": "ithome-2026-publishing-in-production",
+        "sync": "excluded",
+        "checkedAt": "2026-10-19T17:25:27.082Z",
+        "publication": "scheduled",
+        "confirmedTime": "2026-10-21T23:00:00.000Z",
+        "delivery": "armed",
+        "receipt": "unknown"
+      },
+      {
+        "id": "220473117",
+        "slug": "ithome-2026-publishing-toolchain",
+        "sync": "excluded",
+        "checkedAt": "2026-10-19T17:25:30.039Z",
+        "publication": "verified",
+        "confirmedTime": null,
+        "delivery": "not_armed",
+        "receipt": "unknown"
+      },
+      {
+        "id": "221099763",
+        "slug": "ithome-2026-tech-blog-boundary",
+        "sync": "verified",
+        "checkedAt": "2026-10-19T17:28:22.039Z",
+        "publication": "draft_prepared",
+        "confirmedTime": null,
+        "delivery": "not_armed",
+        "receipt": "unknown"
+      },
+      {
+        "id": "221099415",
+        "slug": "ithome-2026-template-hardening",
+        "sync": "verified",
+        "checkedAt": "2026-10-19T17:31:12.167Z",
+        "publication": "draft_prepared",
+        "confirmedTime": null,
+        "delivery": "not_armed",
+        "receipt": "unknown"
+      }
+    ]
+  },
+  "preserved": {
+    "sixOriginalCommitments": true,
+    "syncConfigSha256Unchanged": true,
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "workerBackendResourcesUnchanged": true
+  },
+  "cleanup": {
+    "viewportReset": true,
+    "ownTabClosed": true,
+    "initialDarkThemeRestored": true,
+    "noResponseOverridesUsed": true
+  },
+  "privateEvidence": "/private/tmp/gcake-admin-ui-production-20261020",
+  "screenshots": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a153a5-b815-7753-ac1f-b3b7f9318c2b/admin-status-production-20261020",
+  "limitations": [
+    "Existing legacy publication lookup remains not configured",
+    "Failure UI scenarios retain prior local acceptance evidence; no production failure injection",
+    "No new live subscriber receipt evidence",
+    "No commit, push, merge or migration"
+  ],
+  "spectra": {
+    "analyzeFindings": 0,
+    "valid": true,
+    "tasksComplete": 29,
+    "tasksTotal": 29
+  },
+  "diffCheck": true
+}

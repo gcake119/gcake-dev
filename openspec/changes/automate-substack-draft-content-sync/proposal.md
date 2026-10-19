@@ -48,3 +48,28 @@ The owner explicitly requested unattended actual write and reload on the same or
 ## Read-only production API delivery — 2026-10-20
 
 The owner explicitly authorizes deploying the implemented admin read-only API and production acceptance, with endpoint/state handoff. Preserve current production frontend assets, variables/bindings and provider commitments. Do not change the Chrome sync runtime, allowCreate=false, schedules, publication or subscriber delivery. No commit/push/merge, migration or new frontend screen is inferred.
+
+
+## Read-only frontend integration — 2026-10-20
+
+The owner authorizes connecting the two deployed GET APIs in the existing admin UI, separate sync/publication/delivery presentation, and interface acceptance. Reuse the deployed PR38 interface as base in an owned worktree; preserve the dirty primary. No provider mutation, creation enablement, schedule/publication/delivery operation, commit/push or production frontend rollout is inferred. The existing read-only MCP authorization remains unchanged; no new index is required after automatic review rejected index_repository.
+
+
+## Authorized production frontend delivery — 2026-10-20
+
+The owner explicitly authorizes deploying the qualified frontend candidate and Chrome production acceptance of both read-only APIs and independent synchronization/publication/delivery presentation. Preserve disabled creation, existing schedules, public articles, delivery commitments, production variables and bindings. No source change, migration, provider mutation or commit/push is required.
+
+
+## Legacy publication reader repair — 2026-10-20
+
+Owner authorizes fixing the production legacy publication query and Chrome acceptance. Root cause: handleRequest never supplies the publications reader, so normal article GET returns configuration 503. Wire existing persisted target-state reads only, retain disabled operations, truthful missing/stale evidence and unchanged provider commitments.
+
+
+## Current Pages evidence projection — 2026-10-20
+
+Owner authorizes connecting the current release_queue_runtime publication/deployment/public verification records to the existing read-only article status response and production Chrome acceptance. Three verified-public production records exist but the old target-state table has no Pages rows. Preserve every schedule/provider commitment and disabled creation.
+
+
+## Clean Git delivery of deployed status features — 2026-10-20
+
+The owner authorizes packaging the deployed Substack status UI, legacy publication read repair and current Pages evidence as an independent commit based on merged main 6e8f715, full local verification, push and PR/CI/Codex review. Do not merge, deploy, enable scheduling writes or initiate delivery. Preserve PR41 regressions and keep Admin archive and subsequent draft-list runtime repair out of this delivery.

@@ -370,3 +370,98 @@ The owner explicitly approves media equivalence only when independently verified
 - **GIVEN** the owner-authorized production rollout and the current production assets, configuration and tracked Substack commitments
 - **WHEN** the status API is deployed and the owner reads its list and single-article status through normal authentication
 - **THEN** real production records and separate sync/publication/delivery states are returned without cached private responses, unauthenticated access and attempted writes are rejected, and existing assets, provider identities, schedules, delivery commitments and disabled creation remain unchanged
+
+
+### Requirement: Read-only frontend status integration
+
+The existing publishing workspace SHALL present the paginated status list, and the selected saved article SHALL read its per-slug status. It SHALL separately label draft synchronization, publication and delivery, retain the last check time in Taipei, distinguish unknown recipient receipt and preserve independent attention. Read/refresh/page navigation SHALL issue GET only with same-origin session and no-store; no create, retry-write, arm, publish or send action is added. Failed refresh SHALL retain and mark prior evidence; unauthorized sessions SHALL hide cached private records and offer the existing login. Article changes/unmount SHALL cancel or ignore obsolete replies. Missing tracked identity SHALL not imply provider absence or enable creation.
+
+#### Scenario: Three independent states in the existing interface
+- **GIVEN** a saved article has verified draft content, a confirmed future publication and armed delivery with unknown recipient receipt
+- **WHEN** the owner reads its Substack status or the publishing overview
+- **THEN** the interface separately displays saved-and-verified, scheduled time in Taipei and delivery arranged with no confirmed recipient receipt, including the actual last check time
+
+#### Scenario: Unknown outcome or independent hold remains visible
+- **GIVEN** a result requires reconciliation, a source is excluded from automatic draft editing, or an independent publication hold exists
+- **WHEN** the status is rendered
+- **THEN** the interface preserves the corresponding evidence and attention, does not label unknown as success, and adds no provider mutation control
+
+#### Scenario: Failed refresh and expired authentication
+- **GIVEN** previously displayed status and a later unavailable read or expired owner session
+- **WHEN** refresh completes
+- **THEN** an unavailable read retains clearly marked prior evidence, while an expired session hides private rows and requests normal login, without changing provider state
+
+#### Scenario: Article changes or identity has not been tracked
+- **GIVEN** an article selection changes while an earlier read is pending, or the selected article is not tracked
+- **WHEN** replies arrive or the view closes
+- **THEN** an obsolete response cannot replace the current article, closed views stop reading, and missing status is described as untracked rather than proof that the provider article is absent
+
+#### Scenario: Pagination and responsive read-only acceptance
+- **GIVEN** multiple pages or a 390px viewport in either light or dark theme
+- **WHEN** the owner reads or refreshes status and navigates pages
+- **THEN** page boundaries are truthful, all three status labels remain readable without horizontal page overflow, and every new network operation is read-only
+
+
+### Requirement: Production frontend delivery preserves draft-only authority
+
+The authorized frontend rollout SHALL serve the qualified assets with the existing read-only API backend, authentication, bindings and production variables. Chrome production acceptance SHALL use the actual deployed Document and assets without response overrides. Creation SHALL remain disabled and tracked original identities, schedules, public articles and subscriber commitments SHALL remain unchanged.
+
+#### Scenario: Real production interface reads independent evidence
+- **GIVEN** the qualified frontend candidate, explicit rollout authorization and the current production deployment
+- **WHEN** the frontend is deployed and the owner reads the publishing list and original article in Chrome
+- **THEN** both real read-only APIs return current evidence, the interface separates draft synchronization, publication and delivery with Taipei check time and unknown receipt, and refresh performs no provider mutation
+
+#### Scenario: Deployment or real evidence differs
+- **GIVEN** changed production variables, an unexpected deployment identity, unavailable real API evidence or an inconclusive synchronization result
+- **WHEN** rollout preflight or Chrome verification detects it
+- **THEN** an unexpected preflight difference prevents deployment, incomplete verification is reported honestly, and no create, schedule, publication, notification or automatic write retry is introduced
+
+#### Scenario: Verified rollout retains existing commitments
+- **GIVEN** six tracked original identities and disabled new draft creation before rollout
+- **WHEN** real production acceptance and owned-browser cleanup finish
+- **THEN** original IDs and slugs, existing schedule and subscriber commitments and the synchronization configuration remain unchanged, and only owned acceptance resources are closed
+
+
+### Requirement: Legacy publication history reads without write authority
+
+The deployed legacy article status query SHALL read persisted publication history through the production runtime rather than fail for an omitted reader. It SHALL remain owner-authenticated and no-store. Missing history SHALL remain empty, revision mismatch SHALL remain stale, and storage failure SHALL report unavailable. Restoring reads SHALL NOT enable legacy mutations or change provider commitments.
+
+#### Scenario: Runtime reads existing or absent history
+- **GIVEN** an authenticated owner and existing persisted target history or an article without history
+- **WHEN** the deployed article status query is read
+- **THEN** it returns that actual history with revision mismatch marked stale, or an empty list when absent, without a configuration error or any write
+
+#### Scenario: Missing authorization, failed storage or attempted mutation
+- **GIVEN** an unauthorized session, unavailable history storage or a mutation request against the production read-only history service
+- **WHEN** the request is processed
+- **THEN** private history is denied, unavailable storage remains a visible error, and mutations are rejected with no provider or state write
+
+#### Scenario: Error recovery clears obsolete article evidence
+- **GIVEN** the article view has a prior failed status read or another article
+- **WHEN** a later status read succeeds or fails
+- **THEN** prior error text disappears on success, and old article rows are not reused as evidence for the newly selected article; a genuine failed read stays visible
+
+
+### Requirement: Current Pages publication evidence is visible independently
+
+The owner article status SHALL include current saved Pages publication, matching deployment and public verification evidence independently of the legacy target table. This read SHALL perform no ingestion, fresh verification or provider operation. The interface SHALL label these as saved historical observations with Taipei verification time and SHALL NOT equate deployment or planned time with public success.
+
+#### Scenario: Saved public verification exists without legacy history
+- **GIVEN** a current active article release has saved complete article/RSS verification and matching deployment but no legacy target row
+- **WHEN** the owner reads the article status after unrelated main changes
+- **THEN** the interface shows the stored publication, deployment and public verification evidence with its historical time and article link, rather than no record or a fresh verification claim
+
+#### Scenario: Deployment is incomplete or bound to another source
+- **GIVEN** a release is deployed without full page/RSS proof, or deployment refers to another commit
+- **WHEN** the saved status is read
+- **THEN** deployment and public verification remain distinct, missing proof stays incomplete, and an unrelated deployment cannot be shown as matched success
+
+#### Scenario: No active record, ambiguity or failed read
+- **GIVEN** an article has no active current record, multiple active records or unavailable storage
+- **WHEN** its status is read
+- **THEN** absence remains distinct from unlocked history and from an unavailable read, ambiguous evidence fails visibly, and no schedule or provider state changes
+
+#### Scenario: Switching articles and authorized production verification
+- **GIVEN** a previously displayed Pages record and the scoped production rollout
+- **WHEN** another article is read and Chrome verifies deployed output
+- **THEN** old Pages evidence is cleared, real saved evidence is displayed only for the selected article, original release and Substack commitments are preserved, creation remains disabled and only owned browser resources are cleaned

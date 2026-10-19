@@ -1,0 +1,49 @@
+{
+  "reviewedCommit": "99dd599de489c275c88d3129a39b0ec3289faa71",
+  "reviewFinding": "https://github.com/gcake119/gcake-dev/pull/42#discussion_r4317747769",
+  "checkedAtUtc": "2026-10-19T19:13:54.219706+00:00",
+  "realRedCases": [
+    "completed old Pages proof remains on new draft",
+    "late success fills previous article rows",
+    "late error fills previous article message"
+  ],
+  "focusedAcceptance": {
+    "passed": 63,
+    "total": 63
+  },
+  "gates": [
+    {
+      "name": "test",
+      "exitCode": 0
+    },
+    {
+      "name": "check",
+      "exitCode": 0
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0
+    }
+  ],
+  "inputFiles": 358,
+  "inputDigestSha256": "31451023456bc8cd926b2a869ca55b1a2e18189b45d171500649a4fe31a920f8",
+  "changedSourceSha256": {
+    "apps/admin/src/App.vue": "afe3c1311ffaef95a412f26cb27d5a26d88793f01d3aefa0e24faa871a1976c7",
+    "apps/admin/src/workflow-acceptance.test.ts": "83d3bd49d0461a43951101c1fed2ae187a4ddbd1e6d53a657b906b9eba7c1cd0"
+  },
+  "inputsUnchanged": true,
+  "spectraFindings": 0,
+  "adminArchiveExcluded": true,
+  "merged": false,
+  "productionDeployment": false,
+  "scheduleWritesEnabled": false,
+  "subscriberDelivery": false
+}

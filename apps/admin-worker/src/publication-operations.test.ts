@@ -35,7 +35,7 @@ test('targets remain independent and verified old revision becomes stale without
   await repository.putState({ postSlug: 'demo', target: 'paragraph', sourceRevision: 'abc', status: 'verified', remoteId: 'p', updatedAt: 'now' });
   await repository.putState({ postSlug: 'demo', target: 'github_pages', sourceRevision: 'def', status: 'verified', updatedAt: 'now' });
   const states = await new PublicationOperations(repository).readStates('demo', 'def');
-  assert.equal(states.find((state) => state.target === 'paragraph'), undefined);
+  assert.deepEqual(states.map(state => state.target), ['github_pages']);
   assert.equal(states.find((state) => state.target === 'github_pages')?.status, 'verified');
 });
 

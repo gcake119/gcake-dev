@@ -1,0 +1,272 @@
+{
+  "passed": true,
+  "rootCause": "production composition root omitted publications dependency; no missing Substack credentials",
+  "fix": "wire existing persisted readStates only, never legacy operate; clear stale UI error/history; absent Pages history is no record",
+  "deployment": {
+    "version": "099cf828-63ac-41c9-aadf-5ce8e4f1b707",
+    "deployment": "b18acf01-d304-4fe0-9803-37f1e42e4b4d",
+    "createdOn": "2026-10-19T17:49:21.825381Z",
+    "percentage": 100,
+    "configBindingsRuntimePreserved": true,
+    "scriptEtagChanged": true,
+    "rollbackVersion": "534184e5-b51c-4afe-a8d2-61a66ab53b8c"
+  },
+  "localGates": [
+    {
+      "name": "check",
+      "exitCode": 0,
+      "log": "check-focused.log",
+      "reusedMatchingInputs": true
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "seconds": 92.58
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0,
+      "seconds": 6.09
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 10.09
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 9.99
+    }
+  ],
+  "redFailures": 3,
+  "emptyHistoryRed": true,
+  "chrome": {
+    "passed": true,
+    "checkedAt": "2026-10-19T17:52:03.619Z",
+    "responseOverrides": false,
+    "requests": [
+      {
+        "requestId": "22202.12",
+        "path": "/api/v1/auth/session",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.15",
+        "path": "/api/v1/posts",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.16",
+        "path": "/api/v1/series",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.17",
+        "path": "/api/v1/github/deployments/latest",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.18",
+        "path": "/api/v1/releases",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.19",
+        "path": "/api/v1/posts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.20",
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.21",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.24",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "22202.25",
+        "path": "/api/v1/substack/drafts",
+        "method": "GET"
+      }
+    ],
+    "responses": [
+      {
+        "requestId": "22202.20",
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "22202.21",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "22202.24",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "22202.25",
+        "path": "/api/v1/substack/drafts",
+        "status": 200,
+        "cacheControl": "no-store"
+      }
+    ],
+    "historyCount": 0,
+    "desktop": {
+      "fields": [
+        "草稿同步",
+        "發布",
+        "寄送"
+      ],
+      "hasOldError": false,
+      "height": 907,
+      "pages": "GitHub Pages尚無發布紀錄網站更新與公開確認分開記錄。",
+      "scrollWidth": 1713,
+      "status": "Substack 狀態最後查核結果。讀取不會啟動同步、發布或寄送。重新讀取狀態草稿同步已保存並驗證發布草稿寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:31（台北）Substack 編號：221099415",
+      "width": 1728
+    },
+    "mobile": {
+      "fields": [
+        "草稿同步",
+        "發布",
+        "寄送"
+      ],
+      "hasOldError": false,
+      "height": 844,
+      "pages": "GitHub Pages尚無發布紀錄網站更新與公開確認分開記錄。",
+      "scrollWidth": 375,
+      "status": "Substack 狀態最後查核結果。讀取不會啟動同步、發布或寄送。重新讀取狀態草稿同步已保存並驗證發布草稿寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:31（台北）Substack 編號：221099415",
+      "width": 390
+    },
+    "list": [
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？草稿同步不自動編輯已排程或已公開，保留原承諾。發布公開驗證完成寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:47（台北）Substack 編號：221069931"
+      },
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "我是怎麼跟 ChatGPT 協作寫完 30 篇系列文的草稿同步不自動編輯已排程或已公開，保留原承諾。發布公開驗證完成寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:47（台北）Substack 編號：220011124"
+      },
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "正式開賽後，我怎麼知道自動發文真的完成了？草稿同步不自動編輯已排程或已公開，保留原承諾。發布已排程2026/10/22 07:00（台北）寄送已安排寄送尚無實收證據依最後確認的寄送安排。最近查核：2026/10/20 01:47（台北）Substack 編號：221098688"
+      },
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？草稿同步不自動編輯已排程或已公開，保留原承諾。發布公開驗證完成寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:47（台北）Substack 編號：220473117"
+      },
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？草稿同步已保存並驗證發布草稿寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:50（台北）Substack 編號：221099763"
+      },
+      {
+        "fields": [
+          "草稿同步",
+          "發布",
+          "寄送"
+        ],
+        "text": "從「可以 fork」到「真的能接手」，模板還缺哪些東西？草稿同步同步處理中以最後查核結果為準。發布草稿寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:50（台北）Substack 編號：221099415"
+      }
+    ],
+    "screenshots": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a153a5-b815-7753-ac1f-b3b7f9318c2b/publication-read-fix-20261020"
+  },
+  "cleanup": {
+    "ownTabClosed": true,
+    "viewportReset": true,
+    "initialThemePreserved": true,
+    "noResponseOverrides": true
+  },
+  "publicChecks": {
+    "assets": [
+      {
+        "path": "index.html",
+        "sha256": "7d02c9b262050489df1673d83b5f4d84e01515347d855953710dac950bf13d60",
+        "matched": true
+      },
+      {
+        "path": "assets/index-FNsBu1E4.js",
+        "sha256": "4fba28369f3509bd259f5973018c25d4aa2525852955490361d1243bdc9040ad",
+        "matched": true
+      },
+      {
+        "path": "assets/index-EBQCjx1N.css",
+        "sha256": "a246324e9ac9d3993ba24ce72f2c11fc8fbe7a00fc239ccbcbe75d6156e79c0e",
+        "matched": true
+      }
+    ],
+    "health": {
+      "status": "ok",
+      "service": "gcake-admin-worker",
+      "contractVersion": "v1"
+    },
+    "anonymous": [
+      {
+        "path": "/api/v1/substack/drafts",
+        "status": 401,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 401,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/publications/ithome-2026-template-hardening?sourceRevision=check",
+        "status": 401,
+        "cacheControl": "no-store"
+      }
+    ]
+  },
+  "preserved": {
+    "records": 6,
+    "originalIdentitiesSchedulesAndDelivery": true,
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "syncConfigSha256Unchanged": true
+  },
+  "privateEvidence": "/private/tmp/gcake-publication-read-fix-20261020",
+  "limitations": [
+    "Storage failure and mutation rejection verified locally, not injected on production",
+    "No subscriber receipt inferred",
+    "No commit, push, merge, migration or provider operation"
+  ],
+  "spectra": {
+    "analyzeFindings": 0,
+    "valid": true,
+    "tasksComplete": 31,
+    "tasksTotal": 31
+  },
+  "diffCheck": true
+}

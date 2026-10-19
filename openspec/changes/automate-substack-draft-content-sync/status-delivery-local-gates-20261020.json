@@ -1,0 +1,60 @@
+{
+  "baseCommit": "6e8f715fb14a142e43e322d640e40a21e9fc0907",
+  "checkedAtUtc": "2026-10-19T19:00:34.495491+00:00",
+  "gates": [
+    {
+      "name": "test",
+      "exitCode": 0
+    },
+    {
+      "name": "check",
+      "exitCode": 0
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0
+    }
+  ],
+  "focusedAcceptance": {
+    "tests": 60,
+    "passed": 60,
+    "raceRed": "old acceptance reply overwrote next article",
+    "raceGreen": true
+  },
+  "inputFiles": 358,
+  "inputDigestSha256": "0d07a8d72880e6b13d6756c1330385d07d68bfb39570a969dd4ed36617e020a6",
+  "changedSourceSha256": {
+    "apps/admin-worker/src/index.ts": "0afd02588225fa79557c909d341fe85d283ea01db0ab064598377fdcff6352c5",
+    "apps/admin-worker/src/pages-status.ts": "de3c50ff2d1d35d65b94d7ff4a31f714958f2303949f40cfa164f08a1c151fe0",
+    "apps/admin-worker/src/publication-operations.test.ts": "a8ec71ef9f8507b1e9532099ebe6d0b7acdf29e117e8653c51925e41d71685a8",
+    "apps/admin-worker/src/publication-operations.ts": "296700a845987db4de6c6f255af16703c0c071e4d86819cb60f99082d768cbab",
+    "apps/admin-worker/src/publication-routes.test.ts": "7f4ecea2543e2852cf2a2ed770ed0e2d85d08e4058cd92fc1908a507427c48f0",
+    "apps/admin-worker/src/router.ts": "6066c240a5fdb0c4b742b92b1dd32331bb17da4214288f6b79b15b4f01a26be1",
+    "apps/admin/src/App.vue": "825f68d13be8e56907598ff417b4c0f21777cbe0ee0d600ca52bdcdba71e0e47",
+    "apps/admin/src/SubstackStatusPanel.vue": "5e9e1c81259a5fe11296e0569d499ce1a7d99d739cbed35c7e31e91d25074f12",
+    "apps/admin/src/admin.css": "0c34a8a681025f1a9772b8729e6dd97f0eaf7aed2889645cb6e858316272d1cd",
+    "apps/admin/src/publishing-center.test.ts": "03f04d8b0b2ab02fb01de2a92d13a676dbaf4ef48e87561723c3f6bfe5b1c8b8",
+    "apps/admin/src/substack-status.test.ts": "5f1d88d87622e1315eec0d51a95b75b492218d32ba1f5464508ab1308a6355dc",
+    "apps/admin/src/substack-status.ts": "f9ffeff28e2d8cbe07d8f2e6cd8b8cc2e72ecf3190fcc5db348a790d2de5875a",
+    "apps/admin/src/workflow-acceptance.test.ts": "1b768b59d504a454d76f3fe37c7bf869075989b99e1ef13f4d1afc9f07c924e8",
+    "apps/admin/src/workflow-presentation.ts": "d32b40253169c493192255dbf49c7fa5bf3b7af67a90033cc2f832f8757ac9ce",
+    "packages/admin-contract/src/index.ts": "8adab2241492ed29cfb059308dedd838d055114d9eca9ea14611ae7ae3172fcb"
+  },
+  "inputsUnchanged": true,
+  "spectraFindings": 0,
+  "designDecision": "existing DESIGN and design-system; no new policy or ADR",
+  "history": "prior production desktop/mobile light/dark receipts are retained, not a new deployment",
+  "productionDeployment": false,
+  "scheduleWriteActivation": false,
+  "subscriberDelivery": false,
+  "adminArchiveExcluded": true,
+  "privateRuntimeChanged": false
+}
