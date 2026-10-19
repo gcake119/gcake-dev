@@ -1,10 +1,27 @@
 # Substack 同步腳本
 
-以下既有流程屬於 `pages-first-no-newsletter`；提前備稿的新政策見後段，兩者核准範圍分開。正式來源為 gcake119/gcake-dev main 的完整 Markdown。原文正常公開且匿名讀回內容、標題、日期、canonical、圖片與連結符合精確版本後，才可同步至 Substack。
+## 現行政策與已確認範圍（2026／10／19）
+
+現行政策為 `scheduled-source-first-delivery-v1`，內容來源是 gcake119/gcake-dev main 已儲存、符合資格且釘選 revision 的完整 Git Markdown；Pages 不必先公開。原站預設週一、週四台北時間 07：00，仍須逐篇確認固定時段，佇列估算不能代替排程授權。舊 `pages-first-no-newsletter` 核准仍要求 Pages 完整公開驗證，不能授權新政策首次寄送。
+
+已授權試行僅含 `ithome-2026-publishing-in-production`、原 ID `221098688`、2026／10／22 07：00 台北時間，首次電子郵件／App inbox 開啟；另兩篇 `221099415`、`221099763` 保留草稿。Substack 可在 Pages 失敗時獨立公開與首次寄送。3.1 的真實保存／Scheduled-list 讀回／解除／同 ID 重排已完成；5.3 仍待實際 provider 發布、其後普通背景輪次及獨立寄送證據，個別訂閱者實收無證據時仍為 unknown。詳見 [試行紀錄](../openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md)。
+
+正式背景觀察為 anonymous-only，`observeEnabled=true`、`writeEnabled=false`；只讀 Git、D1 與匿名公開頁，不讀私人草稿、不操作 Chrome。通知修正已部署，詳見 [部署證據](../openspec/changes/schedule-substack-drafts-ahead/notification-false-positives-deployment.md)。後續草稿全文的無人操作寫入仍待另行規劃與驗證；此政策文件不會啟用它。以下前景命令須逐次符合授權，不是可直接執行的 rollout 清單。
 
 使用已核准並釘選的 runtime 與 Git 外私人政策；unattended.targets 必須只有 substack。啟動入口仍為 scripts/publishing/sync-distribution.ts，參數保留 --config、--pin、--acceptance、--out、--lock；預設僅產生計畫，既有授權執行才加 --execute。憑證只以既有 env-file 載入，不讀回、列印或複製。
 
 每輪使用共享鎖、D1 在途對帳、固定 main 快照與精確計畫。相同版本只唯讀驗證；更新沿用原 ID，不再次發布。Substack canonical 為平台文章，正文保留 Pages 原文連結；來源時間對應到使用者已接受的分鐘精度。
+
+## Substack 與原站 slug 一致（2026／10／19）
+
+Substack 的正式網址必須是 `https://gcakedev.substack.com/p/<原站 slug>`，其中 slug 與權威 Git 原稿完全一致，原站對應路徑為 `/gcake-dev/posts/<slug>/`。新政策不要求該 Pages 路徑已公開；舊政策仍要求 Pages 驗證。沿用正式來源的 slug，不依文章標題重新生成，也不接受 Substack 自動產生的縮寫、隨機代稱或自動追加的數字。兩站的域名與路徑前綴不同，slug 必須相同；Substack canonical 仍指向平台自己的文章。
+
+1. 前景 prepare 時，在同一草稿的「設定 → SEO 選項 → 文章網址」設定原站 slug。儲存並重新載入讀回；缺少控制項、儲存失敗、slug 被平台改寫或網址已被其他文章占用時，停止發布並保留原 ID 與診斷。不得另建文章或自動改用其他 slug。
+2. 發布前再次核對已保存的 slug 與來源版本。發布後匿名驗證新網址的原文章 ID、刊物 ID、平台 canonical、全文、標題、原文連結、圖片與該政策已確認的發布分鐘；Pages 可用性與兩站日期差異另外記錄。其中任何一項不符，都不能記為 verified 或宣稱同步完成。舊網址可轉址不代表新 slug 已通過驗證。
+3. 既有文章 slug 不一致時，只能在明確前景操作修改原 ID 的網址，不重新發布、不寄送電子郵件或 App 通知。先盤點 D1 狀態、鎖與 checkpoint；不覆蓋未知操作或其他 writer。修改後驗證新網址，再於持有該文章操作鎖時對帳 D1 remote URL，保留來源版本、原 ID、日期與寄送紀錄，並確認鎖與 checkpoint 已結束。
+4. 修改既有網址可能使舊連結失效，逐篇記錄實際轉址或錯誤結果，不假設平台提供轉址。背景排程不得因 slug 不一致而開啟 Chrome、修改網址、重建或重發；保留原 ID，交由前景處理。
+
+此為同步操作與驗收規則。正式釘選 runtime 的自動欄位設定及 slug 專用阻擋，須另以實作與安裝證據確認；文件更新本身不代表已更換或升級正在執行的排程。
 
 結果未知時保留原 ID、操作意圖與必要快照，不重播。不得依時間偷取鎖；故障恢復先證明執行者已停止，再查核在途資料。成功或已結束失敗輪次由既有腳本清理只屬該輪的快照。
 
@@ -14,13 +31,13 @@ Substack 操作使用使用者核准的 Chrome 與經驗收的介面契約。正
 
 歷史安裝紀錄（不得作為重新啟用 Chrome 操作的指示）：2026／10／13，獨立 LaunchAgent dev.gcake.distribution-sync 已啟用，每 900 秒執行；政策位於 Git 外 native-substack-final-20261013，目標只有 substack，舊 Codex heartbeat 已停用。正式 runtime 保持釘選；repo 清理不直接替換已驗收的安裝版本。Chrome 需保持開啟，重啟後重新綁定驗證。
 
-新文章首次發布最多寄送一次電子報的政策已確認，但正式寄信設定仍待啟用；既有關閉條件保持有效，普通更新、重試及既有文章不補寄，App 通知保持關閉。
+歷史寄送限制：舊政策為網站限定、不寄送電子郵件／App。後續試行的首次雙通道授權見本文件開頭，不能用舊限制否定已保存的試行承諾，也不能將單篇授權擴及其他草稿。普通更新、重試及既有文章不補寄。
 
-## 提前備稿政策（本機候選，尚未啟用）
+## 提前備稿與前景操作政策
 
 `schedule-substack-drafts-ahead` 新增 `scheduled-source-first-delivery-v1`，允許符合資格的 main Markdown 在 Pages 尚未公開時先備稿。首次 Substack 排程會啟用原有訂閱者的電子郵件與 App inbox 組合選項；裝置推播或訂閱者實際收信沒有證據時仍為 unknown。舊核准文件的 newsletter=skip 只適用舊政策。三篇既有文章沿用 ID，不補寄：`220011124`／`ithome-2026-chatgpt-writing-workflow`、`220473117`／`ithome-2026-publishing-toolchain`、`221069931`／`ithome-2026-astro-choice`。
 
-本變更沒有修改已安裝 runtime、私人設定、pin、LaunchAgent、正式 D1 或 Substack。以下命令是另行啟用時使用的操作說明，不能解讀為本次已完成部署或介面驗收。新原生 transport 尚未合格；新政策只接受前景 attended handoff，不得退回背景 Chrome 或私有 API。
+新政策只接受已驗證的前景 attended handoff，不得退回背景 Chrome 或私有 API。單篇試行與唯讀觀察的已完成證據見開頭；不代表全面自動寫入或 5.3 已通過。原生 transport 的舊成功紀錄不能代替新政策驗收。
 
 ### 前景命令
 
@@ -64,15 +81,17 @@ pnpm distribution:run prepare-draft article-slug substack --source-root /absolut
 
 ### 背景觀察、遷移與回復
 
-背景仍使用原 `distribution:sync` 輪次、固定來源快照、鎖及 Hermes 去重，沒有新 timer。新政策觀察設定必須明確為 observeEnabled=true、writeEnabled=false，並提供新政策版本的匿名 acceptance；不接受舊政策驗收文件直接啟用。背景沒有 authenticated provider port，不能讀取私人草稿或操作瀏覽器。到期前不查公開頁；到期後可匿名驗證，Pages 與 delivery 分別記錄。來源缺失、內容／時段漂移、公開內容不符或未決操作，保留原時間並要求前景；讀取失敗不得清空提醒。
+背景仍使用原 `distribution:sync` 輪次、固定來源快照、鎖及 Hermes 去重，沒有新 timer。新政策觀察設定必須明確為 observeEnabled=true、writeEnabled=false，並提供新政策版本的匿名 acceptance；不接受舊政策驗收文件直接啟用。背景沒有 authenticated provider port，不能讀取私人草稿或操作瀏覽器。到期前不查公開頁；到期後可匿名驗證，Pages 與 delivery 分別記錄。來源缺失、已確認的內容／時段漂移、身分不符或未決操作保留最後確認承諾，交前景處理。原稿未變時，僅摘要呈現與已知平台格式差異不通知；讀取失敗記為「驗證未完成」，不得當成內容變更或清空舊提醒。這不放寬前景完整內容保存／讀回。
 
-另行核准 rollout 時依序：盤點現有鎖／意圖／三篇原 ID／provider Scheduled；備份 D1；按既有正式 migration 流程套用 **0007_substack_schedules.sql**；用新前景命令接納既有公開文章，匿名驗證並保留舊 delivery 紀錄；執行該候選的完整 gates；另選一篇未公開稿與未來時段驗收 prepare／arm／remove／rearm；最後才切換已核對完整依賴的 runtime、pin、私人設定與既有觀察排程。不能複製舊 pin 或宣稱本機 fixture 代表 provider 合格。
+背景以同篇 slug 及實際時刻判斷是否延期，單純 queueVersion 更新或 UTC／台北字串差異不通知，也不重寫原承諾版本。真實改期、時段消失或失去資格仍交前景處理；前景核准仍檢查完整版本、reservation 與時段。未決意圖或獨立錯誤不能因通知去誤報而解除。
 
-回復時先停用新增 arm，保留同 ID cancel 的前景能力；唯讀盤點 `publication_schedules` 所有 scheduled、reconciliation_required、未決 intent 與 observedTime，逐篇在 provider 解除並重讀確認。已公開項目保留 ID、原日期與寄送紀錄；未知或仍 armed 項目必須列為未完成。停用本機工作不會取消 provider。確認沒有未決承諾並查核舊程式／設定相容性後，才考慮回復舊 pin；保留加法式資料表，不以 drop table 或清空意圖作為回復。正式 SQL 與 runtime 安裝依既有擁有者流程執行，本次未執行。
+以下是後續另行核准 rollout 的流程，不重做已完成試行：依序盤點現有鎖／意圖／三篇原 ID／provider Scheduled；備份 D1；先核對既有 migration 紀錄，僅在尚未套用且另獲授權時，依正式流程套用 **0007_substack_schedules.sql**；用新前景命令接納既有公開文章，匿名驗證並保留舊 delivery 紀錄；執行該候選的完整 gates；另選一篇未公開稿與未來時段驗收 prepare／arm／remove／rearm；最後才切換已核對完整依賴的 runtime、pin、私人設定與既有觀察排程。不能複製舊 pin 或宣稱本機 fixture 代表 provider 合格。
+
+回復時先停用新增 arm，保留同 ID cancel 的前景能力；唯讀盤點 `publication_schedules` 所有 scheduled、reconciliation_required、未決 intent 與 observedTime，逐篇在 provider 解除並重讀確認。已公開項目保留 ID、原日期與寄送紀錄；未知或仍 armed 項目必須列為未完成。停用本機工作不會取消 provider。確認沒有未決承諾並查核舊程式／設定相容性後，才考慮回復舊 pin；保留加法式資料表，不以 drop table 或清空意圖作為回復。正式 SQL 與 runtime 安裝依既有擁有者流程執行，本文件整理不執行回復或正式寫入。
 
 ### 2026／10／19 真實 UI 契約補充
 
-目前前景驗收使用專用未發布草稿 ID `221081849`，不屬正式發文佇列。此輪只完成保存／重載、slug 與排程預覽；Scheduled 清單為空，不代表已驗證排程保存／取消。詳見 `openspec/changes/schedule-substack-drafts-ahead/ui-qualification.md`。
+早期前景驗收使用專用未發布草稿 ID `221081849`，不屬正式發文佇列；當時只完成保存／重載、slug 與排程預覽，Scheduled 清單為空，原證據仍見 [UI 契約歷史](../openspec/changes/schedule-substack-drafts-ahead/ui-qualification.md)。後續正式授權以 ID `221098688` 完成保存／讀回／解除／同 ID 重排，見開頭試行紀錄；不改寫舊預覽為已排程，也不把它當成 5.3 通過。
 
 - 切換 email／App 後，排程核取方塊的可存取名稱會改變。以實際觀察的 `data-track-input="send_email"`、`data-testid="scheduled-at"` 及 `aria-checked` 核對，不使用動態整段標籤，也不讀取隱藏 native checkbox 的舊 checked 屬性。
 - datetime-local 的 `value` property、HTML value 屬性與最終動作相對時間必須一致；單次 fill 並不充分。UI 顯示 GMT+8，還須獨立確認主機為 Asia/Taipei。輸入 min／max 是預覽限制，仍需原站已確認時段與實際 Scheduled 保存讀回才能宣稱 armed。

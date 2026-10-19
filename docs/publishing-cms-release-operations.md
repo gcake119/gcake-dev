@@ -1,6 +1,6 @@
 # Publishing CMS 長期排程操作與啟用清單
 
-文件包含早期停用／啟用交接證據。現行連載排程已存在；2026-10-13 修補仍只完成本機實作，不構成新版推送或部署授權。下方歷史啟用清單不代表目前 gate 值。
+本文件保留各階段操作與交接證據。2026／10／13 章節的「本機／尚未部署」只代表當時範圍；後續 CMS 部署見 [２０２６－１０－１６結案紀錄](publishing-cms-deployment-20261016.md)。歷史版本、開關與啟用清單均不代表目前狀態，也不是重新安裝或部署授權。Substack 現行政策另見 [同步操作手冊](distribution-scripted-runbook.md)。
 
 ## 日常操作
 
@@ -12,7 +12,7 @@
 
 Pages build 失敗不算已公開；目前 Worker／Pages 僅允許 main 分支人工觸發，合併及每小時經過均不部署。須另取得部署授權後人工部署復原，沒有每小時自動復原。只有另外核准 Actions write 並開啟 RELEASE_DEPLOY_RETRY_ENABLED 時，才能重跑與原 commit 對應的失敗 Pages workflow。重跑不建立第二篇文章。
 
-## 人工部署前查核
+## 歷史啟用查核（2026／10／11）
 
 1. 定稿、排程、暫停／恢復、指定時段預覽已由使用者回覆通過；確認固定／取消固定由代理 Computer Use 驗證通過。仍需人工確認新版資訊分區與手機可讀性、系列進度、事件／錯誤介面及真實 owner 登入流程；固定／取消若需親自操作驗收可另行補做。確認估算日期不能當成公開承諾。
 2. 使用者已授權本次 atomic commits、推送 `feat/publishing-cms-release-design` 及建立 PR；PR 合併仍須另行授權。未合併或遠端部署。
@@ -24,7 +24,7 @@ Pages build 失敗不算已公開；目前 Worker／Pages 僅允許 main 分支�
 8. 依下一節授權 Hermes 個別使用者的單一 RSS poller，確認 Telegram 收件者與秘密儲存；此步尚未在真實 Hermes 帳號執行。
 9. 前述證據齊全後，由人明確決定 production gate 啟用、啟用時間與第一篇。屆時才將 Worker `RELEASE_WRITE_ENABLED` 與 Actions `RELEASE_AUTOMATION_ENABLED` 都設為 true。未啟用前，六篇維持 ready；10/12 等日期只是估算。
 
-## Hermes 安裝與驗收
+## 歷史 RSS poller 安裝與驗收說明
 
 `scripts/hermes/rss_poller.py` 只用 Python 標準函式庫，單次執行一次；排程由 Hermes 帳號的既有 supervisor／工作排程器擇一管理，不另開第二個 poller。可每小時呼叫一次；這僅輪詢公開證據，不會觸發 Pages 部署。若要縮短通知延遲，可在人工驗收後調整輪詢間隔。
 
@@ -64,3 +64,7 @@ Actions editorial-release environment 僅允許 main。設定 RELEASE_WORKER_URL
 ## 歷史單篇公開驗收工具來源回存（２０２６－１０－１６）
 
 `scripts/hermes/public_release_acceptance.py` 與其 fixture tests 已由舊驗收工作樹原樣回存。它只針對固定的歷史首篇，使用隔離公開 Git 與無憑證靜態 GET，拒絕 GitHub REST／GraphQL／內部 JSON API；公開頁／RSS 與 scheduled／部署 provenance 分別判斷。來源不足保持 unconfirmed，不重發、不重跑 workflow。這不是正式 Hermes 通用監控入口，也不要求重建已完成 job。舊 shell 入口只保存於 docs/worktree-closeout/2026-10-16/historical，不能照抄執行。回存及工作樹保留依據見該目錄 README。
+
+## PR ＃32 CMS 部署歷史（２０２６－１０－１６）
+
+[部署與結案紀錄](publishing-cms-deployment-20261016.md) 保存該日版本、開關讀回、D1 備份與介面證據。它補充上方較早的待部署紀錄，不代表目前版本或開關值，也不授權重新部署。Substack 單篇新政策另見 [同步操作手冊](distribution-scripted-runbook.md)。

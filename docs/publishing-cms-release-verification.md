@@ -1,5 +1,7 @@
 # Publishing CMS 長期排程本機驗證紀錄
 
+２０２６－１０－１６的 CMS 歷史部署證據見 [２０２６－１０－１６ PR ＃32 正式部署與結案](publishing-cms-deployment-20261016.md)。以下各節保留各自時間與授權範圍，不以歷史「尚未部署」描述推論目前 CMS 狀態。
+
 日期：2026-10-11。基底：`feat/publishing-cms-release-design`，`dd1b9de`。成果工作目錄：`/Users/caiyijun/project/gcake-dev-release`。主 checkout 的既有未提交變更未納入本次實作。搬移後已再次通過完整 test／check／build／build:workspaces；詳細 log 位於 `output/release-verification/`。
 
 ## 驗證範圍

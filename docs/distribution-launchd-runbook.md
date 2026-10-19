@@ -1,4 +1,12 @@
-# Substack 原生同步與獨立排程
+# Substack 獨立背景觀察與歷史原生安裝
+
+## 現行入口（2026／10／19）
+
+背景只執行 anonymous-only 觀察，保留單一 900 秒工作與共享鎖，provider 寫入關閉；前景操作與單篇首次寄送必須符合 [同步操作手冊](distribution-scripted-runbook.md) 的新政策與精確授權。已部署的通知修正、單篇試行及仍待驗的 5.3，以該手冊引用的版本證據為準。
+
+以下原生安裝及 2026／10／13～17 紀錄按當時範圍保留；其中 Chrome 必須開啟、macos-chrome 收據、Pages 先公開與寄送全關閉等敘述，不能當作現行背景入口或否定後續單篇授權。舊原生成功收據不得替代 anonymous-only 驗收，不能照歷史步驟重新啟用背景 Chrome。此文件不變更正式安裝、設定、寄送 ledger 或既有排程。
+
+## 歷史原生政策
 
 現行同步只允許 Substack。Pages 是正式來源，來源 repo 必須是 gcake119/gcake-dev／main。外部聚合、MDX、未發布、未到日期、重複 slug 或匿名 Pages 不符均保留阻擋。Paragraph 已於 main 撤除，不恢復其 API、排程、文章或未知意圖。
 
@@ -80,3 +88,7 @@ notifyViaHermes=true 的正式執行完成後，將公開 slug 與標準化原�
 Hermes producer 在更新快照前讀取所有 D1 Substack 人工暫停，包含已刪除或不符合目前來源清單的文章。缺少完整持續狀態證據、讀取失敗或輪次失敗時不能清除既有通知快照；首次 owner seed 只能建立尚不存在的非空快照。
 
 本段對應 Git 中的審查修正；本次合併不更新、不重啟已固定版本的私人安裝，後續安裝需另行驗證與切換。
+
+## PR33 自然輪次歷史（2026／10／17）
+
+當日已完成私人安裝與兩輪自然驗證，與人工啟動驗證分開。原 ID、無寫入／無重寄及舊版本回復證據見 [自然排程結案](../openspec/changes/fix-substack-background-interference/natural-scheduler-verification.md) 與原樣保存的 [機器摘要](../openspec/changes/fix-substack-background-interference/natural-scheduler-acceptance.json)。這是該日版本的證據，不是現行版本或新政策 5.3 的驗收；不應重新執行原清理清單。
