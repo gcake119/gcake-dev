@@ -52,3 +52,8 @@ The draft-only PNG identity projection and parent before-paste verdict are local
 ## 2026-10-20 00：06（台北）目前結果
 
 前述「零 provider 寫入／未啟用 runtime」為本機實作階段歷史。其後獲得明確授權並完成：新 supported PNG A 的真實無人全文寫入與讀回、同 ID 完整 Git B 恢復、既有 timer 上啟用持續寫入，以及自然完整六筆盤點。圖片與 Git 恢復為 16／17 次 Chrome 呼叫，自然輪次為 25 次 Chrome 呼叫、兩篇 verified／四篇 excluded、零寫入（內容相同）。六筆承諾未變、來源／分頁／intent／lock／checkpoint 清理通過，runtime pin 全匹配。任務 23／23 完成；當前範圍新建停用、HTTP 未部署，其他排程變更 5.3 仍待驗。詳見 continuous-provider-20261019.md 與 continuous-provider-results.json。
+
+
+## 2026-10-20 00：19（台北）後台唯讀 API 正式交付
+
+使用者另行明確授權後，正式 Worker 唯讀 API 已部署一次成功，version 66a6ea7d-8d71-49a7-b91a-67cd2a095f9c、流量 100％。正常 owner Chrome 登入讀六筆列表／原 ID 單篇／首末頁及錯誤 code，正式匿名 GET／寫入拒絕 HTTP 實測通過；authenticated 405／503 僅為相同候選本機證據，未冒稱正式故障注入。46 個 Worker source／contracts／lock 匹配既有通過候選，重用既有 full gates；隔離 production dry-run、正式資產與 variables／bindings／Substack 承諾／同步設定前後比對通過，專用 Chrome 分頁關閉。25／25 任務完成、Spectra analyze／validate 及 diff check 通過。沒有 commit／push、migration 或同步 runtime／排程／公開／寄送變更。見 api-production-20261020.md、api-production-results.json 與 docs/substack-draft-sync-api.md。

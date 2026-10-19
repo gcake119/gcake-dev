@@ -26,3 +26,12 @@
 五項既有 gate 全部通過：`pnpm test`、`pnpm check`（225 files，0 errors／warnings／hints）、`pnpm build:all`、`pnpm release:dry-run`、`pnpm editorial:rehearse`。18 份程式／測試在執行前後與複製快照雜湊相同，機器摘要與依賴／設定指紋見 [本候選本機 gate](commit-local-gates-20261020.json)。Hermes 既有 SQLite ResourceWarning 與 Node SQLite ExperimentalWarning 保留，完整 gate exit 0；未忽略失敗或改斷言。
 
 這些結果只證明本機候選，不宣稱分支推送自動完成 CI、正式 HTTP API 已部署或重新完成 provider 驗收。程式／依賴／設定未再修改，不因拆成三個 commit 重跑相同的完整 gate。
+
+
+## 同批後續文件補齊
+
+完成前三個 commit 推送後，另一項已授權工作補齊了 2026／10／20 00：14：31 的唯讀 API 正式部署及 00：19 驗收結案。將已完成的七份 Substack 文件更新另作第四個 commit；本輪沒有執行部署。第一批快照中的「部署任務待完成／HTTP 未部署」保留當時界線，最新狀態由 [API 部署紀錄](api-production-20261020.md)、[機器摘要](api-production-results.json) 與前端契約承接；原部署前契約保留為 frontend-api-before-production-20261020.md。
+
+最新 API 文件／任務／對照與實作紀錄皆逐檔從主工作區複製，複製前後雜湊相同。25 項任務完成；正式 version 66a6ea7d-8d71-49a7-b91a-67cd2a095f9c 是另一項工作的保存證據。原機器摘要 sourceDeltaCommitted=false 保留部署當時語境，不能當成推送後仍未提交的狀態。
+
+第四個 commit 只有文件，程式、依賴與設定仍與本輪五項 gate 的指紋一致；不重跑未改的產品測試，不重做正式驗收，不改 runtime／排程／寄送。後台歸檔 e789dbe 仍不在分支中。

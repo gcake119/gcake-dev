@@ -80,3 +80,6 @@ Approved original-image identity comparison／parent-verified before-paste verdi
 
 
 實際 provider 補充：新 supported PNG A 與恢復 Git B 的無人 Chrome 全文寫入／Saved／離開／重載通過，原 ID／slug、原圖 SHA256、alt、正文連結與完整內容匹配。啟用後原 timer 自然完整六筆盤點通過：兩篇 verified、四篇 excluded、零寫入，25 次 Chrome CUA 呼叫；真實能力與 fixture 分列，見 continuous-provider-results.json。新建維持停用且未資格化；HTTP 未部署；其他排程變更 5.3 未完成。
+
+
+Production read-only API delivery：相同 46 個 Worker source／contracts／lockfile 重用既有 full gates，隔離快照 production dry-run。正式健康／匿名 GET／匿名五項寫入拒絕 curl 實測；owner 正常 Chrome OAuth 讀列表、單篇、hasMore 首末頁及錯誤 code。authenticated 405／503 僅為匹配候選的本機測試，不冒稱正式故障注入。六筆承諾／同步設定／資產／bindings 前後比對通過；api-production-20261020.md 分層記錄。

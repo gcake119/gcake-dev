@@ -1,6 +1,11 @@
 # Substack 草稿同步：後台前端 API
 
-本文件描述已實作的後台唯讀 API；HTTP 路由尚未部署。私人 Chrome 草稿同步 runtime 已於 2026-10-19T15:54:47.369Z 啟用既有 ID 的持續寫入，新建與排程寫入保持停用。真實圖片／全文恢復及一次自然完整盤點皆已通過，證據見下方紀錄。API 部署、同步 runtime 與真人寄送收據是不同證據。
+正式唯讀 API 已於台北時間 2026／10／20 00：14 部署並完成下述正式驗收。API 只讀取 D1 最後保存的狀態，不會啟動同步、編輯草稿、排程、發布或寄送。
+
+- 正式 origin：`https://gcake-admin-worker-production.wwhowbuhow.workers.dev`
+- Worker version：`66a6ea7d-8d71-49a7-b91a-67cd2a095f9c`，流量 100％。
+- 新建保持停用，既有 ID 的 Chrome 持續同步設定保留；排程寫入仍關閉。
+- 此次沒有新增後台畫面；前端可以依以下契約串接。
 
 ## 讀取方式
 
@@ -96,51 +101,61 @@
 
 外層 Worker 的既有 `RUNTIME_NOT_CONFIGURED` 回應仍適用。回應不包含全文、完整 handoff、憑證、私人分享連結、工作階段路徑或 intent ID。
 
-## Computer Use 寫入與啟用界線
+## 登入與串接範例
 
-2026／10／19 單篇前景真實驗收已使原 ID `221099415` 的 D1 紀錄取得 `verified`／`draft_prepared`／`not_armed`，並以本機候選投影確認前端可呈現這三個獨立狀態。HTTP 路由尚未部署；這不是正式環境 API 已可呼叫的宣告。實際來源、全文比對、同 ID／slug 與保留失敗見 [provider 驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/live-provider-20261019.md)。本次為相同內容重存，且沒有圖片；無人資格與正式啟用條件保持下述要求。
+後台使用同源 Cookie。未登入時導向 `/api/v1/auth/login`，沿用正常 GitHub owner OAuth；瀏覽器管理 HttpOnly Cookie，前端不讀取或另存 Cookie，不需要傳 Bearer token。GET 不需 CSRF token。
 
-既有單一 `distribution:sync` 輪次會先評估獨立 `draftSync` 設定，再執行草稿階段與匿名觀察器；預設無設定或未啟用時完全不新增 authenticated 存取。它不會改變現有 `scheduled.writeEnabled=false`，也不會改寫已排程文章。
-
-`draftSync` 的啟用範圍包含 `policyVersion=unattended-draft-sync-v1`、`transport=computer-use`、origin、固定 repository／main、到期時間與工作階段排他宣告。還需要 `runtimePinFile`、`qualificationRef`、`authorizationRef`，以及有限的 `maxArticles`、`timeoutMs`、可選 `maxRoundMs`，與 Chrome 執行者及私有證據目錄。`allowCreate=false` 是本次選定的既有 ID 範圍，缺少原 ID 時回報 `SUBSTACK_DRAFT_CREATION_DISABLED`，不存取瀏覽器或建立操作意圖。每輪篇數與單請求期限必須明確設定；程式允許的上限為每輪 20 篇、單請求 600 秒、草稿階段整輪 840 秒，未指定整輪期限時為 60 秒。實際值須由後續 provider 驗收確認；這些上限不是效能量測。
-
-驗收／授權文件須位於 Git 外，綁定 policy scope digest 與 runtime pin 檔案 SHA256、政策及有效期限，`draftOnly=true`。驗收須明確證明 `passed`、`fullReadback`、`exactSlug`、`sameId`、`unattendedExecutor`、`sessionExclusive`；授權須為 `approved=true`。目前資格及授權文件已依真實媒體／全文恢復證據產生，綁定已安裝 runtime pin；自然完整盤點亦已另行驗收通過。
-
-程式透過既有 FileAttendedExchange 發出 v2 精確請求，Computer Use 執行者使用以下既有 CLI 入口的新操作：
-
-```text
-pnpm distribution:handoff inspect-draft --request <request.json> --config <private-policy.json> --source-root <fixed-source>
-pnpm distribution:handoff reply-draft --request <request.json> --config <private-policy.json> --source-root <fixed-source> --evidence <saved-observation.json>
+```ts
+async function readDraftStatus(slug: string, signal?: AbortSignal) {
+  const response = await fetch(
+    `/api/v1/substack/drafts/${encodeURIComponent(slug)}`,
+    { credentials: 'same-origin', cache: 'no-store', signal },
+  );
+  const payload = await response.json();
+  if (!response.ok) {
+    throw Object.assign(new Error(payload.error?.code ?? 'REQUEST_FAILED'), {
+      status: response.status,
+    });
+  }
+  return payload.draft;
+}
 ```
 
-這些是介面說明，不是本次授權執行的正式操作清單。請求位於該輪來源快照旁的私人 `draft-sessions` 目錄，回覆後重新驗證來源、state generation、scope digest、期限及原 ID。更新證據還須包含實際編輯前 observation，與請求中的完整內容 digest 及 draft 狀態一致；保存後證據須重載並包含完整文字、結構、程式碼、slug、圖片載入與 alt、連結，以及 Drafts／Scheduled 清單結果。
+列表同樣使用相對路徑 `/api/v1/substack/drafts?limit=50&offset=0`。目前未開放跨來源 CORS；另一個前端網域不能直接改用絕對網址加 credentials 就完成串接，需要同源部署／代理方案。
 
-一般草稿寫入仍須由已驗收且獲授權的 Computer Use 執行者處理；未接上時保留待處理／逾時結果，不宣稱無人寫入成功，也不重建草稿。另有明確授權的單篇唯讀 qualification，可由既有 timer 呼叫桌面版內附 CLI，在自己的新 Chrome 分頁完整讀回；它使用一次性原 ID／來源／runtime 範圍，不啟用一般寫入。瀏覽器以 chrome 名稱選取，控制程式核對實際 browserFamily，拒絕數字 ID 與非 Chrome 證據。自然輪次證據見 [驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/natural-provider-20261019.md)。此接線沒有新增 timer，後台 HTTP 路由仍未部署。
+頁面顯示時可每 60 秒讀取一次，切換頁面時取消未完成請求；隱藏頁面可暫停輪詢。這是呈現頻率建議，並非新建排程。同步 timer 為 15 分鐘，讀 API 不會提前觸發。顯示 `sync.checkedAt` 並轉換為 Asia／Taipei；`updatedAt` 可能只是其他觀察 metadata 更新，不能代替最後全文檢查時間。503 或網路失敗時保留上次成功資料並標示讀取失敗。
 
-UI 的操作前後檢查與本機鎖無法提供平台原子式條件寫入保證；其他人同時在平台操作仍是殘餘風險。正式啟用前須以受控工作階段確認可接受的操作範圍及排他方式，不能把本機 fixture 當成已解決這項競態。
+`actions` 是既有前景流程的導覽提示，不是 API 可執行的命令；已排程／公開且 excluded 的文章也可能有 foreground-review，不應只因 actions 非空就顯示同步異常。`sync.transport=computer-use` 表示同步來源，不表示 excluded 文章也被開啟瀏覽器。
 
-2026／10／19 Chrome 無人單篇唯讀自然輪次已通過：同 ID／slug、完整 digest 吻合、provider 寫入為零，checkedAt 為 `2026-10-19T12:31:20.724Z`。這使現有 D1 投影維持 verified／draft_prepared／not_armed；[自然輪次紀錄](../openspec/changes/automate-substack-draft-content-sync/natural-provider-20261019.md) 與一般草稿自動寫入資格分開。正式 HTTP API 仍需部署本機候選才能使用。
+## 發布與寄送的獨立狀態
 
-2026／10／19 22：33 的 Chrome 無人背景實際完整重存與重載驗收已通過。實際 D1 v53 投影為 verified／draft_prepared／not_armed，checkedAt=`2026-10-19T14:33:36.275Z`、unresolvedOperation=false。原 ID／slug、既有排程與寄送設定保留；[寫入驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/write-provider-20261019.md) 保留前三次寫入前失敗及最終成功證據。這是同一內容實際重存，單次範圍已消耗，未啟用全清單常態寫入；HTTP API 仍未部署。
+| `publication.state` | 建議顯示 |
+| --- | --- |
+| `not-observed` | 尚無平台身分證據 |
+| `draft_prepared` | 草稿 |
+| `cancelled_draft` | 已解除排程、保留草稿 |
+| `scheduled` | 已排程；時間使用 confirmedTime |
+| `published_unverified` | 平台顯示公開，待完整驗證 |
+| `verified` | 公開驗證完成；仍獨立於草稿 sync.status |
+| `reconciliation_required` | 發布狀態待對帳 |
 
+`delivery.evidence` 的 `not_armed`／`armed`／`unknown`／`provider_reported` 分別表示未安排寄送、已安排、未知、平台回報；都不能顯示為真人已收到。`subscriberReceipt` 固定 unknown。已同步、已排程、已寄送應分開呈現。
 
-2026／10／19 持續同步擴充：一般 worker 已接上與 qualification 共用的無人 CLI 程序；控制程式核對真實 Chrome、原 ID／版本／操作意圖、完整 before／after 與來源新鮮度，獨立產生 reply。成功的原始證據另存 Git 外，完成後清理 payload session；失敗保留 unknown，後續不重播。使用者已選定「既有 ID 自動同步，新建保持停用」，該布林能力與篇數／期限／執行者設定一起綁定 scope digest。後台可依 sync.code 顯示「自動新建未啟用」，actions 仍只是前景檢視提示，不代表新增寫入權限。實際持續啟用與自然清單驗收紀錄另行填入，HTTP 路由仍未部署。
+## 正式驗收與目前資料
 
-`sync.status=excluded` 表示這篇已排程或已發布、來源版本未變且沒有獨立待處理問題，本輪排除草稿編輯，不新增前景異常。此狀態的 checkedAt 是盤點判斷時間，不是重新讀取 provider 的時間。排程／公開／寄送證據仍看各自欄位；來源變動或原有 intent／error／pending action 仍保留前景處理。
+台北 2026／10／20 正常 GitHub owner 登入後，正式列表讀到六筆真實紀錄；單篇、首末頁 hasMore、錯誤參數與不存在文章皆驗收。
 
+| 原 ID | `sync.status` | `publication.state` | `delivery.evidence` |
+| --- | --- | --- | --- |
+| 221099415 | verified | draft_prepared | not_armed |
+| 221099763 | verified | draft_prepared | not_armed |
+| 221098688 | excluded | scheduled | armed |
+| 其餘三篇已公開原 ID | excluded | verified | not_armed |
 
-## 已核准的圖片等價驗證
+這是驗收時快照，前端以 API 的 checkedAt／version 為準；不得把表格當成持續即時保證。既有 221098688 排程仍為 10／22 07：00 台北時間，原寄送承諾未更動。
 
-草稿專用 `mediaProfile=original-sha256-png-v1` 保留原始 UI 證據，由控制程式獨立取得來源及畫面所指向的託管原圖並比對 SHA256。平台改寫圖片 URL／顯示外框可以等價，但圖片順序、alt、正文連結、程式碼及其餘內容仍須嚴格一致。僅支援獨立未包超連結的 PNG，每篇最多 8 張、每張最多 8 MiB。格式、來源結構、載入或原圖驗證不完整時，不顯示已同步；缺少已驗收媒體 profile 時回報 `SUBSTACK_DRAFT_MEDIA_UNQUALIFIED`。來源圖片 bytes 改變也會使同步保持 pending，不能只由 Markdown 版本相同推論已同步。
+正式 HTTP 實測：健康 200；匿名列表／單篇 GET 401；匿名 POST／PUT／PATCH／DELETE 401，均為 UNAUTHENTICATED，私有路由帶 no-store。登入狀態以真實 Chrome 讀到成功列表／單篇、首末頁及 INVALID_PAGINATION／ARTICLE_NOT_FOUND。**已登入非 GET 的 405 與狀態讀取失敗 503 沿用相同候選本機路由測試證據，沒有宣稱正式注入故障或匯出 owner session 做該項測試。**
 
-這是執行者的內容驗證能力，不新增前端圖片寫入端點。前端仍使用既有狀態、code、checkedAt、desiredRevision／savedRevision 來呈現；verified 必須有完整讀回證據。
+三個既有 HTML／JS／CSS 雜湊、正式變數與 bindings、六篇 Substack 身分／排程／寄送承諾及同步設定雜湊都與部署前一致。沒有 migration、排程／文章寫入、發布或通知。正常 OAuth 登入會建立 CMS session，因此不宣稱整個驗收零 D1 寫入。
 
-
-## 目前啟用範圍（2026／10／19）
-
-已安裝 `installed-draft-continuous-media-chrome-20261019`，原 900 秒計時器、Chrome 自有新分頁、每輪最多 20 筆、單請求 600 秒、草稿階段 840 秒。啟用既有未排程從未公開 ID 的草稿保存與完整讀回；`allowCreate=false`、`scheduled.writeEnabled=false`。授權到期時間為 `2026-11-18T15:44:12.782Z`（台北 11／18 23：44），到期後不可繼續新 dispatch。最新真實證據及自然輪次見 [持續同步驗收](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md)。上方單次資格段落為各階段歷史，不代表目前仍是單次範圍。
-
-前端接線仍須部署本機 Worker 候選；本次沒有新增後台畫面、部署 HTTP 路由、commit 或 push。前端讀 API 不會觸發同步，可以輪詢最後持久狀態並顯示 checkedAt。已排程／公開文章的 excluded 只代表不屬一般草稿同步範圍，仍須保留 publication、delivery 與獨立 attention。
-
-
-台北 2026／10／20 00：06 自然驗收：原 timer runs=1、exit=0，六筆全部 observed，兩篇合格草稿 verified、四篇保護文章 excluded，25 次實際 Chrome 呼叫僅讀取，零 provider 寫入。原 ID／slug／排程／寄送承諾與清理對帳通過。這個自然輪次沒有內容差異；實際圖片 A 與 Git B 的兩次寫入證據另列，不宣稱本輪有寫入。最新狀態的前端投影與時間在 [機器摘要](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-results.json)。
+部署與證據細節見 [正式部署驗收](../openspec/changes/automate-substack-draft-content-sync/api-production-20261020.md)；完整同步資格／圖片支援見 [持續同步驗收](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md)。前端 API 與同步 runtime 是不同交付層；圖片目前支援獨立 PNG，原圖雜湊、順序、alt 與連結均須驗證，無需增加前端寫入端點。
