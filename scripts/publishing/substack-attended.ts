@@ -1,7 +1,8 @@
+import {execFileSync} from 'node:child_process';
 import {parsePublicPostIdentity} from './substack-public-identity';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { DistributionArticle, RemoteArticle, SubstackBrowserAdapter } from '../../apps/admin-worker/src/distribution-coordinator';
 import type { DistributionRuntime } from '../../apps/admin-worker/src/distribution-runtime';
 import { renderedArticle, assertPublicDomEvidence, expectedSubstackDate, type PublicDomEvidence, type SubstackUiContract } from './substack-browser';
@@ -26,20 +27,26 @@ function remoteArticle(value:unknown,expectedId?:string,publicOnly=false):Remote
   if (url.origin!==origin||url.username||url.password||url.hash||url.search||!(publicOnly?publicPost:draft||publicPost)) throw Error('SUBSTACK_ATTENDED_REMOTE_MISMATCH');
   return {id:data.id,url:url.href};
 }
-export class FileAttendedExchange {
+export interface ExchangeRequest {action:string;operation:string;article:DistributionArticle;remote?:RemoteArticle;exchangeVersion?:2}
+export function assertOutsideAnyGit(directory:string){
+ try{const flags=execFileSync('git',['-C',directory,'rev-parse','--is-inside-work-tree','--is-inside-git-dir'],{encoding:'utf8',stdio:'pipe'}).trim().split(/\s+/);if(flags.includes('true'))throw Error('SUBSTACK_SESSION_OUTSIDE_GIT');}
+ catch(error){if(error instanceof Error&&error.message==='SUBSTACK_SESSION_OUTSIDE_GIT')throw error;if((error as {status?:number}).status!==128)throw Error('SUBSTACK_SESSION_PATH_UNVERIFIED');}
+}
+export class FileAttendedExchange<Request extends ExchangeRequest=AttendedRequest> {
   private constructor(readonly directory:string,private readonly timeoutMs:number,private readonly pollMs:number,private readonly onRequest:(file:string)=>Promise<void>) {}
-  static async create(base:string,repository:string,timeoutMs=900_000,pollMs=100,onRequest:(file:string)=>Promise<void>=async file=>{console.log(JSON.stringify({attendedRequest:file}));}) {
+  static async create<Request extends ExchangeRequest=AttendedRequest>(base:string,repository:string,timeoutMs=900_000,pollMs=100,onRequest:(file:string)=>Promise<void>=async file=>{console.log(JSON.stringify({attendedRequest:file}));}) {
     const outside=(basePath:string)=>{const relative=path.relative(path.resolve(repository),basePath);return relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative);};
     if (!outside(path.resolve(base))||!Number.isFinite(timeoutMs)||timeoutMs<=0||timeoutMs>900_000||!Number.isFinite(pollMs)||pollMs<=0) throw Error('SUBSTACK_SESSION_OUTSIDE_GIT');
     await fs.mkdir(base,{recursive:true,mode:0o700});
+    assertOutsideAnyGit(await fs.realpath(base));
     if (!outside(await fs.realpath(base))) throw Error('SUBSTACK_SESSION_OUTSIDE_GIT');
     const directory=await fs.mkdtemp(path.join(base,'session-')); await fs.chmod(directory,0o700);
-    return new FileAttendedExchange(directory,timeoutMs,pollMs,onRequest);
+    return new FileAttendedExchange<Request>(directory,timeoutMs,pollMs,onRequest);
   }
-  readonly exchange:AttendedExchange=async request=>{
+  readonly exchange=(async (request:Request):Promise<unknown>=>{
     const requestId=randomUUID(), directory=path.join(this.directory,requestId), expiresAt=Date.now()+this.timeoutMs;
     await fs.mkdir(directory,{mode:0o700});
-    const envelope={version:1,requestId,slug:request.article.slug,sourceRevision:request.article.sourceRevision,operation:request.operation,action:request.action,remoteId:request.remote?.id??null,expiresAt,request};
+    const envelope={version:request.exchangeVersion??1,requestId,slug:request.article.slug,sourceRevision:request.article.sourceRevision,operation:request.operation,action:request.action,remoteId:request.remote?.id??null,expiresAt,request,...(request.exchangeVersion===2?{scopeDigest:createHash('sha256').update(JSON.stringify(request)).digest('hex')}:{})};
     const file=path.join(directory,'request.json');
     await fs.writeFile(file,JSON.stringify(envelope,null,2)+'\n',{flag:'wx',mode:0o600});
     await this.onRequest(file);
@@ -49,12 +56,13 @@ export class FileAttendedExchange {
       catch (error) {if ((error as NodeJS.ErrnoException).code!=='ENOENT') throw Error('SUBSTACK_ATTENDED_REPLY_INVALID'); await new Promise(resolve=>setTimeout(resolve,this.pollMs));continue;}
       let reply:Record<string,unknown>; try {reply=object(JSON.parse(raw));} catch {throw Error('SUBSTACK_ATTENDED_REPLY_INVALID');}
       for (const key of ['version','requestId','slug','sourceRevision','operation','action','remoteId'] as const) if (reply[key]!==envelope[key]) throw Error('SUBSTACK_ATTENDED_REPLY_MISMATCH');
+      if(request.exchangeVersion===2&&(reply.scopeDigest!==envelope.scopeDigest||reply.expiresAt!==expiresAt))throw Error('SUBSTACK_ATTENDED_REPLY_MISMATCH');
       if (Date.now()>=expiresAt) throw Error('SUBSTACK_ATTENDED_TIMEOUT');
       if (reply.ok!==true) throw Error('SUBSTACK_ATTENDED_OPERATOR_STOPPED');
       return reply.result;
     }
     throw Error('SUBSTACK_ATTENDED_TIMEOUT');
-  };
+  });
 }
 export class AttendedSubstackAdapter implements SubstackBrowserAdapter {
   readonly publicationPolicy='full-mirror' as const;
@@ -144,7 +152,7 @@ export function anonymousSubstackReader(ui:SubstackUiContract,fetcher:typeof fet
       }
     }
     const unique=(selector:string)=>{const nodes=document.querySelectorAll(selector);if (nodes.length!==1) throw Error('SUBSTACK_PUBLIC_CONTROLS_AMBIGUOUS');return nodes[0];};
-    const body=unique(ui.publicBody),date=unique(ui.publicDate);
+    const body=unique(ui.publicBody),date=unique(ui.publicDate),publicHtml=body.innerHTML;
     // Match the block boundaries used by the existing browser evidence verifier.
     for (const element of body.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,pre,blockquote,tr,br,hr')) element.appendChild(document.createTextNode(' '));
     const images=await Promise.all([...body.querySelectorAll('img')].map(async image=>{
@@ -153,6 +161,6 @@ export function anonymousSubstackReader(ui:SubstackUiContract,fetcher:typeof fet
       const loaded=await fetcher(src,{signal:AbortSignal.timeout(30_000)});
       return {src,alt:image.getAttribute('alt')??'',loaded:loaded.ok&&(loaded.headers.get('content-type')??'').startsWith('image/')};
     }));
-    return {...(identity?{postId:identity.id,publicationId:ui.publicIdentity!.publicationId}:{}),title:unique(ui.publicTitle).textContent??'',text:body.textContent??'',canonical:unique('link[rel="canonical"]').getAttribute('href')??'',publishedAt:date.getAttribute('datetime')??date.getAttribute('content')??date.textContent??'',links:[...body.querySelectorAll('a')].map(link=>new URL(link.getAttribute('href')??'',remote.url).href),images};
+    return {html:publicHtml,description:document.querySelector('meta[name="description"]')?.getAttribute('content')??undefined,...(identity?{postId:identity.id,publicationId:ui.publicIdentity!.publicationId}:{}),title:unique(ui.publicTitle).textContent??'',text:body.textContent??'',canonical:unique('link[rel="canonical"]').getAttribute('href')??'',publishedAt:date.getAttribute('datetime')??date.getAttribute('content')??date.textContent??'',links:[...body.querySelectorAll('a')].map(link=>new URL(link.getAttribute('href')??'',remote.url).href),images};
   };
 }

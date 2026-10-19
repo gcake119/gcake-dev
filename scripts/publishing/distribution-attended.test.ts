@@ -96,3 +96,31 @@ test('anonymous readback bypasses stale edge HTML while retaining article canoni
  assert.equal(evidence.canonical,publicRemote.url);
  assert.equal(evidence.publishedAt,'2026-10-12T03:56:00.165Z');
 });
+test('schedule exchange binds the complete request digest and refuses a modified delivery reply scope',async()=>{const dir=await fs.mkdtemp(path.join(os.tmpdir(),'gcake-schedule-exchange-'));try{const session=await FileAttendedExchange.create<import('./substack-schedule-attended').ScheduleExchangeRequest>(dir,process.cwd(),200,5,async file=>{const envelope=JSON.parse(await fs.readFile(file,'utf8'));await fs.writeFile(path.join(path.dirname(file),'reply.json'),JSON.stringify({...envelope,scopeDigest:'different',ok:true,result:{}}));});await assert.rejects(session.exchange({exchangeVersion:2,policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'stable',article,action:'schedule-arm',operation:'arm-schedule',delivery:{email:true,appInbox:true},timeZone:'Asia/Taipei',audience:'everyone',recordVersion:1}),/REPLY_MISMATCH/);}finally{await fs.rm(dir,{recursive:true,force:true});}});
+test('private handoff cannot be placed in another Git worktree when source-root differs',async()=>{const dir=await fs.mkdtemp(path.join(process.cwd(),'.schedule-session-test-'));try{await assert.rejects(FileAttendedExchange.create(dir,'/private/tmp/unrelated-source'),/SESSION_OUTSIDE_GIT/);}finally{await fs.rm(dir,{recursive:true,force:true});}});
+test('real saved Substack draft preserves Markdown list and code semantics after reload',async()=>{
+ const {validateScheduleReply}=await import('./substack-schedule-attended');
+ const fixture=new URL('./fixtures/substack-ui-20261019/',import.meta.url),actual=JSON.parse(await fs.readFile(new URL('saved-draft.json',fixture),'utf8'));
+ const source={...article,slug:actual.slug,title:actual.title,description:actual.description,body:await fs.readFile(new URL('source.md',fixture),'utf8')};
+ const request={exchangeVersion:2,policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'ui-qualification',recordVersion:1,article:source,action:'schedule-update',operation:'prepare-draft',remote:{id:actual.id,url:'https://gcakedev.substack.com/publish/post/'+actual.id},delivery:{email:false,appInbox:false},audience:'everyone',timeZone:'Asia/Taipei'} as const;
+ validateScheduleReply(request,{...actual,state:'draft',content:{title:actual.title,description:actual.description,html:actual.html},listEvidence:{draft:true,scheduled:false}});
+});
+test('real schedule UI preview reads the coupled channels and Taipei instant without asserting an armed schedule',async()=>{
+ const {readSchedulePreviewUi,validateScheduleReply}=await import('./substack-schedule-attended');
+ const base=new URL('./fixtures/substack-ui-20261019/',import.meta.url),capture=JSON.parse(await fs.readFile(new URL('schedule-preview-off.json',base),'utf8'));
+ const preview=readSchedulePreviewUi(capture,'Asia/Taipei');assert.equal(preview.kind,'schedule-preview');assert.equal(preview.email,false);assert.equal(preview.appInbox,false);assert.equal(preview.scheduledAt,'2026-10-21T23:00:00.000Z');assert.equal(preview.audience,'everyone');assert.equal(preview.armed,false);
+ const request={exchangeVersion:2,policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'ui-qualification',recordVersion:1,article,action:'schedule-arm',operation:'arm-schedule',remote,delivery:{email:true,appInbox:true},audience:'everyone',timeZone:'Asia/Taipei'} as const;
+ assert.throws(()=>validateScheduleReply(request,preview),/EVIDENCE/);
+ assert.throws(()=>readSchedulePreviewUi({...capture,attributeTime:'2026-10-20T10:50'},'Asia/Taipei'),/UNCOMMITTED/);
+ assert.throws(()=>readSchedulePreviewUi(capture,'Asia/Shanghai'),/TIMEZONE/);
+ assert.throws(()=>readSchedulePreviewUi({...capture,html:capture.html.replace('GMT+8','GMT+9')},'Asia/Taipei'),/TIMEZONE/);
+ const initial=readSchedulePreviewUi(JSON.parse(await fs.readFile(new URL('publish-default.json',base),'utf8')),'Asia/Taipei');assert.equal(initial.email,true);assert.equal(initial.appInbox,true);assert.equal(initial.scheduledAt,undefined);assert.equal(initial.armed,false);
+ assert.throws(()=>readSchedulePreviewUi({...capture,audienceRadios:capture.audienceRadios.map((r:{value:string})=>({...r,checked:r.value==='only_subscribers'}))},'Asia/Taipei'),/AUDIENCE/);
+});
+test('observed list/code wrapper normalization cannot hide changed structure or code whitespace',async()=>{
+ const {contentFingerprint}=await import('./substack-schedule');const fp=(html:string)=>contentFingerprint({title:'Test',html});
+ assert.notEqual(fp('<ul><li><p>one</p><p>two</p></li></ul>'),fp('<ul><li>one two</li></ul>'));
+ assert.notEqual(fp('<pre><code>a  b\n</code></pre>'),fp('<pre><code>a b\n</code></pre>'));
+ assert.notEqual(fp('<pre><code>a\n\n</code></pre>'),fp('<pre><code>a\n</code></pre>'));
+ const rendered=renderedArticle({...article,body:'```\nconst x = 1;\n```'});assert.equal((await import('linkedom')).parseHTML('<html><body>'+rendered.html+'</body></html>').document.querySelector('pre')?.textContent,'const x = 1;\n');
+});

@@ -53,12 +53,14 @@ export class DistributionCoordinator {
     if (!await runtime.acquire(article.slug, target, owner, this.now())) throw new Error('DISTRIBUTION_LOCKED');
     let current: PublicationTargetState | undefined;
     let remote: RemoteArticle | undefined;
-    let eligible = !background;
+    let eligible = false;
     const save = async (status: PublicationTargetState['status'], code?: string) => {
       const state: PublicationTargetState = { ...current, postSlug: article.slug, target, sourceRevision: (await runtime.checkpoint(article.slug, target))?.sourceRevision ?? article.sourceRevision, status, remoteId: remote?.id ?? current?.remoteId, remoteUrl: remote?.url ?? current?.remoteUrl, verifiedAt: status === 'verified' ? this.now() : undefined, lastErrorCode: code, updatedAt: this.now() };
       await this.repository.putState(state); current = state; return state;
     };
     try {
+      await this.repository.assertLegacyDistribution?.(article.slug);
+      eligible = !background;
       current = (await this.repository.listStates(article.slug)).find(s => s.target === target);
       remote = current?.remoteId && current.remoteUrl ? { id: current.remoteId, url: current.remoteUrl } : undefined;
       if (current?.remoteId && !current.remoteUrl) throw new Error('SUBSTACK_REMOTE_STATE_MISSING');

@@ -87,3 +87,4 @@ test('production notification includes inventory-omitted D1 holds and failed rea
   database.close();closed=true;await assert.rejects(deps.notify!(round,f.options.configFile));assert.equal(await fs.readFile(file,'utf8'),before);
  }finally{if(!closed)database.close();await f.cleanup();}
 });
+test('scheduled observation reuses the existing round and attention without any command dispatch',async()=>{const f=await fixture();try{f.deps.plan=async()=>({inventory:{entries:[]},articles:[]} as never);f.deps.observeSchedules=async()=>[{slug:'missing-original',target:'substack',operation:'cancel-schedule',status:'manual_required',code:'DISTRIBUTION_MANUAL_REQUIRED'}];const first=await runSyncRound(f.options,f.deps),second=await runSyncRound(f.options,f.deps);assert.equal(first.status,'attention');assert.equal(first.results[0].operation,'cancel-schedule');assert.equal(second.notification,'quiet');assert.deepEqual(f.calls,['snapshot','snapshot']);}finally{await f.cleanup();}});

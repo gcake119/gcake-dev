@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "scope": "local cancellation recovery only; no CI/provider/production acceptance",
+  "progress": {
+    "total": 21,
+    "complete": 19,
+    "remaining": 2
+  },
+  "initialBehaviorRed": {
+    "tests": 6,
+    "passed": 0,
+    "failed": 6,
+    "log": "/private/tmp/gcake-cancel-recovery-20261019/red.log",
+    "sha256": "4f37b66f53026f6d42cbc43e65d91edea22b3bad0b958e28546a43b3721104e8"
+  },
+  "supportingContentHoldRed": {
+    "log": "/private/tmp/gcake-cancel-recovery-20261019/content-hold-red.log",
+    "sha256": "583373254238820145a25533b2099f737e9e47e965ff00754096c25ee9613519"
+  },
+  "newAcceptanceCases": 8,
+  "checks": [
+    {
+      "command": "pnpm test",
+      "result": "passed",
+      "exitCode": 0,
+      "log": "/private/tmp/gcake-full-test-retry-20261019-next/pnpm-test.log",
+      "logSha256": "cb099fe62b9181bcafa09ce59377d87ceeab46e2287e37899589c8055c05cc78"
+    },
+    {
+      "command": "coordinator suite (60 cases)",
+      "result": "passed",
+      "log": "/private/tmp/gcake-cancel-recovery-20261019/coordinator-green.log",
+      "logSha256": "434ca54d31de107fc6a048a633238036bb84187dcd167dce6a3877ffc18a0467",
+      "reused": true,
+      "reuseReason": "source/config/dependency/toolchain and passing log hashes match"
+    },
+    {
+      "command": "pnpm check",
+      "result": "passed",
+      "log": "/private/tmp/gcake-cancel-recovery-20261019/pnpm-check.log",
+      "logSha256": "e43b7d003bb6a063d235557733f224b8dcf672f4d44b180659b2841b2a75d9b2",
+      "reused": true,
+      "reuseReason": "source/config/dependency/toolchain and passing log hashes match"
+    },
+    {
+      "command": "pnpm build:all",
+      "result": "passed",
+      "log": "/private/tmp/gcake-cancel-recovery-20261019/build-all.log",
+      "logSha256": "677d366b3fe89c96fb6751a3d3aca97727f9e57e5301bf03b97c76929811bf4e",
+      "reused": true,
+      "reuseReason": "source/config/dependency/toolchain and passing log hashes match"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "result": "passed",
+      "log": "/private/tmp/gcake-cancel-recovery-20261019/release-dry-run.log",
+      "logSha256": "a1fda90885c5bc7b17f8d11378c4e271927cd23f49ddb5e13a627236f4fca92b",
+      "reused": true,
+      "reuseReason": "source/config/dependency/toolchain and passing log hashes match"
+    },
+    {
+      "command": "spectra validate schedule-substack-drafts-ahead",
+      "result": "passed",
+      "log": "/private/tmp/gcake-full-test-retry-20261019-next/validate.log",
+      "logSha256": "47730ab64012919fcc5567b56572cd05c518251382e2552a2988355d6bcf24d3",
+      "reused": false
+    },
+    {
+      "command": "spectra analyze schedule-substack-drafts-ahead --json",
+      "result": "passed",
+      "log": "/private/tmp/gcake-full-test-retry-20261019-next/analyze.json",
+      "logSha256": "18226cfdb7462c97daee1eba38f5428b1905d7da14990949cb699beaa4de3369",
+      "reused": false
+    }
+  ],
+  "distributionAggregate": {
+    "result": "passed",
+    "tests": 204,
+    "passed": 204,
+    "failed": 0,
+    "includedIn": "pnpm test",
+    "log": "/private/tmp/gcake-full-test-retry-20261019-next/pnpm-test.log",
+    "logSha256": "cb099fe62b9181bcafa09ce59377d87ceeab46e2287e37899589c8055c05cc78"
+  },
+  "fullAggregate": {
+    "command": "pnpm test",
+    "result": "passed",
+    "exitCode": 0,
+    "log": "/private/tmp/gcake-full-test-retry-20261019-next/pnpm-test.log",
+    "logSha256": "cb099fe62b9181bcafa09ce59377d87ceeab46e2287e37899589c8055c05cc78"
+  },
+  "pending": [
+    "3.1 committed Scheduled-list readback",
+    "5.3 production pilot"
+  ],
+  "preservedDirtyInputs": {
+    "AGENTS.md": "22d855b3747f68f42f31f5704dccab1829962fc62c1b9adb7d3e4157564442f6",
+    "apps/admin-worker/src/release-queue.ts": "a275c0e2aa98a525fd71aceade3c495b95ae3e47f87c53b39f8c16d993a0d8a6",
+    "docs/distribution-scripted-runbook.md": "b26ef4f6c51718536e59685fc59a3d64c2896b8f16cc86448f97f0a97f2a595e",
+    "openspec/specs/publishing-operations/spec.md": "d01bb574c6147b96108bdff3449a7896382181fb5b961527da2515564fafb21a",
+    "packages/publishing-contract/src/release-eligibility.ts": "a1b9ffd96f8e17e898282b12c2a6a58ca9ccff412991fc447e3486d6c4944ffa",
+    "scripts/publishing/distribution-scheduled.test.ts": "31f743535041b668992e3e4e8f0129936ad63ed11f099599b27ae2aa2e208645",
+    "scripts/publishing/scheduled-source.ts": "dd93cad0483fecd8a2fb1fd055251f8bacd87861973b8e239d57f4efb31a84f3",
+    "scripts/publishing/substack-schedule-attended.ts": "2df60f07d453a55f11a5c16fb378d9fddd5b24fac9339167c75c614c167a1e78",
+    "scripts/publishing/substack-schedule-handoff.ts": "cd57eef34c3b2e61ff939e3df040fbafd48c808ccfc67fee142a47d9f4bcde64",
+    "openspec/changes/schedule-substack-drafts-ahead/audit-fixes-candidate-sha256.json": "a0f67df5cbd781e3002f9a6d7159696c5b6f6f6955d712e26d1cf98025af669b",
+    "openspec/changes/schedule-substack-drafts-ahead/audit-fixes-gates.json": "d8b546dd15725920880a2dabe12ed7678d4dba95398c9bf4afca4ef3673419cf",
+    "openspec/changes/schedule-substack-drafts-ahead/audit-fixes.md": "2f86d096700e2b33c126b44a467c153b9e0d6eac1c327ed450c545424917827f"
+  },
+  "productionWrites": false,
+  "providerActions": 0,
+  "subscriberMessagesSent": 0,
+  "headUnchanged": true,
+  "indexEmpty": true,
+  "verificationRetries": [
+    {
+      "scope": "full pnpm test retry; no source modifications",
+      "attempts": [
+        {
+          "evidence": "/private/tmp/gcake-full-test-retry-20261019/attempt-1.json",
+          "sha256": "59fa58ee6c3b5ecbeb86574ba1db8819aa4833e681c36b454f1f318b20c56e42"
+        },
+        {
+          "evidence": "/private/tmp/gcake-full-test-retry-20261019/attempt-2.json",
+          "sha256": "791fcf0e58d36832c428333d548d2ea3e1267689310e50dcb860004aa55845fe"
+        }
+      ],
+      "result": "not_executed_approval_service_unavailable",
+      "sourceInputsMatched": true,
+      "priorPassingCheckLogsMatched": true,
+      "reusedChecks": [
+        "coordinator suite (60 cases)",
+        "pnpm check",
+        "pnpm build:all",
+        "pnpm release:dry-run",
+        "spectra validate schedule-substack-drafts-ahead",
+        "spectra analyze schedule-substack-drafts-ahead --json"
+      ],
+      "task6_6Completed": false
+    },
+    {
+      "timeUtc": "2026-10-19T04:26:52.054282+00:00",
+      "result": "passed",
+      "command": "pnpm test",
+      "exitCode": 0,
+      "log": "/private/tmp/gcake-full-test-retry-20261019-next/pnpm-test.log",
+      "logSha256": "cb099fe62b9181bcafa09ce59377d87ceeab46e2287e37899589c8055c05cc78",
+      "sourceInputsMatched": true,
+      "otherPassingEvidenceReused": true,
+      "task6_6Completed": true
+    }
+  ],
+  "fullAggregateHistory": [
+    {
+      "command": "pnpm test",
+      "result": "not_executed",
+      "reason": "Automatic approval review could not complete: Selected model is at capacity. No action was executed."
+    }
+  ],
+  "distributionAggregateHistory": [
+    {
+      "result": "failed_environment",
+      "tests": 204,
+      "passed": 189,
+      "failed": 15,
+      "allFailureCodes": "EPERM listen 127.0.0.1",
+      "log": "/private/tmp/gcake-cancel-recovery-20261019/distribution.log",
+      "logSha256": "76794d93c025a7b21dca29c28d68ffc746ad60e4429a7f219c70fc79ef70315a"
+    }
+  ]
+}

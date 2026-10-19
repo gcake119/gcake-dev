@@ -24,6 +24,7 @@ export interface SubstackUiContract {
   publicBody: string; publicTitle: string; publicDate: string;
 }
 export interface PublicDomEvidence {
+  html?:string; description?:string;
   title: string; text: string; canonical: string; publishedAt: string;
   postId?:string; publicationId?:number;
   links: string[]; images: { src: string; alt: string; loaded: boolean }[];
@@ -45,10 +46,11 @@ export function renderedArticle(article: DistributionArticle) {
       element.setAttribute(attr, url.href);
     }
   }
+  const portableHtml = document.body.innerHTML;
   // textContent alone joins adjacent paragraphs; introduce readable block boundaries.
   for (const element of document.body.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,pre,blockquote,tr,br,hr')) element.appendChild(document.createTextNode(' '));
   return {
-    html: document.body.innerHTML,
+    html: portableHtml,
     text: normalize(document.body.textContent ?? ''),
     links: Array.from(document.body.querySelectorAll('a')).map(a => a.getAttribute('href')!),
     images: Array.from(document.body.querySelectorAll('img')).map(img => ({ src: img.getAttribute('src')!, alt: img.getAttribute('alt') ?? '' })),

@@ -17,6 +17,7 @@ export interface PublicationTargetState {
 
 export interface PublicationRepository {
   listStates(postSlug: string): Promise<readonly PublicationTargetState[]>;
+  assertLegacyDistribution?(postSlug:string):Promise<void>;
   putState(state: PublicationTargetState): Promise<void>;
   hasMigration(key: string): Promise<boolean>;
   markMigration(key: string, importedAt: string, count: number): Promise<void>;
@@ -53,6 +54,12 @@ function rowState(row: TargetRow): PublicationTargetState {
 export class D1PublicationRepository implements PublicationRepository {
   readonly runtime: D1DistributionRuntime;
   constructor(private readonly database: D1DatabaseLike) { this.runtime = new D1DistributionRuntime(database); }
+  async assertLegacyDistribution(slug:string):Promise<void> {
+    const installed=await this.database.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'publication_schedules'").first();
+    if(!installed)return;
+    const rows=await this.database.prepare('SELECT record_json FROM publication_schedules').all<{record_json:string}>();
+    for(const row of rows.results){const record=JSON.parse(row.record_json) as {slug:string;previousSlugs?:string[]};if(record.slug===slug||record.previousSlugs?.includes(slug))throw Error('SUBSTACK_SCHEDULE_OWNED');}
+  }
   async listStates(postSlug: string): Promise<readonly PublicationTargetState[]> {
     const rows = await this.database.prepare('SELECT * FROM publication_target_states WHERE post_slug = ?').bind(postSlug).all<TargetRow>();
     return rows.results.map(rowState);

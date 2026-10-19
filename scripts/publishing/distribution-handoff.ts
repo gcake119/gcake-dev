@@ -48,9 +48,10 @@ export async function writeHandoffReply(file:string,envelope:Envelope,evidence:u
  await fs.writeFile(path.join(path.dirname(file),'reply.json'),JSON.stringify({...envelope,request:undefined,ok:true,result:evidence},null,2)+'\n',{flag:'wx',mode:0o600});
 }
 export async function main(args=process.argv.slice(2)){
- const [action,...flags]=args;if(!['inspect','proof','reply'].includes(action))throw Error('SUBSTACK_HANDOFF_USAGE');const values=new Map<string,string>();
+ const [action,...flags]=args;if(!['inspect','proof','reply','inspect-schedule','proof-schedule','reply-schedule'].includes(action))throw Error('SUBSTACK_HANDOFF_USAGE');const values=new Map<string,string>();
  for(let i=0;i<flags.length;i+=2){if(!['--request','--config','--source-root','--evidence'].includes(flags[i])||values.has(flags[i])||!flags[i+1]||flags[i+1].startsWith('--'))throw Error('DISTRIBUTION_ARGUMENT_INVALID');values.set(flags[i],flags[i+1]);}
  for(const key of ['--request','--config','--source-root'])if(!values.has(key))throw Error('SUBSTACK_HANDOFF_USAGE');if(action==='reply'&&!values.has('--evidence'))throw Error('SUBSTACK_HANDOFF_USAGE');
+ if(action.endsWith('-schedule')){const {scheduleHandoff}=await import('./substack-schedule-handoff');return scheduleHandoff(action,values);}
  const config=JSON.parse(await fs.readFile(values.get('--config')!,'utf8')) as DistributionConfig;
  const file=await fs.realpath(values.get('--request')!);if(!config.trial)throw Error('SUBSTACK_HANDOFF_SCOPE_REQUIRED');const rel=path.relative(await fs.realpath(config.trial.sessionDirectory),file);if(!rel||rel==='..'||rel.startsWith('..'+path.sep)||path.isAbsolute(rel)||path.basename(file)!=='request.json')throw Error('SUBSTACK_HANDOFF_PATH_MISMATCH');
  const source=path.resolve(values.get('--source-root')!);if(config.trial.sourceCommit!==await openFixedSnapshot(source))throw Error('SUBSTACK_HANDOFF_SOURCE_COMMIT_MISMATCH');
