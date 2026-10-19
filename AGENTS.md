@@ -42,3 +42,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - 原稿修改須實際讀取、比對、編輯及重新讀回同一篇文章；已排程稿先確認解除舊排程，再更新及重排。延期沿用同 ID；取消只解除排程並保留草稿。文章已公開後，只修正文，不改日期、不重新發布或補寄。
 - Git 是內容來源，D1 只保存身分、版本、排程、操作意圖及驗證證據。原稿刪除、退回草稿、改名、時段變動與結果未知，均保留最後確認的 provider 狀態，交前景處理；本機暫停不代表 Substack 已取消。
 - 正式 runtime、D1 migration、排程寫入開關及訂閱者寄送的啟用另需明確授權。本機驗證不能取代實際 provider 介面驗收或寄送證據。
+
+### Computer Use 草稿同步的本機實作
+
+- `automate-substack-draft-content-sync` 已由使用者選定沿用既有 Computer Use handoff；本機實作與後台唯讀 API 說明見 `docs/substack-draft-sync-api.md`。正式執行者、工作階段與無人輪次驗收／啟用仍獨立處理，既有正式觀察器及排程不因本機實作改變。

@@ -1,0 +1,84 @@
+{
+  "scope": "Substack pre-push local candidate",
+  "baseCommit": "509d71b21e6261f5b674bdc77cb38deaf73d785d",
+  "codeSha256": {
+    "apps/admin-worker/src/index.ts": "5e7aea63da6fda48ed917b5f03cdb42ac887ad9f6f183388e6c7a7eaf6037002",
+    "apps/admin-worker/src/router.ts": "2c5f50afba0a12fa01627c547ffa837aceda1334dae844e4bcd332b21617c5eb",
+    "apps/admin-worker/src/substack-schedules.ts": "80f2c557962f6d1fa67a2fa6e22becc08d4212ea17cc86338f1d531c7996fac2",
+    "scripts/publishing/distribution-attention.ts": "68f11365c03186a2ad296f2c338f938ca448aedb4962ec45a499a1ff2c521378",
+    "scripts/publishing/distribution-handoff.ts": "2242b8c03ec8d262799341f047a95e44ef7f722b8f79ad46e8b3dd384fa98e79",
+    "scripts/publishing/distribution-sync.test.ts": "f9f327c45c4019d36f87067247d72aa0ac63f3133ade9d6d10f0b2c2f6e9c0e7",
+    "scripts/publishing/scheduled-source.ts": "67ee74160c663d27abca7f1920e18b8841edb1f280cdd4201ff32070285c17c2",
+    "scripts/publishing/sync-distribution.ts": "02b9fd5391190a187783e6357eff5b14727e1ec50a9518b630ed854b05eeee82",
+    "apps/admin-worker/src/substack-draft-api.test.ts": "b9e3d7206caab06b5c9dfad6aae4d8e47af7b6ba4ce217044e16409a7a223754",
+    "apps/admin-worker/src/substack-draft-api.ts": "a895e8445b9e264940de5ce517d8c5bbe357cc6c9aa4555ef474295c3423a1bf",
+    "scripts/publishing/distribution-draft-sync.test.ts": "9660c04057f3acf976003aed89fb91b2ee43c8de3ecfeae5e7fdd22ce4c2eada",
+    "scripts/publishing/substack-draft-activation.ts": "80e55d4119a0524ec02ad5842a41fc5990d40e5c7dfefb16af31f9f24a35f602",
+    "scripts/publishing/substack-draft-computer-use.ts": "d119126dc298084de5ba2ccb7c0fb76184284f57c392c23ee897bcf95387105b",
+    "scripts/publishing/substack-draft-executor.ts": "16937e43f0429db1fc43e0d98ed77c9f7ab5779b23e4ca7a70910c2b193ca422",
+    "scripts/publishing/substack-draft-media.ts": "5ea45c1226c14cf425dd44b202fb18fa2fcc2d9b22af25d8c07e30d9d0199092",
+    "scripts/publishing/substack-draft-qualification.ts": "291106fed8e7e489d1d386890b1448a472d6df2688a798107a1f9a9f067462b1",
+    "scripts/publishing/substack-draft-round.ts": "2f4f6ccb32a122de63b3a8b00e68fd9e38348c5af73be48a014ae0b6729761bd",
+    "scripts/publishing/substack-draft-sync.ts": "20e706b2e202e0db4de31f02fec44667b8fcc922b20bbda854f98b4f081a550c"
+  },
+  "configSha256": {
+    "package.json": "c568b49b3a78d0ebb33b3dc02725d0dbdf58bc1fb099f64b6311b0fb2ba61f6b",
+    "pnpm-lock.yaml": "2ed4a9eefd27a8cd417ec03567f3f50866081435c57476fcc27ffd8071386645",
+    "pnpm-workspace.yaml": "253208fa7c1b64372c219b9e19cef15ed70ca93b66a4d5c4c4d2297a5aff8880",
+    "tsconfig.json": "5a1bcf45519b8430495eec65f7409d539345be0b38dddca06d8e4adf3c9da341",
+    "apps/admin-worker/package.json": "1b2e61c94558dce7378ad27c08f2040d5ed1e93e0968ded4d7cb3400e6e0b9b2",
+    "apps/admin-worker/tsconfig.json": "8823c6a3dfdd2b80bb63cc261b50fd58cc739f8f439ef967a95617ea4e36d406"
+  },
+  "gates": [
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "seconds": 181.19,
+      "log": "/private/tmp/gcake-substack-prepush-20261020/full-permitted/test.log"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "seconds": 10.57,
+      "log": "/private/tmp/gcake-substack-prepush-20261020/full-permitted/check.log"
+    },
+    {
+      "command": "pnpm build:all",
+      "exitCode": 0,
+      "seconds": 6.17,
+      "log": "/private/tmp/gcake-substack-prepush-20261020/full-permitted/build-all.log"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "exitCode": 0,
+      "seconds": 32.56,
+      "log": "/private/tmp/gcake-substack-prepush-20261020/full-permitted/release-dry-run.log"
+    },
+    {
+      "command": "pnpm editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 70.63,
+      "log": "/private/tmp/gcake-substack-prepush-20261020/full-permitted/editorial-rehearse.log"
+    }
+  ],
+  "checkDiagnostics": {
+    "files": 225,
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "sandboxAttempt": {
+    "status": "failed",
+    "reason": "local socket/HTTP bind forbidden",
+    "failures": 23,
+    "errors": 16,
+    "log": "/private/tmp/gcake-substack-prepush-20261020/test.log"
+  },
+  "retainedWarnings": [
+    "Existing Hermes SQLite ResourceWarning",
+    "Node SQLite ExperimentalWarning"
+  ],
+  "localOnly": true,
+  "newProviderWrites": false,
+  "newDeployment": false
+}

@@ -6,8 +6,8 @@ import type {ScheduleRecord} from '../../apps/admin-worker/src/substack-schedule
 export const HERMES_ATTENTION_FILE='/Users/Shared/gcake-substack-hermes/input/status.json';
 export interface AttentionRound {status:string;results:{slug:string;target:string;operation:string;status:string;code?:string}[]}
 const reasons=new Set(['DISTRIBUTION_MANUAL_REQUIRED','SUBSTACK_BACKGROUND_ATTENDED_REQUIRED','SUBSTACK_DRAFT_PREPARATION_REQUIRED','SUBSTACK_CONTENT_SYNC_REQUIRED','SUBSTACK_SCHEDULE_CANCEL_REQUIRED','SUBSTACK_SCHEDULE_POSTPONE_REQUIRED','SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED']);
-export function scheduleAttentionCode(state:Pick<ScheduleRecord,'intent'|'pendingAction'|'lastErrorCode'>):string{
- if(state.intent||state.pendingAction==='reconcile-schedule')return 'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED';
+export function scheduleAttentionCode(state:Pick<ScheduleRecord,'intent'|'pendingAction'|'lastErrorCode'|'draftSync'>):string{
+ if(state.intent||state.pendingAction==='reconcile-schedule'||state.draftSync?.status==='reconciliation-required')return 'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED';
  if(state.lastErrorCode&&!['SUBSTACK_CONTENT_EVIDENCE_MISMATCH','SUBSTACK_REMOTE_CONTENT_CHANGED','SUBSTACK_PUBLIC_EVIDENCE_MISMATCH'].includes(state.lastErrorCode))return 'DISTRIBUTION_MANUAL_REQUIRED';
  return ({'prepare-draft':'SUBSTACK_DRAFT_PREPARATION_REQUIRED','sync-content':'SUBSTACK_CONTENT_SYNC_REQUIRED','cancel-schedule':'SUBSTACK_SCHEDULE_CANCEL_REQUIRED','postpone-schedule':'SUBSTACK_SCHEDULE_POSTPONE_REQUIRED'} as Record<string,string>)[state.pendingAction??'']??'DISTRIBUTION_MANUAL_REQUIRED';
 }

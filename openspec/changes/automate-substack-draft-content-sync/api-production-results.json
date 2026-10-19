@@ -1,0 +1,74 @@
+{
+  "passed": true,
+  "worker": "gcake-admin-worker-production",
+  "origin": "https://gcake-admin-worker-production.wwhowbuhow.workers.dev",
+  "versionId": "66a6ea7d-8d71-49a7-b91a-67cd2a095f9c",
+  "deploymentId": "e30bd33f-9475-41e8-bd24-628e7e35897e",
+  "deployedAtUtc": "2026-10-19T16:14:31.433732Z",
+  "previousVersion": "2b8c3127-662a-4463-925e-598925a8e8f8",
+  "trafficPercent": 100,
+  "attempts": 1,
+  "sourceBase": "1f3e8cf413beadc687db0dbb58ad21994aa70a1c",
+  "sourceOverlay": [
+    "apps/admin-worker/src/index.ts",
+    "apps/admin-worker/src/router.ts",
+    "apps/admin-worker/src/substack-schedules.ts",
+    "apps/admin-worker/src/substack-draft-api.ts",
+    "apps/admin-worker/src/substack-draft-api.test.ts"
+  ],
+  "sourceDeltaCommitted": false,
+  "assetsMatched": 3,
+  "bindingsAndVariablesPreserved": true,
+  "syncConfigPreserved": true,
+  "substackCommitmentsPreserved": true,
+  "allowCreate": false,
+  "scheduledWrites": false,
+  "newMigration": false,
+  "authenticatedBrowserCases": [
+    "authenticated-list",
+    "authenticated-single",
+    "first-page",
+    "last-page",
+    "invalid-pagination",
+    "missing-article"
+  ],
+  "productionAnonymousHttpChecks": 8,
+  "authenticatedMethod405Evidence": "matching local route test only; no production session export or synthetic session",
+  "subscriberReceipt": "unknown",
+  "apiExample": {
+    "schemaVersion": 1,
+    "slug": "ithome-2026-template-hardening",
+    "providerId": "221099415",
+    "version": 73,
+    "sync": {
+      "status": "verified",
+      "desiredRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+      "savedRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+      "checkedAt": "2026-10-19T16:05:52.660Z",
+      "code": null,
+      "transport": "computer-use",
+      "unresolvedOperation": false
+    },
+    "publication": {
+      "state": "draft_prepared",
+      "confirmedTime": null,
+      "armedRevision": null
+    },
+    "delivery": {
+      "evidence": "not_armed",
+      "deliveredRevision": null,
+      "subscriberReceipt": "unknown"
+    },
+    "attention": {
+      "pendingAction": null,
+      "code": null
+    },
+    "actions": [],
+    "updatedAt": "2026-10-19T16:05:52.982Z"
+  },
+  "ownedChromeTabClosed": true,
+  "spectraTasks": {
+    "complete": 25,
+    "total": 25
+  }
+}

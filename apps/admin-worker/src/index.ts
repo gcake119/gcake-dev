@@ -1,3 +1,4 @@
+import {D1DraftStatusStore} from './substack-draft-api.js';
 import { PUBLICATION_MONITOR_PATH, monitorAuthorized, publicationSummary, type PublicationCatalogue } from './publication-monitor-summary.js';
 import { HEALTH_CONTRACT_VERSION, type HealthResponse } from '@gcake/admin-contract';
 import { D1SessionStore, type SessionDatabase } from './auth.js';
@@ -225,6 +226,7 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
         },
       },
       sessions: new D1SessionStore(env.CMS_DB),
+      drafts: new D1DraftStatusStore(env.CMS_DB),
       github,
       githubWrites,
       releases,

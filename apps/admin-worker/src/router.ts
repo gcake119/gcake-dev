@@ -1,3 +1,4 @@
+import {draftStatusView,type DraftStatusStore} from './substack-draft-api.js';
 import {
   authorizeOwner,
   consumeOAuthState,
@@ -132,6 +133,7 @@ export interface Phase1Dependencies {
   readonly seriesValidator?: SeriesWriteValidator;
   readonly previews?: PreviewApi;
   readonly publications?: PublicationApi;
+  readonly drafts?: DraftStatusStore;
   readonly releases?: ReleaseDelivery;
   readonly now?: () => number;
   readonly randomToken?: () => string;
@@ -166,6 +168,28 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 export function createPhase1Handler(dependencies: Phase1Dependencies) {
   return async function handlePhase1(request: Request): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/v1/substack/drafts' || url.pathname.startsWith('/api/v1/substack/drafts/')) {
+      const headers = {'Cache-Control':'no-store'};
+      const fail=(status:number,code:string)=>Response.json({error:{code}}, {status,headers});
+      const token=cookieValue(request,'gcake_session');
+      const session=token?await dependencies.sessions.findByRawToken(token):undefined;
+      if(!session||session.expiresAt<=(dependencies.now?.()??Date.now())||!dependencies.allowedGitHubUserIds.has(session.user.githubUserId))return fail(401,'UNAUTHENTICATED');
+      if(request.method!=='GET')return fail(405,'METHOD_NOT_ALLOWED');
+      if(!dependencies.drafts)return fail(503,'SUBSTACK_STATE_UNAVAILABLE');
+      try {
+        if(url.pathname==='/api/v1/substack/drafts'){
+          const limit=Number(url.searchParams.get('limit')??50),offset=Number(url.searchParams.get('offset')??0);
+          if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||offset>100000)return fail(400,'INVALID_PAGINATION');
+          const rows=await dependencies.drafts.list(limit+1,offset);
+          return Response.json({schemaVersion:1,drafts:rows.slice(0,limit).map(draftStatusView),page:{limit,offset,hasMore:rows.length>limit}}, {headers});
+        }
+        const slug=url.pathname.slice('/api/v1/substack/drafts/'.length);
+        if(!SAFE_SLUG.test(slug))return fail(404,'ARTICLE_NOT_FOUND');
+        const row=await dependencies.drafts.get(slug);
+        return row?Response.json({draft:draftStatusView(row)}, {headers}):fail(404,'ARTICLE_NOT_FOUND');
+      }catch{return fail(503,'SUBSTACK_STATE_UNAVAILABLE');}
+    }
 
     if (request.method === 'GET' && url.pathname === '/api/v1/auth/login') {
       const state = await createOAuthState({

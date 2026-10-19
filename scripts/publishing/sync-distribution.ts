@@ -16,6 +16,7 @@ type Run=NonNullable<Plan['articles'][number]['run']>;
 type Command=Run['commands'][number]|Run['recoveries'][number];
 type Audit={locks:unknown[];checkpoints:unknown[];intents:unknown[]};
 export interface SyncDependencies {
+ syncDrafts?(source:string,config:string):Promise<{slug:string;sourceRevision?:string;target:string;operation:string;status:string;code?:string}[]>;
  observeSchedules?(source:string,config:string):Promise<{slug:string;sourceRevision?:string;target:string;operation:string;status:string;code?:string}[]>;
  notify?(round:AttentionRound,configFile:string):Promise<{status:string;code?:string}>;
  validate(configFile:string,acceptanceFile:string):Promise<void>;
@@ -61,6 +62,10 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
   directory=await fs.mkdtemp(path.join(options.output,'round-'));await fs.chmod(directory,0o700);await save(path.join(directory,'ownership.json'),{owner,automation:'pages-substack',runtime:options.runtime});
   const preflight=await deps.audit();await save(path.join(directory,'preflight-d1.json'),preflight);if(preflight.locks.length)throw Error('DISTRIBUTION_ACTIVE_WRITER');
   const snapshot=await deps.snapshot(path.join(directory,'source'));source='retained';await save(path.join(directory,'snapshot.json'),snapshot);
+  if(options.execute&&deps.syncDrafts){
+   try{const drafts=await deps.syncDrafts(snapshot.sourceRoot,options.configFile);results.push(...drafts);if(drafts.some(r=>!['verified','observed'].includes(r.status)))status='attention';}
+   catch(error){status='attention';results.push({slug:'',target:'substack',operation:'sync-draft',status:'blocked',code:boundedDistributionError(error)});}
+  }
   if(options.execute&&deps.observeSchedules){const observations=await deps.observeSchedules(snapshot.sourceRoot,options.configFile);results.push(...observations);if(observations.some(r=>['manual_required','blocked'].includes(r.status)))status='attention';}
   const plan=await deps.plan(snapshot.sourceRoot,options.configFile,path.join(directory,'plans'));await save(path.join(directory,'all-plan.json'),plan);
   for(const article of plan.articles){
@@ -88,7 +93,7 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
  }catch(error){status='attention';results.push({slug:'',target:'all',operation:'round',status:'blocked',code:boundedDistributionError(error)});}
  finally{
   if(directory){
-   if(await unanswered(directory)){source='retained';status='attention';}
+   if(await unanswered(directory)||(await fs.readdir(path.join(directory,'draft-sessions')).catch((e:NodeJS.ErrnoException)=>{if(e.code==='ENOENT')return [];throw e;})).length>0){source='retained';status='attention';}
    else {try{await fs.rm(path.join(directory,'source'),{recursive:true,force:true});source='removed';}catch{status='attention';source='retained';}}
    const fingerprint=createHash('sha256').update(JSON.stringify({status,results,source})).digest('hex');
    const previousFile=options.lock+'.last-result.json';
@@ -113,14 +118,15 @@ export function assertAnonymousAcceptance(value:unknown):void{
  const a=value as {status?:string;executionMode?:string;transport?:string;browserAccess?:boolean;articleWrites?:number;readOnlyRound?:string;inFlight?:number;providerStates?:{target:string;status:string}[]};
  if(!a||a.status!=='passed'||a.executionMode!=='anonymous-only'||a.transport!=='anonymous-public'||a.browserAccess!==false||a.articleWrites!==0||a.readOnlyRound!=='completed'||a.inFlight!==0||!Array.isArray(a.providerStates)||a.providerStates.length!==1||a.providerStates[0]?.target!=='substack'||!['verified','manual_required','attended_required'].includes(a.providerStates[0]?.status))throw Error('DISTRIBUTION_ANONYMOUS_ACCEPTANCE_REQUIRED');
 }
-export function productionDependencies(runtime:string,database?:D1DatabaseLike,attentionFile=HERMES_ATTENTION_FILE):SyncDependencies{
+export function productionDependencies(runtime:string,database?:D1DatabaseLike,attentionFile=HERMES_ATTENTION_FILE,runtimePinFile?:string):SyncDependencies{
  const db=database??new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
  const query=async<T=unknown>(sql:string)=>(await db.prepare(sql).all<T>()).results;
  return {
-  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;if(config.unattended?.notifyViaHermes!==true)return {status:'disabled'};const holds:{post_slug:string;code?:string}[]=await query<{post_slug:string}>("SELECT post_slug FROM publication_target_states WHERE target = 'substack' AND status = 'manual_required'");if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');for(const state of await new ScheduleRepository(db).list())if(state.pendingAction||state.intent||state.lastErrorCode)holds.push({post_slug:state.slug,code:scheduleAttentionCode(state)});}return publishAttentionSnapshot(attentionFile,round,holds.map(row=>({slug:String(row.post_slug),...(row.code?{code:row.code}:{})})));},
+  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;if(config.unattended?.notifyViaHermes!==true)return {status:'disabled'};const holds:{post_slug:string;code?:string}[]=await query<{post_slug:string}>("SELECT post_slug FROM publication_target_states WHERE target = 'substack' AND status = 'manual_required'");if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');for(const state of await new ScheduleRepository(db).list())if(state.pendingAction||state.intent||state.lastErrorCode||['conflict','foreground-required','reconciliation-required'].includes(state.draftSync?.status??''))holds.push({post_slug:state.slug,code:scheduleAttentionCode(state)});}return publishAttentionSnapshot(attentionFile,round,holds.map(row=>({slug:String(row.post_slug),...(row.code?{code:row.code}:{})})));},
   validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){if(config.scheduled.observeEnabled!==true||config.scheduled.writeEnabled!==false||config.substack?.ui?.origin!=='https://gcakedev.substack.com')throw Error('SUBSTACK_SCHEDULE_OBSERVER_POLICY_REQUIRED');}else assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));assertAnonymousAcceptance(accepted);if(config.scheduled&&accepted.policyVersion!==config.scheduled.policyVersion)throw Error('SUBSTACK_SCHEDULE_OBSERVER_ACCEPTANCE_REQUIRED');},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   observeSchedules:async(source,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion!=='scheduled-source-first-delivery-v1')return [];const {observeSubstackSchedules}=await import('./observe-substack-schedules');return observeSubstackSchedules(source,db,config.substack.ui);},
+  syncDrafts:async(source,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion!=='scheduled-source-first-delivery-v1')return [];if(config.draftQualification?.enabled===true){const {runDraftQualification}=await import('./substack-draft-qualification');return runDraftQualification(source,db,configFile,runtimePinFile);}const {runDraftSyncRound}=await import('./substack-draft-round');return runDraftSyncRound(source,db,configFile,{runtimePinFile});},
   snapshot:destination=>snapshotDistribution(destination,runtime),
   plan:async(source,configFile,out)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1')return {inventory:{entries:[]},articles:[]} as unknown as Plan;return prepareAllDistribution(source,config as DistributionConfig,out,async(slug,target)=>({state:(await repo.listStates(slug)).find(s=>s.target===target),checkpoint:await repo.runtime.checkpoint(slug,target),locked:!!await db.prepare('SELECT owner FROM publication_locks WHERE post_slug = ? AND target = ?').bind(slug,target).first()}));},
   execute:async(slug,command,run)=>{await distribution([command.operation,slug,command.target,'--background','--config',run.configFile,'--receipt',command.receiptFile,'--approval',command.approvalFile,'--mode','controlled-trial','--source-root',run.sourceRoot],undefined,runtime);const state=(await repo.listStates(slug)).find(s=>s.target===command.target);if(!state)throw Error('DISTRIBUTION_RESULT_MISSING');return state;},
@@ -132,6 +138,6 @@ export async function main(args=process.argv.slice(2)){
  for(const key of ['--config','--pin','--acceptance','--out','--lock'])if(!values.has(key))throw Error('DISTRIBUTION_SYNC_USAGE');
  const runtime=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
  await verifyRuntimePin(runtime,values.get('--pin')!,['scripts/publishing/sync-distribution.ts','scripts/publishing/distribution-handoff.ts','scripts/publishing/distribution-attention.ts']);
- const result=await runSyncRound({runtime,pin:values.get('--pin')!,configFile:values.get('--config')!,acceptanceFile:values.get('--acceptance')!,output:values.get('--out')!,lock:values.get('--lock')!,execute},productionDependencies(runtime));console.log(JSON.stringify(result));if(result.status==='attention')process.exitCode=1;
+ const result=await runSyncRound({runtime,pin:values.get('--pin')!,configFile:values.get('--config')!,acceptanceFile:values.get('--acceptance')!,output:values.get('--out')!,lock:values.get('--lock')!,execute},productionDependencies(runtime,undefined,HERMES_ATTENTION_FILE,values.get('--pin')));console.log(JSON.stringify(result));if(result.status==='attention')process.exitCode=1;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{console.error(boundedDistributionError(error));process.exitCode=1;});

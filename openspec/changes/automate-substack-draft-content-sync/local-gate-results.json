@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "test",
+    "exitCode": 0,
+    "elapsedSeconds": 100.62,
+    "log": "/private/tmp/gcake-draft-delivery-test.log"
+  },
+  {
+    "stage": "check",
+    "exitCode": 0,
+    "elapsedSeconds": 7.28,
+    "log": "/private/tmp/gcake-draft-delivery-check.log"
+  },
+  {
+    "stage": "build:all",
+    "exitCode": 0,
+    "elapsedSeconds": 12.11,
+    "log": "/private/tmp/gcake-draft-delivery-build-all.log"
+  },
+  {
+    "stage": "release:dry-run",
+    "exitCode": 0,
+    "elapsedSeconds": 15.48,
+    "log": "/private/tmp/gcake-draft-delivery-release-dry-run.log"
+  },
+  {
+    "stage": "editorial:rehearse",
+    "exitCode": 0,
+    "elapsedSeconds": 10.73,
+    "log": "/private/tmp/gcake-draft-delivery-editorial-rehearse.log"
+  }
+]
