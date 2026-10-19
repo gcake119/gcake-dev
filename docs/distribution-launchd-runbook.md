@@ -1,10 +1,18 @@
 # Substack 獨立背景觀察與歷史原生安裝
 
-## 現行入口（2026／10／19）
+## 交付快照（2026／10／20）
+
+本次提交保留 2026／10／19～20 已記錄的資格、啟用與自然輪次證據：匿名 observer 維持唯讀；另行授權的既有 ID Chrome 草稿 worker 已有持續啟用與自然盤點紀錄，新建及排程寫入仍停用。詳見 [草稿同步 API 與範圍](substack-draft-sync-api.md) 及 [持續驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md)。這是保存的版本證據，不是本輪重新讀取正式狀態或再次啟用；HTTP API 部署任務仍獨立追蹤。
+
+下方各階段「目前／現行／待驗收」依當時日期解讀，後續範圍以本節連結的最後證據為準。本輪只整理並推送 Git，不切換私人 runtime、timer、設定或 provider。
+
+## 早期入口紀錄（2026／10／19，持續草稿啟用前）
 
 背景只執行 anonymous-only 觀察，保留單一 900 秒工作與共享鎖，provider 寫入關閉；前景操作與單篇首次寄送必須符合 [同步操作手冊](distribution-scripted-runbook.md) 的新政策與精確授權。已部署的通知修正、單篇試行及仍待驗的 5.3，以該手冊引用的版本證據為準。
 
 以下原生安裝及 2026／10／13～17 紀錄按當時範圍保留；其中 Chrome 必須開啟、macos-chrome 收據、Pages 先公開與寄送全關閉等敘述，不能當作現行背景入口或否定後續單篇授權。舊原生成功收據不得替代 anonymous-only 驗收，不能照歷史步驟重新啟用背景 Chrome。此文件不變更正式安裝、設定、寄送 ledger 或既有排程。
+
+另行授權的本機 Computer Use 草稿階段與後台唯讀 API 見 [草稿同步說明](substack-draft-sync-api.md)。目前正式安裝仍為上述唯讀觀察器；本機程式與 fixture 不構成新草稿寫入的正式驗收，也沒有新增 timer 或切換既有安裝。
 
 ## 歷史原生政策
 
@@ -92,3 +100,20 @@ Hermes producer 在更新快照前讀取所有 D1 Substack 人工暫停，包含
 ## PR33 自然輪次歷史（2026／10／17）
 
 當日已完成私人安裝與兩輪自然驗證，與人工啟動驗證分開。原 ID、無寫入／無重寄及舊版本回復證據見 [自然排程結案](../openspec/changes/fix-substack-background-interference/natural-scheduler-verification.md) 與原樣保存的 [機器摘要](../openspec/changes/fix-substack-background-interference/natural-scheduler-acceptance.json)。這是該日版本的證據，不是現行版本或新政策 5.3 的驗收；不應重新執行原清理清單。
+
+## 2026／10／19 單篇無人唯讀資格驗收
+
+另獲明確授權後，沿用原 timer 安裝限 ID `221099415` 的單次 read-only Computer Use qualification，與一般草稿寫入啟用分開。使用新執行者專用分頁，禁止操作既有分頁、建立／更新文章、改排程或寄送；一次 claim 消耗後不自動重試。原匿名 observer、共用鎖與通知 ledger 保留，沒有新增 timer。安裝不等於自然驗收通過，實際狀態及私人證據位置見 [自然輪次紀錄](../openspec/changes/automate-substack-draft-content-sync/natural-provider-20261019.md)。舊匿名 acceptance 只用於 observer，不授權 Computer Use 寫入。
+
+上述單篇資格已於 2026／10／19 20：31 完成 Chrome 真實自然讀回：原 timer runs=1、exit=0，完整內容相符、無 provider 寫入；六篇 D1 承諾與清理對帳通過。現行私人候選為 `installed-draft-qualification-chrome-20261019`，只接受 browserName=chrome，並核對實際工具 family；一次 claim 已消耗，之後不再進行 authenticated CU。首次數字 ID 誤對應 Brave 的證據原樣保留，不能算 Chrome 通過。
+
+## 2026／10／19 Chrome 單篇實際重存自然驗收
+
+使用者明確授權後，現行私人候選為 `installed-draft-write-chrome-r4-20261019`，單次 write qualification 限原 ID 221099415／原 slug／來源 revision／runtime pin／baseline／Chrome，程序最長 600 秒；一般寫入與排程開關仍為 false。22：33 實際完整貼上、保存、離開後重新載入與嚴格全文比對通過，原 timer 自然 runs=1、exit=0；六篇 D1 承諾、owned intent／lock／source／tab cleanup 均對帳通過。先前 r1／r2／r3 都在任何文章編輯前停止，原結果與確定未送出的意圖結清收據保留，不重播舊請求。此單次範圍已消耗，之後跳過 authenticated qualification，保留匿名 observer。完整版本及失敗／成功界線見 [實際寫入驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/write-provider-20261019.md)。
+
+
+## 2026／10／19 已啟用的既有 ID 草稿同步
+
+目前私人 runtime 為 `installed-draft-continuous-media-chrome-20261019`；以使用者最新持續寫入授權取代上述單次資格 scope，保留歷史 runtime、失敗紀錄、舊 pin 及回復用 plist。一般草稿使用同一工作與 900 秒 timer，在自己新建的 Chrome 分頁操作；匿名 observer 保持原職責。禁止操作 Brave 或使用者現有分頁。`draftSync.enabled=true`／`writeEnabled=true`／`allowCreate=false`，排程 `writeEnabled=false`。已核准媒體 profile 為 original-sha256-png-v1，資格／授權綁定 runtime pin 與 2026-11-18T15:44:12.782Z 到期時間。
+
+停用時以原子更新此私人 runtime 的 unattended.json，將 draftSync.enabled／writeEnabled 同時設 false；保留其餘 scope、舊證據與匿名 observer。等待當前程序結束後唯讀盤點所有 intent／lock／checkpoint，未知結果先查原 ID，禁止直接重播、清空未決操作或刪除保留來源。停用只停止新 dispatch，不會回復 Substack 內容或取消既有排程。回復舊 runtime 前仍須確認舊 pin、設定相容性與未決操作，不自行操作 provider 取消。自然輪次與清理結果以 [持續驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md) 為準。
