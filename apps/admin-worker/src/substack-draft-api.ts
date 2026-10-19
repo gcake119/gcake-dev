@@ -4,7 +4,7 @@ export interface DraftStatusStore {get(slug:string):Promise<ScheduleRecord|undef
 const text=(s:unknown)=>typeof s==='string'&&s.length<=200?s:null;
 export function draftStatusView(s:ScheduleRecord){
  const d=s.draftSync;
- const unresolved=!!s.intent;
+ const unresolved=!!s.intent||d?.status==='reconciliation-required';
  const status=unresolved?'reconciliation-required':d?.status==='verified'&&d.desiredRevision!==d.savedRevision?'pending':d?.status??'not-observed';
  const code=d?.code&&/^SUBSTACK_[A-Z_]+$/.test(d.code)?d.code:null;
  return {schemaVersion:1,slug:s.slug,providerId:s.remoteId??null,version:s.version,

@@ -31,3 +31,13 @@ test('independent publication holds remain visible even when the last draft save
  const view=draftStatusView({...record,intent:undefined,observedState:'draft_prepared',lastErrorCode:'SUBSTACK_REMOTE_IDENTITY_MISMATCH',pendingAction:'reconcile-schedule',draftSync:{...record.draftSync!,status:'verified',desiredRevision:'same',savedRevision:'same'}});
  assert.equal(view.attention.code,'SUBSTACK_REMOTE_IDENTITY_MISMATCH');assert.equal(view.attention.pendingAction,'reconcile-schedule');assert.deepEqual(view.actions,['foreground-review']);
 });
+
+
+test('checkpoint reconciliation without an intent exposes an unresolved operation and foreground route',async()=>{
+ const row={...record,intent:undefined,observedState:'draft_prepared' as const,draftSync:{...record.draftSync!,status:'reconciliation-required' as const}};
+ const request=await fixture({get:async()=>row,list:async()=>[row]});
+ for(const route of ['/trial','']){
+  const response=await request(route);const body=await response.json() as any;const view=route?body.draft:body.drafts[0];
+  assert.equal(view.sync.status,'reconciliation-required');assert.equal(view.sync.unresolvedOperation,true);assert.deepEqual(view.actions,['foreground-reconcile']);
+ }
+});

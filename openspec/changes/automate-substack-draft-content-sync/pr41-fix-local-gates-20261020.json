@@ -1,0 +1,68 @@
+{
+  "parentCommit": "7e617b8d401be301d94fbbaebf8298abeec52e9e",
+  "failedCI": "https://github.com/gcake119/gcake-dev/actions/runs/39295170194",
+  "reviewFindings": {
+    "P1": 2,
+    "P2": 2
+  },
+  "focusedAcceptance": {
+    "passed": 53,
+    "failed": 0
+  },
+  "gates": [
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "seconds": 141.48,
+      "log": "/private/tmp/gcake-pr41-fix-gates/test.log"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "seconds": 7.44,
+      "log": "/private/tmp/gcake-pr41-fix-gates/check.log"
+    },
+    {
+      "command": "pnpm build:all",
+      "exitCode": 0,
+      "seconds": 5.74,
+      "log": "/private/tmp/gcake-pr41-fix-gates/build-all.log"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "exitCode": 0,
+      "seconds": 10.55,
+      "log": "/private/tmp/gcake-pr41-fix-gates/release-dry-run.log"
+    },
+    {
+      "command": "pnpm editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 9.98,
+      "log": "/private/tmp/gcake-pr41-fix-gates/editorial-rehearse.log"
+    }
+  ],
+  "inputsSha256": {
+    "apps/admin-worker/src/substack-draft-api.test.ts": "2f2bd72846800f7de7e23a23152b2ec62235d696355f244c9c47206c7a940fdb",
+    "apps/admin-worker/src/substack-draft-api.ts": "56ed00501a81c16e2ca19e52f05e41c5165c3a1cd1f7f9c235335327eea494be",
+    "scripts/publishing/distribution-draft-sync.test.ts": "1a6c9fc603e3285e9bdb818591d38c98473d7cbbe4f222aa7656a525e3c22cf0",
+    "scripts/publishing/substack-draft-executor.ts": "4ee0ec36dee4d689812952303efaa2a24d89e23679c53896fdaca2ae96f0918a",
+    "scripts/publishing/substack-draft-qualification.ts": "42e741bd239155c1cb826538e908349b82e8f388b1f229119210ccdb0b127dcd",
+    "scripts/publishing/substack-draft-round.ts": "464a6c6e0dde1fc2918241b0300ecf695b75969a7d96c2194d374fd8e42592e9",
+    "package.json": "c568b49b3a78d0ebb33b3dc02725d0dbdf58bc1fb099f64b6311b0fb2ba61f6b",
+    "pnpm-lock.yaml": "2ed4a9eefd27a8cd417ec03567f3f50866081435c57476fcc27ffd8071386645",
+    "pnpm-workspace.yaml": "253208fa7c1b64372c219b9e19cef15ed70ca93b66a4d5c4c4d2297a5aff8880",
+    "tsconfig.json": "5a1bcf45519b8430495eec65f7409d539345be0b38dddca06d8e4adf3c9da341",
+    "apps/admin-worker/tsconfig.json": "8823c6a3dfdd2b80bb63cc261b50fd58cc739f8f439ef967a95617ea4e36d406"
+  },
+  "evidenceSha256": {
+    "/private/tmp/gcake-pr41-ci-failed.log": "c6d40c97c1a515e2fc90642b66a4f7218ceeff2a55cfec9cbdb612d7ce426f69",
+    "/private/tmp/gcake-pr41-regressions-red.log": "485a6ca52d68149a286eacad0a8b7d3a0fcf81b95cc1a053c651f4ca552827e9",
+    "/private/tmp/gcake-pr41-timeout-red.log": "04c6696a9d85a6f12d2f1086fcf57f97141ee80dad8a94209b4971ecf05e097a",
+    "/private/tmp/gcake-pr41-partial-signal-red.log": "7a40f44d110a5fe120ab2547a47692b9a2b0ee533d02a0d34c50eb24af7e1e10",
+    "/private/tmp/gcake-pr41-focused-green.log": "3c78b24b3ec33473dd6b6014ec9d9d9c4753c363fe60a1ffc32b0893c3593451"
+  },
+  "scope": "local candidate; no live provider, runtime activation, merge or deployment",
+  "invalidTimeoutFixtureRetained": true,
+  "reviewOfNewCandidate": "pending",
+  "ciOfNewCandidate": "pending"
+}

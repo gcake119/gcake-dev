@@ -192,10 +192,10 @@ for(const failure of [false,true])test('ordinary unattended executor '+(failure?
  const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'ordinary-executor-'));
  try{
   await fs.mkdir(path.join(root,'source/src/content/posts'),{recursive:true});await fs.writeFile(path.join(root,'source/src/content/posts/trial.md'),'---\nstatus: ready\n---\nComplete');
-  const config=path.join(root,'policy.json');await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:2,timeoutMs:1000,maxRoundMs:5000,executor:process.execPath,browserName:'chrome',evidenceDirectory:path.join(root,'evidence')}}));
+  const config=path.join(root,'policy.json');await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:2,timeoutMs:5000,maxRoundMs:30000,executor:process.execPath,browserName:'chrome',evidenceDirectory:path.join(root,'evidence')}}));
   const actions:string[]=[];const execute=async(file:string,q:{directory:string},evidence:string)=>{
    const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;
-   if(r.action==='draft-update'){assert.equal((await f.repo.bySlug('trial'))?.intent?.id,r.intentId);assert.equal(r.precondition.digest,contentFingerprint(f.post.content));before=structuredClone(f.post);if(failure)throw Error('SUBSTACK_EXECUTOR_FAILED');await fixtureBeforeVerdict(file,q.directory,before);f.post.content=expectedContent(source('b'));}
+   if(r.action==='draft-update'){assert.equal((await f.repo.bySlug('trial'))?.intent?.id,r.intentId);assert.equal(r.precondition.digest,contentFingerprint(f.post.content));before=structuredClone(f.post);if(failure)throw Error('SUBSTACK_EXECUTOR_FAILED');await fixtureBeforeVerdict(file,q.directory,before,true);f.post.content=expectedContent(source('b'));}
    await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post,...(before?{before,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}:{})}));
    await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
   };
@@ -204,7 +204,7 @@ for(const failure of [false,true])test('ordinary unattended executor '+(failure?
   const rows=await runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,deps);
   const state=(await f.repo.bySlug('trial'))!;assert.equal(state.remoteId,'123');assert.equal(state.delivery,'not_armed');
   if(failure){assert.equal(rows[0].status,'manual_required');assert.equal(state.intent?.action,'update-draft');assert.equal(state.draftSync?.status,'reconciliation-required');}
-  else {assert.equal(rows[0].status,'observed');assert.deepEqual(actions,['draft-read','draft-read','draft-update','draft-read']);assert.equal(state.intent,undefined);assert.deepEqual(f.post.content,expectedContent(source('b')));const count=actions.length;await runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,deps);assert.deepEqual(actions.slice(count),['draft-read']);assert.ok((await fs.readdir(root+'/evidence')).length>=5);}
+  else {assert.equal(rows[0].status,'observed',JSON.stringify({rows,code:state.draftSync?.code,actions}));assert.deepEqual(actions,['draft-read','draft-read','draft-update','draft-read']);assert.equal(state.intent,undefined);assert.deepEqual(f.post.content,expectedContent(source('b')));const count=actions.length;await runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,deps);assert.deepEqual(actions.slice(count),['draft-read']);assert.ok((await fs.readdir(root+'/evidence')).length>=5);}
  }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
 });
 
@@ -258,10 +258,14 @@ test('ordinary controller rejects claimed write without parent before verdict',a
  }finally{f.db.close();await fs.rm(base,{recursive:true,force:true});}
 });
 
-async function fixtureBeforeVerdict(_file:string,directory:string,observation:ScheduleObservation){
+async function fixtureBeforeVerdict(_file:string,directory:string,observation:ScheduleObservation,fragmentReady=false){
  await fs.writeFile(directory+'/before.json',JSON.stringify({sessionExclusive:true,reloaded:true,observation}));
  const {execFile}=await import('node:child_process'),{promisify}=await import('node:util');
- const result=await promisify(execFile)(process.execPath,['--import',import.meta.resolve('tsx'),directory+'/verify-before.mts'],{timeout:2000});assert.match(result.stdout,/SUBSTACK_BEFORE_VERIFIED/);
+ const imports=['--import',import.meta.resolve('tsx')];
+ if(fragmentReady){
+  const injector=directory+'/fragment-writes.mjs';await fs.writeFile(injector,`import fs from 'node:fs/promises';const write=fs.writeFile.bind(fs);fs.writeFile=async(file,data,options)=>{if(String(file).endsWith('/before-ready.json')){const handle=await fs.open(file,'wx',0o600);try{const body=String(data),middle=Math.floor(body.length/2);await handle.write(body.slice(0,middle));await new Promise(r=>setTimeout(r,180));await handle.write(body.slice(middle));}finally{await handle.close();}return;}return write(file,data,options);};`);imports.push('--import',injector);
+ }
+ const result=await promisify(execFile)(process.execPath,[...imports,directory+'/verify-before.mts'],{timeout:5000});assert.match(result.stdout,/SUBSTACK_BEFORE_VERIFIED/);
 }
 
 test('parent source revocation rejects before verdict and permits no fixture edit',async()=>{
@@ -285,3 +289,47 @@ test('media capability activation cannot reuse a text-only receipt',async()=>{co
  await assert.rejects(validateDraftActivation(policy,'pin',now,deps),/ACTIVATION_REQUIRED/);
  await validateDraftActivation(policy,'pin',now,{...deps,read:async(file:string)=>file==='pin'?'pinned runtime':{...receipt,mediaProfile:DRAFT_MEDIA_PROFILE,mediaQualified:true}});
 }finally{f.db.close();}});
+
+
+test('ordinary dispatch rejects a valid replacement policy instead of launching the old executor',async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-policy-replaced-'));
+ try{
+  await fs.mkdir(root+'/source/src/content/posts',{recursive:true});await fs.writeFile(root+'/source/src/content/posts/trial.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';const initial={...f.policy,maxArticles:1,timeoutMs:1000,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/old-evidence'};
+  await fs.writeFile(config,JSON.stringify({draftSync:initial}));let dispatched=0,replaced=false;
+  const {runDraftSyncRound}=await import('./substack-draft-round');
+  const rows=await runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},assertMain:async()=>{},readSource:async()=>{if(!replaced){replaced=true;await fs.writeFile(config,JSON.stringify({draftSync:{...initial,evidenceDirectory:root+'/new-evidence',timeoutMs:500}}));}return source('b');},execute:async()=>{dispatched++;throw Error('Unexpected stale executor');}});
+  assert.equal(dispatched,0);assert.notEqual(rows[0].status,'observed');assert.equal((await f.repo.bySlug('trial'))?.intent,undefined);
+ }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+
+test('rename holds rotate fairly to the missing original without allowing replacement creation',async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-rename-fairness-'));
+ try{
+  await fs.mkdir(root+'/src/content/posts',{recursive:true});for(const slug of ['a','z'])await fs.writeFile(root+'/src/content/posts/'+slug+'.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:1000}}));let tick=0;const visited:string[]=[];const before=f.calls.length;
+  const {runDraftSyncRound}=await import('./substack-draft-round');
+  for(let round=0;round<5;round++){
+   const rows=await runDraftSyncRound(root,new SqliteD1Database(f.db),config,{now:()=>new Date(Date.parse(now)+1000*(++tick)).toISOString(),verifyActivation:async()=>{},assertMain:async()=>{},readSource:async(_root,slug)=>{if(slug==='trial')throw Error('SUBSTACK_SOURCE_NOT_FINALIZED');return {...source(),slug,sourcePath:'src/content/posts/'+slug+'.md',article:{...source().article,slug}};},provider:()=>({find:async()=>{throw Error('Must not discover replacements');},read:async()=>{throw Error('Must not access provider');},create:async()=>{throw Error('Must not create');},update:async()=>{throw Error('Must not update');}})});
+   visited.push(rows[0].slug);
+  }
+  assert.ok(visited.includes('trial'),JSON.stringify(visited));assert.equal((await f.repo.bySlug('trial'))?.draftSync?.status,'foreground-required');
+  assert.equal((await f.repo.bySlug('a'))?.lastErrorCode,'SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED');assert.equal((await f.repo.bySlug('z'))?.lastErrorCode,'SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED');
+  assert.deepEqual(f.calls.slice(before),[]);
+ }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+
+test('executor ignoring SIGTERM is bounded and its owned process group is stopped',async()=>{
+ const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-executor-timeout-'));let pid:number|undefined;let execution:Promise<unknown>|undefined;
+ try{
+  const executable=root+'/ignore-term.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(root+'/term-seen')},'yes'));fs.writeFileSync(${JSON.stringify(root+'/pid')},String(process.pid));setInterval(()=>{},100);`,{mode:0o700});
+  const {executeComputerUse}=await import('./substack-draft-qualification');
+  execution=executeComputerUse('fixture only',{executor:executable,directory:root,timeoutMs:1500}).then(()=> 'resolved',e=>e.message);
+  const result=await Promise.race([execution,new Promise<string>(r=>setTimeout(()=>r('still-running'),4500))]);
+  pid=Number(await fs.readFile(root+'/pid','utf8'));assert.equal(await fs.readFile(root+'/term-seen','utf8'),'yes');
+  assert.equal(result,'SUBSTACK_EXECUTOR_TIMEOUT');const reapDeadline=Date.now()+1000;while(Date.now()<reapDeadline){try{process.kill(pid!,0);}catch(e){if((e as NodeJS.ErrnoException).code==='ESRCH')break;throw e;}await new Promise(r=>setTimeout(r,10));}assert.throws(()=>process.kill(pid!,0),{code:'ESRCH'});
+ }finally{
+  if(!pid)try{pid=Number(await fs.readFile(root+'/pid','utf8'));}catch{}
+  if(pid)try{process.kill(-pid,'SIGKILL');}catch{}await execution;await fs.rm(root,{recursive:true,force:true});
+ }
+});

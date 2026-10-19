@@ -70,3 +70,9 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 10.1 Deploy the existing draft status API from an isolated snapshot of the current production base plus only the qualified API delta. Verify matching local gate provenance, production dry-run, existing frontend asset hashes, variables/bindings/secret names and rollback identity; no migrations or sync-runtime changes.
 - [x] 10.2 Verify production health, anonymous rejection, authenticated list/single-article/pagination/missing-record behavior and read-only method rejection at the available layers. Compare actual records and preserved provider commitments/config, retain redacted deployment/HTTP evidence and publish frontend endpoint/state/error/polling guidance. Do not claim local-only checks as production results.
+
+
+## 11. PR #41 CI and review regressions
+
+- [x] 11.1 Reproduce the ordinary executor CI failure and reviewed current-policy, rename fairness, checkpoint projection and process-timeout boundaries through the existing acceptance seams. Retain the failed CI and real local RED; use the existing Qualified unattended draft integration, Freshness and source lifecycle boundaries, Bounded recovery and truthful disablement, and Authenticated frontend status projection contracts without changing acceptance conditions.
+- [x] 11.2 Fix confirmed causes, retaining no-replay, original identity and authorization boundaries; run focused GREEN then all five existing local gates before pushing a candidate, record exact evidence and keep Admin archive, production runtime, schedules and deployment outside this work.

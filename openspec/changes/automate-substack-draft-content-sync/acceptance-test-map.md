@@ -83,3 +83,6 @@ Approved original-image identity comparison／parent-verified before-paste verdi
 
 
 Production read-only API delivery：相同 46 個 Worker source／contracts／lockfile 重用既有 full gates，隔離快照 production dry-run。正式健康／匿名 GET／匿名五項寫入拒絕 curl 實測；owner 正常 Chrome OAuth 讀列表、單篇、hasMore 首末頁及錯誤 code。authenticated 405／503 僅為匹配候選的本機測試，不冒稱正式故障注入。六筆承諾／同步設定／資產／bindings 前後比對通過；api-production-20261020.md 分層記錄。
+
+
+PR #41 regressions：沿用既有 scope／撤銷、盤點公平續行、未決結果投影、有限執行與保存前判決情境。原普通 executor 驗收加入分段 before-ready 寫入；新增有效 policy 置換零 dispatch、改名阻擋五輪公平到達原 ID、SIGTERM 忽略後自有程序群組被終止，以及列表／單篇無 intent 對帳提示。原 CI 失敗、真實 RED、修正與限制見 pr41-review-fixes-20261020.md；局部 Node／SQLite／檔案／Worker 驗收合計 53 項通過，沒有新增測試層。

@@ -34,9 +34,13 @@ export async function executeComputerUse(prompt:string,q:{executor:string;direct
  try{await new Promise<void>((resolve,reject)=>{
   const computerUse=path.join(env.HOME??'','.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient');
   const child=spawn(q.executor,['exec','-c','mcp_servers.computer-use.command='+JSON.stringify(computerUse),'--sandbox','workspace-write','--ephemeral','--json','--skip-git-repo-check','-C',q.directory,prompt],{env,stdio:['ignore',out.fd,err.fd],detached:true});
-  let timedOut=false;const timer=setTimeout(()=>{timedOut=true;if(child.pid){try{process.kill(-child.pid,'SIGTERM');}catch{}}},q.timeoutMs);
-  child.once('error',()=>{clearTimeout(timer);reject(Error('SUBSTACK_EXECUTOR_FAILED'));});
-  child.once('exit',code=>{clearTimeout(timer);code===0&&!timedOut?resolve():reject(Error(timedOut?'SUBSTACK_EXECUTOR_TIMEOUT':'SUBSTACK_EXECUTOR_FAILED'));});
+  let timedOut=false,settled=false,forceTimer:ReturnType<typeof setTimeout>|undefined;
+  const signal=(value:NodeJS.Signals)=>{if(child.pid)try{process.kill(-child.pid,value);}catch{}};
+  const finish=(error?:string)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(forceTimer);error?reject(Error(error)):resolve();};
+  const timer=setTimeout(()=>{timedOut=true;signal('SIGTERM');forceTimer=setTimeout(()=>{signal('SIGKILL');finish('SUBSTACK_EXECUTOR_TIMEOUT');},1000);},q.timeoutMs);
+  child.once('error',()=>{if(!timedOut)finish('SUBSTACK_EXECUTOR_FAILED');});
+  // Keep the grace deadline even if the parent exits: descendants may still own the group.
+  child.once('exit',code=>{if(!timedOut)finish(code===0?undefined:'SUBSTACK_EXECUTOR_FAILED');});
  });}finally{await out.close();await err.close();}
 }
 /** One-use scoped qualification remains separate from standing draft-write activation. */

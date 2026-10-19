@@ -18,6 +18,11 @@ export interface DraftExecutorOptions {
  fetcher?:typeof fetch;
  execute?:(request:string,scope:{directory:string;executor:string;timeoutMs:number},evidence:string)=>Promise<void>;
 }
+/** Publish complete coordination signals atomically, retaining exclusive-create semantics. */
+async function writeSignal(file:string,value:unknown){
+ const partial=file+'.partial';await fs.writeFile(partial,JSON.stringify(value),{mode:0o600,flag:'wx'});
+ try{await fs.link(partial,file);}finally{await fs.unlink(partial);}
+}
 /** The controller owns envelopes. The browser process supplies only real UI observations. */
 export async function replyWithDraftExecutor(file:string,o:DraftExecutorOptions){
  const p=o.policy,hash=(v:string)=>createHash('sha256').update(v).digest('hex');
@@ -35,7 +40,7 @@ export async function replyWithDraftExecutor(file:string,o:DraftExecutorOptions)
  if(contentFingerprint(payload)!==contentFingerprint(expected))throw Error('SUBSTACK_CONTENT_EVIDENCE_MISMATCH');
  await fs.writeFile(path.join(directory,'write-payload.json'),JSON.stringify(payload),{mode:0o600,flag:'wx'});
  const gate=`import fs from 'node:fs/promises';import {createHash} from 'node:crypto';
-import {isDeepStrictEqual} from 'node:util';const base=${JSON.stringify(directory)},requestId=${JSON.stringify(envelope.requestId)},scopeDigest=${JSON.stringify(envelope.scopeDigest)};const raw=await fs.readFile(base+'/before.json','utf8'),beforeHash=createHash('sha256').update(raw).digest('hex');await fs.writeFile(base+'/before-ready.json',JSON.stringify({requestId,scopeDigest,beforeHash}),{mode:0o600,flag:'wx'});const end=Date.now()+${Math.min(120000,o.timeoutMs)};let passed=false;while(Date.now()<end){let v;try{v=JSON.parse(await fs.readFile(base+'/before-verdict.json','utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}if(v){if(v.requestId!==requestId||v.scopeDigest!==scopeDigest||v.beforeHash!==beforeHash||v.expiresAt<=Date.now())throw Error('SUBSTACK_BEFORE_VERDICT_INVALID');if(v.ok!==true)throw Error(v.code);passed=true;break;}await new Promise(r=>setTimeout(r,100));}if(!passed)throw Error('SUBSTACK_BEFORE_VERDICT_REQUIRED');console.log('SUBSTACK_BEFORE_VERIFIED');`;
+import {isDeepStrictEqual} from 'node:util';const base=${JSON.stringify(directory)},requestId=${JSON.stringify(envelope.requestId)},scopeDigest=${JSON.stringify(envelope.scopeDigest)};const raw=await fs.readFile(base+'/before.json','utf8'),beforeHash=createHash('sha256').update(raw).digest('hex');const ready=base+'/before-ready.json';await fs.writeFile(ready+'.partial',JSON.stringify({requestId,scopeDigest,beforeHash}),{mode:0o600,flag:'wx'});try{await fs.link(ready+'.partial',ready);}finally{await fs.unlink(ready+'.partial');}const end=Date.now()+${Math.min(120000,o.timeoutMs)};let passed=false;while(Date.now()<end){let v;try{v=JSON.parse(await fs.readFile(base+'/before-verdict.json','utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}if(v){if(v.requestId!==requestId||v.scopeDigest!==scopeDigest||v.beforeHash!==beforeHash||v.expiresAt<=Date.now())throw Error('SUBSTACK_BEFORE_VERDICT_INVALID');if(v.ok!==true)throw Error(v.code);passed=true;break;}await new Promise(r=>setTimeout(r,100));}if(!passed)throw Error('SUBSTACK_BEFORE_VERDICT_REQUIRED');console.log('SUBSTACK_BEFORE_VERIFIED');`;
  await fs.writeFile(path.join(directory,'verify-before.mts'),gate,{mode:0o600,flag:'wx'});
  const scope={directory,executor:p.executor,timeoutMs:o.timeoutMs};
  let done=false,executionError:unknown,gateError:unknown,gatePassed=false,gateHandled=false,capturedBefore:unknown;
@@ -59,17 +64,17 @@ import {isDeepStrictEqual} from 'node:util';const base=${JSON.stringify(director
      const normalized=await normalize(actual.observation,'before');
      if(normalized.slug!==o.source.slug||normalized.state!=='draft'||normalized.listEvidence?.draft!==true||normalized.listEvidence?.scheduled!==false||normalized.scheduledAt||contentFingerprint(normalized.content)!==r.precondition?.digest)throw Error('SUBSTACK_REMOTE_EDIT_CONFLICT');
      validateDraftHandoff(envelope,await o.check(),o.source);capturedBefore=actual.observation;
-     await fs.writeFile(path.join(directory,'before-verdict.json'),JSON.stringify({ok:true,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash,expiresAt:envelope.expiresAt,digest:r.precondition.digest}),{mode:0o600,flag:'wx'});gatePassed=true;
+     await writeSignal(path.join(directory,'before-verdict.json'),{ok:true,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash,expiresAt:envelope.expiresAt,digest:r.precondition.digest});gatePassed=true;
     }catch(e){
      gateError=e;const code=e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
-     await fs.writeFile(path.join(directory,'before-verdict.json'),JSON.stringify({ok:false,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash,expiresAt:envelope.expiresAt,code}),{mode:0o600,flag:'wx'});
+     await writeSignal(path.join(directory,'before-verdict.json'),{ok:false,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash,expiresAt:envelope.expiresAt,code});
     }
    }
   }
   if(!done)await new Promise(resolve=>setTimeout(resolve,50));
  }
  }catch(e){
-  try{const raw=await fs.readFile(path.join(directory,'before.json'),'utf8');await fs.writeFile(path.join(directory,'before-verdict.json'),JSON.stringify({ok:false,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash:hash(raw),expiresAt:envelope.expiresAt,code:'SUBSTACK_BEFORE_VERDICT_INVALID'}),{mode:0o600,flag:'wx'});}catch{}
+  try{const raw=await fs.readFile(path.join(directory,'before.json'),'utf8');await writeSignal(path.join(directory,'before-verdict.json'),{ok:false,requestId:envelope.requestId,scopeDigest:envelope.scopeDigest,beforeHash:hash(raw),expiresAt:envelope.expiresAt,code:'SUBSTACK_BEFORE_VERDICT_INVALID'});}catch{}
   await execution;throw e;
  }
  await execution;if(executionError)throw executionError;

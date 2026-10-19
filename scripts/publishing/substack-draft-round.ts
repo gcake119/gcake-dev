@@ -1,3 +1,4 @@
+import {isDeepStrictEqual} from 'node:util';
 import {buildDraftSource} from './substack-draft-media';
 import {validateDraftActivation} from './substack-draft-activation';
 import {execFileSync} from 'node:child_process';
@@ -36,7 +37,7 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
   try{
    if(missingTracked&&!records.some(r=>r.slug===slug))throw Error('SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED');
    const source=await readSource();
-   const authority=async()=>{if(Date.now()>=deadline)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');const policy=(await config()).draftSync;assertDraftPolicy(policy,now());await verifyActivation(policy!);};
+   const authority=async()=>{if(Date.now()>=deadline)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');const policy=(await config()).draftSync;assertDraftPolicy(policy,now());await verifyActivation(policy!);if(!isDeepStrictEqual(policy,initial))throw Error('SUBSTACK_DRAFT_SCOPE_CHANGED');};
    const provider=source?(deps.provider?.(source)??new ComputerUseDraftPort(source,repo,async r=>{
     await authority();
     exchange??=await FileAttendedExchange.create<DraftExchangeRequest>(path.join(path.dirname(root),'draft-sessions'),root,Math.min(initial.timeoutMs,Math.max(1,deadline-Date.now())),250,async file=>{
@@ -53,7 +54,7 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
    const code=e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
    const file=files.find(f=>f.slug===slug);
    // Record failed eligibility as metadata only, so one broken new original cannot monopolize every round.
-   if(file&&!missingTracked&&code!=='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'&&!await repo.bySlug(slug))await repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'substack:'+slug,slug,sourcePath:path.relative(root,file.path),version:0,observedState:'draft_prepared',delivery:'not_armed',draftSync:{status:'inconclusive',code,checkedAt:now(),transport:'computer-use'},updatedAt:now()},0);
+   if(file&&(!missingTracked||code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED')&&!await repo.bySlug(slug))await repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'substack:'+slug,slug,sourcePath:path.relative(root,file.path),version:0,observedState:'draft_prepared',delivery:'not_armed',...(code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?{lastErrorCode:code}:{}),draftSync:{status:code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?'foreground-required':'inconclusive',code,checkedAt:now(),transport:'computer-use'},updatedAt:now()},0);
    results.push({slug,target:'substack',operation:'sync-draft',status:'blocked',code});
   }
  }
