@@ -103,3 +103,18 @@ test('production scheduled durable holds retain content and recovery reasons ins
   const before=await fs.readFile(file,'utf8');sql.close();closed=true;await assert.rejects(deps.notify!({status:'completed',results:[]},f.options.configFile));assert.equal(await fs.readFile(file,'utf8'),before);
  }finally{if(!closed)sql.close();await f.cleanup();}
 });
+
+test('draft worker and anonymous observer are distinct phases; draft failure cannot suppress observation',async()=>{const f=await fixture();try{
+ const phases:string[]=[];f.deps.plan=async()=>({inventory:{entries:[]},articles:[]} as never);
+ f.deps.syncDrafts=async()=>{phases.push('draft');throw Error('SUBSTACK_DRAFT_SYNC_UNQUALIFIED');};
+ f.deps.observeSchedules=async()=>{phases.push('observe');return [{slug:'article',target:'substack',operation:'observe-schedule',status:'observed'}];};
+ const result=await runSyncRound(f.options,f.deps);assert.deepEqual(phases,['draft','observe']);assert.equal(result.status,'attention');assert.ok(result.results.some(r=>r.operation==='observe-schedule'));
+ phases.length=0;await runSyncRound({...f.options,execute:false},f.deps);assert.deepEqual(phases,[]);
+}finally{await f.cleanup();}});
+
+test('repeated draft reconciliation without a new handoff cleans its new snapshot; unresolved current payload stays',async()=>{const f=await fixture();try{
+ f.deps.plan=async()=>({inventory:{entries:[]},articles:[]} as never);f.deps.syncDrafts=async()=>[{slug:'article',target:'substack',operation:'sync-draft',status:'manual_required',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}];
+ const repeated=await runSyncRound(f.options,f.deps);assert.equal(repeated.cleanup.source,'removed');
+ f.deps.syncDrafts=async source=>{const dir=path.join(path.dirname(source),'draft-sessions','unresolved');await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'request.json'),'{}');await fs.writeFile(path.join(dir,'reply.json'),'{}');return [{slug:'article',target:'substack',operation:'sync-draft',status:'manual_required',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}];};
+ const uncertain=await runSyncRound(f.options,f.deps);assert.equal(uncertain.cleanup.source,'retained');
+}finally{await f.cleanup();}});

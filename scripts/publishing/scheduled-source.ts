@@ -9,7 +9,7 @@ import {collectReleaseEligibility} from '../../packages/publishing-contract/src/
 import {openFixedSnapshot} from './distribution-inventory';
 import {renderedArticle} from './substack-browser';
 import type {DistributionArticle} from '../../apps/admin-worker/src/distribution-coordinator';
-export interface ScheduledSource {slug:string;sourcePath:string;sourceCommit:string;sourceRevision:string;seriesSlug?:string;article:DistributionArticle}
+export interface ScheduledSource {media?:import('./substack-draft-media').SourceImageDigest[];slug:string;sourcePath:string;sourceCommit:string;sourceRevision:string;seriesSlug?:string;article:DistributionArticle}
 export async function buildScheduledSource(root:string,slug:string,fetcher:typeof fetch=fetch):Promise<ScheduledSource>{
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))throw Error('SUBSTACK_SOURCE_INVALID');
  const sourceCommit=await openFixedSnapshot(root);
