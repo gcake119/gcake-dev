@@ -206,3 +206,17 @@ Recovery choices SHALL use the currently opened article and its loaded source re
 - **GIVEN** recovery choices for a previous article
 - **WHEN** the owner creates a new article draft
 - **THEN** the new draft has no previous recovery prompt and merging cannot replace its identity or content with the previous article
+
+
+### Requirement: Discarded series edits stay discarded
+Confirming discard when leaving series editing SHALL remove its pending edits from subsequent operations. Saving an article after this action SHALL save only the article and SHALL NOT persist the discarded series edits. Choosing to continue editing SHALL retain the edited series without writing it. Reopening the discarded series SHALL load its saved version.
+
+#### Scenario: Discard a series and save an article
+- **GIVEN** an edited series with unsaved changes
+- **WHEN** the owner confirms discard, opens an article and saves it
+- **THEN** the article is saved without changing the series, and reopening the series shows its previously saved content
+
+#### Scenario: Continue editing a series
+- **GIVEN** an edited series and a pending leave confirmation
+- **WHEN** the owner chooses to continue editing
+- **THEN** the modified series remains in the editor and no save occurs

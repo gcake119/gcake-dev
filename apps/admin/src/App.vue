@@ -73,6 +73,9 @@ const articleDirty = computed(() => Boolean(selectedPost.value && (
   editorTitle.value !== selectedPost.value.title || editorSlug.value !== selectedPost.value.slug
 )));
 async function finishOverview(section: 'articles' | 'series' | 'publishing'): Promise<void> {
+  seriesDirty.value = false;
+  selectedSeries.value = undefined;
+  seriesManifest.value = undefined;
   pendingOverview.value = undefined;
   workspaceMode.value = 'overview';
   overviewSection.value = section;

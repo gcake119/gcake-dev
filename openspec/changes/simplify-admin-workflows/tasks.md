@@ -50,3 +50,10 @@
 - [x] 9.1 Reproduce stale browser-draft merge, cross-article recovery and direct-body image focus regressions using the existing actual-workspace acceptance harness before implementation.
 - [x] 9.2 Implement Article-scoped recovery and uninterrupted image editing: scope recovery state to each opened article and restore media entry focus only when a dialog was actually open; preserve existing dialog close and failed upload behavior.
 - [x] 9.3 Run affected acceptance tests, complete local gates before pushing a candidate, and record CI/review evidence while excluding Substack changes. No merge or deployment.
+
+
+## 10. Re-review discard regression
+
+- [x] 10.1 Reproduce Discarded series edits stay discarded through actual series editing, leave/continue/discard and subsequent article-save requests before implementation.
+- [x] 10.2 Clear pending series state at the workspace leave boundary, preserving continue-editing behavior and independent article saves.
+- [x] 10.3 Run complete local gates before pushing and record re-review findings plus the exact-candidate handoff for CI and Codex, without Substack changes, merge or deployment.

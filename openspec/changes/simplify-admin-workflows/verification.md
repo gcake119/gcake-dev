@@ -191,3 +191,14 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 - 推送前完整本機 gate 全部通過：pnpm test、pnpm check（暫時抽出實際 Vue script，219 files，0 errors／warnings／hints）、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse、Spectra analyze／validate、diff check。型別暫存檔已精準移除。Hermes 仍有既有 SQLite ResourceWarning，完整測試 exit 0，沒有忽略失敗。
 - App.vue 僅 6 行實作增補，CSS／模板幾何未變；原 64 組視覺驗收沿用，這次以實際 Vue script 的行為驗收補足。沒有任何 Substack 後端、腳本、原稿、依賴或 workflow 變更。
 - 本輪作為後續獨立修正 commit 更新同一 PR。原始 CI 通過與本機 GREEN 不代表新候選 CI 或重新審查已完成；新候選結果另存 PR 交付收據。未合併、未啟用自動合併、未部署。
+
+
+## 8369a91 重新審查與系列捨棄 P1 修正
+
+- 使用者明確授權重新觸發 Codex 審查。[要求](https://github.com/gcake119/gcake-dev/pull/38#issuecomment-6268837268) 釘選 8369a91，審查已完成；本輪新增 [P1：捨棄系列後被文章儲存夾帶寫入](https://github.com/gcake119/gcake-dev/pull/38#discussion_r4314641365)，因此未將本輪結果稱為無問題通過。
+- 先補 Discarded series edits stay discarded 的 requirement／Gherkin，再新增 task 10 與驗收。使用既有 actual-workspace harness 執行真正 openSeries、編輯、離開／繼續／捨棄、openPost、saveToGit；RED 捕捉到文章 POST 的 files 同時包含文章及已捨棄系列，不是靜態原始碼檢查。
+- 根因修正位於 finishOverview 離開邊界：清除 seriesDirty、selectedSeries 與 seriesManifest。繼續編輯不呼叫這個邊界，因此保留修改、不寫入。沒有靠 API 端丟棄任意檔案掩蓋錯誤。
+- GREEN：Admin 64／64 通過。新驗收同時確認繼續時內容保留、捨棄後文章儲存只含文章、模擬的系列儲存內容不變，以及重新開啟系列顯示原名稱；前輪兩個 P2 的四項回歸仍通過。
+- 推送前 pnpm test 完整通過；含實際 Vue script 的 pnpm check：219 files、0 errors／warnings／hints；pnpm build:all 通過。型別暫存檔已移除。發布模擬／本機演練的輸入未受本次三行工作區狀態清理影響，沿用前輪相同腳本、鎖檔及設定的成功證據，不為回報重跑。Spectra analyze／validate、diff check 通過。
+- 沒有 CSS／模板幾何變更，CSS 仍是 index-fVLqfW1i.css，沿用 64 組桌面／手機與明暗量測。新候選將以獨立 commit 更新同一 PR，再觸發 Codex 審查並核對其 CI；最終結果保留在 PR 摘要與交付收據，不能用舊候選結果替代。
+- 本輪僅 App.vue 三行、既有驗收測試及本 change 文件；沒有 Substack、後端、原稿、套件或 workflow 變更，未合併、未部署。

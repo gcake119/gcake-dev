@@ -82,3 +82,7 @@ Use the owned loopback memory host for existing real content plus one synthetic 
 
 ### PR review: recovery ownership and media focus
 Both P2 findings were reproduced through the existing actual-script acceptance harness. Initialize recoveryPost from the same successful post load that creates an older-draft conflict, reset the selected recovery choice on article load, and clear recovery state when creating a fresh draft. This prevents a previous article's identity/revision from leaking into a later merge/save. Make closing an already-closed media dialog a no-op, so direct body image paste/drop retains editing focus while an open dialog still restores its entry control. No API or Substack changes.
+
+
+### Re-review: discard ends ownership of the series draft
+The actual-script test reproduced an article-save payload containing the discarded series manifest. Clear dirty state, selected series and its editable manifest at finishOverview, the shared successful leave/discard boundary. Continue editing only dismisses the leave intent and never reaches that boundary, so edits stay available without a write. Preserve existing save contracts; do not mask the leak by filtering arbitrary files at the API boundary.

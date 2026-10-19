@@ -391,3 +391,46 @@ test('actual-new-article: creating a draft clears recovery choices from the prev
     assert.doesNotMatch(s.editorSource.value,/前一篇/);
   });
 });
+
+
+test('actual-series-discard: discarded edits cannot be persisted by a later article save while continue retains them',async()=>{
+  await withActualWorkspace(async s=>{
+    const seriesPath='src/content/series/demo.yaml';
+    const savedSeries='slug: demo\ntitle: 原來的系列\nstatus: planned\nsections: []\n';
+    let seriesSource=savedSeries;
+    let article={...post,source:'# 原始內容',baseCommitSha:'revision'};
+    const writes:{url:string;body:any}[]=[];
+    Object.assign(globalThis,{localStorage:{getItem(){return null;},removeItem(){}}});
+    globalThis.fetch=async(url,options)=>{
+      if(options?.method==='POST'){
+        const body=JSON.parse(String(options.body));writes.push({url:String(url),body});
+        for(const file of body.files){
+          if(file.path===seriesPath)seriesSource=file.source;
+          else article={...article,source:file.source,baseCommitSha:'saved-revision'};
+        }
+        return new Response(JSON.stringify({commitSha:'saved-revision'}));
+      }
+      return new Response(JSON.stringify(String(url).startsWith('/api/v1/series/')
+        ?{slug:'demo',path:seriesPath,source:seriesSource,baseBlobSha:'series-blob',baseCommitSha:'revision'}
+        :String(url).includes('publications')?{states:[]}:article));
+    };
+    await s.openSeries('demo');
+    s.editSeriesMetadata({title:'應該捨棄的系列名稱'});
+    await s.selectOverview('articles');
+    assert.equal(s.pendingOverview.value,'articles');
+    s.pendingOverview.value=undefined; // Continue editing: the rendered control clears only this intent.
+    assert.equal(s.workspaceMode.value,'series');
+    assert.equal(s.seriesManifest.value.title,'應該捨棄的系列名稱');
+    assert.equal(writes.length,0);
+    await s.selectOverview('articles');
+    await s.finishOverview(s.pendingOverview.value);
+    await s.openPost('acceptance');
+    s.editorSource.value+='\n文章本身的修改';
+    await s.saveToGit();
+    assert.deepEqual(writes.map(w=>w.body.files.map((f:any)=>f.path)),[['src/content/posts/acceptance.md']]);
+    assert.equal(seriesSource,savedSeries);
+    assert.match(article.source,/文章本身的修改/);
+    await s.openSeries('demo');
+    assert.equal(s.seriesManifest.value.title,'原來的系列');
+  });
+});
