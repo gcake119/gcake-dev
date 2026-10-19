@@ -86,3 +86,6 @@ Production read-only API delivery：相同 46 個 Worker source／contracts／lo
 
 
 PR #41 regressions：沿用既有 scope／撤銷、盤點公平續行、未決結果投影、有限執行與保存前判決情境。原普通 executor 驗收加入分段 before-ready 寫入；新增有效 policy 置換零 dispatch、改名阻擋五輪公平到達原 ID、SIGTERM 忽略後自有程序群組被終止，以及列表／單篇無 intent 對帳提示。原 CI 失敗、真實 RED、修正與限制見 pr41-review-fixes-20261020.md；局部 Node／SQLite／檔案／Worker 驗收合計 53 項通過，沒有新增測試層。
+
+
+PR #41 re-review source deadline：既有 Budgets end during a large inventory 情境新增三個 round 驗收，分別以慢來源／main／媒體重現逾時，確認整輪有界返回、媒體 abort、晚來源不啟動 main、零 provider dispatch 與原 intent 保留；真實 RED／GREEN 及錯誤 fixture 限制見 pr41-rereview-20261020.md。局部草稿＋API 56 項通過。

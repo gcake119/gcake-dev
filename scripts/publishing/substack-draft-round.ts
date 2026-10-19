@@ -1,7 +1,7 @@
-import {isDeepStrictEqual} from 'node:util';
+import {isDeepStrictEqual,promisify} from 'node:util';
 import {buildDraftSource} from './substack-draft-media';
 import {validateDraftActivation} from './substack-draft-activation';
-import {execFileSync} from 'node:child_process';
+import {execFile} from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import matter from 'gray-matter';
@@ -15,7 +15,7 @@ import {ComputerUseDraftPort,type DraftExchangeRequest} from './substack-draft-c
 import {FileAttendedExchange} from './substack-attended';
 import {replyWithDraftExecutor,type DraftExecutorOptions} from './substack-draft-executor';
 interface Policy extends DraftSyncPolicy {maxArticles:number;timeoutMs:number;maxRoundMs?:number}
-interface Dependencies {readSource?:typeof buildScheduledSource;assertMain?:(root:string,commit:string)=>Promise<void>;provider?:(s:ScheduledSource)=>DraftPort;now?:()=>string;runtimePinFile?:string;verifyActivation?:(policy:DraftSyncPolicy)=>Promise<void>;execute?:DraftExecutorOptions['execute']}
+interface Dependencies {readSource?:typeof buildScheduledSource;assertMain?:(root:string,commit:string,signal?:AbortSignal)=>Promise<void>;fetcher?:typeof fetch;provider?:(s:ScheduledSource)=>DraftPort;now?:()=>string;runtimePinFile?:string;verifyActivation?:(policy:DraftSyncPolicy)=>Promise<void>;execute?:DraftExecutorOptions['execute']}
 export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile:string,deps:Dependencies={}){
  const config=async()=>JSON.parse(await fs.readFile(configFile,'utf8')) as {draftSync?:Policy};
  const initial=(await config()).draftSync;if(initial?.enabled!==true)return [];
@@ -33,7 +33,27 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
  for(const slug of ordered.slice(0,initial.maxArticles)){
   if(Date.now()>=deadline)break;
   let exchange:FileAttendedExchange<DraftExchangeRequest>|undefined;
-  const readSource=async()=>{try{const source=await (deps.readSource??buildDraftSource)(root,slug);if(deps.assertMain)await deps.assertMain(root,source.sourceCommit);else if(execFileSync('git',['ls-remote','origin','refs/heads/main'],{cwd:root,encoding:'utf8',timeout:30000}).trim().split(/\s+/)[0]!==source.sourceCommit)throw Error('SUBSTACK_SOURCE_CHANGED');return source;}catch(e){if(e instanceof Error&&['SUBSTACK_SOURCE_NOT_FINALIZED','SUBSTACK_SOURCE_SERIES_INCOMPLETE'].includes(e.message))return undefined;throw e;}};
+  const readSource=async()=>{
+   const remaining=deadline-Date.now();if(remaining<=0)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
+   const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
+   const expired=new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>{const error=Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');controller.abort(error);reject(error);},remaining);});
+   const fetchSource=(async(input,options)=>{
+    controller.signal.throwIfAborted();
+    return (deps.fetcher??fetch)(input,{...options,signal:AbortSignal.any([controller.signal,...(options?.signal?[options.signal]:[])])});
+   }) as typeof fetch;
+   const work=async()=>{
+    const source=await (deps.readSource??buildDraftSource)(root,slug,fetchSource);controller.signal.throwIfAborted();
+    if(deps.assertMain)await deps.assertMain(root,source.sourceCommit,controller.signal);
+    else {
+     const result=await promisify(execFile)('git',['ls-remote','origin','refs/heads/main'],{cwd:root,encoding:'utf8',timeout:Math.max(1,Math.min(30000,deadline-Date.now())),signal:controller.signal,killSignal:'SIGKILL'});
+     if(result.stdout.trim().split(/\s+/)[0]!==source.sourceCommit)throw Error('SUBSTACK_SOURCE_CHANGED');
+    }
+    controller.signal.throwIfAborted();return source;
+   };
+   try{return await Promise.race([work(),expired]);}
+   catch(e){if(controller.signal.aborted||Date.now()>=deadline)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');if(e instanceof Error&&['SUBSTACK_SOURCE_NOT_FINALIZED','SUBSTACK_SOURCE_SERIES_INCOMPLETE'].includes(e.message))return undefined;throw e;}
+   finally{clearTimeout(timer);controller.abort();}
+  };
   try{
    if(missingTracked&&!records.some(r=>r.slug===slug))throw Error('SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED');
    const source=await readSource();

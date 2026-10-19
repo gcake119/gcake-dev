@@ -333,3 +333,23 @@ test('executor ignoring SIGTERM is bounded and its owned process group is stoppe
   if(pid)try{process.kill(-pid,'SIGKILL');}catch{}await execution;await fs.rm(root,{recursive:true,force:true});
  }
 });
+
+
+for(const stage of ['source','main','media'] as const)test('round deadline bounds slow '+stage+' checks before any provider dispatch',async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-source-deadline-'));let running:Promise<unknown>|undefined;
+ try{
+  await fs.mkdir(root+'/src/content/posts',{recursive:true});await fs.writeFile(root+'/src/content/posts/trial.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:100,maxRoundMs:120}}));
+  let calls=0,cancelled=false,mainCalls=0;const before=await f.repo.bySlug('trial');
+  const {runDraftSyncRound}=await import('./substack-draft-round');
+  const fetcher=(async(_input,options)=>new Promise<Response>((resolve,reject)=>{const signal=options?.signal;const late=setTimeout(()=>resolve(new Response()),1500);signal?.addEventListener('abort',()=>{cancelled=true;clearTimeout(late);reject(signal.reason);},{once:true});})) as typeof fetch;
+  running=runDraftSyncRound(root,new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},fetcher,
+   readSource:async(_root,_slug,readFetch)=>{if(stage==='source')await new Promise(r=>setTimeout(r,1500));if(stage==='media')await (readFetch??fetcher)('https://source.example/slow.png',{signal:AbortSignal.timeout(30000)});return source();},
+   assertMain:async()=>{mainCalls++;if(stage==='main')await new Promise(r=>setTimeout(r,1500));},
+   provider:()=>({find:async()=>{calls++;throw Error('unexpected provider');},read:async()=>{calls++;return f.post;},create:async()=>{calls++;return '123';},update:async()=>{calls++;}})});
+  const result=await Promise.race([running,new Promise<string>(r=>setTimeout(()=>r('still-running'),800))]);
+  assert.notEqual(result,'still-running');const rows=result as {code?:string;status:string}[];assert.equal(rows[0].code,'SUBSTACK_DRAFT_BUDGET_EXHAUSTED');assert.notEqual(rows[0].status,'observed');assert.equal(calls,0);
+  if(stage==='media')assert.equal(cancelled,true);if(stage==='source')assert.equal(mainCalls,0);
+  assert.equal((await f.repo.bySlug('trial'))?.intent,before?.intent);
+ }finally{await running;f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});

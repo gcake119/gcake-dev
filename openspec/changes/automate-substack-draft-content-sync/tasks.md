@@ -76,3 +76,9 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 11.1 Reproduce the ordinary executor CI failure and reviewed current-policy, rename fairness, checkpoint projection and process-timeout boundaries through the existing acceptance seams. Retain the failed CI and real local RED; use the existing Qualified unattended draft integration, Freshness and source lifecycle boundaries, Bounded recovery and truthful disablement, and Authenticated frontend status projection contracts without changing acceptance conditions.
 - [x] 11.2 Fix confirmed causes, retaining no-replay, original identity and authorization boundaries; run focused GREEN then all five existing local gates before pushing a candidate, record exact evidence and keep Admin archive, production runtime, schedules and deployment outside this work.
+
+
+## 12. PR #41 re-review source deadline
+
+- [x] 12.1 Reproduce source/media and remote-main checks exceeding the existing Budgets end during a large inventory contract before implementation; assert bounded exit, cancelled media and zero provider dispatch through existing round acceptance.
+- [x] 12.2 Bound the complete source check by the remaining round budget, cancel media/remote reads, retain incomplete coverage and intent safety, then run focused acceptance and all five local gates before updating the same PR. Keep original review findings, deployment and Admin archive evidence separate.
