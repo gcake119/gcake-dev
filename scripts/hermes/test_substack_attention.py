@@ -44,6 +44,22 @@ class AttentionDelivery(unittest.TestCase):
             self.snapshot(**patch)
             with self.assertRaises(ValueError):self.run_once()
         self.snapshot();self.assertEqual(self.run_once()['status'],'quiet');self.assertEqual(len(self.sent),1)
+    def test_actionable_reasons_do_not_invent_identity_errors_or_completed_cancellation(self):
+        cases={
+            'SUBSTACK_DRAFT_PREPARATION_REQUIRED':'待備稿',
+            'SUBSTACK_CONTENT_SYNC_REQUIRED':'內容',
+            'SUBSTACK_SCHEDULE_CANCEL_REQUIRED':'尚未確認解除',
+            'SUBSTACK_SCHEDULE_POSTPONE_REQUIRED':'尚未確認延期',
+            'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED':'結果未明',
+            'DISTRIBUTION_MANUAL_REQUIRED':'人工確認',
+        }
+        for index,(code,expected) in enumerate(cases.items()):
+            with self.subTest(code=code):
+                self.snapshot([{'slug':'article-'+str(index),'code':code}]);self.assertEqual(self.run_once()['status'],'sent')
+                self.assertIn(expected,self.sent[-1]);self.assertNotIn('檢查文章身分',self.sent[-1]);self.assertNotIn('已暫停自動重試',self.sent[-1]);self.assertNotIn('發文失敗',self.sent[-1])
+                self.assertEqual(self.run_once()['status'],'quiet')
+        self.assertEqual(len(self.sent),len(cases))
+
     def test_nonlive_hermes_gate_blocks_before_credentials_or_send(self):
         from unittest.mock import patch
         import types

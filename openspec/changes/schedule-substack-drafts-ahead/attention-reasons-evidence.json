@@ -1,0 +1,172 @@
+{
+  "change": "schedule-substack-drafts-ahead",
+  "scope": "7.1-7.3 action-specific attention correction; no provider write or live delivery",
+  "head": "8cd46132615cc9c93eaed2cf587a86578e006944",
+  "sourceHashes": {
+    "scripts/publishing/distribution-attention.ts": "d4d16a2012f16eb5738d12ac5252d77d6b79364537f6dc013793e387d1d1210f",
+    "scripts/publishing/observe-substack-schedules.ts": "ff6429d37f8a7b439a0dd7a163909804939d1c1c3c14b124c0af3a742366fb1f",
+    "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa",
+    "scripts/hermes/substack_attention.py": "07e08a90bac42d60ae839e2c610c7e6a9de5cce932cb1f648949f7734a01875a",
+    "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+    "scripts/publishing/distribution-scheduled.test.ts": "249edf4b68dd3bf7c89370337d77503d80d3454ea9a30656992334787919a8c3",
+    "scripts/publishing/distribution-sync.test.ts": "94da56d72c43ec8b15a773c28b480c70e01be6c96177f60b0f5bc8fbcce9f053",
+    "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e",
+    "package.json": "8a2fac54632ff68952831b81ca9a7decb51cd20dc6066a69c729dc831edee1ed",
+    "pnpm-lock.yaml": "2ed4a9eefd27a8cd417ec03567f3f50866081435c57476fcc27ffd8071386645",
+    ".spectra.yaml": "fad38540a1a07f3e830a948d599d202a2937bb8f1251a528f5c38f2be7da20b9"
+  },
+  "red": {
+    "node": "3 acceptance failures / 20 cases; exact reason loss observed",
+    "python": "new reason allowlist rejected; generic reason/header falsely implied identity/retries",
+    "logs": {
+      "red-node.log": "e5c934164ff56e96d0435875aa66d5151a8e9020f318374dd855b88571ef3cfa",
+      "red-python.log": "a1f3aa9a08576f86767b25954c8bd4cc337610b82b8ecf83d2acad20264a6d5a"
+    }
+  },
+  "focusedGreen": {
+    "node": {
+      "passed": 37,
+      "failed": 0
+    },
+    "python": {
+      "passed": 8,
+      "failed": 0
+    },
+    "crossLanguageBoundary": "real TS producer snapshot consumed by Python consumer in a separate process with fixture-only sender; restart quiet",
+    "logs": {
+      "green-node.log": "b9b23e01fad93e56ee0cbef704849489d65991a3df8712b51761cbc9e0e6abbb",
+      "green-python.log": "3e5da844f1824a82652941f99635e09a97f05c3845d2eabc98f1abf1df76a2c6"
+    }
+  },
+  "checks": [
+    {
+      "check": "test",
+      "command": [
+        "corepack",
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 1,
+      "seconds": 26.27,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/test.log",
+      "sha256": "5f9ca765c7f54816c52740a29e6047eed1ea81fb103d57d7defe6f1b3cd83166"
+    },
+    {
+      "check": "check",
+      "command": [
+        "corepack",
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "seconds": 7.69,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/check.log",
+      "sha256": "754932b92a523c0be39836bd281009fe2ebbbccd6e1d66b459943da639fe99c3"
+    },
+    {
+      "check": "build-all",
+      "command": [
+        "corepack",
+        "pnpm",
+        "build:all"
+      ],
+      "exitCode": 0,
+      "seconds": 6.42,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/build-all.log",
+      "sha256": "20855a128c599624448f6bc4ff6521ea925dd541e8eda7b93332a847b6c013fd"
+    },
+    {
+      "check": "release-dry-run",
+      "command": [
+        "corepack",
+        "pnpm",
+        "release:dry-run"
+      ],
+      "exitCode": 1,
+      "seconds": 1.11,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/release-dry-run.log",
+      "sha256": "00391c2fcc69daf8614398b481139a3be2999ca1fa8cce685f279c1a79937736"
+    },
+    {
+      "check": "spectra-validate",
+      "command": [
+        "spectra",
+        "validate",
+        "schedule-substack-drafts-ahead"
+      ],
+      "exitCode": 0,
+      "seconds": 0.02,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/spectra-validate.log",
+      "sha256": "47730ab64012919fcc5567b56572cd05c518251382e2552a2988355d6bcf24d3"
+    },
+    {
+      "check": "spectra-analyze",
+      "command": [
+        "spectra",
+        "analyze",
+        "schedule-substack-drafts-ahead",
+        "--json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.01,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/spectra-analyze.log",
+      "sha256": "18226cfdb7462c97daee1eba38f5428b1905d7da14990949cb699beaa4de3369"
+    },
+    {
+      "check": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "seconds": 0.03,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "permissionRetry": [
+    {
+      "check": "test-unsandboxed",
+      "command": [
+        "corepack",
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 87.41,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/test-unsandboxed.log",
+      "sha256": "7e2cd454d4e30fc3b40ac7bd8b9e8ddf532f104953e4617b74764d85e45f3ef6"
+    },
+    {
+      "check": "release-dry-run-unsandboxed",
+      "command": [
+        "corepack",
+        "pnpm",
+        "release:dry-run"
+      ],
+      "exitCode": 0,
+      "seconds": 9.93,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/release-dry-run-unsandboxed.log",
+      "sha256": "d418e44ed155766b30d45c1b02be628a059ca79249c5844d6593ffe0d98ee39d"
+    }
+  ],
+  "retryReason": "sandbox denied loopback listen and temporary permission/immutable fixture operations; original failures retained; no assertion or implementation weakened",
+  "originalDirtyFilesPreserved": {
+    "AGENTS.md": true,
+    "docs/distribution-scripted-runbook.md": true,
+    "openspec/specs/publishing-operations/spec.md": true,
+    "openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md": true
+  },
+  "originalTask3.1And5.3StatusPreserved": true,
+  "installedRuntimePinMismatches": 0,
+  "installedRuntimePinFiles": 19084,
+  "installedLaunchAgentUnchanged": true,
+  "providerWrites": 0,
+  "liveHermesSends": 0,
+  "commits": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "activation": "not performed; new code allowlist requires paired producer and privileged consumer activation after authorization",
+  "messagePreview": "Substack 有 2 項前景待辦。背景僅觀察，不會操作 Chrome。\n\nnew-series-draft\n待備稿：原稿已就緒，需要前景建立或核對完整草稿；背景不會排程或寄送\nhttps://gcake119.github.io/gcake-dev/posts/new-series-draft/\n\nexisting-public\n內容待同步：需要前景比對並更新同一篇文章，不重新發布或重寄\nhttps://gcake119.github.io/gcake-dev/posts/existing-public/"
+}

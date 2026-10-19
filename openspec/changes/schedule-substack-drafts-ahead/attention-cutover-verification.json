@@ -1,0 +1,198 @@
+{
+  "status": "deployed_and_verified",
+  "installedConsumerSha256": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+  "installedAgentSha256": "55db9adf70b3e0824fe1c3969d5b7eae9e6e4597f5e02f1c45ffba3977dfc4b1",
+  "runtimePinFiles": 19084,
+  "runtimePinMismatches": 0,
+  "runtime": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/runtime",
+  "cutoverReceipt": {
+    "status": "cut_over",
+    "consumerSha256": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "agentSha256": "55db9adf70b3e0824fe1c3969d5b7eae9e6e4597f5e02f1c45ffba3977dfc4b1",
+    "ledgerBefore": {
+      "events": 3,
+      "unknown": 0
+    },
+    "ledgerPreserved": true,
+    "providerWritesEnabled": false,
+    "singleTimer": true,
+    "firstNewRound": "pending",
+    "humanReceived": false,
+    "activatedAt": 1792395055.329039
+  },
+  "consumerProductionPythonProbe": {
+    "status": "passed",
+    "fixtureOnly": true,
+    "liveSends": 0
+  },
+  "firstNewRound": {
+    "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/rounds/round-Qe6FdX",
+    "status": "attention",
+    "results": [
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-astro-choice",
+        "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "observedTime": "2026-10-21T23:00:00.000Z",
+        "stillArmedUntilConfirmed": true,
+        "slug": "ithome-2026-publishing-in-production",
+        "sourceRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-publishing-toolchain",
+        "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-tech-blog-boundary",
+        "sourceRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-template-hardening",
+        "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      }
+    ],
+    "cleanup": {
+      "source": "removed"
+    },
+    "notification": "meaningful",
+    "hermes": {
+      "status": "queued"
+    }
+  },
+  "firstLiveTransportReceipt": {
+    "status": "sent",
+    "humanReceived": false,
+    "issueCount": 3,
+    "updatedAt": "2026-10-19T07:31:48.786258+00:00",
+    "eventId": 4,
+    "messageId": "80"
+  },
+  "repeatRound": {
+    "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/rounds/round-s5NFES",
+    "status": "attention",
+    "results": [
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-astro-choice",
+        "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "observedTime": "2026-10-21T23:00:00.000Z",
+        "stillArmedUntilConfirmed": true,
+        "slug": "ithome-2026-publishing-in-production",
+        "sourceRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-publishing-toolchain",
+        "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-tech-blog-boundary",
+        "sourceRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-template-hardening",
+        "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      }
+    ],
+    "cleanup": {
+      "source": "removed"
+    },
+    "notification": "quiet",
+    "hermes": {
+      "status": "queued"
+    }
+  },
+  "repeatConsumerReceipt": {
+    "status": "quiet",
+    "humanReceived": false,
+    "issueCount": 3,
+    "updatedAt": "2026-10-19T07:33:06.052873+00:00",
+    "eventId": 4
+  },
+  "ledgerPreserved": true,
+  "newNormalNotificationEvents": 1,
+  "normalMessageId": "80",
+  "repeatedNotificationSent": false,
+  "humanReceipt": "unknown; transport acknowledgement only",
+  "providerWritesEnabled": false,
+  "firstAndRepeatD1Audit": {
+    "locks": [],
+    "checkpoints": [],
+    "intents": []
+  },
+  "pilotTimeTaipei": "2026-10-22T07:00:00+08:00",
+  "otherTwoDraftsUnarmed": true,
+  "singleTimerSeconds": 900,
+  "existingDirtyFilesPreserved": [
+    "AGENTS.md",
+    "docs/distribution-scripted-runbook.md",
+    "openspec/specs/publishing-operations/spec.md",
+    "openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md"
+  ],
+  "commits": 0,
+  "pushes": 0,
+  "pagesOrWorkerDeployment": false,
+  "acceptanceLimit": "activation-started and manually repeated rounds; not the October 22 actual publication or subsequent ordinary automatic occurrence",
+  "task5.3": "pending"
+}

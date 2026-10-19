@@ -13,7 +13,15 @@ import sys
 import time
 
 AUTHORITY=Path('/usr/local/share/gcake-hermes-runtime')
-REASONS={'DISTRIBUTION_MANUAL_REQUIRED':'同步已暫停，需檢查文章身分與原錯誤','SUBSTACK_BACKGROUND_ATTENDED_REQUIRED':'需要前景操作才能新增、更新或復原'}
+REASONS={
+    'DISTRIBUTION_MANUAL_REQUIRED':'同步需要人工確認，請查看保留的原始錯誤與操作紀錄',
+    'SUBSTACK_BACKGROUND_ATTENDED_REQUIRED':'需要前景操作才能新增、更新或復原',
+    'SUBSTACK_DRAFT_PREPARATION_REQUIRED':'待備稿：原稿已就緒，需要前景建立或核對完整草稿；背景不會排程或寄送',
+    'SUBSTACK_CONTENT_SYNC_REQUIRED':'內容待同步／驗證：需要前景比對同一篇文章，確認差異後更新，不重新發布或重寄',
+    'SUBSTACK_SCHEDULE_CANCEL_REQUIRED':'待解除排程：尚未確認解除，Substack 仍可能依最後確認時段發布',
+    'SUBSTACK_SCHEDULE_POSTPONE_REQUIRED':'待調整排程：尚未確認延期，Substack 仍可能依最後確認時段發布',
+    'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED':'排程操作結果未明：請前景讀回原文章確認，勿重做或另建文章',
+}
 
 def read_snapshot(file,uid,now):
     fd=os.open(file,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
@@ -48,7 +56,7 @@ def atomic_receipt(file,value):
         except FileNotFoundError:pass
 
 def message(issues):
-    lines=[f'Substack 有 {len(issues)} 項需要你處理。已暫停自動重試，背景不會操作 Chrome。']
+    lines=[f'Substack 有 {len(issues)} 項前景待辦。背景僅觀察，不會操作 Chrome。']
     for issue in issues[:8]:
         lines.extend(['',issue['slug'][:80],REASONS[issue['code']],'https://gcake119.github.io/gcake-dev/posts/'+issue['slug']+'/'])
     if len(issues)>8:lines.extend(['',f'另有 {len(issues)-8} 項，請查看同步結果。'])

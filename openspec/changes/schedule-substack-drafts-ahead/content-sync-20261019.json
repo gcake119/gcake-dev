@@ -1,0 +1,146 @@
+{
+  "recordedAt": "2026-10-19T07:53:25.527793+00:00",
+  "scope": "attended same-ID public content correction only",
+  "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+  "items": [
+    {
+      "slug": "ithome-2026-astro-choice",
+      "remoteId": "221069931",
+      "canonical": "https://gcakedev.substack.com/p/ithome-2026-astro-choice",
+      "publishedAtBefore": "2026-10-18T23:00:00.032Z",
+      "publishedAtAfter": "2026-10-18T23:00:00.032Z",
+      "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+      "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+      "contentDigest": "sha256:78daa411c2826dc53a090c1c70a20f79fed4b0a0aa263b81b34ebd360317604c",
+      "verifiedAt": "2026-10-19T07:51:58.734Z",
+      "lastComparison": {
+        "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+        "observedDigest": "sha256:b9de9f97b45370e1eefe45ff8af7e7d262dd7ae2879d0234c131e6f0a5dc6761",
+        "expectedDigest": "sha256:78daa411c2826dc53a090c1c70a20f79fed4b0a0aa263b81b34ebd360317604c",
+        "mode": "public",
+        "differences": [
+          "description"
+        ],
+        "result": "verified-edit"
+      },
+      "intent": null,
+      "pendingAction": null,
+      "delivery": "not_armed",
+      "emailAndAppControlsObserved": false,
+      "scheduleControlObserved": false
+    },
+    {
+      "slug": "ithome-2026-chatgpt-writing-workflow",
+      "remoteId": "220011124",
+      "canonical": "https://gcakedev.substack.com/p/ithome-2026-chatgpt-writing-workflow",
+      "publishedAtBefore": "2026-10-12T03:56:00.165Z",
+      "publishedAtAfter": "2026-10-12T03:56:00.165Z",
+      "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+      "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+      "contentDigest": "sha256:841e323d5556150bafce8823909229f0cffb9a87070745c5a77138ea22eb68ac",
+      "verifiedAt": "2026-10-19T07:51:58.734Z",
+      "lastComparison": {
+        "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+        "observedDigest": "sha256:1d6507828b2a97c9be729911691b7597bdf29a28ba5342232cf4977e5ad9ecd3",
+        "expectedDigest": "sha256:841e323d5556150bafce8823909229f0cffb9a87070745c5a77138ea22eb68ac",
+        "mode": "public",
+        "differences": [
+          "description",
+          "body-structure-links-images"
+        ],
+        "result": "verified-edit"
+      },
+      "intent": null,
+      "pendingAction": null,
+      "delivery": "not_armed",
+      "emailAndAppControlsObserved": false,
+      "scheduleControlObserved": false
+    },
+    {
+      "slug": "ithome-2026-publishing-toolchain",
+      "remoteId": "220473117",
+      "canonical": "https://gcakedev.substack.com/p/ithome-2026-publishing-toolchain",
+      "publishedAtBefore": "2026-10-14T23:00:00.681Z",
+      "publishedAtAfter": "2026-10-14T23:00:00.681Z",
+      "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+      "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+      "contentDigest": "sha256:b44353cf84b2d78d8a222c96560cd122168b4cc0a571719197cde6d24d727fa4",
+      "verifiedAt": "2026-10-19T07:51:58.734Z",
+      "lastComparison": {
+        "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+        "observedDigest": "sha256:542b4cf4d1f6a9f4cf4f19c4200750885a28436e52ab68596af761e3ad5bcbf8",
+        "expectedDigest": "sha256:b44353cf84b2d78d8a222c96560cd122168b4cc0a571719197cde6d24d727fa4",
+        "mode": "public",
+        "differences": [
+          "description",
+          "body-structure-links-images"
+        ],
+        "result": "verified-edit"
+      },
+      "intent": null,
+      "pendingAction": null,
+      "delivery": "not_armed",
+      "emailAndAppControlsObserved": false,
+      "scheduleControlObserved": false
+    }
+  ],
+  "existingDirtyFilesUnchanged": 20,
+  "foregroundWriteGateClosed": true,
+  "backgroundProviderWritesEnabled": false,
+  "observerRound": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/rounds/round-CSJzBx",
+  "finalD1": {
+    "locks": [],
+    "checkpoints": [],
+    "intents": []
+  },
+  "pilot": {
+    "remoteId": "221098688",
+    "observedTime": "2026-10-21T23:00:00.000Z",
+    "delivery": "armed",
+    "savedSlot": {
+      "reservationId": "fixed:ithome-2026-publishing-in-production:2026-10-22T07:00:00+08:00",
+      "queueVersion": 162,
+      "slug": "ithome-2026-publishing-in-production",
+      "scheduledAt": "2026-10-22T07:00:00+08:00",
+      "confirmed": true
+    },
+    "currentOriginalSlot": {
+      "reservationId": "fixed:ithome-2026-publishing-in-production:2026-10-22T07:00:00+08:00",
+      "queueVersion": 165,
+      "slug": "ithome-2026-publishing-in-production",
+      "scheduledAt": "2026-10-22T07:00:00+08:00",
+      "confirmed": true
+    },
+    "pendingAction": "postpone-schedule",
+    "providerScheduleChanged": false,
+    "finding": "False postpone reminder caused by queueVersion 162 -> 165 with identical reservation, slug and scheduledAt. Observer compares whole slot JSON. Not repaired or manually cleared."
+  },
+  "otherDrafts": [
+    {
+      "slug": "ithome-2026-template-hardening",
+      "remoteId": "221099415",
+      "state": "draft_prepared",
+      "delivery": "not_armed"
+    },
+    {
+      "slug": "ithome-2026-tech-blog-boundary",
+      "remoteId": "221099763",
+      "state": "draft_prepared",
+      "delivery": "not_armed"
+    }
+  ],
+  "ownerNotificationReceipt": {
+    "status": "sent",
+    "humanReceived": false,
+    "issueCount": 1,
+    "updatedAt": "2026-10-19T07:52:07.808008+00:00",
+    "eventId": 5,
+    "messageId": "81"
+  },
+  "qualification53": "pending future actual publication and delivery evidence",
+  "initialToolchainReadbackRejection": {
+    "code": "SUBSTACK_CONTENT_EVIDENCE_MISMATCH",
+    "cause": "six editor PRE blocks contained nested CODE and trailing BR; public reader had normalized these markers away",
+    "resolution": "same ID body corrected from pinned Git HTML; reloaded editor and public verification passed; assertions unchanged"
+  }
+}

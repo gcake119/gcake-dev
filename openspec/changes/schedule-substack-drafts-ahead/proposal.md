@@ -13,6 +13,8 @@ Substack currently waits for a verified public Pages article and requires foregr
 - Separate source, saved draft, armed schedule, public verification and provider delivery evidence. Pages failure is reported independently and does not cause a Substack resend or false combined completion.
 - Preserve existing public IDs and no-backfill delivery for the three already published articles; migration and rollback reconcile all armed or uncertain provider schedules before declaring them stopped.
 
+- Preserve pending-action reasons through existing Hermes attention; new draft preparation is a routine foreground task, not an identity/publication failure. Keep content/schedule/recovery holds and existing deduplication.
+
 ## Capabilities
 
 ### New Capabilities
@@ -33,7 +35,18 @@ Substack currently waits for a verified public Pages article and requires foregr
   - `apps/admin-worker/src/distribution-coordinator.ts`, `apps/admin-worker/src/distribution-runtime.ts`, `apps/admin-worker/src/publication-operations.ts`.
   - `scripts/publishing/sync-distribution.ts`, `scripts/publishing/distribution-attention.ts`, `scripts/publishing/distribution-launchd.ts`.
   - Existing distribution scheduled, attended, native, runtime, review, inventory and sync test suites under `scripts/publishing/`.
+  - `scripts/hermes/substack_attention.py` and its existing isolated delivery tests.
   - `AGENTS.md`, `docs/distribution-scripted-runbook.md`, `docs/distribution-launchd-runbook.md`.
 - Planned new migration: `apps/admin-worker/migrations/0007_substack_schedules.sql`; additive operational schedule/delivery records only, with no article-body owner outside Git.
 - Reuse existing tests, locks, checkpoints, immutable snapshots, Hermes attention channel and pinned runtime installation. No new service, dependency, CI workflow, timer or private provider API.
 - This change creates planning artifacts only. It does not implement, commit, push, deploy, replace the installed runtime, schedule a real post or send messages.
+
+
+## Owner clarification: false content attention
+
+The owner classified the three legacy content-sync messages as false positives and approved excluding unchanged-source description/presentation differences from notifications. Read failures are inconclusive verification, not proof of changed content. Extend only the existing observer/comparison, durable record and attention tests; preserve strict foreground verification, genuine drift/identity/intent attention and existing provider state. This local correction does not authorize another runtime cutover or provider operation.
+
+
+## Owner-authorized paired false-positive deployment
+
+The owner subsequently authorized fixing queue-version-only postponement attention and deploying it together with the approved content-attention correction. Preserve dirty source files and all provider articles/schedules, first-delivery history and task 5.3. The deployment target is the existing private browser-free observer; retain the compatible Hermes consumer and its ledger rather than reinstalling them. No repository push, Pages/Worker deployment, provider write or resend is part of this scope.

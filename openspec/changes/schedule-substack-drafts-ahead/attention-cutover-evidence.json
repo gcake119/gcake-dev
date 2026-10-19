@@ -1,0 +1,286 @@
+{
+  "authorization": "owner explicitly authorized deployment and paired cutover on 2026-10-19",
+  "status": "prepared-awaiting-administrator-authentication",
+  "installedServicesChanged": false,
+  "candidateSourceHashes": {
+    "scripts/publishing/distribution-attention.ts": "170de69351fb0125c51b6155e5249f3d0cdb33b26c7c3a6c5d049859fcec878a",
+    "scripts/publishing/observe-substack-schedules.ts": "ff6429d37f8a7b439a0dd7a163909804939d1c1c3c14b124c0af3a742366fb1f",
+    "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa",
+    "scripts/hermes/substack_attention.py": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+    "scripts/publishing/distribution-scheduled.test.ts": "249edf4b68dd3bf7c89370337d77503d80d3454ea9a30656992334787919a8c3",
+    "scripts/publishing/distribution-sync.test.ts": "aa5271215f46d45ad4acb526c23be833389b3ad26e0c0869e5b77c4a4c1816d4",
+    "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e"
+  },
+  "deploymentGates": [
+    {
+      "check": "deploy-test",
+      "command": [
+        "corepack",
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 91.38,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/deploy-test.log",
+      "sha256": "708fd0b20c3beb151350ecfbcd81fb0c0099095b2d803a1bea2d724aac5be6d1"
+    },
+    {
+      "check": "deploy-check",
+      "command": [
+        "corepack",
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "seconds": 6.98,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/deploy-check.log",
+      "sha256": "b2663a098ff1f0eb3a78a0f7fd8ef6f945cdadee8b78142630a2c6c9708a1f92"
+    },
+    {
+      "check": "deploy-build-all",
+      "command": [
+        "corepack",
+        "pnpm",
+        "build:all"
+      ],
+      "exitCode": 0,
+      "seconds": 6.39,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/deploy-build-all.log",
+      "sha256": "91fcc2fdaca3e2c7c297a324fbf13ad1cd77ddac025c265746fab578559747af"
+    },
+    {
+      "check": "deploy-release-dry-run",
+      "command": [
+        "corepack",
+        "pnpm",
+        "release:dry-run"
+      ],
+      "exitCode": 0,
+      "seconds": 10.17,
+      "log": "/private/tmp/gcake-attention-reasons-20261019/deploy-release-dry-run.log",
+      "sha256": "e52b08930708a3d701c663de399e485dc507f95566fdf4083491961f33ada915"
+    }
+  ],
+  "realPreflightRegression": {
+    "originalResult": {
+      "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/preflight-rounds/round-BsV85G",
+      "status": "attention",
+      "results": [
+        {
+          "stillArmedUntilConfirmed": false,
+          "slug": "ithome-2026-astro-choice",
+          "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+          "target": "substack",
+          "operation": "sync-content",
+          "status": "manual_required",
+          "code": "DISTRIBUTION_MANUAL_REQUIRED"
+        },
+        {
+          "stillArmedUntilConfirmed": false,
+          "slug": "ithome-2026-chatgpt-writing-workflow",
+          "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+          "target": "substack",
+          "operation": "sync-content",
+          "status": "manual_required",
+          "code": "DISTRIBUTION_MANUAL_REQUIRED"
+        },
+        {
+          "observedTime": "2026-10-21T23:00:00.000Z",
+          "stillArmedUntilConfirmed": true,
+          "slug": "ithome-2026-publishing-in-production",
+          "sourceRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+          "target": "substack",
+          "operation": "observe-schedule",
+          "status": "observed"
+        },
+        {
+          "stillArmedUntilConfirmed": false,
+          "slug": "ithome-2026-publishing-toolchain",
+          "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+          "target": "substack",
+          "operation": "sync-content",
+          "status": "manual_required",
+          "code": "DISTRIBUTION_MANUAL_REQUIRED"
+        },
+        {
+          "stillArmedUntilConfirmed": false,
+          "slug": "ithome-2026-tech-blog-boundary",
+          "sourceRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+          "target": "substack",
+          "operation": "observe-schedule",
+          "status": "observed"
+        },
+        {
+          "stillArmedUntilConfirmed": false,
+          "slug": "ithome-2026-template-hardening",
+          "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+          "target": "substack",
+          "operation": "observe-schedule",
+          "status": "observed"
+        }
+      ],
+      "cleanup": {
+        "source": "removed"
+      },
+      "notification": "quiet",
+      "hermes": {
+        "status": "queued"
+      }
+    },
+    "fix": "Preserve sync-content action for persisted public-evidence mismatches; require foreground comparison/verification before edits. Other unknown failures remain generic.",
+    "red": "4ef590c03dc4d9cd11f5d2b3aa641daa4e6c678adaf3db18094be0eec9cf3f51",
+    "green": "da261a26e8fae587dac5214e9d42ed05b674217e43ee788a3c4d633f33a66538"
+  },
+  "freshPreflight": {
+    "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/preflight-rounds/round-Brxc6D",
+    "status": "attention",
+    "results": [
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-astro-choice",
+        "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "observedTime": "2026-10-21T23:00:00.000Z",
+        "stillArmedUntilConfirmed": true,
+        "slug": "ithome-2026-publishing-in-production",
+        "sourceRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-publishing-toolchain",
+        "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+        "target": "substack",
+        "operation": "sync-content",
+        "status": "manual_required",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-tech-blog-boundary",
+        "sourceRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      },
+      {
+        "stillArmedUntilConfirmed": false,
+        "slug": "ithome-2026-template-hardening",
+        "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+        "target": "substack",
+        "operation": "observe-schedule",
+        "status": "observed"
+      }
+    ],
+    "cleanup": {
+      "source": "removed"
+    },
+    "notification": "meaningful",
+    "hermes": {
+      "status": "queued"
+    }
+  },
+  "privateFeed": {
+    "schema": 1,
+    "generatedAt": "2026-10-19T07:26:29.144Z",
+    "issues": [
+      {
+        "slug": "ithome-2026-astro-choice",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      },
+      {
+        "slug": "ithome-2026-publishing-toolchain",
+        "code": "SUBSTACK_CONTENT_SYNC_REQUIRED"
+      }
+    ]
+  },
+  "newAcceptance": {
+    "status": "passed",
+    "policyVersion": "scheduled-source-first-delivery-v1",
+    "executionMode": "anonymous-only",
+    "transport": "anonymous-public",
+    "browserAccess": false,
+    "articleWrites": 0,
+    "readOnlyRound": "completed",
+    "inFlight": 0,
+    "providerStates": [
+      {
+        "target": "substack",
+        "status": "attended_required"
+      }
+    ],
+    "round": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-reasons-20261019/preflight-rounds/round-Brxc6D",
+    "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+    "scope": "actual observer and private corrected attention snapshot; no live Hermes send or provider mutation"
+  },
+  "productionPythonTests": {
+    "version": "3.11",
+    "passed": 8,
+    "failed": 0
+  },
+  "activationManifest": {
+    "oldAgentSha256": "f2d4f9fccc6d2992ebe8d699f51d60631fe6a4fad5ce1b63210bfc6a24a4ee07",
+    "oldConsumerSha256": "3f1eccf283582b886bc396f32be739b74d5deb97f0ffb494cca3a646126e3cac",
+    "daemonSha256": "a8cfe00a0dd259684570a63adf04e882435f20782216b8b457ea6a5789b7cd6c",
+    "selectorSha256": "c0415a23bbd3dde0e8a9703bbf4870f8c50880dd87203bfecc9bc25bbc5e9f19",
+    "gateSha256": "8b957bc4f81e5507f4dad1e88f1844079018066e58d6beee54ba39734f32a704",
+    "sealedFiles": {
+      "runtime-sha256.json": "81a4cdb5f8487a2564a2e026aa8f8759b7ef98245cdd0dcaae113831de35991f",
+      "candidate-agent.plist": "55db9adf70b3e0824fe1c3969d5b7eae9e6e4597f5e02f1c45ffba3977dfc4b1",
+      "previous-agent.plist": "f2d4f9fccc6d2992ebe8d699f51d60631fe6a4fad5ce1b63210bfc6a24a4ee07",
+      "unattended.json": "78a2db191008961e0ab3633d8d95ad2828a0d101c14eac7ec545c54a8dcd8d12",
+      "acceptance.json": "8b7d53ba941b163173e201df7ad6a1dc7849777c184d7063c34ce64c365f6cc2",
+      "preflight-result.json": "3467ef8591f2086bdf2191e15f93cb954a8b1c3e29a0973cb6300c83f09b6d21",
+      "preflight-attention.json": "040fe5c177097bef8f23005b5b562a90ced065ad8df80b761449d7f1bdcc0501",
+      "provenance.json": "cad79d8f4ab2bdf6503d836d2ab0b3c6129ae3d80144dcca11f8f4a94d945619"
+    },
+    "scriptSha256": "8809e14929c8e998f4590844c65afa7696d0880af397b39730a012bdc8042f8f",
+    "producerSourceHashes": {
+      "scripts/publishing/distribution-attention.ts": "170de69351fb0125c51b6155e5249f3d0cdb33b26c7c3a6c5d049859fcec878a",
+      "scripts/publishing/observe-substack-schedules.ts": "ff6429d37f8a7b439a0dd7a163909804939d1c1c3c14b124c0af3a742366fb1f",
+      "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa",
+      "scripts/hermes/substack_attention.py": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+      "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+      "scripts/publishing/distribution-scheduled.test.ts": "249edf4b68dd3bf7c89370337d77503d80d3454ea9a30656992334787919a8c3",
+      "scripts/publishing/distribution-sync.test.ts": "aa5271215f46d45ad4acb526c23be833389b3ad26e0c0869e5b77c4a4c1816d4",
+      "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e"
+    },
+    "productionPythonTests": {
+      "version": "3.11",
+      "passed": 8,
+      "failed": 0
+    },
+    "currentStatus": "prepared; administrator authentication required; not cut over"
+  },
+  "liveMessagesSent": 0,
+  "SubstackProviderWrites": 0,
+  "noCommitsOrPushes": true,
+  "blocker": "sudo -n -l: a password is required; root-owned existing consumer cannot be replaced without owner OS authentication",
+  "remaining": [
+    "owner runs sealed sudo command",
+    "verify actual installed consumer and producer hashes",
+    "read first real corrected notification receipt; human receipt remains separate",
+    "verify repeated same issue set quiet; do not reset history"
+  ]
+}

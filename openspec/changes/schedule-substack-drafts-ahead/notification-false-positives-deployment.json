@@ -1,0 +1,236 @@
+{
+  "recordedAt": "2026-10-19T08:30:08.005313+00:00",
+  "ownerAuthorization": "Fix queue-version false postponement, then deploy/cut over both notification corrections; preserve dirty files and provider commitments; no edits, rearm, republication or resend; task 5.3 pending.",
+  "candidateRuntime": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-false-positives-20261019/runtime",
+  "baseRemoteMain": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+  "primaryHead": "8cd46132615cc9c93eaed2cf587a86578e006944",
+  "overlays": {
+    "apps/admin-worker/src/substack-schedules.ts": "41274fcae760f3ff336125755b237ecd8d69ed7db9b100200371418b23a11fa6",
+    "scripts/hermes/substack_attention.py": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e",
+    "scripts/publishing/distribution-advance.test.ts": "101eb011b4cf7a860002cc87b7cf8f944728d67e30364fe7c26cbab071f4c231",
+    "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+    "scripts/publishing/distribution-attention.ts": "170de69351fb0125c51b6155e5249f3d0cdb33b26c7c3a6c5d049859fcec878a",
+    "scripts/publishing/distribution-scheduled.test.ts": "cd9488cc8b9765058b5bde3e168ad4ffc604bc079589663961e490f44ac446ee",
+    "scripts/publishing/distribution-sync.test.ts": "aa5271215f46d45ad4acb526c23be833389b3ad26e0c0869e5b77c4a4c1816d4",
+    "scripts/publishing/observe-substack-schedules.ts": "509f5b6a14ad92d0b4496ecd72f015a9c76c3dba0eefe30345c323f940f87e38",
+    "scripts/publishing/substack-schedule.ts": "a755a3cb6b653a80e838fdf76362ef506e9f579994f4b558ceb292df5d9f53ba",
+    "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa"
+  },
+  "qualificationDiffOnlyRelated": [
+    "apps/admin-worker/src/substack-schedules.ts",
+    "scripts/hermes/substack_attention.py",
+    "scripts/hermes/test_substack_attention.py",
+    "scripts/publishing/distribution-advance.test.ts",
+    "scripts/publishing/distribution-attention.test.ts",
+    "scripts/publishing/distribution-attention.ts",
+    "scripts/publishing/distribution-scheduled.test.ts",
+    "scripts/publishing/distribution-sync.test.ts",
+    "scripts/publishing/observe-substack-schedules.ts",
+    "scripts/publishing/substack-schedule.ts",
+    "scripts/publishing/sync-distribution.ts"
+  ],
+  "tests": {
+    "red": {
+      "coordinatorCases": 7,
+      "failedBugReproductions": 2,
+      "preservedControlsPassed": 5,
+      "observerPipelineCases": 1,
+      "observerPipelineFailures": 1
+    },
+    "green": {
+      "relatedCases": 95,
+      "passed": 95,
+      "failed": 0
+    },
+    "workingTreeGates": [
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "seconds": 92.63,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/test.log",
+        "sha256": "68dd88bbb3fa74da1114ecccc958d12813488ba8a6797fa4d017ba6362b7a65b"
+      },
+      {
+        "command": "pnpm check",
+        "exitCode": 0,
+        "seconds": 6.936,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/check.log",
+        "sha256": "12a074434641902852dffe48500e209440daea8a8c22ede413de9956a24f8c9d"
+      },
+      {
+        "command": "pnpm build:all",
+        "exitCode": 0,
+        "seconds": 5.927,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/build-all.log",
+        "sha256": "a661273d5119510ecea21ac31da02a28518af4cc137c40d95667fa1c2c8c4077"
+      },
+      {
+        "command": "pnpm release:dry-run",
+        "exitCode": 0,
+        "seconds": 9.735,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/release-dry-run.log",
+        "sha256": "d3500c2140b6e11097fdbeb62da149a42a4bdefecfc770c6b0024b4a5838bd74"
+      }
+    ],
+    "qualifiedMainGates": [
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "seconds": 101.174,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/qualified-test.log",
+        "sha256": "564abfb6f9e5f4431e58fb501675833e8a28402902d5055bf7afc0a078b902d7"
+      },
+      {
+        "command": "pnpm check",
+        "exitCode": 0,
+        "seconds": 7.208,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/qualified-check.log",
+        "sha256": "86a7d2efb41e545fc382f385a79da7e7ce706487a1c6d6843e713433b6a9917f"
+      },
+      {
+        "command": "pnpm build:all",
+        "exitCode": 0,
+        "seconds": 6.516,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/qualified-build-all.log",
+        "sha256": "7413db807c899a8393f9303e544e0c570193fb3edab0ee3a13314dfa320ac170"
+      },
+      {
+        "command": "pnpm release:dry-run",
+        "exitCode": 0,
+        "seconds": 10.284,
+        "log": "/private/tmp/gcake-queue-attention-fix-20261019/qualified-release-dry-run.log",
+        "sha256": "56ce069ddede464cc4e60d3fdc1acda0fc34463cbe8583de96f5dcfface09015"
+      }
+    ],
+    "initialQualificationFailure": "Missing workspace package links caused ERR_MODULE_NOT_FOUND for @gcake/admin-contract; preserved initial logs; copied same-version links within owned qualification root; no source or assertion changes; full rerun passed."
+  },
+  "protectedDirtyFiles": {
+    "openspec/changes/schedule-substack-drafts-ahead/attention-cutover-evidence.json": "a92ff76ed56c5c80fc6fae2b605083dcf9663a3c2c759ad6c4b659928904ce5a",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-cutover-verification.json": "8fe8708d6aa52e9fc376dc9595aee33d2aff18121fe1fc56bcfe55f3b76fc09f",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-reasons-evidence.json": "c2ed6201bde9cfc4e05ced7d35530e2adf19f5ebcb4fdfd96eb93dc25fda73c7",
+    "openspec/changes/schedule-substack-drafts-ahead/attention-reasons.md": "8f1642f0a4863612456ff5d2acefc116284ae80435c95bbe126d3605ab9e9f5e",
+    "openspec/changes/schedule-substack-drafts-ahead/content-attention-false-positives-evidence.json": "fa719ce9dbb1f389060b3576b3d460a4fc1748a6b486871dc5ba447ccfd012cd",
+    "openspec/changes/schedule-substack-drafts-ahead/content-attention-false-positives.md": "05a605212ac39c9d928195a7890c7dcf73d9fa0527f9012bd21bc10dfc4c9e8a",
+    "openspec/changes/schedule-substack-drafts-ahead/content-sync-20261019.json": "954b842454043da1126674c0363c5dac810c70f235e0719b3b3b583936bacc36",
+    "openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md": "8bc72a7e2e07151122a9f9760681cb6b5f208ab151c26e7e9f77bb918ccc1140",
+    "AGENTS.md": "22d855b3747f68f42f31f5704dccab1829962fc62c1b9adb7d3e4157564442f6",
+    "apps/admin-worker/src/substack-schedules.ts": "41274fcae760f3ff336125755b237ecd8d69ed7db9b100200371418b23a11fa6",
+    "docs/distribution-scripted-runbook.md": "b26ef4f6c51718536e59685fc59a3d64c2896b8f16cc86448f97f0a97f2a595e",
+    "openspec/specs/publishing-operations/spec.md": "d01bb574c6147b96108bdff3449a7896382181fb5b961527da2515564fafb21a",
+    "scripts/hermes/substack_attention.py": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "scripts/hermes/test_substack_attention.py": "074bca588601bd6444b4fa24e5792829dd14115449a8c82f26de4f8a863dbc3e",
+    "scripts/publishing/distribution-attention.test.ts": "4ab254e9fdfada9806c5a0976e36125e052176a8902b565449b148228efbb007",
+    "scripts/publishing/distribution-attention.ts": "170de69351fb0125c51b6155e5249f3d0cdb33b26c7c3a6c5d049859fcec878a",
+    "scripts/publishing/distribution-sync.test.ts": "aa5271215f46d45ad4acb526c23be833389b3ad26e0c0869e5b77c4a4c1816d4",
+    "scripts/publishing/observe-substack-schedules.ts": "509f5b6a14ad92d0b4496ecd72f015a9c76c3dba0eefe30345c323f940f87e38",
+    "scripts/publishing/sync-distribution.ts": "e83dea5568edb5ca41a8ea7e70eda4b9065e7b7ffb98bc503d7f17efe42c8aaa"
+  },
+  "onlyGateInputPostCheckChange": [
+    "openspec/changes/schedule-substack-drafts-ahead/tasks.md"
+  ],
+  "deployment": {
+    "status": "verified",
+    "verifiedAt": "2026-10-19T08:27:18.817Z",
+    "agentSha256": "8c9444c43615fd0967e654d183821dea72b23d7071bcd1d5684c782bcda7168d",
+    "consumerSha256": "b9e09441a9ed92d2c86e936ac3ea072747f02c7023479a25c3df276745fc4fb2",
+    "pinFiles": 19084,
+    "pinMismatches": 0,
+    "providerCommitmentsUnchanged": true,
+    "providerWritesEnabled": false,
+    "providerWrites": 0,
+    "newArticleOrScheduleWrites": 0,
+    "liveNotificationReceipt": {
+      "status": "clear",
+      "humanReceived": false,
+      "issueCount": 0,
+      "updatedAt": "2026-10-19T08:25:56.560466+00:00"
+    },
+    "sharedAttentionIssues": 0,
+    "consumerAndHermesUnchanged": true,
+    "ledgerAgentWrites": 0,
+    "singleTimerSeconds": 900,
+    "rounds": [
+      {
+        "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-false-positives-20261019/rounds/round-2GAy9q",
+        "status": "completed",
+        "notification": "quiet",
+        "hermes": {
+          "status": "queued"
+        },
+        "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+        "finalD1": {
+          "locks": [],
+          "checkpoints": [],
+          "intents": []
+        },
+        "sourceCleanup": "removed"
+      },
+      {
+        "directory": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-attention-false-positives-20261019/rounds/round-cHgF1K",
+        "status": "completed",
+        "notification": "quiet",
+        "hermes": {
+          "status": "queued"
+        },
+        "sourceCommit": "ed7de732b11767894e12ae9178d33a0c0dfde5ba",
+        "finalD1": {
+          "locks": [],
+          "checkpoints": [],
+          "intents": []
+        },
+        "sourceCleanup": "removed"
+      }
+    ],
+    "pilot": {
+      "remoteId": "221098688",
+      "observedTime": "2026-10-21T23:00:00.000Z",
+      "originalSlot": {
+        "reservationId": "fixed:ithome-2026-publishing-in-production:2026-10-22T07:00:00+08:00",
+        "queueVersion": 162,
+        "slug": "ithome-2026-publishing-in-production",
+        "scheduledAt": "2026-10-22T07:00:00+08:00",
+        "confirmed": true
+      },
+      "currentOriginalSlot": {
+        "reservationId": "fixed:ithome-2026-publishing-in-production:2026-10-22T07:00:00+08:00",
+        "queueVersion": 165,
+        "slug": "ithome-2026-publishing-in-production",
+        "scheduledAt": "2026-10-22T07:00:00+08:00",
+        "confirmed": true
+      },
+      "email": true,
+      "appInbox": true,
+      "delivery": "armed"
+    },
+    "otherDrafts": [
+      {
+        "remoteId": "221099763",
+        "slug": "ithome-2026-tech-blog-boundary",
+        "delivery": "not_armed"
+      },
+      {
+        "remoteId": "221099415",
+        "slug": "ithome-2026-template-hardening",
+        "delivery": "not_armed"
+      }
+    ],
+    "qualification53": "pending future provider publication and delivery evidence",
+    "naturalTimerOccurrenceClaimed": false
+  },
+  "committed": false,
+  "pushed": false,
+  "qualification53": "pending",
+  "rollback": "Previous runtime and previous-agent.plist retained; idle/owner-lock restoration required; no ledger reset or provider cancellation.",
+  "artifactDirectory": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a1518e-95c8-7770-8173-0f10b276aee5/notification-false-positives-deployment",
+  "finalChecks": {
+    "spectraValidate": "passed",
+    "spectraAnalyzeFindings": 0,
+    "gitDiffCheck": "passed",
+    "tasksComplete": 31,
+    "tasksTotal": 32,
+    "remainingTask": "5.3",
+    "testedOverlaysUnchanged": true,
+    "ownedQualificationCloneRemoved": true
+  }
+}

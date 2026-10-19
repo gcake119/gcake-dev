@@ -230,3 +230,81 @@ test('cancel recovery: a later explicitly authorized rearm is not mistaken for t
   const result=await f.coordinator.run(f.request('reconcile-schedule',{remoteId:'123'}));assert.equal(result.observedState,'scheduled');assert.equal(result.desiredState,'scheduled');assert.equal(result.delivery,'armed');assert.equal(result.intent,undefined);assert.equal(f.provider.calls.filter(c=>c==='arm').length,2);
  }finally{f.close();}
 });
+
+for(const presentation of ['description','editor-break','terminal-editor-space'] as const)test('content attention ignores unchanged-source '+presentation+' without claiming strict verification',async()=>{
+ const f=await fixture();try{
+  const s=source();s.article.body='## Heading\n\nBody.\n\n```text\na  b\n```\n\n[原文與最新版本](https://gcake119.github.io/gcake-dev/posts/trial/)';f.setSource(s);
+  const expected=content(s),actual=structuredClone(expected);
+  if(presentation==='description')actual.description='';
+  else if(presentation==='editor-break')actual.html=actual.html.replace(/<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/,'<pre><code><code>$1</code><br class="ProseMirror-trailingBreak"></code></pre>');
+  else actual.html=actual.html.replace(/(<\/code><\/pre>)/,' $1');
+  assert.notEqual(contentFingerprint(actual),contentFingerprint(expected),'strict foreground verification remains sensitive');
+  await f.repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'schedule-trial',slug:'trial',remoteId:'123',sourceRevision:s.sourceRevision,version:0,legacyPublished:true,observedState:'published_unverified',publicationMinute:at,delivery:'not_armed',pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_EVIDENCE_MISMATCH',updatedAt:now},0);
+  f.provider.post={id:'123',slug:'trial',state:'published',saved:true,content:actual,publishedAt:at};
+  const r=await f.coordinator.observe('schedule-trial',s,undefined,'2026-10-22T00:00:00Z');
+  assert.equal(r.pendingAction,undefined);assert.equal(r.lastErrorCode,undefined);assert.equal(r.verification?.status,'presentation_only');assert.equal(r.contentVerifiedRevision,undefined);assert.equal(r.observedState,'published_unverified');assert.deepEqual(f.provider.calls,[]);assert.equal(r.remoteId,'123');
+ }finally{f.close();}
+});
+
+test('failed or incomplete public verification is inconclusive, never an inferred content change',async()=>{
+ for(const failure of ['read','missing-minute','incomplete-html'] as const){const f=await fixture();try{
+  const s=source(),digest=contentFingerprint(content(s));
+  await f.repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'schedule-trial',slug:'trial',remoteId:'123',sourceRevision:s.sourceRevision,contentVerifiedRevision:s.sourceRevision,contentDigest:digest,verifiedAt:now,version:0,observedState:'verified',...(failure==='missing-minute'?{}:{publicationMinute:at}),delivery:'not_armed',updatedAt:now},0);
+  f.context.readPublic=async()=>{if(failure==='read')throw Error('network timeout');return {id:'123',slug:'trial',state:'published',saved:true,content:failure==='incomplete-html'?{title:'Title a',html:undefined as never}:content(s),canonical:'https://gcakedev.substack.com/p/trial',publishedAt:at};};
+  const r=await f.coordinator.observe('schedule-trial',s,undefined,'2026-10-22T00:00:00Z');assert.equal(r.pendingAction,undefined);assert.equal(r.lastErrorCode,undefined);assert.equal(r.verification?.status,'inconclusive');assert.equal(r.contentDigest,digest);assert.equal(r.verifiedAt,now);assert.equal(r.contentVerifiedRevision,s.sourceRevision);assert.deepEqual(f.provider.calls,[]);
+ }finally{f.close();}}
+});
+
+test('an inconclusive read preserves a legacy unresolved hold rather than falsely clearing it',async()=>{
+ const f=await fixture();try{
+  await f.repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'schedule-trial',slug:'trial',remoteId:'123',sourceRevision:source().sourceRevision,version:0,legacyPublished:true,observedState:'published_unverified',publicationMinute:at,delivery:'not_armed',pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_EVIDENCE_MISMATCH',updatedAt:now},0);
+  let reads=0;f.context.readPublic=async()=>{reads++;throw Error('network unavailable');};
+  const r=await f.coordinator.observe('schedule-trial',source(),undefined,'2026-10-22T00:00:00Z');assert.equal(reads,1);assert.equal(r.pendingAction,'sync-content');assert.equal(r.lastErrorCode,'SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');assert.equal(r.verification?.status,'inconclusive');assert.deepEqual(f.provider.calls,[]);
+ }finally{f.close();}
+});
+
+for(const drift of ['title','paragraph','heading','code-inner-space','link','image-alt'] as const)test('confirmed provider '+drift+' drift remains actionable with unchanged Git',async()=>{
+ const f=await fixture();try{
+  const s=source();s.article.body='## Heading\n\nBody.\n\n```text\na  b\n```\n\n[原文與最新版本](https://gcake119.github.io/gcake-dev/posts/trial/)\n\n![Original](https://example.com/image.png)';f.setSource(s);
+  const actual=content(s);if(drift==='title')actual.title='Different';else if(drift==='paragraph')actual.html=actual.html.replace('Body.','Changed.');else if(drift==='heading')actual.html=actual.html.replace(/h2/g,'h3');else if(drift==='code-inner-space')actual.html=actual.html.replace('a  b','a b');else if(drift==='link')actual.html=actual.html.replace('href="https://gcake119.github.io/gcake-dev/posts/trial/"','href="https://example.com/wrong"');else actual.html=actual.html.replace('alt="Original"','alt="Changed"');
+  await f.repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'schedule-trial',slug:'trial',remoteId:'123',sourceRevision:s.sourceRevision,contentVerifiedRevision:s.sourceRevision,contentDigest:contentFingerprint(content(s)),version:0,observedState:'verified',publicationMinute:at,delivery:'not_armed',updatedAt:now},0);
+  f.provider.post={id:'123',slug:'trial',state:'published',saved:true,content:actual,publishedAt:at,images:[{src:'https://example.com/image.png',alt:drift==='image-alt'?'Changed':'Original',loaded:true}]};
+  const r=await f.coordinator.observe('schedule-trial',s,undefined,'2026-10-22T00:00:00Z');assert.equal(r.pendingAction,'sync-content');assert.equal(r.verification?.status,'content_difference');assert.equal(r.remoteId,'123');assert.equal(r.contentVerifiedRevision,s.sourceRevision);assert.deepEqual(f.provider.calls,[]);
+ }finally{f.close();}
+});
+
+test('description changes in a new Git source remain actionable and foreground verification stays strict',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));f.provider.post!.state='published';f.provider.post!.publishedAt=at;
+  await f.coordinator.observe('schedule-trial',source(),undefined,'2026-10-22T00:00:00Z');f.provider.post!.content.description='Platform description';
+  const before=f.provider.calls.length;let r=await f.coordinator.observe('schedule-trial',source(),undefined,'2026-10-22T01:00:00Z');assert.equal(r.pendingAction,undefined);assert.equal(r.verification?.status,'presentation_only');assert.equal(f.provider.calls.length,before);
+  r=await f.coordinator.run(f.request('sync-content',{remoteId:'123'}));assert.deepEqual(f.provider.calls.slice(before).filter(c=>c!=='read'),['update-public']);assert.equal(r.contentDigest,contentFingerprint(content(source())));
+  const changed=source();changed.sourceRevision='sha256:'+'c'.repeat(64);changed.article.sourceRevision=changed.sourceRevision;changed.article.description='Changed source description';r=await f.coordinator.observe('schedule-trial',changed,undefined,'2026-10-22T02:00:00Z');assert.equal(r.pendingAction,'sync-content');
+ }finally{f.close();}
+});
+
+for(const retained of [false,true])test('queue version 162 to 165 at the same instant stays quiet'+(retained?' and clears its false postpone hold':''),async()=>{
+ const f=await fixture();try{
+  const original={reservationId:'fixed:trial:2026-10-22T07:00:00+08:00',queueVersion:162,slug:'trial',scheduledAt:'2026-10-22T07:00:00+08:00',confirmed:true};f.setSlot(original);
+  await f.coordinator.run(f.request('prepare-draft'));const armed=await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));
+  if(retained)await f.repo.save({...armed,pendingAction:'postpone-schedule',desiredTime:at},armed.version);
+  const n=f.provider.calls.length,current={...original,queueVersion:165,scheduledAt:at};const r=await f.coordinator.observe('schedule-trial',source(),current,now);
+  assert.equal(r.pendingAction,undefined);assert.equal(r.observedTime,at);assert.deepEqual(r.slot,original);assert.equal(r.remoteId,'123');assert.equal(r.delivery,'armed');assert.equal(r.armedRevision,armed.armedRevision);assert.equal(r.emailEnabled,true);assert.equal(r.appInboxEnabled,true);assert.equal(f.provider.calls.length,n);
+  const reviewed=f.request('arm-schedule',{remoteId:'123'});f.setSlot(current);await assert.rejects(f.coordinator.run(reviewed),/SUBSTACK_SCHEDULE_SLOT_UNCONFIRMED/);assert.equal(f.provider.calls.length,n);
+ }finally{f.close();}
+});
+
+for(const change of ['real-time','missing-slot','wrong-article','unconfirmed'] as const)test('queue attention retains '+change+' as foreground work',async()=>{
+ const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));const armed=await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'})),n=f.provider.calls.length;
+  const current=change==='missing-slot'?undefined:{...armed.slot!,queueVersion:165,...(change==='real-time'?{scheduledAt:'2026-10-25T23:00:00Z'}:change==='wrong-article'?{slug:'different'}:change==='unconfirmed'?{confirmed:false}:{})};
+  const r=await f.coordinator.observe('schedule-trial',source(),current,now);assert.equal(r.pendingAction,change==='missing-slot'?'cancel-schedule':'postpone-schedule');assert.equal(r.observedTime,at);assert.deepEqual(r.slot,armed.slot);assert.equal(r.delivery,'armed');assert.equal(f.provider.calls.length,n);
+ }finally{f.close();}
+});
+
+test('queue equivalence cannot clear unknown mutation or an independent content error',async()=>{
+ for(const unknown of [true,false]){const f=await fixture();try{
+  await f.coordinator.run(f.request('prepare-draft'));const armed=await f.coordinator.run(f.request('arm-schedule',{remoteId:'123'}));const held=await f.repo.save({...armed,pendingAction:'postpone-schedule',...(unknown?{intent:{id:'unknown-arm',action:'arm' as const,createdAt:now}}:{lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH'})},armed.version);const n=f.provider.calls.length;
+  const r=await f.coordinator.observe('schedule-trial',source(),{...armed.slot!,queueVersion:165},now);assert.equal(r.pendingAction,'postpone-schedule');assert.deepEqual(r.intent,held.intent);assert.equal(r.lastErrorCode,held.lastErrorCode);assert.equal(r.observedTime,at);assert.equal(f.provider.calls.length,n);
+ }finally{f.close();}}
+});
