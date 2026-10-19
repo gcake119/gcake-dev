@@ -139,3 +139,43 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 - 完整 Admin 59／59 測試通過；Admin build、Spectra analyze／validate、diff check 通過。此輪只有 CSS 與文件變更，未重跑無關的公開站／Worker gate，也未新增 CI。
 - 中途原 QA 服務停止，已重新啟動。部分讀取誤用舊分頁 helper，造成錯誤頁的 URL policy 訊息；改為有效分頁的讀取後完成四組驗收，未將錯誤頁算為產品或規範通過證據。
 - QA 服務為本次記憶體模式，exec session 24776，服務回報 PID 295；保留至 2026-10-20 供檢視。優先結束該 session 精準清理；若用 PID，須先確認仍是本次 QA 程序。舊 PID／session 已失效。無正式寫入、推送或部署。
+
+
+## 全後台實際間距稽核（2026-10-19）
+
+本輪依使用者要求延伸至其他頁面與 modal，先在設計文件及 Consistent spacing across Admin surfaces 規格補上 Gherkin，才建立第 8 組 tasks 與修正 CSS。僅後台 CSS、queue scoped CSS、設計與本 change 文件變更；沒有修改 API、排程、上傳、刪除或通知流程。
+
+### 實際發現與修正
+
+- 新增文章／系列欄位垂直距離 16px → 12px；完成欄位／說明到操作列維持 16px。
+- 章節與篇序的普通按鈕 4px → 8px；正文 SVG 工具群組保留 4px。
+- 一般收合入口約 30.6px → 至少 44px；展開後標題到首個內容由 0px／不固定 margin 改為 12px。長標題自然增高，不裁切。
+- queue 欄位到執行按鈕 0px → 16px；日期調整表單、影響預覽與空清單使用一致節奏。
+- 發布紀錄欄位到說明 0px → 8px，說明到執行按鈕 28px → 16px。
+- 媒體卡片到管理區原先 grid gap 與 margin 疊加為 16px，改為 8px；展開入口到欄位 12px，欄位到執行列 16px。原 media header 到拖放提示 16px 保留。
+- 登入說明到按鈕原先段落 margin 加按鈕 margin 為 24px，改為 16px；載入失敗頁同樣驗收。
+- 原生段落與清單 margin 會引入 17px 等未定義距離，已依角色重設。舊日期欄位改為寬度受限單欄，欄位 12px、操作列 16px。
+
+### 四組驗收與範圍
+
+1280×900 與 390×844，各自明亮／暗色，共 64 組唯一畫面狀態（16 種 × 4）。包含：新增文章、文章全部設定（含舊日期）、有圖片媒體庫／圖片管理、搜尋無結果、新增系列、未開始系列全部巢狀設定、日期調整、影響預覽、需處理空白結果、發布紀錄與時間線、已開始系列、已定稿文章／人工發布設定、未儲存離開確認、儲存衝突、登入、載入失敗。
+
+- 每組實際 DOM 邊界量測：標籤到控制 8px；可比較的垂直欄位 12px；普通按鈕 8px、SVG 工具 4px；展開內容 12px；任務操作列 16px；所有受檢控制至少 44px，沒有頁面水平溢出。
+- 媒體卡片資訊各段 8px、操作列到提示區 16px；dialog 本身沒有水平溢出。四組關閉回圖片按鈕，原文逐字相同。
+- 四組取消離開後，工作原文保留。一次記憶體 409 衝突在四種版面皆可讀，處理欄位到按鈕 16px，切換主題／寬度沒有改寫原文。
+- 最終彙整 spacing-final-matrix.json：64 組、0 個間距／高度／水平溢出失敗；spacing-extra-behavior.json 保留取消與紀錄說明的讀值。早期 spacing-audit-red.json 保留原始失敗。過程中 selector 的 textbox/searchbox 不同及 DOM 工具不支援 checkVisibility 等錯誤，修正量測方式後重做，不計作產品失敗或通過。
+- 發布紀錄與圖片為本機合成 fixture；其他文章／系列來自隔離副本。這些證據證明前端版面，不能替代正式 provider、CI、部署或獨立人工驗收。
+- 瀏覽器原生刪除確認嘗試觸發後工具 mouse dispatch 逾時，沒有可取得的 dialog，因此不宣稱本輪完成原生確認框的視覺或取消驗收；原生 chrome 本來也不受專案 CSS 控制。既有取消／確認行為由原 Admin 行為測試保護。未執行任何正式刪除或發布。
+
+### 驗證及交付
+
+- Admin node:test：59／59 通過。Admin Vite build 通過，最終產物 index-fVLqfW1i.css／index-BqIwbBeZ.js。沒有 Vue script／型別或公開站變更，因此不重跑不受影響的全站／Worker gate；沒有新增套件、測試層、CI 或 Docker。
+- 最後兩項 scoped 修正僅影響發布紀錄 label 後說明及 center-card 按鈕，各自已重新完成四組驗收；其他未受影響狀態沿用同一輪通過讀值。
+- Spectra analyze／validate 與 git diff --check 通過。設計權威為 DESIGN.md、docs/design-system.md 及本 change；本輪是既有規則補齊，不建立新的 ADR／ledger 系統。
+- 程式保留 /private/tmp/gcake-admin-ux-20261019（codex/simplify-admin-workflows）的後續 diff；本輪沒有新增 commit、推送或部署。原兩個已完成 commit 不改寫。主工作區僅同步已核對歸屬的設計與本 change 文件，其他 Substack 變更保持原樣。
+- 最新本機服務 exec session 54828、PID 34730，loopback 127.0.0.1:4326，記憶體資料、正式發布停用，保留到 2026-10-20 供檢視（非自動到期）。清理優先結束該 session；若使用 kill 34730，須先核對仍為本次 QA 程序。先前服務皆已結束。
+
+
+### 本輪獨立提交整理
+
+使用者後續明確授權將本輪間距、設計文件與 Spectra 驗收紀錄整理為獨立 commit。僅選取兩個後台樣式檔、設計規範與本 change 的 design／spec／tasks／verification，共 7 個檔案；不納入本機 QA host、其他 Substack change 或後端變更。提交前逐檔 SHA-256 與上一輪驗證清單完全相符，因此沿用 59 項測試、建置與 64 組版面驗收，不重跑未改動的程式。另確認 Spectra 與 staged diff，主工作區內容保持不變；只將完成的 commit 匯入本機既有後台分支，不切換 main，不推送、不部署。

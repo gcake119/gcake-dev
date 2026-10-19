@@ -36,3 +36,10 @@
 
 - [x] 7.1 Specify Media action section spacing and reproduce the rendered 0px separation before changing CSS; preserve the existing 8px button gap and record actual RED measurements.
 - [x] 7.2 Add the missing 16px media-header spacing using existing tokens; verify rendered 16px/8px distances at desktop and 390px in both themes, plus Escape focus/source retention, Admin build and Spectra checks.
+
+
+## 8. Full Admin spacing audit
+
+- [x] 8.1 Specify Consistent spacing across Admin surfaces and record rendered RED measurements before CSS changes; use the existing local browser host and existing tests without a new CI layer.
+- [x] 8.2 Correct shared form/disclosure/action spacing across article, series, publishing and populated media without changing business actions.
+- [x] 8.3 Verify desktop/390px and both themes across forms, settings, scheduling, populated/empty media and failure feedback; record real boundaries/screenshots, run Admin tests/build and Spectra checks, and preserve unrelated Substack changes. No push or deployment.

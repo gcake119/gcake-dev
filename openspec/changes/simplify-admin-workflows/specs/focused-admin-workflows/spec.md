@@ -156,3 +156,28 @@ The media library SHALL retain 16px of vertical space between its action row and
 - **GIVEN** an unsaved article and an open media library
 - **WHEN** the owner closes it with Escape
 - **THEN** focus returns to the image tool and the article text is unchanged
+
+
+### Requirement: Consistent spacing across Admin surfaces
+Article and series creation, article settings, series sections, publishing controls and populated media dialogs SHALL follow the adopted spacing roles at rendered boundaries: labels to inputs 8px, vertically adjacent fields 12px, ordinary adjacent buttons 8px, and completed field/help groups to their execution row 16px. Only the body SVG tool pair SHALL use 4px. Disclosure controls SHALL be at least 44px high and retain 12px before their first expanded content. Media card information groups SHALL retain 8px. Desktop/mobile and both themes SHALL retain these distances when content wraps, without page horizontal overflow or more than two buttons per operation context. Opening, cancelling and closing SHALL NOT save, publish or discard content.
+
+#### Scenario: Inspect forms and expanded settings
+- **GIVEN** article creation, series creation, article settings or an unlocked series on desktop or 390px in either theme
+- **WHEN** the owner expands the available settings
+- **THEN** rendered field, button and disclosure distances match the documented roles and controls remain reachable without horizontal page scrolling
+
+#### Scenario: Inspect publishing and populated media
+- **GIVEN** a publishing queue and a media library containing an image in either viewport and theme
+- **WHEN** the owner expands queue actions, previews a date change and opens image management
+- **THEN** inputs, help, action rows and expanded content retain documented spacing, each operation has at most two buttons and no change occurs before confirmation
+
+#### Scenario: Empty results and failure feedback
+- **GIVEN** a media search with no results or a failed operation with unsaved content
+- **WHEN** the owner reads feedback and closes or cancels the current operation
+- **THEN** readable feedback remains separated from adjacent controls, no content is lost and no save or publication success is invented
+
+
+#### Scenario: Signed-out or unavailable workspace
+- **GIVEN** the owner is signed out or the workspace cannot load in either viewport and theme
+- **WHEN** the owner reads the explanation and available next action
+- **THEN** the action retains 16px after the explanation, is at least 44px high and remains reachable without horizontal scrolling

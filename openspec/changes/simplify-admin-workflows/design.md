@@ -72,3 +72,9 @@ Delivery refinement: after the owner adopted the design supplement, the owned DE
 The header has no bottom margin and the following hint has zero top margin, leaving the action row touching its next section. Give the media header an explicit 16px bottom margin using the existing space token; preserve the existing 8px button gap and all upload behavior. Measure actual row-to-hint boundaries in all four viewport/theme combinations.
 
 Mobile action rows previously used space-between, producing 147px instead of the documented 8px gap. Align the two actions together at the end of their row; actual geometry remains the acceptance authority.
+
+
+### Full Admin spacing audit
+Apply the existing spacing scale consistently to all rendered surfaces, including creation, nested series settings, old-date controls, populated media, publishing previews/records and signed-out/error shells. Reset browser-default paragraph/list margins where they interfere with role distances. Keep ordinary button pairs at 8px, SVG body tools at 4px, label/help spacing at 8px, field groups and expanded disclosures at 12px, and completed field/help groups to actions at 16px. Keep legacy date fields in a bounded single-column group so desktop and mobile share the same reading order. No API, action, dependency or CI changes.
+
+Use the owned loopback memory host for existing real content plus one synthetic image and release record. These fixtures prove frontend geometry only. Existing node:test remains the behavior layer; a new test runner, Docker service or CI job would add cost without improving this CSS acceptance seam. Preserve rendered RED and final measurements. Reuse previously passing geometry only for selectors and states unaffected by later scoped CSS edits. Native confirmation layouts belong to the browser; no CSS conformity claim is made for their chrome.
