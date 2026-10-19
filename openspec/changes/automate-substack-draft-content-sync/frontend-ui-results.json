@@ -1,0 +1,183 @@
+{
+  "passed": true,
+  "sourceBase": "1f3e8cf413beadc687db0dbb58ad21994aa70a1c",
+  "worktree": "/Users/caiyijun/.codex/worktrees/admin-draft-status/gcake-dev",
+  "frontendDeployed": false,
+  "localGates": [
+    {
+      "name": "check",
+      "exitCode": 0,
+      "log": "check-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "log": "test.log"
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0,
+      "log": "build-all.log"
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0,
+      "log": "release-dry-run.log"
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0,
+      "log": "editorial-rehearse.log"
+    }
+  ],
+  "candidateInputSha256": "d838433ed3072aa9155c37081ddbb8975ec95af8a31e61057ca0a13b71132c60",
+  "localChromeCases": [
+    {
+      "name": "desktop-light",
+      "width": 1440,
+      "height": 960,
+      "scrollWidth": 1425,
+      "theme": "light"
+    },
+    {
+      "name": "desktop-dark",
+      "width": 1440,
+      "height": 960,
+      "scrollWidth": 1425,
+      "theme": "dark"
+    },
+    {
+      "name": "mobile-dark",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "dark"
+    },
+    {
+      "name": "mobile-light",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 375,
+      "theme": "light"
+    },
+    {
+      "name": "article-per-slug",
+      "width": 390
+    },
+    {
+      "name": "unavailable-retains-last"
+    },
+    {
+      "name": "expired-hides-private-data"
+    },
+    {
+      "name": "untracked"
+    },
+    {
+      "name": "unknown"
+    },
+    {
+      "name": "conflict"
+    },
+    {
+      "name": "normal"
+    }
+  ],
+  "localRequests": {
+    "allGet": true,
+    "count": 15,
+    "methods": {
+      "GET": 15
+    },
+    "paths": [
+      "/api/v1/auth/session",
+      "/api/v1/github/deployments/latest",
+      "/api/v1/posts",
+      "/api/v1/posts/ithome-2026-template-hardening",
+      "/api/v1/publications/ithome-2026-template-hardening",
+      "/api/v1/releases",
+      "/api/v1/series",
+      "/api/v1/substack/drafts",
+      "/api/v1/substack/drafts/ithome-2026-template-hardening"
+    ]
+  },
+  "realApi": {
+    "listRows": 6,
+    "requests": [
+      {
+        "path": "/api/v1/substack/drafts",
+        "method": "GET",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET",
+        "status": 200,
+        "cacheControl": "no-store"
+      }
+    ],
+    "identity": "221099415",
+    "observedInconclusiveId": "221099763",
+    "assetOverrides": "owned Chrome tab only; cleared"
+  },
+  "preserved": {
+    "records": 6,
+    "providerCommitments": true,
+    "syncConfigSha256Unchanged": true,
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "productionAssets": [
+      {
+        "path": "assets/index-Ccs2ogNW.js",
+        "status": 200,
+        "localSha256": "ee84fdcb625de2bd5b7c10582c7bea73a996199b3f456483bf47b729a564708a",
+        "productionSha256": "ee84fdcb625de2bd5b7c10582c7bea73a996199b3f456483bf47b729a564708a",
+        "identical": true
+      },
+      {
+        "path": "assets/index-fVLqfW1i.css",
+        "status": 200,
+        "localSha256": "610ff0111f5fea8087fca9c88c9444c9c7f30160a4149a1ab56adaa479acb06f",
+        "productionSha256": "610ff0111f5fea8087fca9c88c9444c9c7f30160a4149a1ab56adaa479acb06f",
+        "identical": true
+      },
+      {
+        "path": "index.html",
+        "status": 200,
+        "localSha256": "348797dd026d92a06dd650c4ae731f0de83a40d902517bebec4946d7be7a0e40",
+        "productionSha256": "348797dd026d92a06dd650c4ae731f0de83a40d902517bebec4946d7be7a0e40",
+        "identical": true
+      }
+    ]
+  },
+  "cleanup": {
+    "ownTabsClosed": true,
+    "viewportReset": true,
+    "assetOverridesCleared": true,
+    "localThemeRestored": true,
+    "localPortClosed": true
+  },
+  "limitations": [
+    "Frontend candidate not deployed, committed or pushed",
+    "Failure UI uses explicit loopback fixtures",
+    "Deployment metadata GET returned 403; production assets and health verified with anonymous GET",
+    "Existing legacy publication query reports not configured; independent new APIs pass",
+    "Codebase indexing denied; existing indexed read-only queries used"
+  ],
+  "privateEvidence": "/private/tmp/gcake-admin-status-ui-20261020",
+  "screenshots": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a153a5-b815-7753-ac1f-b3b7f9318c2b/admin-status-ui-20261020",
+  "spectra": {
+    "analyzeFindings": 0,
+    "valid": true,
+    "tasksComplete": 27,
+    "tasksTotal": 27
+  },
+  "diffCheck": true
+}

@@ -8,6 +8,7 @@ import { parse, compileScript, compileTemplate } from 'vue/compiler-sfc';
 import { parseHTML } from 'linkedom';
 import { EditorState } from './editor-state';
 import * as editorViews from './editor-state';
+import {statusPresentation,emptyStatusState,type DraftStatus} from './substack-status';
 import { iconPaths } from '../../../src/components/icon-paths';
 
 // Render the actual Vue template, using synthetic state instead of production APIs.
@@ -38,6 +39,7 @@ async function render(file: string, overrides: Record<string, unknown> = {}) {
     const component = { ssrRender, setup: () => state };
     const app = createSSRApp(component);
     app.component('ReleaseQueuePanel', { template: '<section aria-label="發布摘要">下一篇</section>' });
+    app.component('SubstackStatusPanel', { props:['slug'], template:'<section class="substack-mount" :data-scope="slug || \'list\'"></section>' });
     app.config.warnHandler = () => {};
     return parseHTML('<html><body>' + await renderToString(app) + '</body></html>').document;
   } finally { await unlink(url); }
@@ -185,7 +187,8 @@ async function withActualWorkspace(run: (state: any) => Promise<void>) {
   const source=await readFile(new URL('./App.vue',import.meta.url),'utf8');
   const {descriptor}=parse(source);
   const compiled=compileScript(descriptor,{id:'workflow-runtime'}).content
-    .replace("import ReleaseQueuePanel from './ReleaseQueuePanel.vue';",'const ReleaseQueuePanel = {};');
+    .replace("import ReleaseQueuePanel from './ReleaseQueuePanel.vue';",'const ReleaseQueuePanel = {};')
+    .replace("import SubstackStatusPanel from './SubstackStatusPanel.vue';",'const SubstackStatusPanel = {};');
   const url=new URL(`.workflow-script-${process.pid}.mjs`,import.meta.url);
   await writeFile(url,ts.transpileModule(compiled,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText);
   const originalWindow=globalThis.window;
@@ -433,4 +436,68 @@ test('actual-series-discard: discarded edits cannot be persisted by a later arti
     await s.openSeries('demo');
     assert.equal(s.seriesManifest.value.title,'原來的系列');
   });
+});
+
+
+test('Substack status is mounted in publishing overview and replaces the obsolete single article badge', async () => {
+  const overview = await render('./App.vue', { overviewSection:'publishing' });
+  assert.ok(overview.querySelector('.substack-mount[data-scope="list"]'), 'publishing overview must mount the read-only status panel');
+  const article = await render('./App.vue', { workspaceMode:'post', selectedPost:post });
+  assert.ok(article.querySelector('.substack-mount[data-scope="acceptance"]'), 'saved article must use its per-slug status panel');
+  assert.equal(article.querySelector('[aria-label="Substack 狀態查詢"]'), null, 'old combined publication badge is replaced');
+});
+
+
+const statusRecord:DraftStatus={schemaVersion:1,slug:'acceptance',providerId:'221099415',version:1,sync:{status:'verified',checkedAt:'2026-10-19T16:05:00Z',unresolvedOperation:false},publication:{state:'scheduled',confirmedTime:'2026-10-21T23:00:00Z'},delivery:{evidence:'armed',subscriberReceipt:'unknown'},attention:{pendingAction:null,code:null},actions:['foreground-review']};
+async function renderSubstack(record=statusRecord,patch:Record<string,unknown>={}){
+ return render('./SubstackStatusPanel.vue',{props:{slug:'acceptance'},headingId:'substack-article-status-title',snapshot:{...emptyStatusState(),loaded:true,rows:[record]},rows:[{row:record,view:statusPresentation(record),title:'驗收文章'}],...patch});
+}
+test('Substack actual template separates evidence, check time and unknown receipt with a GET refresh only',async()=>{
+ const doc=await renderSubstack();assert.deepEqual([...doc.querySelectorAll('dt')].map(n=>n.textContent),['草稿同步','發布','寄送']);const evidence=[...doc.querySelectorAll('dd')].map(n=>n.textContent);assert.match(evidence[0],/已保存並驗證/);assert.match(evidence[1],/已排程.*2026\/10\/22 07:00/);assert.match(evidence[2],/已安排寄送.*尚無實收證據/);assert.match(doc.body.textContent!,/最近查核：2026\/10\/20 00:05/);assert.deepEqual(buttons(doc),['重新讀取狀態']);assert.equal(doc.querySelector('.substack-attention'),null);
+});
+test('Substack actual template retains old rows after unavailable read and exposes login or untracked distinctly',async()=>{
+ const unavailable=await renderSubstack(statusRecord,{snapshot:{...emptyStatusState(),loaded:true,error:'目前無法更新，以下保留上次讀取的資料。',rows:[statusRecord]}});assert.ok(unavailable.querySelector('[role="alert"]'));assert.equal(unavailable.querySelectorAll('.substack-status-row').length,1);
+ const expired=await renderSubstack(statusRecord,{snapshot:{...emptyStatusState(),loaded:true,error:'登入已失效',loginRequired:true},rows:[]});assert.equal(expired.querySelectorAll('.substack-status-row').length,0);assert.equal(expired.querySelector('a')?.getAttribute('href'),'/api/v1/auth/login');
+ const untracked=await renderSubstack(statusRecord,{snapshot:{...emptyStatusState(),loaded:true,untracked:true},rows:[]});assert.match(untracked.body.textContent!,/尚未追蹤.*無法據此判斷平台是否已有草稿/);
+});
+test('Substack actual template keeps reconciliation and independent holds visible and truthful page buttons',async()=>{
+ const unknown={...statusRecord,sync:{...statusRecord.sync,status:'reconciliation-required',unresolvedOperation:true},attention:{pendingAction:'reconcile-schedule',code:'SUBSTACK_REMOTE_IDENTITY_MISMATCH'}};
+ const doc=await renderSubstack(unknown,{props:{titles:{acceptance:'驗收文章'}},snapshot:{...emptyStatusState(),loaded:true,rows:[unknown],page:{limit:50,offset:0,hasMore:true}}});assert.match(doc.body.textContent!,/結果待查證/);assert.match(doc.querySelector('.substack-attention')!.textContent!,/人工查核/);const nav=doc.querySelector('[aria-label="Substack 狀態分頁"]')!;assert.deepEqual(buttons(nav),['上一頁','下一頁']);assert.ok(nav.querySelectorAll('button')[0].hasAttribute('disabled'));assert.ok(!nav.querySelectorAll('button')[1].hasAttribute('disabled'));
+});
+
+
+test('actual-publication-history: successful read clears prior error and failed next article never reuses earlier rows',async()=>{
+ await withActualWorkspace(async s=>{
+  s.publicationMessage.value='發佈中心尚未設定。';s.publicationStates.value=[{postSlug:'old',target:'github_pages',status:'verified'}];
+  globalThis.fetch=async()=>Response.json({states:[{postSlug:'acceptance',target:'github_pages',status:'stale'}]});await s.loadPublicationStates();assert.equal(s.publicationMessage.value,'');assert.equal(s.publicationStates.value[0].postSlug,'acceptance');
+  globalThis.fetch=async()=>Response.json({error:{code:'PUBLICATION_STATE_UNAVAILABLE',message:'目前無法讀取發布紀錄。'}},{status:503});await s.loadPublicationStates({...s.selectedPost.value,slug:'next'});assert.deepEqual(s.publicationStates.value,[]);assert.equal(s.publicationMessage.value,'目前無法讀取發布紀錄。');
+ });
+});
+
+
+test('publication-history-empty: missing Pages history is presented as no record, not missing configuration or verified',async()=>{
+ const doc=await render('./App.vue',{workspaceMode:'post',selectedPost:post,publicationStates:[]});const target=doc.querySelector('.target-grid')!;assert.match(target.textContent!,/GitHub Pages.*尚無發布紀錄/s);assert.doesNotMatch(target.textContent!,/尚未設定|公開驗證完成/);
+});
+
+
+test('current Pages actual template shows saved publication, deployment and public verification separately with historical Taipei time',async()=>{
+ const pagesSummary={label:'已有公開驗證紀錄',deployment:'網站已部署',verification:'文章與 RSS 已驗證',verifiedAt:'2026/10/19 08:46（台北）',url:'https://gcake119.github.io/gcake-dev/posts/acceptance/'};const doc=await render('./App.vue',{workspaceMode:'post',selectedPost:post,pagesSummary});const target=doc.querySelector('.target-grid')!;assert.match(target.textContent!,/已有公開驗證紀錄/);assert.match(target.textContent!,/部署：網站已部署/);assert.match(target.textContent!,/公開驗證：文章與 RSS 已驗證/);assert.match(target.textContent!,/2026\/10\/19 08:46/);assert.match(target.textContent!,/已保存.*不會重新驗證/s);assert.equal(target.querySelector('a')?.getAttribute('href'),pagesSummary.url);
+});
+test('actual Pages reply is stored for selected article and cleared before another failed read',async()=>{
+ await withActualWorkspace(async s=>{globalThis.fetch=async()=>Response.json({states:[],pages:{state:'verified-public',source:'release-queue'}});await s.loadPublicationStates();assert.equal(s.pagesStatus.value.state,'verified-public');globalThis.fetch=async()=>Response.json({error:{message:'查詢失敗'}},{status:503});await s.loadPublicationStates({...s.selectedPost.value,slug:'next'});assert.equal(s.pagesStatus.value,undefined);assert.equal(s.publicationMessage.value,'查詢失敗');});
+});
+
+
+test('publication history ignores earlier replies after a newer article query completes',async()=>{
+ for(const earlierFails of [false,true]) await withActualWorkspace(async s=>{
+  const pending:((value:Response)=>void)[]=[];
+  globalThis.fetch=()=>new Promise(resolve=>pending.push(resolve));
+  const first=s.loadPublicationStates();
+  const next=s.loadPublicationStates({...s.selectedPost.value,slug:'next'});
+  pending[1](Response.json({states:[{postSlug:'next',target:'github_pages',status:'stale'}],pages:{state:'not-recorded',source:'release-queue'}}));await next;
+  pending[0](earlierFails?Response.json({error:{message:'上一文章的錯誤'}},{status:503}):Response.json({states:[{postSlug:'acceptance',target:'github_pages',status:'verified'}],pages:{state:'verified-public',source:'release-queue'}}));await first;
+  assert.equal(s.publicationStates.value[0].postSlug,'next');
+  assert.equal(s.pagesStatus.value.state,'not-recorded');
+  assert.equal(s.publicationMessage.value,'');
+ });
 });

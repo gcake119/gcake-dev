@@ -1,3 +1,5 @@
+import type { PagesPublicationStatus } from '@gcake/admin-contract';
+import { taipeiTime } from './substack-status';
 /** Presentation only: repository and provider values remain unchanged. */
 export function contentStatusLabel(status?: string): string {
   return ({draft:'草稿',ready:'已定稿',published:'文章已標記公開'} as Record<string,string>)[status ?? ''] ?? '狀態待確認';
@@ -20,4 +22,11 @@ export function safeMessage(value: unknown, fallback = '操作未完成，請稍
   return value.replaceAll('儲存至 Git','儲存文章').replaceAll('儲存 Git','儲存文章').replaceAll('GitHub 版本','較新版本')
     .replaceAll('系列 YAML','系列設定').replaceAll('Markdown','原文').replaceAll('slug','網址代稱').replaceAll('GitHub 內容','文章內容')
     .replaceAll('R2 媒體','圖片檔案').replaceAll('正式 Astro 預覽','網站預覽').replaceAll('候選資格','排程條件');
+}
+
+export function pagesPresentation(value:PagesPublicationStatus) {
+  const labels:Record<string,string> = {'not-recorded':value.historyCount ? '目前沒有生效發布紀錄' : '尚無發布紀錄','committed-slot':'已有發布承諾',publishing:'發布處理中','awaiting-verification':'待公開驗證','verified-public':'已有公開驗證紀錄',failed:'發布未完成','verification-unknown':'發布結果待確認'};
+  const verification:Record<string,string> = {verified:'文章與 RSS 已驗證','page-only':'文章頁已查核，RSS 待確認',incomplete:'驗證證據不完整','not-verified':'尚未完成公開驗證'};
+  const deployment:Record<string,string> = {deployed:'網站已部署',failed:'部署失敗',building:'網站建置中',pending:'等待部署','not-recorded':'尚無對應部署證據',unknown:'部署來源待確認'};
+  return {label:value.state==='verified-public' && value.verification.state!=='verified' ? '公開驗證證據不完整' : labels[value.state] ?? '發布狀態待確認',deployment:deployment[value.deployment.state] ?? '部署狀態待確認',verification:verification[value.verification.state],verifiedAt:value.verification.verifiedAt ? taipeiTime(value.verification.verifiedAt) : '',url:value.verification.publicUrl};
 }
