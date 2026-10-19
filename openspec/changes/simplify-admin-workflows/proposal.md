@@ -39,3 +39,6 @@ Single cyclic SVG view control replaces the first implementation’s direct sele
 The owner adopted design-conformance-report.html and authorized project design documents, specs/Gherkin first, followed by Admin styling and four-combination visual verification without deployment. Scope adds documented typography/spacing, semantic overlay/status tokens and shared SVG data with framework-specific rendering. Public icon geometry remains unchanged; public layout, content and publishing behavior stay out of scope.
 
 Adopted supplement files: DESIGN.md, docs/design-system.md, apps/admin/src/admin.css, ReleaseQueuePanel.vue, App.vue, src/components/Icon.astro and the new src/components/icon-paths.ts. Existing public icon geometry and public layout/color values are retained.
+
+## Media spacing correction
+Owner screenshot identified the media action row touching its hint section. Correct the missing 16px section separation and retain the 8px button gap; include rendered-distance regression acceptance. Prior broad visual verification missed this gap.

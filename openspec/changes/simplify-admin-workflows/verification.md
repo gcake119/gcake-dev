@@ -127,3 +127,15 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 - admin-implementation.patch 本輪改為「僅程式差異」（含新增共用圖示），因設計／Spectra 文件已同步主工作區；可用 git apply --check 驗證，尚未 apply。source-sha256.json 包含程式與設計文件，供候選核對。
 - 本機預覽保留原 owned QA PID 18563／exec session 63155，127.0.0.1:4326，至 2026-10-20 供這次檢視；停止方式沿前述精準清理。測試只寫記憶體，沒有 Docker 或外部 provider 寫入。
 - 未 commit、push、merge、archive 或部署；沒有正式上傳、公開／通知、CI 或獨立人工接受證據。未宣稱完整無障礙認證。
+
+## 媒體庫間距漏項修正
+
+使用者截圖指出按鈕緊貼下方提示區。上一輪雖檢查字級／控制尺寸及部分間距，漏掉相鄰區塊的實際距離；原提交 9ccfd3f 保留，另作後續修正。
+
+- RED：桌面按鈕彼此 8px，但操作列到提示區 0px；手機 space-between 造成按鈕彼此相距 147px。記錄為真實 rendered boundary，而非只看宣告的 gap。
+- 修正：media-header 下方使用既有 16px token；手機將同列兩按鈕靠右成組，維持既有 8px gap。沒有改寫上傳、插入、保存或其他 provider 行為。
+- 規格先新增 Media action section spacing 的 Given／When／Then，再新增第 7 組 tasks；設計文件同步明示 16px 區塊間距與 8px 按鈕間距。
+- GREEN：1280px 明亮／暗色、390px 明亮／暗色，四組皆實測操作列到提示區 16px、按鈕彼此 8px；沒有頁面水平溢出，Escape 回圖片按鈕，原文逐字不變。原始讀值在 media-spacing-red.json／media-spacing-green.json，截圖為 media-spacing-{1280,390}-{light,dark}.jpg。
+- 完整 Admin 59／59 測試通過；Admin build、Spectra analyze／validate、diff check 通過。此輪只有 CSS 與文件變更，未重跑無關的公開站／Worker gate，也未新增 CI。
+- 中途原 QA 服務停止，已重新啟動。部分讀取誤用舊分頁 helper，造成錯誤頁的 URL policy 訊息；改為有效分頁的讀取後完成四組驗收，未將錯誤頁算為產品或規範通過證據。
+- QA 服務為本次記憶體模式，exec session 24776，服務回報 PID 295；保留至 2026-10-20 供檢視。優先結束該 session 精準清理；若用 PID，須先確認仍是本次 QA 程序。舊 PID／session 已失效。無正式寫入、推送或部署。

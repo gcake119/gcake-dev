@@ -31,3 +31,8 @@
 - [x] 6.1 Publish Adopted Admin visual foundations and Shared theme and SVG contracts in DESIGN.md, docs/design-system.md and Spectra with normal, failure and narrow-boundary Gherkin; verify spectra analyze/validate before application edits and capture computed-style RED against the previous build.
 - [x] 6.2 Implement Adopted Admin visual foundations in Admin/queue CSS: role sizes, spacing, gutters, reading width, 44px controls and 5px radii; implement Shared theme and SVG contracts with root overlay and shared path data while retaining public icon geometry. Verify Admin acceptance and shared icon rendering/build.
 - [x] 6.3 Verify Desktop settings hierarchy, Mobile long title and long draft, Four visual combinations and Visible failure feedback in both themes using actual local browser computed styles/screenshots; run required affected type/build/test gates, record evidence and synchronize owned design/spec files without deployment.
+
+## 7. Media spacing regression
+
+- [x] 7.1 Specify Media action section spacing and reproduce the rendered 0px separation before changing CSS; preserve the existing 8px button gap and record actual RED measurements.
+- [x] 7.2 Add the missing 16px media-header spacing using existing tokens; verify rendered 16px/8px distances at desktop and 390px in both themes, plus Escape focus/source retention, Admin build and Spectra checks.

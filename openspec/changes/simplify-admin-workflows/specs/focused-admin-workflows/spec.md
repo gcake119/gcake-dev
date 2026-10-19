@@ -143,3 +143,16 @@ The Admin SHALL preserve the public site's shared light/dark brand color values 
 - **GIVEN** a failed save or revision conflict with unsaved content
 - **WHEN** the owner reads feedback in either theme
 - **THEN** body-sized readable text explains the result, color is not the only signal, and no success, publication or notification completion is invented
+
+### Requirement: Media action section spacing
+The media library SHALL retain 16px of vertical space between its action row and the following paste/drop hint section, and 8px between adjacent action buttons. These distances SHALL hold at desktop and 390px widths in both themes, measured between rendered element boundaries rather than inferred from token declarations.
+
+#### Scenario: Open media on desktop or mobile
+- **GIVEN** an open article on desktop or a 390px viewport in either theme
+- **WHEN** the owner opens the media library
+- **THEN** its action row and paste/drop hint have a visible 16px separation, the adjacent action buttons have an 8px gap and no page-level horizontal overflow appears
+
+#### Scenario: Return from media without edits
+- **GIVEN** an unsaved article and an open media library
+- **WHEN** the owner closes it with Escape
+- **THEN** focus returns to the image tool and the article text is unchanged

@@ -67,3 +67,8 @@ Move existing icon path data to src/components/icon-paths.ts; Astro and Vue rend
 - Failure: long text wraps or stays within its intended scroll surface; conflict/media errors retain draft text and use readable body text in either theme. No styling change sends a write or promotes a saved status to public.
 
 Delivery refinement: after the owner adopted the design supplement, the owned DESIGN.md and docs/design-system.md are also synchronized into primary. Application changes and shared icon code remain in the isolated clone; unrelated primary changes remain untouched.
+
+### Media action section spacing
+The header has no bottom margin and the following hint has zero top margin, leaving the action row touching its next section. Give the media header an explicit 16px bottom margin using the existing space token; preserve the existing 8px button gap and all upload behavior. Measure actual row-to-hint boundaries in all four viewport/theme combinations.
+
+Mobile action rows previously used space-between, producing 147px instead of the documented 8px gap. Align the two actions together at the end of their row; actual geometry remains the acceptance authority.
