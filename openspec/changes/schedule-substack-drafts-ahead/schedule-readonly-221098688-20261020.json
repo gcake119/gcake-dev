@@ -1,0 +1,94 @@
+{
+  "evidenceKind": "backfill-of-completed-read-only-pre-publication-audit",
+  "auditDateTaipei": "2026-10-20",
+  "providerId": "221098688",
+  "slug": "ithome-2026-publishing-in-production",
+  "policyVersion": "scheduled-source-first-delivery-v1",
+  "schedule": {
+    "state": "scheduled",
+    "confirmedTimeUtc": "2026-10-21T23:00:00.000Z",
+    "confirmedTimeTaipei": "2026-10-22T07:00:00+08:00",
+    "timeZone": "Asia/Taipei",
+    "audience": "everyone",
+    "armedRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2"
+  },
+  "delivery": {
+    "commitment": "armed",
+    "emailEnabled": true,
+    "appInboxEnabled": true,
+    "providerDeliveryResult": "unknown",
+    "subscriberReceipt": "unknown",
+    "deliveredRevision": null
+  },
+  "api": {
+    "syncStatus": "excluded",
+    "checkedAtUtc": "2026-10-20T09:31:58.989Z",
+    "updatedAtUtc": "2026-10-20T09:35:29.467Z",
+    "unresolvedOperation": false,
+    "pendingAction": null,
+    "checkedAtIsCaptureTime": false
+  },
+  "providerUi": {
+    "scheduledListContainsOriginalId": true,
+    "editorAndScheduleInfoShowOctober22At7am": true,
+    "editorShowsEmailToEveryone": true,
+    "independentAppSettingVisible": false,
+    "cancelOrSaveInvoked": false,
+    "postContentEdited": false
+  },
+  "d1": {
+    "readOnlySelects": 2,
+    "bothSucceeded": true,
+    "rowsWritten": [
+      0,
+      0
+    ],
+    "changes": [
+      0,
+      0
+    ],
+    "changedDatabase": [
+      false,
+      false
+    ],
+    "intentPresent": false
+  },
+  "task53": {
+    "complete": false,
+    "missing": [
+      "actual provider-controlled publication at confirmed minute",
+      "complete anonymous public verification against armed source",
+      "subsequent ordinary observer occurrence and matching runtime provenance",
+      "independent Pages and provider-delivery observations",
+      "post-publication in-flight cleanup and rollback schedule inventory"
+    ],
+    "unknownDeliveryMustNotTriggerResend": true,
+    "subscriberReceiptRequiresIndependentEvidence": true
+  },
+  "scope": {
+    "newProductionAccessDuringBackfill": false,
+    "newRuntimeQualification": false,
+    "newDeployment": false,
+    "scheduleMutation": false,
+    "newDelivery": false,
+    "ownedAuditTabsClosed": true,
+    "existingTabsPreserved": true,
+    "noClaimAllConcurrentSystemsWereWriteFree": true
+  },
+  "limitations": [
+    "API and D1 are saved operational evidence, not a fresh full-provider-content comparison",
+    "App inbox enabled was checked in D1; no independent current UI checkbox proof",
+    "Due-time acceptance is future work, not executed by this document backfill",
+    "No raw private state, article body, authentication session or credentials included"
+  ],
+  "documentationValidation": {
+    "spectraAnalyzeFindings": 0,
+    "spectraValidate": "valid-with-pre-existing-archive-preflight-warning",
+    "baselineMainCommit": "6ad8b5eaa47d5d7f0bfd5a287f733c99737c95cb",
+    "sameWarningReproducedOnUnmodifiedBaseline": true,
+    "warning": "quiet-background-distribution delta: 4 ADDED operations, 0 applied; archive preflight would refuse",
+    "archiveAttempted": false,
+    "requirementsOrGherkinChanged": false,
+    "fullCodeTestsRerun": false
+  }
+}
