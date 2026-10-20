@@ -64,3 +64,9 @@
 - [x] 11.1 Record the deployed main commit, actual Worker/Deployment IDs, preserved production gates and matching assets in project documents; verify against saved provider readback and SHA-256 receipts without redeployment.
 - [x] 11.2 Record 40 production viewport/theme states separately from 64 local behavior tests and 64 local visual states, retaining empty-media, read-only-content and tool-failure limits; verify all recorded measurements and evidence references.
 - [x] 11.3 Commit only the production evidence documents and this change's completion records after JSON/link consistency, Spectra analyze/validate and staged scope checks; preserve Substack work, with no push, new deployment or archive.
+
+
+## 12. Archive closeout
+
+- [x] 12.1 Verify PR #39 and main 509d71b CI/review evidence, completed artifacts and tasks; preserve prior deployment and acceptance limits in the final record.
+- [x] 12.2 Archive simplify-admin-workflows through Spectra, synchronize the two existing delta specs, and update closeout links while preserving historical evidence and excluding Substack work.

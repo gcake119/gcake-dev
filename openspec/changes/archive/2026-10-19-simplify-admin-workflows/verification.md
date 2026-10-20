@@ -210,9 +210,28 @@ QueueView 沒有完整的固定時段欄位。只有本次成功操作、仍屬�
 
 - main 合併 commit：`1f3e8cf413beadc687db0dbb58ad21994aa70a1c`；與審查 head `4c9dff2e1abc8262d3fce141cb3c7930e00de9c1` 檔案樹完全相同。該 head CI 與 Codex 重新審查皆通過、三個討論完成；[main CI](https://github.com/gcake119/gcake-dev/actions/runs/39267964824) 也全部通過。
 - 正式 Worker Version：`2b8c3127-662a-4463-925e-598925a8e8f8`；Deployment：`7f9d4a6b-448b-4012-92b2-b8020a311a55`；tag `pr38-1f3e8cf`，UTC `2026-10-19T14:37:34.926533Z`，Asia／Taipei 2026-10-19 22：37：34。驗收讀回為 100％ 流量。
-- 由乾淨指定來源建置，部署一次成功；正式 health HTTP 200，HTML／JS／CSS 與建置逐位元組相同。完整 SHA-256、設定及 40 組量測見 [專案部署紀錄](../../../docs/publishing-cms-deployment-20261019.md) 與 [結構化證據](../../../docs/publishing-cms-deployment-20261019.json)。
+- 由乾淨指定來源建置，部署一次成功；正式 health HTTP 200，HTML／JS／CSS 與建置逐位元組相同。完整 SHA-256、設定及 40 組量測見 [專案部署紀錄](../../../../docs/publishing-cms-deployment-20261019.md) 與 [結構化證據](../../../../docs/publishing-cms-deployment-20261019.json)。
 - 正式驗收為 1280×900／390×844 × 明暗，各 10 種狀態，共 40 組、0 失敗；檢視循環後原文不變，四組媒體庫關閉皆回入口。先前 64 項 Admin 測試與 64 組本機版面是不同驗證層，未混算。
 - 部署前後普通變數、D1／R2 綁定及 secret 名稱一致；本站發布 true，Substack／Paragraph 寫入 false。無待套 migration，本次未套 migration；未納入未提交 Substack 工作。相對正式 PR35 的唯一後端差異為既有型別欄位，輸出的 Substack JavaScript 已證明相同。
 - 正式媒體庫為空，未上傳或加入假圖；只查看／展開／取消，未儲存內容、排程、公開、通知或刪除。登入／佇列查看可能更新 session／runtime metadata，不宣稱零 D1 寫入、完整 WCAG 或獨立人工接受。
 - Python HTTP 403、非同步等待與 modal 遮罩造成的無效讀值保留限制，重做後才計入 40 組通過。既有原生確認框驗收限制仍保留，沒有因回填文件擴大宣稱。
 - 本輪僅新增部署紀錄／精簡收據、更新設計文件入口、本節及 tasks 結案項目；沒有新的產品 requirement 或行為變更，因此沿用已完成 Gherkin／TDD，不新增需求、測試層、ADR 或 CI。此次文件 commit 不推送、不再次部署，也不 archive change。
+
+
+## Spectra 歸檔結案（2026-10-19）
+
+- 使用者明確授權歸檔已完成的後台改善與建立獨立本機 commit；本輪不推送或再次部署。先前未合併／未部署／未歸檔文字保留當時語境。
+- 文件 [PR #39](https://github.com/gcake119/gcake-dev/pull/39) 已以 `509d71b21e6261f5b674bdc77cb38deaf73d785d` 合併到 main，檔案樹與文件 head `05314f941337f02e359cd17c4a1c4f93ad09fbec` 相同。[PR CI](https://github.com/gcake119/gcake-dev/actions/runs/39273488924) 通過，[Codex 審查](https://github.com/gcake119/gcake-dev/pull/39#issuecomment-6270242209) 對該 head 完成且無發現／未解決項目；[main CI](https://github.com/gcake119/gcake-dev/actions/runs/39276651575) 對合併 commit 完成且全部通過。
+- 正式部署仍引用既有 `1f3e8cf` 的 Worker Version `2b8c3127-662a-4463-925e-598925a8e8f8`；文件合併與本次歸檔不是新的部署。64 項本機行為測試、64 組本機版面與 40 組正式畫面仍分別記錄，原有驗收限制不變，未新增正式寫入或人工接受宣稱。
+- 歸檔前 artifact graph 全部 done、原有 30 項任務全部完成；Spectra analyze／validate 通過，preview 無衝突或警告。以 `spectra archive simplify-admin-workflows --yes --json` 完成正式歸檔，CLI 回覆已建立 snapshot、同步兩份規格且無 cleanup warnings。
+- 主規格 [focused-admin-workflows](../../../specs/focused-admin-workflows/spec.md) 納入 14 項既有需求與完整 Gherkin；[safe-content-editor](../../../specs/safe-content-editor/spec.md) 僅更新單一循環檢視需求及其情境，其餘需求保留。沒有重新定義驗收條件、變更產品行為或新增測試／CI。
+- 決策對照：沿用根目錄 DESIGN.md、docs/design-system.md 與本 change 的既有設計決策；專案未初始化 docs/decisions，無新產品決策，故不新增 ADR／ledger 系統。結案證據由本節、部署紀錄及主規格承接。
+- 工作位於以乾淨 main `509d71b` 為基底的獨立副本與分支 `codex/archive-admin-workflows-20261019`。主工作區及其他 Substack changes 不在本輪寫入／提交範圍；僅歸檔文件、兩份主規格及結案入口變更。未修改程式、依賴、workflow、資料或正式設定。
+
+
+### 歸檔後驗證
+
+- `spectra validate --specs --json`：12 份主規格全部 valid，無 errors／warnings；包含本輪同步的兩份。逐項比對 requirement 與 Gherkin 內容，確認 14 項新增及 1 項修改與原 delta 完全一致，其餘 safe-content-editor 需求未變。
+- 歷史 proposal／design／delta specs 逐位元組保留；`.openspec.yaml` 保留建立身分並由 CLI 補上歸檔身分。active change 已移除，所有 32 項 task 完成。歸檔與相關專案文件的本機 Markdown 連結皆可解析。
+- CLI 參數界線：直接執行 `spectra validate focused-admin-workflows` 時，工具將引數當作 active change，回覆 not found；改以官方 `--specs` 模式後成功驗證主規格。`spectra analyze 2026-10-19-simplify-admin-workflows --json` 同樣不接受 archive 名稱，原始 not found 不視為成功；語意分析沿用歸檔前通過結果，並以歸檔後需求／情境逐項一致性查核補足，沒有重建 active change 或跳過驗證。
+- 本輪僅移動／同步規格與補上結案證據，沒有產品或測試輸入改變；沿用 `509d71b` 的完整 main CI，不為文件歸檔重跑產品測試、瀏覽器或正式驗收。提交前再檢查 diff、路徑與獨立副本狀態。
