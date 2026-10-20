@@ -99,3 +99,6 @@ PR #41 result-media deadline：同一個 existing ordinary executor／SQLite／P
 合併候選的舊發布查詢競態：既有 Error recovery clears obsolete article evidence／Switching articles 情境，以實際 Vue setup 同時發出兩篇查詢，讓前篇成功／失敗晚到，驗證後篇 rows、Pages 與錯誤訊息不被覆寫。真實 RED 為 acceptance 蓋掉 next；序號控制後 GREEN。保留 PR41 無 intent 對帳路徑測試。
 
 PR42 P1：既有 Article changes or identity has not been tracked／Error recovery clears obsolete article evidence 情境，以實際 Vue setup 驗收 createPost 的文章身分切換；三項真實 RED 分別為已完成的舊 Pages 殘留、晚到成功污染 rows／Pages、晚到錯誤污染 message。reset 同時清除及使世代失效後，含原閱讀流程的 63 項聚焦驗收通過。
+
+
+f4ea22f 正式環境證據：Production frontend delivery preserves draft-only authority、Current Pages publication evidence is visible independently、Read-only frontend status integration 的桌面／390px、明暗主題與實際 owner GET 呈現，保存於 production-main-f4ea22f-20261020.md／results.json。六項 owner API 及八項匿名 HTTP 為正式實測；503／authenticated 405 與新草稿晚到回應仍以精確來源本機測試為證，沒有正式故障注入。221099763 對應 Deployment or real evidence differs 的 inconclusive 呈現：當次 inconclusive 如實顯示，不將相同 revision 或歷史 verified 當作成功。本次只回填既有情境證據，不新增測試層、修改 Gherkin 或結案其他未驗收情境。

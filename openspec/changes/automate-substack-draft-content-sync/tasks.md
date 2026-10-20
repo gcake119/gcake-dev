@@ -124,3 +124,9 @@ The owner's latest request explicitly authorizes completing remaining live quali
 
 - [x] 19.1 Reproduce the reviewed P1 through actual Vue setup for an already completed old Pages read and pending old success/error replies when creating an unsaved draft, using existing Article changes or identity has not been tracked / Error recovery clears obsolete article evidence contracts. Invalidate old reads and clear all publication evidence at the new-draft context boundary; retain normal saved-article reads.
 - [x] 19.2 Run focused acceptance, all five existing local gates and Spectra/scope checks, retain RED/GREEN and exact candidate evidence, prepare only PR42 update for exact-head CI/Codex review (outcomes recorded on the PR). Preserve Admin archive isolation, production runtime and all schedule/delivery gates.
+
+
+## 20. f4ea22f production deployment evidence backfill — 2026-10-20
+
+- [x] 20.1 Record the authorized clean main rollout version/deployment/time/traffic and real API, status UI, saved Pages evidence and desktop/mobile light/dark acceptance, preserving existing configuration, provider commitments and exact-source local/CI evidence boundaries. Retain 221099763 inconclusive/list-incomplete status, historical prior verified state and unknown recipient receipt without claiming a successful current full-content verification.
+- [x] 20.2 Backfill project API guidance, implementation evidence and acceptance mapping with redacted deployment evidence; validate documentation/spec consistency and isolate a documentation-only commit. No requirement/Gherkin changes, Admin archive, code/config/runtime changes, push, new deployment or schedule/delivery activation. This task records the completed historical rollout; it grants no new production authority.

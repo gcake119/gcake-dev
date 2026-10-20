@@ -1,11 +1,15 @@
 # Substack 草稿同步：後台前端 API
 
-正式唯讀 API 已於台北時間 2026／10／20 00：14 部署並完成下述正式驗收。API 只讀取 D1 最後保存的狀態，不會啟動同步、編輯草稿、排程、發布或寄送。
+## 最新已記錄正式部署：2026／10／20 03：38 台北
 
-- 正式 origin：`https://gcake-admin-worker-production.wwhowbuhow.workers.dev`
-- Worker version：`66a6ea7d-8d71-49a7-b91a-67cd2a095f9c`，流量 100％。
-- 新建保持停用，既有 ID 的 Chrome 持續同步設定保留；排程寫入仍關閉。
-- 此次沒有新增後台畫面；前端可以依以下契約串接。
+乾淨 main `f4ea22f097973f4978e7dccbbaddad87bb3c4ec7` 已部署至正式後台，Worker version `c65baef6-faa6-40c8-bb89-6a5047db216d`、流量 100％，deployment `55c29a09-1ac7-4eb0-be36-ce0ec091d546`。這是具日期的已保存部署／驗收快照，不代表本文每次閱讀都重新確認即時狀態。
+
+- 正式 origin：`https://gcake-admin-worker-production.wwhowbuhow.workers.dev`。
+- Substack 唯讀 API、列表／單篇畫面與 Pages 保存驗證紀錄已上線；桌面 1728×907、手機 390×844 的明暗主題驗收通過。讀取不啟動同步、排程、發布或寄送。
+- 原 ID **221099763** 驗收時為 **inconclusive／驗證未完成**，台北 03：39：20.992 查核代碼 SUBSTACK_DRAFT_LIST_INCOMPLETE；API／畫面如實顯示，沒有把先前 verified 或相同內容版本當成當次同步成功。發布仍為草稿、未安排寄送，真人實收未知。
+- 新建草稿與排程寫入關閉，既有原站發布設定、六篇原身分與排程／寄送承諾保留；沒有新啟用寄送。
+
+詳見 [f4ea22f 正式部署與驗收](../openspec/changes/automate-substack-draft-content-sync/production-main-f4ea22f-20261020.md) 與 [機器摘要](../openspec/changes/automate-substack-draft-content-sync/production-main-f4ea22f-results.json)。後文各具日期的部署、候選與成功狀態屬歷史證據；最早唯讀 API 版本 66a6ea7d 的紀錄保留於原驗收文件。
 
 ## 讀取方式
 

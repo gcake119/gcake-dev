@@ -57,3 +57,10 @@ The draft-only PNG identity projection and parent before-paste verdict are local
 ## 2026-10-20 00：19（台北）後台唯讀 API 正式交付
 
 使用者另行明確授權後，正式 Worker 唯讀 API 已部署一次成功，version 66a6ea7d-8d71-49a7-b91a-67cd2a095f9c、流量 100％。正常 owner Chrome 登入讀六筆列表／原 ID 單篇／首末頁及錯誤 code，正式匿名 GET／寫入拒絕 HTTP 實測通過；authenticated 405／503 僅為相同候選本機證據，未冒稱正式故障注入。46 個 Worker source／contracts／lock 匹配既有通過候選，重用既有 full gates；隔離 production dry-run、正式資產與 variables／bindings／Substack 承諾／同步設定前後比對通過，專用 Chrome 分頁關閉。25／25 任務完成、Spectra analyze／validate 及 diff check 通過。沒有 commit／push、migration 或同步 runtime／排程／公開／寄送變更。見 api-production-20261020.md、api-production-results.json 與 docs/substack-draft-sync-api.md。
+
+
+## 2026-10-20 03：38（台北）main f4ea22f 正式部署
+
+使用者另行授權後，乾淨 main f4ea22f 已部署一次，version c65baef6-faa6-40c8-bb89-6a5047db216d／deployment 55c29a09-1ac7-4eb0-be36-ce0ec091d546／100％流量。358 個輸入匹配 PR42 已通過候選；重新建置、dry-run、版本守門與三資產 SHA256 比對通過。正式 owner 六項 API、匿名八項檢查、桌面與 390px 手機明暗主題驗收完成；23 個捕捉到的 UI API 都是 GET。詳細分層、時間與限制見 [正式部署紀錄](production-main-f4ea22f-20261020.md) 與 [結果](production-main-f4ea22f-results.json)。
+
+221099763 於驗收時為 inconclusive／驗證未完成（03：39：20.992、SUBSTACK_DRAFT_LIST_INCOMPLETE），先前 03：18 verified 與最後已保存版本保留，沒有重試寫入或冒稱本次全文查核成功。部署／介面驗收通過不等於六篇草稿均重新驗證成功。六篇承諾與同步設定、三筆 Pages release 保留；queue metadata 178→180，未宣稱 D1 全零寫入。沒有新啟用排程寫入、發布或寄送；本次文件回填沒有再次部署或推送。
