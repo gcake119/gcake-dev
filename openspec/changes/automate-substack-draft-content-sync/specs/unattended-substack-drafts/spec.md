@@ -465,3 +465,28 @@ The owner article status SHALL include current saved Pages publication, matching
 - **GIVEN** a previously displayed Pages record and the scoped production rollout
 - **WHEN** another article is read and Chrome verifies deployed output
 - **THEN** old Pages evidence is cleared, real saved evidence is displayed only for the selected article, original release and Substack commitments are preserved, creation remains disabled and only owned browser resources are cleaned
+
+### Requirement: Deterministic complete draft-list evidence
+
+Unattended draft synchronization SHALL validate all three observed lists with the same deterministic rules and actual observed totals. Both existing editor and published-detail link formats SHALL preserve their original IDs. A read failure SHALL retain prior content evidence and SHALL NOT cause a retry write, replacement draft or weaker content comparison.
+
+#### Scenario: Published detail links coexist with draft links
+- **GIVEN** complete observed draft, scheduled and published lists whose published rows use the published-detail URL shape
+- **WHEN** the worker validates original ID 221099415 before full readback
+- **THEN** all actual rows are counted, the original is confirmed only in drafts, and its full saved content can be independently read without any write
+
+#### Scenario: Incomplete, conflicting or protected list evidence
+- **GIVEN** observed totals differ from rows, lists are loading or paginated, a link is invalid, or an original appears in protected or duplicate identities
+- **WHEN** the deterministic verifier runs in child and parent
+- **THEN** reading or editing is held with a specific list/identity error, prior failures are preserved and no provider mutation is replayed
+
+#### Scenario: Qualified original read and natural round
+- **GIVEN** explicit scoped repair authorization and complete local gates
+- **WHEN** Chrome fully reloads the same original and the unchanged timer later runs the repaired runtime naturally
+- **THEN** complete content and exact slug/ID match current Git, creation remains disabled, schedules/publication/delivery commitments remain unchanged and owned resources are cleaned, without manual kickstart or fabricated provider evidence
+
+
+#### Scenario: Unsupported creation flags cannot expand the ordinary executor
+- **GIVEN** the qualified ordinary integration supports existing draft IDs and creation is not qualified
+- **WHEN** discovery of a new identity or draft creation is requested, even with a creation flag set to true
+- **THEN** both controller and direct executor reject before any browser process, preserve the original identity and pending intent, and require separately qualified creation support rather than infer permission from an empty discovery reply

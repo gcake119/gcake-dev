@@ -126,7 +126,28 @@ The owner's latest request explicitly authorizes completing remaining live quali
 - [x] 19.2 Run focused acceptance, all five existing local gates and Spectra/scope checks, retain RED/GREEN and exact candidate evidence, prepare only PR42 update for exact-head CI/Codex review (outcomes recorded on the PR). Preserve Admin archive isolation, production runtime and all schedule/delivery gates.
 
 
-## 20. f4ea22f production deployment evidence backfill — 2026-10-20
+## 20. Original draft read repair — historical qualification 2026-10-20
 
-- [x] 20.1 Record the authorized clean main rollout version/deployment/time/traffic and real API, status UI, saved Pages evidence and desktop/mobile light/dark acceptance, preserving existing configuration, provider commitments and exact-source local/CI evidence boundaries. Retain 221099763 inconclusive/list-incomplete status, historical prior verified state and unknown recipient receipt without claiming a successful current full-content verification.
-- [x] 20.2 Backfill project API guidance, implementation evidence and acceptance mapping with redacted deployment evidence; validate documentation/spec consistency and isolate a documentation-only commit. No requirement/Gherkin changes, Admin archive, code/config/runtime changes, push, new deployment or schedule/delivery activation. This task records the completed historical rollout; it grants no new production authority.
+
+- [x] 20.1 Deliver Deterministic complete draft-list evidence with real RED cases for published-detail links and incomplete/duplicate/protected boundaries, reuse shared child/parent list verifier without weakening full content checks, pin it in activation and pass five existing local gates.
+- [x] 20.2 Qualify same original Chrome full readback against current Git, repair installed runtime pin/receipt linkage under existing locks with exact backups and unchanged expiry/policy/timer, wait a natural round with no reload/kickstart, verify original content/ID/slug, six commitments and disabled creation, and clean owned resources. No schedule/publication/delivery operation, commit/push or Worker deployment.
+
+
+The phase 20 private runtime acceptance predates this clean-main assembly. Its pin and provider receipt remain historical; they do not qualify the assembled PR runtime or authorize changing the standing installation.
+
+## 21. Independent read-repair commit and PR — 2026-10-20
+
+- [x] 21.1 Assemble only the qualified list verifier, child/parent checks, navigation lifetime instructions and scoped evidence on latest main, retaining PR41 atomic verdicts, deadline/media cancellation and PR42 status isolation. Reproduce the original list acceptance before implementation and verify parent rejects forged success on both read and pre-write paths in the existing Node/SQLite seam.
+- [x] 21.2 Complete five existing local gates, validate the exact candidate Spectra artifacts and scope, preserve dirty checkouts and the standing runtime configuration, then prepare an independent commit and authorized PR. Record CI on the exact PR head separately in the PR; do not label historical provider acceptance as new-main runtime qualification or merge/deploy.
+
+
+## 22. PR43 unqualified creation review findings
+
+- [x] 22.1 Reproduce both ordinary and direct unsupported discovery/creation dispatch before changing behavior. Restrict the qualified executor to existing-ID read/update, reject both unsupported actions for either creation flag value, preserve identity/intent and remove unreachable provider instructions. Keep generic coordinator scaffolding and all existing read/update protections.
+- [x] 22.2 Complete all five existing local gates, candidate Spectra/scope/preservation checks and a scoped review-fix commit. Recheck CI on the new exact PR head separately; no provider/runtime/configuration/creation activation or merge/deploy.
+
+
+## 23. f4ea22f production deployment evidence backfill — 2026-10-20
+
+- [x] 23.1 Record the authorized clean main rollout version/deployment/time/traffic and real API, status UI, saved Pages evidence and desktop/mobile light/dark acceptance, preserving existing configuration, provider commitments and exact-source local/CI evidence boundaries. Retain 221099763 inconclusive/list-incomplete status, historical prior verified state and unknown recipient receipt without claiming a successful current full-content verification.
+- [x] 23.2 Backfill project API guidance, implementation evidence and acceptance mapping with redacted deployment evidence; validate documentation/spec consistency and isolate a documentation-only commit. No requirement/Gherkin changes, Admin archive, code/config/runtime changes, push, new deployment or schedule/delivery activation. This task records the completed historical rollout; it grants no new production authority.
