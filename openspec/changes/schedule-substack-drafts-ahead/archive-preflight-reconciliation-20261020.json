@@ -1,0 +1,124 @@
+{
+  "baseCommit": "cfa6465e98ecff7d955165630e1a97aca07730e2",
+  "scenarios": {
+    "publishing-operations": {
+      "baselineDelta": 11,
+      "candidateDelta": 15,
+      "allBaselinePayloadsRetained": true
+    },
+    "quiet-background-distribution": {
+      "baselineDelta": 24,
+      "candidateDelta": 27,
+      "allBaselinePayloadsRetained": true
+    }
+  },
+  "specHashes": {
+    "openspec/changes/schedule-substack-drafts-ahead/specs/publishing-operations/spec.md": {
+      "baselineSha256": "b1cc70ff0c22e95b7cb9c56381264086d1a8ebf6eef86d15360dbf3ff4293564",
+      "candidateSha256": "58831d6abbfe6c577a64f80067a573b76be4466b1e967136c5b613fc9d3145aa"
+    },
+    "openspec/changes/schedule-substack-drafts-ahead/specs/quiet-background-distribution/spec.md": {
+      "baselineSha256": "208d5f82be1c323075e3474316dbc78e04e51907af8232e51ebd7bf6ee0dd518",
+      "candidateSha256": "41fd26e8f364ff94514d892357c441e77a532d3c99c3dc306db68cfe44370b7d"
+    }
+  },
+  "change": "schedule-substack-drafts-ahead",
+  "date": "2026-10-20",
+  "scope": "local spec reconciliation only; no archive, main-spec write, provider access or runtime change",
+  "baselineValidate": "✓ schedule-substack-drafts-ahead — valid\n  warn: specs/quiet-background-distribution/spec.md: Archive would refuse the delta for 'quiet-background-distribution': Delta for quiet-background-distribution declares 4 ADDED operation(s) but 0 applied; the main spec does not hold the targeted requirement, or the requirement name does not match\n",
+  "baselinePreview": {
+    "change_id": "schedule-substack-drafts-ahead",
+    "spec_updates": [
+      {
+        "capability": "publishing-operations",
+        "exists": true,
+        "added": 0,
+        "modified": 3,
+        "removed": 0,
+        "renamed": 0,
+        "conflict_source": "2026-10-20-automate-substack-draft-content-sync"
+      },
+      {
+        "capability": "quiet-background-distribution",
+        "exists": true,
+        "added": 0,
+        "modified": 2,
+        "removed": 0,
+        "renamed": 0,
+        "conflict_source": "2026-10-20-automate-substack-draft-content-sync"
+      },
+      {
+        "capability": "substack-scheduled-publication",
+        "exists": false,
+        "added": 8,
+        "modified": 0,
+        "removed": 0,
+        "renamed": 0,
+        "conflict_source": null
+      }
+    ],
+    "incomplete_tasks": 1,
+    "warnings": [],
+    "has_delta_specs": true
+  },
+  "candidateChecks": {
+    "validate": {
+      "command": [
+        "spectra",
+        "validate",
+        "schedule-substack-drafts-ahead"
+      ],
+      "exitCode": 0,
+      "stdout": "✓ schedule-substack-drafts-ahead — valid\n",
+      "stderr": ""
+    },
+    "analyze": {
+      "command": [
+        "spectra",
+        "analyze",
+        "schedule-substack-drafts-ahead"
+      ],
+      "exitCode": 0,
+      "stdout": "Change: schedule-substack-drafts-ahead\n\n  ✓ Coverage       Clean (0 findings)\n  ✓ Consistency    Clean (0 findings)\n  ✓ Ambiguity      Clean (0 findings)\n  ✓ Gaps           Clean (0 findings)\n  ✓ Localization   Skipped (insufficient artifacts) (0 findings)\n\n  Analyzed: proposal, specs, design, tasks\n\n  ✓ No issues found\n",
+      "stderr": ""
+    },
+    "preview": {
+      "command": [
+        "spectra",
+        "archive",
+        "schedule-substack-drafts-ahead",
+        "--preview",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"change_id\":\"schedule-substack-drafts-ahead\",\"spec_updates\":[{\"capability\":\"publishing-operations\",\"exists\":true,\"added\":0,\"modified\":3,\"removed\":0,\"renamed\":0,\"conflict_source\":\"2026-10-20-automate-substack-draft-content-sync\"},{\"capability\":\"quiet-background-distribution\",\"exists\":true,\"added\":0,\"modified\":6,\"removed\":0,\"renamed\":0,\"conflict_source\":\"2026-10-20-automate-substack-draft-content-sync\"},{\"capability\":\"substack-scheduled-publication\",\"exists\":false,\"added\":8,\"modified\":0,\"removed\":0,\"renamed\":0,\"conflict_source\":null}],\"incomplete_tasks\":1,\"warnings\":[],\"has_delta_specs\":true}\n",
+      "stderr": ""
+    }
+  },
+  "pendingAcceptance": {
+    "task": "5.3",
+    "complete": false,
+    "providerId": "221098688",
+    "schedule": "2026-10-22T07:00:00+08:00",
+    "scheduleEvidence": "historical read-only snapshot; not refreshed in this correction",
+    "providerDeliveryResult": "unknown",
+    "subscriberReceipt": "unknown"
+  },
+  "mainSpecsWritten": false,
+  "archivePerformed": false,
+  "pushed": false,
+  "deployed": false,
+  "providerOperations": false,
+  "newDelivery": false,
+  "verificationSummary": {
+    "allChecksPassed": true,
+    "method": [
+      "Compare every original delta scenario GIVEN/WHEN/THEN payload with the candidate, ignoring whitespace and scenario titles.",
+      "Compare every current-main scenario payload and normative requirement sentence with each targeted candidate block.",
+      "Assert the four previously duplicated ADDED blocks remain textually equivalent to both baseline delta and current main.",
+      "Project MODIFIED block replacements in memory and verify the complete main requirement inventory, scenario payloads and unrelated blocks survive.",
+      "Verify no main spec file, new scheduled-publication capability, task checkbox or historical read-only audit is modified.",
+      "Check validate output for the original warning and verify preview operation counts plus one incomplete task."
+    ]
+  }
+}

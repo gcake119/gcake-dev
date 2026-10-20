@@ -33,6 +33,8 @@
 
 2026-10-20 pre-due read-only audit: original ID 221098688 remains scheduled for 2026-10-22 07:00 Asia/Taipei with the original everyone/email/App commitment; delivery result and individual receipt remain unknown. This is not post-publication acceptance. Task 5.3 stays unchecked; historical prepare/arm/remove/rearm evidence is preserved. See [read-only audit and post-publication steps](schedule-readonly-221098688-20261020.md) and [redacted summary](schedule-readonly-221098688-20261020.json). No new provider operation or deployment is authorized.
 
+2026-10-20 spec-only reconciliation: the duplicate-ADDED archive preflight warning is resolved against the current main contracts; all original delta and main acceptance scenarios are retained. See [reconciliation and local checks](archive-preflight-reconciliation-20261020.md) and [raw evidence](archive-preflight-reconciliation-20261020.json). This is not archive or provider acceptance: task 5.3 remains incomplete, provider delivery and human receipt remain unknown, and the historical read-only audit above is unchanged.
+
 ## 6. Audit regression corrections for c1b97b4
 
 These corrections enforce the existing confirmed-slot, finalized-source, identity, disarm, cancellation and complete-content requirements; they do not relax acceptance or qualify tasks 3.1/5.3.
