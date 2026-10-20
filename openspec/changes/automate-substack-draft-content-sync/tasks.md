@@ -145,3 +145,9 @@ The phase 20 private runtime acceptance predates this clean-main assembly. Its p
 
 - [x] 22.1 Reproduce both ordinary and direct unsupported discovery/creation dispatch before changing behavior. Restrict the qualified executor to existing-ID read/update, reject both unsupported actions for either creation flag value, preserve identity/intent and remove unreachable provider instructions. Keep generic coordinator scaffolding and all existing read/update protections.
 - [x] 22.2 Complete all five existing local gates, candidate Spectra/scope/preservation checks and a scoped review-fix commit. Recheck CI on the new exact PR head separately; no provider/runtime/configuration/creation activation or merge/deploy.
+
+
+## 23. f4ea22f production deployment evidence backfill — 2026-10-20
+
+- [x] 23.1 Record the authorized clean main rollout version/deployment/time/traffic and real API, status UI, saved Pages evidence and desktop/mobile light/dark acceptance, preserving existing configuration, provider commitments and exact-source local/CI evidence boundaries. Retain 221099763 inconclusive/list-incomplete status, historical prior verified state and unknown recipient receipt without claiming a successful current full-content verification.
+- [x] 23.2 Backfill project API guidance, implementation evidence and acceptance mapping with redacted deployment evidence; validate documentation/spec consistency and isolate a documentation-only commit. No requirement/Gherkin changes, Admin archive, code/config/runtime changes, push, new deployment or schedule/delivery activation. This task records the completed historical rollout; it grants no new production authority.
