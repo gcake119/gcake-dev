@@ -11,7 +11,7 @@
 - 私人來源每次查核均核對遠端 main；即使 UI 已保存，main 前進也不能把舊版報為目前已同步。已保存與期望版本分開。
 - 草稿階段與匿名觀察器是獨立 hook，沿用單一輪次／鎖／通知去重；草稿失敗不阻擋匿名觀察。沒有新 timer、服務、套件、migration 或 CI workflow。
 - qualification／authorization 為實際私人文件，綁定政策範圍、有效期限及 runtime pin digest；本次沒有建立正式通過文件或啟用寫入。
-- 新增後台已登入 owner 可讀的列表／單篇狀態 API，分開同步、發布、寄送與獨立待辦，禁止狀態路由寫入。契約見 [前端 API 文件](../../../docs/substack-draft-sync-api.md)。
+- 新增後台已登入 owner 可讀的列表／單篇狀態 API，分開同步、發布、寄送與獨立待辦，禁止狀態路由寫入。契約見 [前端 API 文件](../../../../docs/substack-draft-sync-api.md)。
 
 ## 本機驗證
 

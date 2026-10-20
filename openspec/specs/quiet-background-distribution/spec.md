@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Keep browser-free Substack observation and human-action notifications truthful while preserving source identity, confirmed provider commitments and delivery evidence. Foreground work owns authenticated draft and schedule changes; background work never mutates provider state.
+Keep browser-free Substack observation and human-action notifications truthful while preserving source identity, confirmed provider commitments and delivery evidence. The anonymous observer never uses authenticated provider access or mutates provider state. A separately qualified and activated unattended-draft-sync-v1 draft worker may perform only its authorized unscheduled draft operations under unattended-substack-drafts; it grants no browser or write authority to the observer. Foreground work retains schedule changes, publication, public corrections and subscriber-delivery authority, and draft changes outside that qualified scope.
 
 ## Requirements
 
@@ -31,10 +31,9 @@ The scheduled synchronizer SHALL skip article mutations requiring human action u
 - **THEN** it explicitly reports that provider publication is still armed until foreground cancellation is confirmed
 
 ---
-
 ### Requirement: Browser-free background execution
 
-Background work SHALL read only fixed Git snapshots, durable operational state and anonymous public evidence. It SHALL NOT open, activate, navigate, reload, inspect or execute scripts in the user's Chrome, read authenticated provider drafts or mutate provider state. Foreground work SHALL prepare, arm, revise, postpone and cancel schedules. A known armed identity SHALL be anonymously checked at or after its confirmed due time without requiring Pages availability; pre-due absence SHALL NOT be treated as publication failure. Content drift, cancellation requests and unknown operations SHALL produce foreground attention rather than a mutation fallback. Direct background execution SHALL enforce the same boundary under the target lock with fresh disposition checks.
+Anonymous observer background work SHALL read only fixed Git snapshots, durable operational state and anonymous public evidence. It SHALL NOT open, activate, navigate, reload, inspect or execute scripts in the user's Chrome, read authenticated provider drafts or mutate provider state. Without a separately qualified activated draft worker, foreground work SHALL prepare all drafts. Foreground work SHALL exclusively arm, revise, postpone and cancel schedules. A separate unattended-draft-sync-v1 worker SHALL perform only the draft operations specified by unattended-substack-drafts; it SHALL NOT grant the anonymous observer authenticated access or writes. Existing foreground source-edit and schedule policies SHALL remain in force outside that narrowly activated scope. A known armed identity SHALL be anonymously checked at or after its confirmed due time without requiring Pages availability; pre-due absence SHALL NOT be treated as publication failure. Content drift, cancellation requests and unknown operations SHALL produce foreground attention rather than a mutation fallback. Direct background execution SHALL enforce the same boundary under the target lock with fresh disposition checks.
 
 #### Scenario: Unchanged verified article
 - **GIVEN** an unchanged verified article with a known public URL and no unsettled intent
@@ -42,7 +41,7 @@ Background work SHALL read only fixed Git snapshots, durable operational state a
 - **THEN** it verifies the same identity using public evidence without a browser, login or article write
 
 #### Scenario: Browser operation is required
-- **GIVEN** a new article, changed source, draft or unresolved schedule operation
+- **GIVEN** a new article, changed source or draft outside a qualified activated draft-worker scope, or any unresolved schedule operation
 - **WHEN** a scheduled round or direct background command evaluates it
 - **THEN** it reports foreground work required before controlling a browser or writing an article
 
@@ -56,8 +55,19 @@ Background work SHALL read only fixed Git snapshots, durable operational state a
 - **WHEN** Substack publishes at its due time and a later background round observes it
 - **THEN** the round anonymously verifies the original identity and armed version while Pages and delivery observations remain separate
 
----
+#### Scenario: Qualified worker shares orchestration
 
+- **GIVEN** a separately activated qualified draft worker and the existing anonymous observer
+- **WHEN** the single ordinary occurrence runs
+- **THEN** only the worker uses its scoped authenticated draft port, the observer stays anonymous-only with zero provider writes, and both serialize with foreground writers
+
+#### Scenario: Worker is disabled
+
+- **GIVEN** the worker is unqualified or disabled
+- **WHEN** an ordinary round sees a new draft or changed source
+- **THEN** existing foreground preparation and reconciliation attention remains available without authenticated access or a new timer
+
+---
 ### Requirement: Preserve evidence and scheduling
 
 The synchronizer SHALL preserve pin validation, single-writer locks, source verification, unsettled-intent auditing and owned-source cleanup. Runtime cutover SHALL retain prior private configuration and credentials and SHALL distinguish local checks from real scheduled acceptance.
@@ -73,7 +83,6 @@ The synchronizer SHALL preserve pin validation, single-writer locks, source veri
 - **THEN** it stops without taking over the writer or accessing a browser
 
 ---
-
 ### Requirement: Hermes human-action notification
 
 The synchronizer SHALL notify the owner through the existing Hermes Telegram home channel when a human-action issue set first appears or changes. An unchanged set SHALL stay quiet across rounds and process restarts. Existing held items SHALL be announced once when delivery is first activated, regardless of an older quiet-round marker. A confirmed clear round SHALL allow a later recurrence to notify again; source failures SHALL NOT silently clear held issues. The notification SHALL include affected articles, reasons and public source links without credentials or private source content.
@@ -100,7 +109,6 @@ The synchronizer SHALL notify the owner through the existing Hermes Telegram hom
 - **THEN** the safe existing synchronizer remains running and actual Hermes delivery is explicitly pending owner activation
 
 ---
-
 ### Requirement: Inert public identity format compatibility
 
 The verifier SHALL accept a unique designated application/json identity record or a unique legacy inline JSON string without executing JavaScript. It SHALL reject malformed, duplicate, competing, off-publication or off-canonical identity evidence. Supporting the new representation SHALL NOT weaken full-content, source, original-ID or date checks.
@@ -126,7 +134,6 @@ The verifier SHALL accept a unique designated application/json identity record o
 - **THEN** it stays blocked for human action on the original ID without attempting a write or loosening verification
 
 ---
-
 ### Requirement: Reviewed scheduler boundaries
 
 Scheduler activation and execution SHALL require anonymous-only acceptance with zero browser access and zero article writes. Human-action snapshots SHALL include every durable manual hold, even when its source is missing or ineligible, and SHALL clear only after complete durable-state evidence. Background eligibility SHALL be enforced while owning the target lock; a genuine hold rejection SHALL preserve the current state and unresolved evidence without a public read. Reassessment of a legacy unconfirmed presentation-only verification hold SHALL follow Content attention requires confirmed meaningful drift and SHALL NOT resolve genuine mutation or identity holds.
@@ -157,7 +164,6 @@ Scheduler activation and execution SHALL require anonymous-only acceptance with 
 - **THEN** it refuses verification, preserves the original hold and diagnostics, and releases its lock without public or browser access
 
 ---
-
 ### Requirement: Scheduled-source observation reuses existing attention
 
 Background observation SHALL compare each tracked schedule against current finalized source eligibility, content version, slug and confirmed original-site slot using the existing attention channel. It SHALL include armed schedules even when the source is missing or ineligible. A requested change SHALL remain pending until foreground provider readback confirms it. Unchanged issues SHALL reuse existing deduplication rather than a new notification timer. A source or durable-state read failure SHALL preserve the prior attention and schedule evidence.
@@ -185,7 +191,6 @@ Existing public mirrors SHALL remain observable after their first publication. A
 - **THEN** it preserves the previous schedule and attention and does not report cancellation or successful synchronization
 
 ---
-
 ### Requirement: Action-specific truthful attention reasons
 
 The observer and existing Hermes producer/consumer SHALL preserve bounded pending-action reasons from the observed article through durable holds and notification rendering. New eligible series drafts SHALL be reported as foreground preparation work, content drift as same-ID content synchronization, postponement and cancellation as their respective pending operations, and an uncertain schedule intent as reconciliation. Routine preparation SHALL NOT be described as failed publication, an identity error or paused automatic retries. Unknown legacy errors SHALL remain generic manual review rather than an asserted identity mismatch. Durable fallback holds SHALL NOT replace a more specific current reason with a generic reason. An unchanged issue set SHALL remain quiet across rounds and sender restarts; real unresolved content, identity or schedule issues SHALL NOT be suppressed merely because another draft was added. Source/D1 read failure SHALL preserve prior attention evidence.
@@ -211,7 +216,6 @@ The observer and existing Hermes producer/consumer SHALL preserve bounded pendin
 - **THEN** no duplicate message is sent and a failed source or state read cannot clear those issues
 
 ---
-
 ### Requirement: Content attention requires confirmed meaningful drift
 
 For an unchanged authoritative source revision, background observation SHALL NOT notify content synchronization for a description-only presentation difference or the observed provider-only code wrappers and terminal empty-line artifacts. It SHALL still detect title, body structure, non-terminal code whitespace, links, images and alt-text changes. A changed authoritative source with changed supported content, including description, SHALL remain pending foreground synchronization. Strict foreground content verification SHALL remain unchanged; ignored presentation differences SHALL NOT qualify complete content synchronization.
@@ -243,7 +247,6 @@ A failed or incomplete anonymous read SHALL record verification as inconclusive,
 - **THEN** its existing description, structure, link, media and meaningful code-whitespace checks still apply
 
 ---
-
 ### Requirement: Queue revisions do not imply provider postponement
 
 Background schedule observation SHALL compare the tracked original article and the confirmed actual publication instant with the last confirmed provider time. A queue-version change or an equivalent UTC/Taipei timestamp representation SHALL NOT request postponement when the article and actual instant are unchanged. Fresh matching evidence SHALL clear a previously inferred postponement hold without changing the saved provider commitment, delivery history or schedule. Real time changes, lost eligibility or missing confirmed slots SHALL remain pending foreground work. Unresolved mutation intents and independent content/identity errors SHALL NOT be cleared by queue equivalence.
@@ -273,3 +276,38 @@ Foreground mutation approval and handoff SHALL continue requiring the exact curr
 - **GIVEN** an earlier foreground mutation review and a newer queue version for the same actual time, or an unresolved mutation intent
 - **WHEN** a mutation handoff or background observation rechecks it
 - **THEN** stale mutation approval is rejected and unknown mutation evidence is retained without replay
+
+---
+### Requirement: Draft worker shares quiet attention without weakening evidence
+
+The worker and observer SHALL reuse the existing timer, locks, attention producer/consumer and durable deduplication ledger. Equal content and repeated unchanged holds SHALL stay quiet. A failed/incomplete source, state or provider read SHALL preserve prior attention and evidence instead of inventing drift or clearing unresolved issues. Strict draft verification SHALL remain independent of unchanged-source presentation-only notification suppression. Equivalent actual publication times for the same article SHALL NOT request postponement merely because queueVersion or timezone text differs. Worker success SHALL clear only its confirmed resolved draft hold, never independent schedule/identity/unknown-intent holds.
+
+#### Scenario: Equal or repeated worker result
+
+- **GIVEN** an equal draft or unchanged human-action set was already observed
+- **WHEN** ordinary rounds or sender restarts process it again
+- **THEN** no repeated notification or second timer is introduced
+
+#### Scenario: Full read is unavailable
+
+- **GIVEN** prior evidence and genuine pending actions exist
+- **WHEN** a source, state or saved-provider read fails or is incomplete
+- **THEN** verification stays incomplete, previous attention persists and no inferred content-change notification or success is produced
+
+#### Scenario: Existing content false positives remain suppressed
+
+- **GIVEN** an unchanged authoritative public source differs only by description presentation or known platform code wrappers/terminal empty lines
+- **WHEN** the anonymous observer runs with the new worker present
+- **THEN** it sends no false content notification while strict draft body, description, code and media verification remains required
+
+#### Scenario: Queue version changes at the same instant
+
+- **GIVEN** the same article is committed at 2026-10-22 07:00 Asia/Taipei with version 162
+- **WHEN** queue version becomes 165 at the equivalent 2026-10-21T23:00:00Z
+- **THEN** no postponement is notified or schedule changed, while foreground exact-version approval and independent errors remain intact
+
+#### Scenario: A genuine separate issue remains
+
+- **GIVEN** draft content has been verified but an unknown schedule intent or identity hold remains
+- **WHEN** a completed worker result updates attention
+- **THEN** only the resolved draft issue clears and the independent unresolved issue remains visible through existing deduplication
