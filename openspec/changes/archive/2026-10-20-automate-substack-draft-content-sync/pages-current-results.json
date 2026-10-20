@@ -1,0 +1,266 @@
+{
+  "passed": true,
+  "rootCause": "Legacy Pages target table was empty while current release_queue_runtime contained three verified-public release records",
+  "deployment": {
+    "version": "b7019878-d470-4558-9d68-ebaee8a7fe4a",
+    "deployment": "52534827-254e-46c8-90d0-5042f1c4deab",
+    "createdOn": "2026-10-19T17:59:55.904586Z",
+    "percentage": 100,
+    "configBindingsRuntimePreserved": true,
+    "rollbackVersion": "099cf828-63ac-41c9-aadf-5ce8e4f1b707"
+  },
+  "localGates": [
+    {
+      "name": "check",
+      "exitCode": 0,
+      "seconds": 8.01
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "seconds": 97.8
+    },
+    {
+      "name": "build:all",
+      "exitCode": 0,
+      "seconds": 6.15
+    },
+    {
+      "name": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 9.97
+    },
+    {
+      "name": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 9.93
+    }
+  ],
+  "focusedTests": 39,
+  "redFailures": 4,
+  "chrome": {
+    "passed": true,
+    "checkedAt": "2026-10-19T18:03:18.166Z",
+    "responseOverrides": false,
+    "liveReverification": false,
+    "requests": [
+      {
+        "requestId": "13041.12",
+        "path": "/api/v1/auth/session",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.15",
+        "path": "/api/v1/posts",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.16",
+        "path": "/api/v1/series",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.17",
+        "path": "/api/v1/github/deployments/latest",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.18",
+        "path": "/api/v1/releases",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.19",
+        "path": "/api/v1/posts/ithome-2026-astro-choice",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.20",
+        "path": "/api/v1/publications/ithome-2026-astro-choice",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.21",
+        "path": "/api/v1/substack/drafts/ithome-2026-astro-choice",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.24",
+        "path": "/api/v1/posts/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.25",
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "method": "GET"
+      },
+      {
+        "requestId": "13041.26",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "method": "GET"
+      }
+    ],
+    "responses": [
+      {
+        "requestId": "13041.20",
+        "path": "/api/v1/publications/ithome-2026-astro-choice",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "13041.21",
+        "path": "/api/v1/substack/drafts/ithome-2026-astro-choice",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "13041.25",
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      },
+      {
+        "requestId": "13041.26",
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 200,
+        "cacheControl": "no-store"
+      }
+    ],
+    "payloads": [
+      {
+        "path": "/api/v1/publications/ithome-2026-astro-choice",
+        "pages": {
+          "source": "release-queue",
+          "state": "verified-public",
+          "historyCount": 1,
+          "releaseId": "cc6f43ad-5c9f-4bc7-b5fd-cf47f0dfc32f",
+          "sourceRevision": "ef226e63c128fe5b1da787559583b6edbadb8eaa",
+          "commitSha": "3366277fd3c80fb0f22f12fb00346cf35a167594",
+          "releaseAt": "2026-10-19T07:00:00+08:00",
+          "deployment": {
+            "state": "deployed",
+            "url": "https://github.com/gcake119/gcake-dev/actions/runs/39174851031"
+          },
+          "verification": {
+            "state": "verified",
+            "verifiedAt": "2026-10-19T00:46:59.664Z",
+            "publicUrl": "https://gcake119.github.io/gcake-dev/posts/ithome-2026-astro-choice/",
+            "pageVerifiedAt": "2026-10-19T00:46:59.664Z"
+          }
+        }
+      },
+      {
+        "path": "/api/v1/publications/ithome-2026-template-hardening",
+        "pages": {
+          "source": "release-queue",
+          "state": "not-recorded",
+          "historyCount": 0,
+          "deployment": {
+            "state": "not-recorded"
+          },
+          "verification": {
+            "state": "not-verified"
+          }
+        }
+      }
+    ],
+    "publishedDesktop": {
+      "height": 907,
+      "pages": "GitHub Pages已有公開驗證紀錄部署：網站已部署公開驗證：文章與 RSS 已驗證驗證時間：2026/10/19 08:46（台北）查看已驗證文章依已保存的發布與查核紀錄；讀取不會重新驗證，也不代表目前內容再次驗證。",
+      "scrollWidth": 1713,
+      "url": "https://gcake119.github.io/gcake-dev/posts/ithome-2026-astro-choice/",
+      "width": 1728
+    },
+    "publishedMobile": {
+      "height": 844,
+      "heightOfPages": 358.296875,
+      "pages": "GitHub Pages已有公開驗證紀錄部署：網站已部署公開驗證：文章與 RSS 已驗證驗證時間：2026/10/19 08:46（台北）查看已驗證文章依已保存的發布與查核紀錄；讀取不會重新驗證，也不代表目前內容再次驗證。",
+      "scrollWidth": 375,
+      "top": 143.515625,
+      "width": 390
+    },
+    "unpublished": {
+      "pages": "GitHub Pages尚無發布紀錄部署：尚無對應部署證據公開驗證：尚未完成公開驗證依已保存的發布與查核紀錄；讀取不會重新驗證，也不代表目前內容再次驗證。",
+      "scrollWidth": 375,
+      "substack": "Substack 狀態最後查核結果。讀取不會啟動同步、發布或寄送。重新讀取狀態草稿同步驗證未完成不能確認目前內容是否一致。發布草稿寄送未安排寄送尚無實收證據最近查核：2026/10/20 01:52（台北）Substack 編號：221099415",
+      "width": 390
+    },
+    "screenshots": "/Users/caiyijun/.codex/visualizations/2026/10/19/01a153a5-b815-7753-ac1f-b3b7f9318c2b/pages-current-evidence-20261020"
+  },
+  "queuePreserved": {
+    "beforeVersion": 176,
+    "afterVersion": 177,
+    "releaseRecordsUnchanged": true,
+    "scheduleControlsUnchanged": true,
+    "releases": 3
+  },
+  "substackPreserved": {
+    "records": 6,
+    "originalIdentityScheduleAndDelivery": true,
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "syncConfigSha256Unchanged": true
+  },
+  "publicChecks": {
+    "assets": [
+      {
+        "path": "index.html",
+        "sha256": "4fa3b73d3987eec6c8739eee9235e5e525f5cd61af5dedf5fa8702932d4ce9c2",
+        "matched": true
+      },
+      {
+        "path": "assets/index-EBQCjx1N.css",
+        "sha256": "a246324e9ac9d3993ba24ce72f2c11fc8fbe7a00fc239ccbcbe75d6156e79c0e",
+        "matched": true
+      },
+      {
+        "path": "assets/index-DsWjxJ1h.js",
+        "sha256": "6269f64cfbe8c9326aed91edea63758e8a6cfeb8a517cfd059d86cae016d8f87",
+        "matched": true
+      }
+    ],
+    "health": {
+      "status": "ok",
+      "service": "gcake-admin-worker",
+      "contractVersion": "v1"
+    },
+    "anonymous": [
+      {
+        "path": "/api/v1/substack/drafts",
+        "status": 401,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+        "status": 401,
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/api/v1/publications/ithome-2026-template-hardening?sourceRevision=check",
+        "status": 401,
+        "cacheControl": "no-store"
+      }
+    ]
+  },
+  "cleanup": {
+    "ownTabClosed": true,
+    "viewportReset": true,
+    "initialThemeRestored": true,
+    "noResponseOverrides": true
+  },
+  "privateEvidence": "/private/tmp/gcake-pages-status-20261020",
+  "limitations": [
+    "Stored historical evidence, not fresh provider verification or current-content equality",
+    "Production UI sample: one published article and one unpublished original draft",
+    "Missing/ambiguous/storage failure/mismatched deployment tested locally, not injected in production",
+    "Original draft Substack inconclusive check predates this Pages rollout; not retried or relabeled",
+    "No commit, push, merge, migration, provider publishing or subscriber operation"
+  ],
+  "spectra": {
+    "analyzeFindings": 0,
+    "valid": true,
+    "tasksComplete": 33,
+    "tasksTotal": 33
+  },
+  "diffCheck": true
+}

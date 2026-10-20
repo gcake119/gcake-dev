@@ -12,8 +12,9 @@ import type {
   PublicationOperation,
   PublicationTarget,
   PublicationTargetState,
+  PagesPublicationStatus,
 } from '@gcake/admin-contract';
-import { contentStatusLabel, publicationStatusLabel, previewStatusLabel, safeMessage } from './workflow-presentation';
+import { contentStatusLabel, pagesPresentation, publicationStatusLabel, previewStatusLabel, safeMessage } from './workflow-presentation';
 import { deploymentPresentation } from './deployment';
 import { renderImmediatePreview, nextEditorView, editorViewLabel, type EditorView } from './editor-state';
 import { removedImageUrls, removedMediaRecords } from './media-cleanup';
@@ -37,6 +38,7 @@ import { createStandaloneSource, filterPostsBySeries, standalonePosts, updatePos
 import { requestSlugSuggestion } from './slug-suggestion';
 
 import ReleaseQueuePanel from './ReleaseQueuePanel.vue';
+import SubstackStatusPanel from './SubstackStatusPanel.vue';
 import { iconPaths } from '../../../src/components/icon-paths';
 import { reviewManualPublication } from './manual-release';
 import type { QueueView } from '@gcake/admin-contract';
@@ -128,6 +130,8 @@ const formalPreview = ref<PreviewJob>();
 const formalPreviewMessage = ref('');
 const publicationStates = ref<readonly PublicationTargetState[]>([]);
 const publicationMessage = ref('');
+const pagesStatus = ref<PagesPublicationStatus>();
+const pagesSummary = computed(() => pagesStatus.value ? pagesPresentation(pagesStatus.value) : undefined);
 const recoveryPost = ref<PostSource>();
 const recoveryConflict = ref<{ draft: string; repository: string; detail?: string }>();
 const sourceElement = ref<HTMLTextAreaElement>();
@@ -468,7 +472,7 @@ function createPost(): void {
   editorMessage.value = '已建立無系列文章草稿；按下「儲存文章」才會保存。';
   scheduleDate.value = '';
   scheduleTime.value = '09:00';
-  publicationStates.value = [];
+  resetPublicationEvidence();
   workspaceMode.value = 'post';
 }
 
@@ -512,12 +516,23 @@ async function generateEditorSlug(): Promise<void> {
   }
 }
 
+let publicationReadGeneration = 0;
+function resetPublicationEvidence(): number {
+  publicationMessage.value = '';
+  publicationStates.value = [];
+  pagesStatus.value = undefined;
+  return ++publicationReadGeneration;
+}
 async function loadPublicationStates(post = selectedPost.value): Promise<void> {
+  const generation = resetPublicationEvidence();
   if (!post) return;
   try {
-    const result = await readJson<{ states: readonly PublicationTargetState[] }>(`/api/v1/publications/${post.slug}?sourceRevision=${encodeURIComponent(post.baseCommitSha)}`);
+    const result = await readJson<{ states: readonly PublicationTargetState[]; pages?:PagesPublicationStatus }>(`/api/v1/publications/${post.slug}?sourceRevision=${encodeURIComponent(post.baseCommitSha)}`);
+    if (generation !== publicationReadGeneration) return;
     publicationStates.value = result.states;
+    pagesStatus.value = result.pages;
   } catch (error) {
+    if (generation !== publicationReadGeneration) return;
     publicationMessage.value = error instanceof Error ? error.message : '無法載入發佈狀態。';
   }
 }
@@ -1150,6 +1165,7 @@ onMounted(() => {
             </ul>
             <p v-else class="empty">目前沒有系列。新增系列後即可加入文章。</p>
           </article>
+          <SubstackStatusPanel v-if="overviewSection === 'publishing'" :titles="Object.fromEntries(posts.map(post => [post.slug, post.title]))" @select="openPost" />
           <details v-if="deploymentStatus && overviewSection === 'publishing'" class="workspace-settings">
             <summary>網站更新狀態</summary>
             <p>這是整個網站最近一次更新的狀態，不代表每篇文章都已公開。</p>
@@ -1429,18 +1445,20 @@ onMounted(() => {
               <div class="target-grid">
                 <article>
                   <strong>GitHub Pages</strong>
-                  <span class="badge">{{ publicationStatusLabel(targetState('github_pages')?.status ?? 'not_configured') }}</span>
-                  <small>網站更新與公開確認分開記錄。</small>
+                  <span class="badge">{{ pagesSummary?.label ?? (targetState('github_pages') ? publicationStatusLabel(targetState('github_pages')!.status) : '尚無發布紀錄') }}</span>
+                  <template v-if="pagesSummary">
+                    <small>部署：{{ pagesSummary.deployment }}</small>
+                    <small>公開驗證：{{ pagesSummary.verification }}</small>
+                    <small v-if="pagesSummary.verifiedAt">驗證時間：{{ pagesSummary.verifiedAt }}</small>
+                    <a v-if="pagesSummary.url" :href="pagesSummary.url" target="_blank" rel="noopener noreferrer">查看已驗證文章</a>
+                    <small>依已保存的發布與查核紀錄；讀取不會重新驗證，也不代表目前內容再次驗證。</small>
+                  </template>
+                  <small v-else>網站更新與公開確認分開記錄。</small>
                 </article>
-                <article>
-                  <strong>Substack</strong>
-                  <span class="badge">{{ publicationStatusLabel(targetState('substack')?.status ?? 'manual_required') }}</span>
-                  <small>外部平台的發布與通知，請依人工處理紀錄確認。</small>
-                  <div role="group" aria-label="Substack 狀態查詢">
-                    <button type="button" class="secondary-action" @click="loadPublicationStates()">重新查看狀態</button>
-                  </div>
-                </article>
+
               </div>
+              <SubstackStatusPanel v-if="selectedPost.baseBlobSha" :slug="selectedPost.slug" />
+              <p v-else class="muted">尚未儲存的文章沒有可查核的平台狀態。</p>
               <p v-if="publicationMessage" class="editor-message" aria-live="polite">{{ safeMessage(publicationMessage) }}</p>
             </details>
           </section>

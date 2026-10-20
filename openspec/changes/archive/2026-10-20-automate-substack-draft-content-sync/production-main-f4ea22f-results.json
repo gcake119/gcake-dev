@@ -1,0 +1,242 @@
+{
+  "sourceCommit": "f4ea22f097973f4978e7dccbbaddad87bb3c4ec7",
+  "cleanSource": true,
+  "adminArchiveExcluded": true,
+  "worker": "gcake-admin-worker-production",
+  "origin": "https://gcake-admin-worker-production.wwhowbuhow.workers.dev",
+  "versionId": "c65baef6-faa6-40c8-bb89-6a5047db216d",
+  "deploymentId": "55c29a09-1ac7-4eb0-be36-ce0ec091d546",
+  "deployedAtUtc": "2026-10-19T19:38:46.864032Z",
+  "deployedAtTaipei": "2026-10-20T03:38:46.864032+08:00",
+  "trafficPercent": 100,
+  "attempts": 1,
+  "rollbackVersion": "b7019878-d470-4558-9d68-ebaee8a7fe4a",
+  "bindingsAndRuntimePreserved": true,
+  "assetsMatched": 3,
+  "health": {
+    "status": "ok",
+    "service": "gcake-admin-worker",
+    "contractVersion": "v1"
+  },
+  "authenticatedApiCases": [
+    {
+      "name": "list",
+      "path": "/api/v1/substack/drafts?limit=50&offset=0",
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "single",
+      "path": "/api/v1/substack/drafts/ithome-2026-template-hardening",
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "first-page",
+      "path": "/api/v1/substack/drafts?limit=1&offset=0",
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "last-page",
+      "path": "/api/v1/substack/drafts?limit=1&offset=5",
+      "status": 200,
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "invalid-pagination",
+      "path": "/api/v1/substack/drafts?limit=0",
+      "status": 400,
+      "cacheControl": "no-store"
+    },
+    {
+      "name": "missing-article",
+      "path": "/api/v1/substack/drafts/acceptance-missing-record",
+      "status": 404,
+      "cacheControl": "no-store"
+    }
+  ],
+  "anonymousChecks": 8,
+  "uiRequestsGetOnly": 23,
+  "uiStatusResponses200NoStore": 16,
+  "acceptanceModes": [
+    {
+      "viewport": "1728x907",
+      "theme": "light",
+      "list": "passed",
+      "articleAndPages": "passed"
+    },
+    {
+      "viewport": "1728x907",
+      "theme": "dark",
+      "list": "passed",
+      "articleAndPages": "passed"
+    },
+    {
+      "viewport": "390x844",
+      "theme": "light",
+      "list": "passed",
+      "articleAndPages": "passed"
+    },
+    {
+      "viewport": "390x844",
+      "theme": "dark",
+      "list": "passed",
+      "articleAndPages": "passed"
+    }
+  ],
+  "substackStates": [
+    {
+      "slug": "ithome-2026-astro-choice",
+      "providerId": "221069931",
+      "sync": "excluded",
+      "publication": "verified",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    },
+    {
+      "slug": "ithome-2026-chatgpt-writing-workflow",
+      "providerId": "220011124",
+      "sync": "excluded",
+      "publication": "verified",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    },
+    {
+      "slug": "ithome-2026-publishing-in-production",
+      "providerId": "221098688",
+      "sync": "excluded",
+      "publication": "scheduled",
+      "delivery": "armed",
+      "subscriberReceipt": "unknown"
+    },
+    {
+      "slug": "ithome-2026-publishing-toolchain",
+      "providerId": "220473117",
+      "sync": "excluded",
+      "publication": "verified",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    },
+    {
+      "slug": "ithome-2026-tech-blog-boundary",
+      "providerId": "221099763",
+      "sync": "inconclusive",
+      "publication": "draft_prepared",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    },
+    {
+      "slug": "ithome-2026-template-hardening",
+      "providerId": "221099415",
+      "sync": "verified",
+      "publication": "draft_prepared",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    }
+  ],
+  "substackCommitmentsPreserved": true,
+  "syncConfigPreserved": true,
+  "pagesReleaseRecordsPreserved": true,
+  "queueVersions": [
+    178,
+    180
+  ],
+  "allowCreate": false,
+  "scheduledWrites": false,
+  "substackWorkerWriteEnabled": false,
+  "subscriberDeliveryActivated": false,
+  "newMigration": false,
+  "cleanup": {
+    "ownedTabsClosed": true,
+    "viewportReset": true,
+    "initialThemeRestored": {
+      "height": 907,
+      "theme": "dark",
+      "width": 1728
+    },
+    "responseOverrides": false,
+    "interactionNotes": [
+      "body keyboard scroll did not complete; used observed normal scroll instead",
+      "article heading wait expired during API load; inspected completed UI and continued without repeating operation"
+    ]
+  },
+  "limits": [
+    "Historical Pages evidence display; no new public-site reverification",
+    "503 and authenticated 405 rely on exact-source local tests; no production fault injection or session export",
+    "One tracked draft reports inconclusive; no provider retry or relabel as verified",
+    "Existing release queue enabled state and scheduled subscriber commitments preserved; no new activation",
+    "Authenticated UI reads may update queue/session metadata; no claim of zero D1 writes"
+  ],
+  "privateEvidence": "/private/tmp/gcake-production-f4ea22f-20261020",
+  "receiptKind": "historical-production-deployment-and-interface-acceptance",
+  "deploymentAndInterfaceAcceptancePassed": true,
+  "allTrackedDraftsVerified": false,
+  "draft221099763": {
+    "providerId": "221099763",
+    "slug": "ithome-2026-tech-blog-boundary",
+    "before": {
+      "observedAtUtc": "2026-10-19T19:36:46.342Z",
+      "syncStatus": "verified",
+      "checkedAtUtc": "2026-10-19T19:18:02.732Z"
+    },
+    "acceptance": {
+      "observedAtUtc": "2026-10-19T19:50:05.536Z",
+      "syncStatus": "inconclusive",
+      "displayLabel": "驗證未完成",
+      "checkedAtUtc": "2026-10-19T19:39:20.992Z",
+      "checkedAtTaipei": "2026-10-20T03:39:20.992+08:00",
+      "code": "SUBSTACK_DRAFT_LIST_INCOMPLETE",
+      "savedRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+      "desiredRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+      "unresolvedOperation": false,
+      "publication": "draft_prepared",
+      "delivery": "not_armed",
+      "subscriberReceipt": "unknown"
+    },
+    "retryOrProviderWritePerformedByAcceptance": false,
+    "causeReproducedOrRepairedInThisBackfill": false
+  },
+  "priorEvidence": {
+    "pr42Head": "cea6a19b00b5ada9ef2549f1b870c249cf5a4882",
+    "pr42Ci": "https://github.com/gcake119/gcake-dev/actions/runs/39309242767",
+    "mergeCi": "https://github.com/gcake119/gcake-dev/actions/runs/39311030734",
+    "fullLocalGateReceipt": "pr42-fix-local-gates-20261020.json",
+    "fullLocalGatesRerunForDocs": false
+  },
+  "backfillScope": "documentation only; no push, deployment, scheduling write or subscriber delivery activation",
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "d4356cc6db0350038d445bdc567efb497b7514a1dcc1a760a0f6caa4d4098db0",
+      "matched": true
+    },
+    {
+      "path": "assets/index-EBQCjx1N.css",
+      "sha256": "a246324e9ac9d3993ba24ce72f2c11fc8fbe7a00fc239ccbcbe75d6156e79c0e",
+      "matched": true
+    },
+    {
+      "path": "assets/index-CjYJB1nA.js",
+      "sha256": "2c8947660bbee908fa91e7588f9c3b0f1dbf6cbdf2b03bc350ec3af22829b5fc",
+      "matched": true
+    }
+  ],
+  "sourceInputs": {
+    "files": 358,
+    "matchesPassingPr42Candidate": true,
+    "digestSha256": "31451023456bc8cd926b2a869ca55b1a2e18189b45d171500649a4fe31a920f8"
+  },
+  "evidenceFilesSha256": {
+    "source-proof.json": "70634ea211b157f6ded6148dd21b69ae7290bfd11810f0fd16903713507a9374",
+    "active-after.json": "dbc1986afead1a46918fe8ad633ccd867caee304da23be0c7e0600ac07714e6c",
+    "version-after.json": "eb98a80ad0a37a9584b33b8538795b289677179ff8d777641285cd5f11d242c0",
+    "postdeploy-proof.json": "d5de8628b2be521f86d725c0294ed0aceca949ce77c63eb94ff4afcc4f29cdd3",
+    "browser-evidence.json": "5deabf80821864e7ef2fe74dae2eef28766a88575e17a1aad39dd17ce5dfd718",
+    "browser-cleanup.json": "d1579d5529d4b0f7fd4773290885147cd90ea6fc2920718000cc5e108801805c",
+    "state-before.json": "012272681ed17421a47ff6b2ae564ad87777ae26b6a0427fa07e9b3bc4dd33b0",
+    "state-after.json": "e7f0fb18911f3411b89cb481701327bc41c72ec9c6fee85e792fda49b2936372",
+    "queue-before.json": "c1c5635491307219984e8bc442899f2bf33c89a0331bd8b56efa7e153616486c",
+    "queue-after.json": "167f02a41095bafc41237ec9b9ff53580828c8695a5e3549e215888fda8356ef"
+  }
+}

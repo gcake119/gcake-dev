@@ -1,0 +1,58 @@
+{
+  "parentCommit": "13d2aeeadab7aa0b8a408561d0231a12b629dbf8",
+  "finding": "https://github.com/gcake119/gcake-dev/pull/41#discussion_r4317124159",
+  "focusedAcceptance": {
+    "passed": 57,
+    "failed": 0
+  },
+  "gates": [
+    {
+      "command": "pnpm test",
+      "exitCode": 0,
+      "seconds": 88.6,
+      "log": "/private/tmp/gcake-pr41-result-media-gates/test.log"
+    },
+    {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "seconds": 7.39,
+      "log": "/private/tmp/gcake-pr41-result-media-gates/check.log"
+    },
+    {
+      "command": "pnpm build:all",
+      "exitCode": 0,
+      "seconds": 5.48,
+      "log": "/private/tmp/gcake-pr41-result-media-gates/build-all.log"
+    },
+    {
+      "command": "pnpm release:dry-run",
+      "exitCode": 0,
+      "seconds": 10.27,
+      "log": "/private/tmp/gcake-pr41-result-media-gates/release-dry-run.log"
+    },
+    {
+      "command": "pnpm editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 9.89,
+      "log": "/private/tmp/gcake-pr41-result-media-gates/editorial-rehearse.log"
+    }
+  ],
+  "inputsSha256": {
+    "scripts/publishing/substack-draft-round.ts": "8e84fec9f0bd67483ef942bc03be0aff4f919f34ad47ed83e80fb10d8556da53",
+    "scripts/publishing/distribution-draft-sync.test.ts": "e342f239783ca624438b7a0acea2fc9a3fc135a6f64a2a1e6eafc26cf58e282f",
+    "package.json": "c568b49b3a78d0ebb33b3dc02725d0dbdf58bc1fb099f64b6311b0fb2ba61f6b",
+    "pnpm-lock.yaml": "2ed4a9eefd27a8cd417ec03567f3f50866081435c57476fcc27ffd8071386645",
+    "pnpm-workspace.yaml": "253208fa7c1b64372c219b9e19cef15ed70ca93b66a4d5c4c4d2297a5aff8880",
+    "tsconfig.json": "5a1bcf45519b8430495eec65f7409d539345be0b38dddca06d8e4adf3c9da341",
+    "apps/admin-worker/tsconfig.json": "8823c6a3dfdd2b80bb63cc261b50fd58cc739f8f439ef967a95617ea4e36d406"
+  },
+  "evidenceSha256": {
+    "/private/tmp/gcake-pr41-result-media-red.log": "5858f3f1b13df2e0f5aed88a9b2e9c847668a6327c3614feb0ad415842f1fa8f",
+    "/private/tmp/gcake-pr41-result-media-green.log": "e384c2b6d8c823fa1fb0d728d224b5d4cb59bb3bd35ad9a07a7d853703b7ed45",
+    "/private/tmp/gcake-pr41-result-media-focused-green.log": "654c82b0b6739f3d83ce79fb44bd724280145be8d7056ed9336f99a79f9356dc"
+  },
+  "providerAccess": "fixtures only",
+  "runtimeChanged": false,
+  "merged": false,
+  "deployed": false
+}

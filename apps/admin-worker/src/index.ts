@@ -1,3 +1,7 @@
+import { readPagesStatus } from './pages-status.js';
+import { D1PublicationRepository, PublicationOperations } from './publication-operations.js';
+import type { D1DatabaseLike } from './media.js';
+import {D1DraftStatusStore} from './substack-draft-api.js';
 import { PUBLICATION_MONITOR_PATH, monitorAuthorized, publicationSummary, type PublicationCatalogue } from './publication-monitor-summary.js';
 import { HEALTH_CONTRACT_VERSION, type HealthResponse } from '@gcake/admin-contract';
 import { D1SessionStore, type SessionDatabase } from './auth.js';
@@ -225,6 +229,15 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
         },
       },
       sessions: new D1SessionStore(env.CMS_DB),
+      drafts: new D1DraftStatusStore(env.CMS_DB),
+      // Expose persisted history only. Do not wire legacy operate(), which is not
+      // the qualified scheduling/publication runtime.
+      publications: {
+        pages: (slug) => readPagesStatus(env.CMS_DB!, slug),
+        states: (slug, revision) => new PublicationOperations(
+          new D1PublicationRepository(env.CMS_DB as D1DatabaseLike),
+        ).readStates(slug, revision),
+      },
       github,
       githubWrites,
       releases,

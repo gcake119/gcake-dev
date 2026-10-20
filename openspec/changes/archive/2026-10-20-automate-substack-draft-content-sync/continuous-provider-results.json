@@ -1,0 +1,437 @@
+{
+  "schema": 1,
+  "stageA": {
+    "passed": true,
+    "mediaQualified": true,
+    "mediaProfile": "original-sha256-png-v1",
+    "sourceMedia": [
+      {
+        "src": "https://gcake119.github.io/gcake-dev/brand/gcake-dev-logo-96.png",
+        "sha256": "088f5f545e0727dfa49af5ca82e982a4e8e2bdd7c5794fe6d742b6b2b95e2288",
+        "bytes": 3339,
+        "contentType": "image/png",
+        "format": "png"
+      }
+    ],
+    "originalId": "221099415",
+    "slug": "ithome-2026-template-hardening",
+    "image": "https://gcake119.github.io/gcake-dev/brand/gcake-dev-logo-96.png",
+    "alt": "草稿同步驗收圖片：gcake-dev 標誌",
+    "sourceCommit": "509d71b21e6261f5b674bdc77cb38deaf73d785d",
+    "digest": "sha256:52d33f035b7c2713a976ed455c4c6f707df25c46b57972f59bc5954d74b7eca9"
+  },
+  "restore": {
+    "passed": true,
+    "originalId": "221099415",
+    "slug": "ithome-2026-template-hardening",
+    "sourceCommit": "509d71b21e6261f5b674bdc77cb38deaf73d785d",
+    "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+    "digest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721",
+    "checkedAt": "2026-10-19T15:54:16.344Z",
+    "inventoryRows": [
+      {
+        "slug": "ithome-2026-template-hardening",
+        "operation": "qualification-restore-Git",
+        "status": "observed",
+        "sameId": true
+      }
+    ],
+    "commitmentsPreserved": true
+  },
+  "activation": {
+    "activated": true,
+    "existingIdOnly": true,
+    "allowCreate": false,
+    "browser": "chrome",
+    "timerSeconds": 900,
+    "manualKickstart": false,
+    "jobReloadAtActivation": false,
+    "expiresAt": "2026-11-18T15:44:12.782Z",
+    "activatedAt": "2026-10-19T15:54:47.369Z",
+    "naturalRunsAtActivation": 0,
+    "pinDigest": "057997a49c9cd76100de3501ec511ee8ab7d90c264b7e3cd87bd07aefaa6f430"
+  },
+  "naturalAcceptance": {
+    "passed": true,
+    "checkedAt": "2026-10-19T16:06:25.559Z",
+    "activatedAt": "2026-10-19T15:54:47.369Z",
+    "naturalRuns": 1,
+    "naturalRunsAtActivation": 0,
+    "manualKickstart": false,
+    "resultFile": "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-draft-continuous-media-chrome-20261019/rounds/round-B4Ipub/result.json",
+    "roundStatus": "completed",
+    "rows": [
+      {
+        "slug": "ithome-2026-astro-choice",
+        "sourceRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      },
+      {
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "sourceRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      },
+      {
+        "slug": "ithome-2026-publishing-in-production",
+        "sourceRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      },
+      {
+        "slug": "ithome-2026-publishing-toolchain",
+        "sourceRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      },
+      {
+        "slug": "ithome-2026-tech-blog-boundary",
+        "sourceRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      },
+      {
+        "slug": "ithome-2026-template-hardening",
+        "sourceRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+        "target": "substack",
+        "operation": "sync-draft",
+        "status": "observed"
+      }
+    ],
+    "api": [
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-astro-choice",
+        "providerId": "221069931",
+        "version": 41,
+        "sync": {
+          "status": "excluded",
+          "desiredRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+          "savedRevision": "sha256:e4ac7282e422b4c4581bade05d03c24e65b9f450332c9fb992fd3d84d11b3bc8",
+          "checkedAt": "2026-10-19T15:59:56.146Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "verified",
+          "confirmedTime": null,
+          "armedRevision": null
+        },
+        "delivery": {
+          "evidence": "not_armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [
+          "foreground-review"
+        ],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      },
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-chatgpt-writing-workflow",
+        "providerId": "220011124",
+        "version": 41,
+        "sync": {
+          "status": "excluded",
+          "desiredRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+          "savedRevision": "sha256:ba1e53cbadcd3766141cb7f1f970a36b52187647844ef39938d15bdd62aeaa57",
+          "checkedAt": "2026-10-19T15:59:59.188Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "verified",
+          "confirmedTime": null,
+          "armedRevision": null
+        },
+        "delivery": {
+          "evidence": "not_armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [
+          "foreground-review"
+        ],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      },
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-publishing-in-production",
+        "providerId": "221098688",
+        "version": 58,
+        "sync": {
+          "status": "excluded",
+          "desiredRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+          "savedRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2",
+          "checkedAt": "2026-10-19T16:00:04.129Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "scheduled",
+          "confirmedTime": "2026-10-21T23:00:00.000Z",
+          "armedRevision": "sha256:a85b33cfd86a2f589e01ce555f1e50e0a2bd0e7db73252cc4cd9412808b1f9c2"
+        },
+        "delivery": {
+          "evidence": "armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [
+          "foreground-review"
+        ],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      },
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-publishing-toolchain",
+        "providerId": "220473117",
+        "version": 41,
+        "sync": {
+          "status": "excluded",
+          "desiredRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+          "savedRevision": "sha256:bcec0ee0c31ce84ec835517d77772d54a470f2f6fb0f39937fb86c55888d7871",
+          "checkedAt": "2026-10-19T16:00:08.023Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "verified",
+          "confirmedTime": null,
+          "armedRevision": null
+        },
+        "delivery": {
+          "evidence": "not_armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [
+          "foreground-review"
+        ],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      },
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-tech-blog-boundary",
+        "providerId": "221099763",
+        "version": 49,
+        "sync": {
+          "status": "verified",
+          "desiredRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+          "savedRevision": "sha256:81bb7fba698446db8ee414d6bf7023e748587b47fa64282065c7996677992e35",
+          "checkedAt": "2026-10-19T16:03:07.862Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "draft_prepared",
+          "confirmedTime": null,
+          "armedRevision": null
+        },
+        "delivery": {
+          "evidence": "not_armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      },
+      {
+        "schemaVersion": 1,
+        "slug": "ithome-2026-template-hardening",
+        "providerId": "221099415",
+        "version": 73,
+        "sync": {
+          "status": "verified",
+          "desiredRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+          "savedRevision": "sha256:6bd00a9217daefa1d9775b93523e10d063231e1fba5c9f0fc02202391de7890b",
+          "checkedAt": "2026-10-19T16:05:52.660Z",
+          "code": null,
+          "transport": "computer-use",
+          "unresolvedOperation": false
+        },
+        "publication": {
+          "state": "draft_prepared",
+          "confirmedTime": null,
+          "armedRevision": null
+        },
+        "delivery": {
+          "evidence": "not_armed",
+          "deliveredRevision": null,
+          "subscriberReceipt": "unknown"
+        },
+        "attention": {
+          "pendingAction": null,
+          "code": null
+        },
+        "actions": [],
+        "updatedAt": "2026-10-19T16:05:52.982Z"
+      }
+    ],
+    "commitmentsPreserved": true,
+    "locks": 0,
+    "checkpoints": 0,
+    "intents": 0,
+    "sourceCleanup": "removed",
+    "actions": [
+      "draft-read",
+      "draft-read"
+    ],
+    "providerWrites": 0,
+    "actualChromeCalls": 25,
+    "ownedTabs": [
+      "1179170680",
+      "1179170682"
+    ],
+    "proofs": [
+      {
+        "id": "221099763",
+        "action": "draft-read",
+        "completedAt": "2026-10-19T16:03:06.223Z",
+        "actualCalls": 11
+      },
+      {
+        "id": "221099415",
+        "action": "draft-read",
+        "completedAt": "2026-10-19T16:05:51.200Z",
+        "actualCalls": 14
+      }
+    ],
+    "pinDigest": "057997a49c9cd76100de3501ec511ee8ab7d90c264b7e3cd87bd07aefaa6f430",
+    "subscriberReceipt": "unknown",
+    "httpApiDeployed": false,
+    "chromeCleanup": {
+      "checkedAt": "2026-10-19T16:06:27.821Z",
+      "knownOwnedIds": [
+        "1179170680",
+        "1179170682"
+      ],
+      "remainingOwned": []
+    }
+  },
+  "httpApiDeployed": false,
+  "commitPush": false,
+  "creationQualified": false,
+  "scheduleWritesEnabled": false,
+  "subscriberReceipt": "unknown",
+  "chromeCleanup": {
+    "checkedAt": "2026-10-19T15:55:01.376Z",
+    "ownedIds": [
+      "1179170672",
+      "1179170674",
+      "1179170676",
+      "1179170678"
+    ],
+    "remainingOwned": []
+  },
+  "phases": [
+    {
+      "name": "evidence",
+      "calls": 16,
+      "browserFamilies": [
+        "chrome"
+      ],
+      "writeEvidence": {
+        "fullBodyPasted": true,
+        "savedBeforeReload": true,
+        "navigatedAway": true,
+        "reloaded": true
+      },
+      "images": 1,
+      "beforeVerdict": true,
+      "rawObservationSha256": "902a8701d91cd6fe99810a14b0f1ce06d1f04d855d4af5406084b5a417cc8911",
+      "executorEventsSha256": "9de0e45dfddc47cb8f3273ddb01194f77ebf42a89a3f5e36c090b1819e674a03",
+      "mediaVerification": {
+        "profile": "original-sha256-png-v1",
+        "before": [],
+        "beforeConfirmed": [],
+        "after": [
+          {
+            "src": "https://substack-post-media.s3.amazonaws.com/public/images/f3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "sha256": "088f5f545e0727dfa49af5ca82e982a4e8e2bdd7c5794fe6d742b6b2b95e2288",
+            "bytes": 3339,
+            "contentType": "image/png",
+            "format": "png",
+            "renderedSrc": "https://substackcdn.com/image/fetch/$s_!zewX!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "alt": "草稿同步驗收圖片：gcake-dev 標誌"
+          }
+        ]
+      }
+    },
+    {
+      "name": "restore-evidence",
+      "calls": 17,
+      "browserFamilies": [
+        "chrome"
+      ],
+      "writeEvidence": {
+        "fullBodyPasted": true,
+        "savedBeforeReload": true,
+        "navigatedAway": true,
+        "reloaded": true
+      },
+      "images": 0,
+      "beforeVerdict": true,
+      "rawObservationSha256": "9603d544d1f2f6f730c86d512b2ac02a8cdf1f6cd4af3eea8696a8d04bdd7f4b",
+      "executorEventsSha256": "5be234a05a475e2b81617cccc9e9c0641af7276dbcdf0e36f22b414526f7bfd7",
+      "mediaVerification": {
+        "profile": "original-sha256-png-v1",
+        "before": [
+          {
+            "src": "https://substack-post-media.s3.amazonaws.com/public/images/f3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "sha256": "088f5f545e0727dfa49af5ca82e982a4e8e2bdd7c5794fe6d742b6b2b95e2288",
+            "bytes": 3339,
+            "contentType": "image/png",
+            "format": "png",
+            "renderedSrc": "https://substackcdn.com/image/fetch/$s_!zewX!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "alt": "草稿同步驗收圖片：gcake-dev 標誌"
+          }
+        ],
+        "beforeConfirmed": [
+          {
+            "src": "https://substack-post-media.s3.amazonaws.com/public/images/f3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "sha256": "088f5f545e0727dfa49af5ca82e982a4e8e2bdd7c5794fe6d742b6b2b95e2288",
+            "bytes": 3339,
+            "contentType": "image/png",
+            "format": "png",
+            "renderedSrc": "https://substackcdn.com/image/fetch/$s_!zewX!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff3cd5d13-4ba4-4831-ae20-e18bd7368cdd_96x96.png",
+            "alt": "草稿同步驗收圖片：gcake-dev 標誌"
+          }
+        ],
+        "after": []
+      }
+    }
+  ]
+}

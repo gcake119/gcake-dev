@@ -179,7 +179,24 @@ export interface PublicationOperationRequest {
   readonly newsletterIntentKey?: string;
   readonly explicitIrreversibleIntent?: true;
 }
-export type PublicationTargetStatus = 'not_configured' | 'prepare_ready' | 'pending' | 'published' | 'verified' | 'failed' | 'manual_required' | 'stale';
+export type PublicationTargetStatus = 'not_configured' | 'prepare_ready' | 'pending' | 'published' | 'verified' | 'failed' | 'manual_required' | 'stale' | 'uncertain';
+/** Saved Pages observations; reading does not verify today's source or public site. */
+export interface PagesPublicationStatus {
+  readonly source: 'release-queue';
+  readonly state: string;
+  readonly historyCount: number;
+  readonly releaseId?: string;
+  readonly sourceRevision?: string;
+  readonly commitSha?: string;
+  readonly releaseAt?: string;
+  readonly deployment: { readonly state: string; readonly url?: string };
+  readonly verification: {
+    readonly state: 'verified' | 'page-only' | 'incomplete' | 'not-verified';
+    readonly verifiedAt?: string;
+    readonly pageVerifiedAt?: string;
+    readonly publicUrl?: string;
+  };
+}
 export interface PublicationTargetState {
   readonly postSlug: string;
   readonly target: PublicationTarget;

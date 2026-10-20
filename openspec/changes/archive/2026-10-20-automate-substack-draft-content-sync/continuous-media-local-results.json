@@ -1,0 +1,28 @@
+[
+  {
+    "name": "check",
+    "exitCode": 0,
+    "evidence": "check.log",
+    "reused": true
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "seconds": 96.51
+  },
+  {
+    "name": "build:all",
+    "exitCode": 0,
+    "seconds": 6.3
+  },
+  {
+    "name": "release:dry-run",
+    "exitCode": 0,
+    "seconds": 10.42
+  },
+  {
+    "name": "editorial:rehearse",
+    "exitCode": 0,
+    "seconds": 10.21
+  }
+]

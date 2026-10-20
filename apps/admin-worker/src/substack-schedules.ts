@@ -3,7 +3,9 @@ export const SCHEDULE_POLICY='scheduled-source-first-delivery-v1' as const;
 export type ScheduleOperation='prepare-draft'|'arm-schedule'|'revise-schedule'|'postpone-schedule'|'cancel-schedule'|'reconcile-schedule'|'sync-content';
 export interface ConfirmedSlot {reservationId:string;queueVersion:number;slug:string;scheduledAt:string;confirmed:boolean}
 export interface ScheduleIntent {id:string;policyVersion?:typeof SCHEDULE_POLICY;expectedGeneration?:number;audience?:'everyone';email?:boolean;appInbox?:boolean;action:'create'|'update-draft'|'update-public'|'arm'|'remove';sourceRevision?:string;expectedDigest?:string;scheduledAt?:string;slot?:ConfirmedSlot;createdAt:string}
+export interface DraftSyncEvidence {status:'pending'|'syncing'|'verified'|'excluded'|'conflict'|'inconclusive'|'foreground-required'|'reconciliation-required';desiredRevision?:string;savedRevision?:string;baselineDigest?:string;code?:string;checkedAt:string;transport:'computer-use'}
 export interface ScheduleRecord {
+ draftSync?:DraftSyncEvidence;
  policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;slug:string;previousSlugs?:string[];legacyNewsletterSentAt?:string;legacyPublished?:boolean;everPublished?:boolean;sourcePath?:string;sourceCommit?:string;sourceRevision?:string;version:number;remoteId?:string;
  editUrl?:string;expectedPublicUrl?:string;remoteUrl?:string;timeZone?:'Asia/Taipei';audience?:'everyone';
  observedState:'draft_prepared'|'scheduled'|'cancelled_draft'|'published_unverified'|'verified'|'reconciliation_required';
