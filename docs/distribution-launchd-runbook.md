@@ -117,3 +117,7 @@ Hermes producer 在更新快照前讀取所有 D1 Substack 人工暫停，包含
 目前私人 runtime 為 `installed-draft-continuous-media-chrome-20261019`；以使用者最新持續寫入授權取代上述單次資格 scope，保留歷史 runtime、失敗紀錄、舊 pin 及回復用 plist。一般草稿使用同一工作與 900 秒 timer，在自己新建的 Chrome 分頁操作；匿名 observer 保持原職責。禁止操作 Brave 或使用者現有分頁。`draftSync.enabled=true`／`writeEnabled=true`／`allowCreate=false`，排程 `writeEnabled=false`。已核准媒體 profile 為 original-sha256-png-v1，資格／授權綁定 runtime pin 與 2026-11-18T15:44:12.782Z 到期時間。
 
 停用時以原子更新此私人 runtime 的 unattended.json，將 draftSync.enabled／writeEnabled 同時設 false；保留其餘 scope、舊證據與匿名 observer。等待當前程序結束後唯讀盤點所有 intent／lock／checkpoint，未知結果先查原 ID，禁止直接重播、清空未決操作或刪除保留來源。停用只停止新 dispatch，不會回復 Substack 內容或取消既有排程。回復舊 runtime 前仍須確認舊 pin、設定相容性與未決操作，不自行操作 provider 取消。自然輪次與清理結果以 [持續驗收紀錄](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md) 為準。
+
+## 2026／10／20 原草稿驗證修正
+
+現行上述私人 runtime 的清單驗證器同時接受實際 editor／published-detail 連結，以畫面總數完整盤點，再由子執行者與父控制器獨立核對；唯讀導覽逾時先保留錯誤並確認原分頁實況，請求結束才清理分頁，禁止重播內容寫入。最終 pin 為 `154d919567c7eccb6a47674ef88b21b401680d84893a6739f151cb97f44f32ae`，原設定、期限與 900 秒 timer 不變，兩次修正都有精準原檔／收據備份。第 10 次自然輪次已 completed、exit 0，原 ID 221099415 完整全文、slug、當前 Git 指紋及正式後台「已保存並驗證」均通過；兩篇只讀、四篇 protected excluded，六篇承諾未變、新建仍停用。來源變動與過早關閉分頁的失敗原件保留，詳見 [原草稿修正驗收](../openspec/changes/automate-substack-draft-content-sync/read-repair-20261020.md)。本次沒有 reload／kickstart、排程／發布／訂閱者寄送操作或 Worker 部署。

@@ -194,7 +194,7 @@ for(const failure of [false,true])test('ordinary unattended executor '+(failure?
   await fs.mkdir(path.join(root,'source/src/content/posts'),{recursive:true});await fs.writeFile(path.join(root,'source/src/content/posts/trial.md'),'---\nstatus: ready\n---\nComplete');
   const config=path.join(root,'policy.json');await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:2,timeoutMs:5000,maxRoundMs:30000,executor:process.execPath,browserName:'chrome',evidenceDirectory:path.join(root,'evidence')}}));
   const actions:string[]=[];const execute=async(file:string,q:{directory:string},evidence:string)=>{
-   const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;
+   const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;await fixtureLists(q.directory);
    if(r.action==='draft-update'){assert.equal((await f.repo.bySlug('trial'))?.intent?.id,r.intentId);assert.equal(r.precondition.digest,contentFingerprint(f.post.content));before=structuredClone(f.post);if(failure)throw Error('SUBSTACK_EXECUTOR_FAILED');await fixtureBeforeVerdict(file,q.directory,before,true);f.post.content=expectedContent(source('b'));}
    await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post,...(before?{before,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}:{})}));
    await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
@@ -258,7 +258,9 @@ test('ordinary controller rejects claimed write without parent before verdict',a
  }finally{f.db.close();await fs.rm(base,{recursive:true,force:true});}
 });
 
+async function fixtureLists(directory:string){await fs.writeFile(directory+'/list-evidence.json',JSON.stringify({schemaVersion:1,lists:[{state:'draft',label:'草稿 1',selected:true,loading:false,nextEnabled:false,rows:[{href:'/publish/post/123',text:'Original'}]},{state:'scheduled',label:'已排程 0',selected:true,loading:false,nextEnabled:false,rows:[]},{state:'published',label:'已發佈 1',selected:true,loading:false,nextEnabled:false,rows:[{href:'/publish/posts/detail/456',text:'Published'}]}]}));}
 async function fixtureBeforeVerdict(_file:string,directory:string,observation:ScheduleObservation,fragmentReady=false){
+ await fixtureLists(directory);
  await fs.writeFile(directory+'/before.json',JSON.stringify({sessionExclusive:true,reloaded:true,observation}));
  const {execFile}=await import('node:child_process'),{promisify}=await import('node:util');
  const imports=['--import',import.meta.resolve('tsx')];
@@ -368,7 +370,7 @@ test('round deadline cancels post-executor media verification and retains the un
   const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:2500,maxRoundMs:3000,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/evidence',mediaProfile:'original-sha256-png-v1'}}));
   const {runDraftSyncRound}=await import('./substack-draft-round');
   running=runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},assertMain:async()=>{},readSource:async()=>desired,fetcher,execute:async(file,q,evidence)=>{
-   const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;
+   const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;await fixtureLists(q.directory);
    if(r.action==='draft-update'){before=structuredClone(f.post);await fixtureBeforeVerdict(file,q.directory,before);f.post.content=expectedContent(desired);f.post.images=[{src:image,alt:'required alt',loaded:true}];}
    await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post,...(before?{before,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}:{})}));
    await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
@@ -378,4 +380,55 @@ test('round deadline cancels post-executor media verification and retains the un
   const state=(await f.repo.bySlug('trial'))!;assert.equal(state.remoteId,'123');assert.equal(state.intent?.action,'update-draft');assert.equal(state.draftSync?.status,'reconciliation-required');assert.equal(state.contentVerifiedRevision,source().sourceRevision);
   assert.deepEqual(actions,['draft-read','draft-read','draft-update']);
  }finally{clearTimeout(watchdog);await running;f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+
+test('complete UI list verifier counts both actual published-detail and draft-editor links without fixed inventory totals',async()=>{
+ const {verifyDraftLists}=await import('./substack-draft-lists');const proof={schemaVersion:1,lists:[{state:'draft',label:'草稿 1',selected:true,loading:false,nextEnabled:false,rows:[{href:'/publish/post/123?back=x',text:'Original'}]},{state:'scheduled',label:'已排程 1',selected:true,loading:false,nextEnabled:false,rows:[{href:'/publish/post/789?back=x',text:'Protected'}]},{state:'published',label:'已發佈 2',selected:true,loading:false,nextEnabled:false,rows:[{href:'/publish/posts/detail/456?referrer=x',text:'Published'},{href:'https://gcakedev.substack.com/publish/posts/detail/999',text:'Other'}]}]};const result=verifyDraftLists(proof,'123');assert.deepEqual(result.counts,{draft:1,scheduled:1,published:2});assert.deepEqual(result.ids.published,['456','999']);
+ for(const change of [(p:any)=>p.lists[2].rows.pop(),(p:any)=>p.lists[0].loading=true,(p:any)=>p.lists[2].nextEnabled=true,(p:any)=>p.lists[2].rows[1].href='/publish/posts/detail/456',(p:any)=>p.lists[2].rows[0].href='https://other.example/publish/post/456',(p:any)=>p.lists[0].rows[0].href='/publish/post/789']){const bad=structuredClone(proof);change(bad);assert.throws(()=>verifyDraftLists(bad,'123'),/SUBSTACK_DRAFT_LIST_|SUBSTACK_DRAFT_IDENTITY_/);}
+});
+
+for(const stage of ['read','update'] as const)test('parent independently rejects incomplete '+stage+' lists despite claimed child success',async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-parent-lists-'));const actions:string[]=[];let denied=false,edits=0;
+ try{
+  await fs.mkdir(root+'/source/src/content/posts',{recursive:true});await fs.writeFile(root+'/source/src/content/posts/trial.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:5000,maxRoundMs:30000,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/evidence'}}));
+  const desired=stage==='update'?source('b'):source();const {runDraftSyncRound}=await import('./substack-draft-round');
+  const rows=await runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},assertMain:async()=>{},readSource:async()=>desired,execute:async(file,q,evidence)=>{
+   const request=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(request.action);await fixtureLists(q.directory);
+   await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
+   if(stage==='read'||request.action==='draft-update'){
+    const lists=JSON.parse(await fs.readFile(q.directory+'/list-evidence.json','utf8'));lists.lists[2].rows=[];await fs.writeFile(q.directory+'/list-evidence.json',JSON.stringify(lists));
+    await fs.writeFile(q.directory+'/list-verdict.json',JSON.stringify({complete:true}));
+   }
+   if(request.action==='draft-update'){
+    await fs.writeFile(q.directory+'/before.json',JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post}));
+    const {execFile}=await import('node:child_process'),{promisify}=await import('node:util');
+    await assert.rejects(promisify(execFile)(process.execPath,['--import',import.meta.resolve('tsx'),q.directory+'/verify-before.mts'],{timeout:5000}),/SUBSTACK_DRAFT_LIST_INCOMPLETE/);
+    const verdict=JSON.parse(await fs.readFile(q.directory+'/before-verdict.json','utf8'));assert.equal(verdict.ok,false);assert.equal(verdict.code,'SUBSTACK_DRAFT_LIST_INCOMPLETE');denied=true;return;
+   }
+   if(request.action!=='draft-read')edits++;
+   await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post}));
+  }});
+  const state=(await f.repo.bySlug('trial'))!;assert.notEqual(rows[0].status,'observed');assert.equal(edits,0);assert.deepEqual(f.post.content,expectedContent(source()));assert.equal(state.remoteId,'123');assert.equal(state.delivery,'not_armed');assert.equal(state.draftSync?.baselineDigest,contentFingerprint(expectedContent(source())));
+  if(stage==='read'){assert.deepEqual(actions,['draft-read']);assert.equal(state.draftSync?.status,'inconclusive');assert.equal(state.draftSync?.code,'SUBSTACK_DRAFT_LIST_INCOMPLETE');assert.equal(state.intent,undefined);}
+  else {assert.deepEqual(actions,['draft-read','draft-read','draft-update']);assert.equal(denied,true);assert.equal(state.intent?.action,'update-draft');assert.equal(state.draftSync?.status,'reconciliation-required');}
+ }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+
+for(const action of ['draft-find','draft-create'] as const)for(const allowCreate of [false,true])test('ordinary existing-ID executor rejects '+action+' with allowCreate='+allowCreate,async()=>{
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-existing-id-only-'));let dispatched=0;
+ try{
+  const old=(await f.repo.bySlug('trial'))!;const state=await f.repo.save({...old,remoteId:undefined,remoteUrl:undefined,editUrl:undefined,intent:action==='draft-create'?{id:'unqualified-create',action:'create',sourceRevision:source().sourceRevision,expectedDigest:contentFingerprint(expectedContent(source())),createdAt:now}:undefined},old.version);
+  const {FileAttendedExchange}=await import('./substack-attended'),{ComputerUseDraftPort}=await import('./substack-draft-computer-use'),{replyWithDraftExecutor}=await import('./substack-draft-executor');
+  const exchange=await FileAttendedExchange.create<DraftExchangeRequest>(root+'/requests',root+'/source',1000,10,async file=>replyWithDraftExecutor(file,{policy:{...f.policy,allowCreate,executor:process.execPath,browserName:'chrome',evidenceDirectory:root+'/evidence'},source:source(),timeoutMs:1000,check:async()=>state,execute:async()=>{dispatched++;throw Error('UNQUALIFIED_DISPATCH');}}));
+  const port=new ComputerUseDraftPort(source(),f.repo,exchange.exchange,async()=>{});
+  await assert.rejects(action==='draft-find'?port.find(source()):port.create(source()),/SUBSTACK_DRAFT_CREATION_DISABLED/);assert.equal(dispatched,0);const after=(await f.repo.bySlug('trial'))!;assert.equal(after.remoteId,undefined);assert.deepEqual(after.intent,state.intent);
+ }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});
+for(const action of ['draft-find','draft-create'] as const)test('direct executor rejects unqualified '+action+' before any process',async()=>{
+ const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-direct-disabled-'));
+ try{
+  const request=root+'/request.json';await fs.writeFile(request,JSON.stringify({request:{action,article:source().article}}));const executable=root+'/sentinel.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`require('node:fs').writeFileSync(${JSON.stringify(root+'/spawned')},'yes');`,{mode:0o700});
+  const {executeDraftRequest}=await import('./substack-draft-executor');await assert.rejects(executeDraftRequest(request,{directory:root,executor:executable,timeoutMs:1000},root+'/observation.json'),/SUBSTACK_DRAFT_CREATION_DISABLED/);await assert.rejects(fs.access(root+'/spawned'),{code:'ENOENT'});
+ }finally{await fs.rm(root,{recursive:true,force:true});}
 });

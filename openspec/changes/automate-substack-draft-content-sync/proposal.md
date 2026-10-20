@@ -73,3 +73,7 @@ Owner authorizes connecting the current release_queue_runtime publication/deploy
 ## Clean Git delivery of deployed status features — 2026-10-20
 
 The owner authorizes packaging the deployed Substack status UI, legacy publication read repair and current Pages evidence as an independent commit based on merged main 6e8f715, full local verification, push and PR/CI/Codex review. Do not merge, deploy, enable scheduling writes or initiate delivery. Preserve PR41 regressions and keep Admin archive and subsequent draft-list runtime repair out of this delivery.
+
+## Original draft inconclusive read repair — 2026-10-20
+
+Owner authorizes diagnosing and repairing ID 221099415 readback and natural Chrome synchronization acceptance. Preserved failed transcript shows complete published links at /publish/posts/detail/ID were incorrectly discarded by child ad hoc /publish/post/ filtering before opening the draft. Replace this duplicated guess with shared deterministic full-list identity validation, retain all discovery/content guards, qualify full read then repair the installed pin/receipts under the existing round lock without kickstart, new timer, creation, schedule/publication/delivery operation or Worker deployment.
