@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Keep browser-free Substack observation and human-action notifications truthful while preserving source identity, confirmed provider commitments and delivery evidence. Foreground work owns authenticated draft and schedule changes; background work never mutates provider state.
+Keep browser-free Substack observation and human-action notifications truthful while preserving source identity, confirmed provider commitments and delivery evidence. The anonymous observer never uses authenticated provider access or mutates provider state. A separately qualified and activated unattended-draft-sync-v1 draft worker may perform only its authorized unscheduled draft operations under unattended-substack-drafts; it grants no browser or write authority to the observer. Foreground work retains schedule changes, publication, public corrections and subscriber-delivery authority, and draft changes outside that qualified scope.
 
 ## Requirements
 
