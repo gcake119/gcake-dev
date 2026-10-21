@@ -25,9 +25,10 @@ async function textBounded(response: Response, limit = 8 * 1024 * 1024) {
         reader.releaseLock();
     }
 }
-export function deployedReader(fetcher: typeof fetch = fetch) {
+export function deployedReader(fetcher: typeof fetch = fetch, timeoutMs = 2000) {
+    if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 30000) throw new Error('INVALID_DOWNLOAD_DEADLINE');
     return async (signal: AbortSignal) => {
-        const timeout = AbortSignal.timeout(2000), bounded = AbortSignal.any([signal, timeout]);
+        const timeout = AbortSignal.timeout(timeoutMs), bounded = AbortSignal.any([signal, timeout]);
         const response = await fetcher(manifestUrl, { cache: 'no-store', redirect: 'error', signal: bounded });
         const m = JSON.parse(await textBounded(response, 32768));
         if (m.schemaVersion !== 1 || !/^\w{64}$/.test(m.corpusId) || !m.assets)

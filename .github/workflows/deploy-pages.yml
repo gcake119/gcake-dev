@@ -55,6 +55,7 @@ jobs:
       - name: Build
         run: pnpm build
         env:
+          PUBLIC_SEARCH_ENDPOINT: ${{ vars.PUBLIC_SEARCH_ENDPOINT }}
           WEBSITE_ANALYTICS_ENABLED: 'true'
           CLOUDFLARE_WEB_ANALYTICS_TOKEN: ${{ vars.CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
           GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}

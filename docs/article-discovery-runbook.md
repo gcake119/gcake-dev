@@ -136,3 +136,21 @@ IP 只用於具密鑰、逐分鐘更新的短期雜湊，應用不記錄原始�
 以上均不是尚缺的精簡搜尋畫面功能；雲端部分在另行授權與有效證據齊備前維持停用，不因本文回填而執行。
 
 帳戶費率、免費資格、零超額限制及隱私文件可先以唯讀方式整理，不需要先啟用模型；實際雲端模型呼叫、資源接線及版本切換／回復驗證則需另行授權。這次只回填既有結果，沒有執行上述雲端準備或啟用工作。
+
+
+## Cloudflare 啟用授權與持續決策（２０２６－１０－２１）
+
+本次使用者已另行授權實際接線、驗證及正式語意搜尋啟用，並確認免費方案硬上限下自動重設本站每日保守額度。[ADR-001](decisions/ADR-001-cloudflare-semantic-search.md) 保存這些持續決策，取代前文針對先前「尚未授權」階段的現況描述；舊驗收與原始限制不回寫成成功。實際部署、資源、模型測試及開關結果將另外保存，不以授權本身代表已啟用。
+
+
+### 正式搜尋 Worker 的型別與發布
+
+`pnpm --filter @gcake/search-worker types` 使用既有 Admin workspace 的 Wrangler 產生綁定型別，再將宣告限制在搜尋 Worker 模組內，避免改變 Astro 與其他 workspace 的瀏覽器型別。實際入口仍以這份生成的綁定型別做編譯核對，離線測試沿用既有的最小 dependency contracts。
+
+前景建索引命令為 `node --import tsx scripts/discovery/cloud-stage.ts --out <本輪獨立證據目錄>`，預設只凍結計畫與有來源的題目、不推論；核實當期免費方案／用量並保存 admission.json 後，才在已授權的前景加入 `--run`。認證只由環境變數傳入，不寫進計畫、快取或 Git。每批最多１６筆、每筆最多４０９６ UTF-8 bytes，先持久保存保守預留額度，再呼叫模型；未知結果不退額度、不自動重試。既有計畫或題目改變即停止，另建獨立輪次；不得覆寫凍結資料以取得通過。
+
+Vectorize 先建立 metadata indexes，再 upsert；上傳與索引處理完成是兩回事。實際 get_by_ids 端點每批最多２０個 IDs，逐批核對 namespace、文章身分、修訂及１０２４維向量值後才視為可用。完整兩份索引不可同時塞進免費容量；版本切換須先核實當期容量、查詢在途狀態與可安全清理的本輪資源，不能隨意刪除其他索引。
+
+`wrangler.jsonc` 的預設及 production 開關都保留 false。第一次準備資源或重新部署後，透過 Cloudflare 控制台核對 AI／DISCOVERY_DB／VECTOR_INDEX 三個綁定、已加密的 THROTTLE_SECRET，以及 Workers Logs／追蹤停用；有效 D1 policy、當期公開 corpus 與真實 provider 驗證齊備後，才將 production 的 SEMANTIC_ENABLED 改為 true。靜態建置僅接受指定的公開搜尋端點，來源由部署流程的 PUBLIC_SEARCH_ENDPOINT 提供。
+
+每日自動額度只適用 ADR-001 已確認的 Workers Free 硬限制；D1 的當日列只建立一次，重新部署不補回已用額度。帳戶升級前先關閉語意服務，不能把已記錄的免費方案證據沿用到付費帳戶。政策證據有有效期限，過期仍停用，不自動延長價格／隱私證明。

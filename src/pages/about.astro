@@ -20,6 +20,9 @@ import { profileStructuredData } from '@/lib/seo/structured-data';
     <p>我目前在 AI Camp 受訓，透過 AI 協作與真實專案學習軟體開發。</p>
     <p>現在最想練習的是：把問題問清楚、把流程拆開，並判斷做出的功能是否有用。我也在探索工作流程自動化與 AI Agent，學習讓 AI 在明確的目標與流程中執行任務。</p>
     <p>我想進一步理解，當一個功能進入真實使用情境後，會遇到哪些問題，又該怎麼驗證與調整。這些正在摸索的事情，都會成為開發筆記的一部分。</p>
+    <h2>搜尋與隱私</h2>
+    <p>送出搜尋時，查詢文字會交由 Cloudflare Workers AI 的 BGE-M3 模型處理，以尋找意思相關的公開文章。輸入過程不會呼叫模型；服務無法使用時，改用關鍵字搜尋。</p>
+    <p>本站不保存搜尋原文或原始 IP，也不提供 AI 回答或搜尋紀錄。Cloudflare 表示不會將 Workers AI 的輸入與輸出用來訓練模型；一般推論處理完成後不保留內容，但可能保留用量、安全及法令所需的資料。詳見<a href="https://developers.cloudflare.com/workers-ai/platform/data-usage/">Cloudflare 的資料使用政策</a>。</p>
     <h2>其他地方也可以找到我</h2>
     <ul>{socialLinks.map(link => <li><a href={link.href}>{link.name}</a></li>)}</ul>
   </article>

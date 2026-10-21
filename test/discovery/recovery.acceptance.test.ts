@@ -59,3 +59,7 @@ test('Superseded release recovery cannot overwrite a newer query',async()=>{
         assert.equal((h.document.querySelector('input') as any).value,'kept');assert.doesNotMatch(h.rows(),/withdrawn/);assert.match(h.rows(),/kept/);
     }finally{h.release();h.restore();}
 });
+
+test('Authorized public endpoint searches directly without a mode selector or preview flag',async()=>{
+ const h=setup('409');try{delete (h.document.querySelector('#search-results') as any).dataset.localSemantic;installSearch();await until(()=>h.status().includes('找到'));assert.equal(h.calls(),1);assert.equal(h.document.querySelectorAll('select').length,0);assert.match(h.rows(),/kept/);}finally{h.restore();}
+});

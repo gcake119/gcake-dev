@@ -2,9 +2,46 @@
   "name": "gcake-public-search",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-21",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "workers_dev": false,
   "preview_urls": false,
-  "vars": { "SEMANTIC_ENABLED": "false" },
-  "observability": { "enabled": false }
+  "vars": {
+    "SEMANTIC_ENABLED": "false"
+  },
+  "observability": {
+    "enabled": false
+  },
+  "env": {
+    "production": {
+      "name": "gcake-public-search-production",
+      "account_id": "979a3735f8dfa269e7474135f348cfdf",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "SEMANTIC_ENABLED": "false"
+      },
+      "ai": {
+        "binding": "AI"
+      },
+      "vectorize": [
+        {
+          "binding": "VECTOR_INDEX",
+          "index_name": "gcake-public-search-bge-m3"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DISCOVERY_DB",
+          "database_name": "gcake-search-admission-production",
+          "database_id": "61a90421-3b29-4876-b178-5dd2c5c7d623",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "observability": {
+        "enabled": false
+      }
+    }
+  }
 }

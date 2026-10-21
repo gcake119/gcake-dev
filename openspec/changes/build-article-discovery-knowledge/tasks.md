@@ -72,3 +72,8 @@
 | 4.3 | Complete local gate, PR/main CI, static Pages deployment and public asset readback. | Actual semantic runtime/account/index configuration and quality decision, compatible release promotion, rollback and authorized old-namespace cleanup; no cloud service was activated here. |
 
 Evaluation evidence grows with public articles without fixed quotas. Static publication does not close provider or human relevance acceptance. No archive, cloud activation, model execution or new deployment is part of this backfill.
+
+
+## Cloud execution authorization（2026-10-21）
+
+The operator now authorizes actual free-only BGE-M3 wiring, provider verification and public activation under pending 3.3/4.3. Verify an incomplete production binding causes zero calls before implementation, then exercise actual provider output, current release identity, durable quota admission, privacy, Computer Use search/mobile flows and semantic-disable recovery. Preserve every completed checkbox and historical evidence limitation. Record actual outcomes rather than changing earlier receipts.
