@@ -1,0 +1,449 @@
+{
+  "recordType": "recorded-production-acceptance",
+  "localDate": "2026-10-22",
+  "recordingScope": "Backfill existing deployment observations only; no new provider calls, deployment or settings writes during documentation commit.",
+  "result": {
+    "passed": true,
+    "sourceCommit": "ecfebebaaaa1c0d070975d58dbd752ff497d1de7",
+    "workerVersion": "88aa9c47-20d6-4563-bbae-5c42b3f405e2",
+    "pagesRun": "https://github.com/gcake119/gcake-dev/actions/runs/39658022913",
+    "newCorpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "semanticApi": 200,
+    "keywordFallbackAndRetry": true,
+    "mobileWidths": [
+      320,
+      390
+    ],
+    "articleAnchorVerified": true,
+    "indexReuse": {
+      "vectors": 2633,
+      "newEmbeddings": 0,
+      "newStorageDimensions": 0,
+      "foregroundDeploymentMaintenance": true
+    },
+    "naturalCronResumed": true,
+    "model": "@cf/baai/bge-m3",
+    "freeHardLimitsUnchanged": true,
+    "enabledSettingsUnchanged": true,
+    "originalDirtyCheckoutUnchanged": true,
+    "viewportReset": true,
+    "networkOverridesCleared": true,
+    "uploadInputsRemovedBytes": 34523819
+  },
+  "worker": {
+    "sourceCommit": "ecfebebaaaa1c0d070975d58dbd752ff497d1de7",
+    "mainCI": 39656622195,
+    "at": "2026-10-21T19:01:48.562231+00:00",
+    "deployment": {
+      "id": "6c82ffb3-d14f-4e58-b32a-bca8f35042e3",
+      "source": "wrangler",
+      "strategy": "percentage",
+      "annotations": {
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "88aa9c47-20d6-4563-bbae-5c42b3f405e2",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-10-21T19:01:14.723588Z"
+    },
+    "moduleMatchesMainBundle": true,
+    "moduleSha256": "d1d5f1b58b132866f78fd1b951d4d1bb2ef229cbab631893ed11050fb085f115",
+    "settingsUnchanged": true,
+    "policyUnchanged": true,
+    "schedulesUnchanged": true,
+    "model": "@cf/baai/bge-m3",
+    "paidOverage": 0,
+    "limits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T15:40:36.413Z",
+      "processedUpToMutation": "b5479c98-bd31-4755-a1a2-3da3b2cc3edc"
+    }
+  },
+  "pages": {
+    "sourceCommit": "ecfebebaaaa1c0d070975d58dbd752ff497d1de7",
+    "run": 39658022913,
+    "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "htmlMatchesArtifact": true,
+    "manifestMatchesArtifact": true,
+    "scripts": [
+      {
+        "href": "/gcake-dev/_astro/search.astro_astro_type_script_index_0_lang.FypUu2Z1.js",
+        "sha256": "5020c215fe0838b2f2bc87e9d7af26401dd88817d12b273b309fa542b9d7ae59",
+        "browser22sPresent": true
+      }
+    ],
+    "assets": [
+      {
+        "kind": "index",
+        "bytes": 1375779,
+        "digest": "92d4068434cbc3fad90644d5a3a89c881d561711b79f1f327cb5ef68acb05dd3"
+      },
+      {
+        "kind": "passages",
+        "bytes": 1464252,
+        "digest": "a5cc672e0e1c8c886bbf40284c102e2c9c777d2bf5a645b4ead1970a4913d7a5"
+      }
+    ]
+  },
+  "alignment": {
+    "owner": "deploy-align:a385674f-5e36-4f04-ab78-e024c82f212a",
+    "target": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "previous": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "vectors": 2633,
+    "cloudEmbeddingCalls": 0,
+    "newStorageDimensions": 0,
+    "phase": "promoted",
+    "upserts": [
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 133
+      }
+    ],
+    "reservation": {
+      "requests": 0,
+      "tokens": 0,
+      "units": 0,
+      "vectorQueries": 0,
+      "worker": 1,
+      "admission": 12000,
+      "storage": 0
+    },
+    "providerVectorsFullyVerified": 2633,
+    "policyOnlyActiveCorpusChanged": true,
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T19:14:12.240Z",
+      "processedUpToMutation": "021eeb45-d51e-4428-9d62-f44c4ef3ed95"
+    },
+    "finishedAt": "2026-10-21T19:16:24.586551+00:00",
+    "leaseReleased": true
+  },
+  "finalReadback": {
+    "at": "2026-10-21T19:20:08.003003+00:00",
+    "settingsUnchanged": true,
+    "schedulesUnchanged": true,
+    "policyOnlyCurrentCorpusChanged": true,
+    "model": "@cf/baai/bge-m3",
+    "limits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "paidOverage": 0,
+    "evidenceValidUntil": "2026-11-20T00:00:00Z",
+    "currentCorpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T19:14:12.240Z",
+      "processedUpToMutation": "021eeb45-d51e-4428-9d62-f44c4ef3ed95"
+    },
+    "syncState": {
+      "id": 1,
+      "owner": null,
+      "leaseUntil": 0,
+      "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+      "previousCorpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+      "cursor": 2633,
+      "status": "no_change",
+      "detail": "",
+      "updated": 1792610370746
+    },
+    "pending": 0,
+    "independentCronReceipts": [
+      {
+        "id": 210,
+        "created": 1792610370746,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 209,
+        "created": 1792610311821,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 208,
+        "created": 1792610250515,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 207,
+        "created": 1792610191912,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 206,
+        "created": 1792610183906,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "promoted",
+        "detail": "Deployment foreground reuse: 2633 verified; 0 embeddings; no additional storage dimensions"
+      }
+    ],
+    "existingDailyCreditNeverReplenished": true,
+    "originalDirtyCheckoutUnchanged": true
+  },
+  "browser": {
+    "passed": true,
+    "observations": [
+      {
+        "phase": "natural-version-conflict",
+        "retry": true,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋暫時無法使用，已顯示關鍵字結果。找到 24 篇文章，第 1 頁。",
+        "width": 390
+      },
+      {
+        "phase": "fallback-pagination",
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "找到 24 篇文章，第 2 頁。",
+        "width": 320
+      },
+      {
+        "phase": "natural-fallback-http",
+        "http": [
+          {
+            "status": 204,
+            "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+          },
+          {
+            "status": 409,
+            "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+          },
+          {
+            "status": 204,
+            "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+          },
+          {
+            "status": 409,
+            "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+          }
+        ]
+      },
+      {
+        "phase": "current-corpus-recovered",
+        "pagination": [
+          "上一頁",
+          "下一頁"
+        ],
+        "retry": false,
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 2 頁。",
+        "width": 320
+      },
+      {
+        "phase": "semantic-320",
+        "first": "Day 2｜當實作跑得比理解更快",
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。",
+        "width": 320
+      },
+      {
+        "phase": "semantic-390",
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。",
+        "width": 390
+      },
+      {
+        "phase": "browser-only-network-failure",
+        "retry": true,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋暫時無法使用，已顯示關鍵字結果。找到 24 篇文章，第 1 頁。",
+        "width": 390
+      },
+      {
+        "phase": "network-restored-semantic",
+        "first": "Day 2｜當實作跑得比理解更快",
+        "retry": false,
+        "rows": 10,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "article-navigation",
+        "hasBody": true,
+        "hash": "#ai-%E5%8A%A0%E9%80%9F%E7%9A%84%E6%98%AF%E6%95%B4%E5%80%8B%E5%BE%AA%E7%92%B0",
+        "scrollWidth": 375,
+        "title": "Day 2｜當實作跑得比理解更快",
+        "url": "https://gcake119.github.io/gcake-dev/series/ithome-2026/day-02/#ai-%E5%8A%A0%E9%80%9F%E7%9A%84%E6%98%AF%E6%95%B4%E5%80%8B%E5%BE%AA%E7%92%B0",
+        "width": 390,
+        "anchorExists": true
+      },
+      {
+        "phase": "network-observations",
+        "http": [
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          }
+        ],
+        "failures": [
+          {
+            "reason": "inspector",
+            "error": ""
+          }
+        ]
+      }
+    ],
+    "viewportReset": true,
+    "networkOverridesCleared": true
+  },
+  "semanticSmoke": {
+    "at": "2026-10-21T19:19:59.264318+00:00",
+    "status": 200,
+    "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "mode": "hybrid",
+    "total": 33,
+    "firstResult": {
+      "articleId": "ithome:day-24",
+      "title": "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+      "readingHref": "/gcake-dev/series/ithome-2026/day-24/#%E6%88%91%E7%8F%BE%E5%9C%A8%E5%BB%BA%E7%AB%8B%E7%9A%84%E6%98%AF%E4%BF%A1%E4%BB%BB%E4%B8%8D%E6%98%AF%E5%AE%8C%E5%85%A8%E7%A2%BA%E5%AE%9A"
+    },
+    "scope": "One recorded synthetic public paraphrase smoke; no quality or latency benchmark claim. Real inference consumed existing shared quota."
+  },
+  "cleanup": {
+    "files": [
+      {
+        "file": "reuse-0000.ndjson",
+        "bytes": 6550006,
+        "sha256": "14f578b86834c57c6bb621e6617d9e4a778109d2ebe0fac734bba5d57c09d0fd"
+      },
+      {
+        "file": "reuse-0500.ndjson",
+        "bytes": 6558340,
+        "sha256": "faddc954064cdfe9ada43eb01431f19430cdb3ff1ef8fbb4bafc075daf4840c6"
+      },
+      {
+        "file": "reuse-1000.ndjson",
+        "bytes": 6547336,
+        "sha256": "b249a081dc19b122958c0e55186f328ccaae176b923e01bcd933c88b490a4383"
+      },
+      {
+        "file": "reuse-1500.ndjson",
+        "bytes": 6555980,
+        "sha256": "1d7d78395dfad4c169f7e48e2a87fe1fe543512328046cb9145f9655e5bd20a2"
+      },
+      {
+        "file": "reuse-2000.ndjson",
+        "bytes": 6562535,
+        "sha256": "d0c97f5a81c650f3b2cd3bc2285c29843de3f18676ac06230c6180d20d1cc13d"
+      },
+      {
+        "file": "reuse-2500.ndjson",
+        "bytes": 1749622,
+        "sha256": "89e737c65b97b3ab17d5f0079b5128074206f3dcda0f50ed095957ffe9bf74e7"
+      }
+    ],
+    "removedBytes": 34523819,
+    "reason": "All provider values and metadata verified, current corpus promoted; retained receipts rather than disposable upload inputs"
+  },
+  "remainingTasks": [
+    "1.1 historical RED provenance",
+    "12.2 full natural new-article sync and promotion"
+  ],
+  "rawReceiptSha256": {
+    "result.json": "7c94fe2e65321f8a3ddb534cd4baf36326a45ca16c471cbfaf5b7a2ba0058555",
+    "worker-readback.json": "faed40b2460a7d21cfbfe49f4ad4a592a2a5efdf963b0f611da62c0bca3225e9",
+    "pages-readback.json": "8c7803d1af36ff800407013ffa2910a9671051a2e0eb7f95067b441f211d1565",
+    "pages-run.json": "be8bcc23eaf3cf9ecce2cf7e7b535c679300e2db0aa246fe7e33a9523ec208e5",
+    "index-alignment.json": "0bb6a997b1174ce5d939c9089aa8b9c7f92452fbc923f065c22837cee3bcedbd",
+    "final-readback.json": "1b7e16e191f0afba84999728fc2c03ff1a618ccd6df3d22bfe2be500f22d0cad",
+    "browser-result.json": "a8e2e502138bd3bc47b90a760d46f151a340c097b52f9744a71393b2ed247403",
+    "semantic-api.json": "322408a44c891cd04a0bce13efe8979f46ad41afc88fa20661a333a80b784ad1",
+    "sync-readback-initial.json": "35d1b2bf841b373b8fa90aedcc69569f4f7075a9a3fc6a943f3490b3048b0e45",
+    "reuse-input-cleanup.json": "397d98be18f0d58ec39500ad5de27a1d013092930e2cf2a008607755d3b00d1e",
+    "public-manifest.json": "1d55178b15c687f5c36b4d37b506c4e9beaf352d5e2d812c32299a4e33d865aa"
+  },
+  "screenshots": {
+    "evidence/source-timeout-production-20261022/semantic-390.jpg": "6a5fe9422448f5c43624dce9f86d42cf1ff226fa6ec3e1c758bb0eca8bc2b356",
+    "evidence/source-timeout-production-20261022/semantic-320.jpg": "ef86d4eb19629ac8bbde13e46a540938248cb60e79691d7f2dfdd675f80d2ecc",
+    "evidence/source-timeout-production-20261022/network-fallback-390.jpg": "6b562c999a1d820bf954adf093ef54d1b16200637a3a16016a1c29c383a8074b",
+    "evidence/source-timeout-production-20261022/natural-fallback-390.jpg": "6b562c999a1d820bf954adf093ef54d1b16200637a3a16016a1c29c383a8074b"
+  },
+  "documentationValidation": {
+    "scope": "Local documentation/evidence checks only; no runtime rerun",
+    "spectraValidate": "pass on isolated non-Git snapshot matching owned worktree openspec",
+    "spectraAnalyze": {
+      "critical": 0,
+      "coverage": "Clean",
+      "consistency": "Clean",
+      "gaps": "Clean",
+      "existingSuggestion": "specs/reader-search/spec.md:62 may"
+    },
+    "localMarkdownLinksChecked": 34,
+    "screenshotSha256": "pass",
+    "taskProgress": "34/36",
+    "originalDirtyStatusMatchesBaseline": true,
+    "screenshotFileFormat": "Original JPEG bytes retained; portable extensions corrected from .png to .jpg without recompression."
+  }
+}
