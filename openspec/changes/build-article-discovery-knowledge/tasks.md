@@ -59,3 +59,16 @@
 - [x] 11.1 Deliver release-conflict lexical recovery without stale withdrawn results or automatic model retries; first reproduce 409, changed-manifest, unavailable-refresh and superseded-recovery acceptance failures, then verify current results/query/pagination/retry and the existing browser flows.
 - [x] 11.2 Deliver independent preview evidence locations across repeated foreground runs; first reproduce receipt overwrite using the extracted existing behavior, then verify distinct run locations and unchanged earlier start/status/finish receipts with owned temporary files and no model calls.
 - [x] 11.3 Reject duplicate primary reading URLs before map construction while preserving valid same-slug/different-route sources; first reproduce collision acceptance failure, then verify normalized URL collisions, existing aliases, the complete local gate and unchanged approved UI/cloud-disabled boundaries.
+
+
+## Current status after static production deployment（2026-10-21）
+
+24/27 tasks remain complete; every existing checkbox and completed description is preserved. The conditional deployed-manifest portion of completed task 2.5 now has actual Pages/artifact/browser evidence in production-acceptance-20261021.md. No new implementation task or acceptance requirement is introduced by recording this evidence.
+
+| Unchecked task | Already evidenced | Remaining scope |
+| --- | --- | --- |
+| 1.1 | Existing regression and subsequent red-to-green tests. | Historical absence of complete pre-implementation failing evidence for every early scenario; cannot be retroactively manufactured or closed by rerunning green tests. |
+| 3.3 | Offline client/lifecycle behavior, actual local Ollama comparison and preview, and deployed static corpus identity. | Actual cloud model inputs/outputs/quality, current account-specific free/no-overage and privacy evidence, and authorized Workers AI/Vectorize/D1 wiring and activation. |
+| 4.3 | Complete local gate, PR/main CI, static Pages deployment and public asset readback. | Actual semantic runtime/account/index configuration and quality decision, compatible release promotion, rollback and authorized old-namespace cleanup; no cloud service was activated here. |
+
+Evaluation evidence grows with public articles without fixed quotas. Static publication does not close provider or human relevance acceptance. No archive, cloud activation, model execution or new deployment is part of this backfill.

@@ -1,0 +1,143 @@
+{
+  "deploymentRun": "https://github.com/gcake119/gcake-dev/actions/runs/39594694469",
+  "deployedCommit": "f488015757d2cb337734c5c735f9b590c510adae",
+  "site": "https://gcake119.github.io/gcake-dev/search/?q=AI",
+  "deployment": "success",
+  "publicArtifactVerification": {
+    "sourceTree": "f488015757d2cb337734c5c735f9b590c510adae",
+    "corpusId": "1e14c449ba244e3be6872d968b86aabcd1ff782315e53dacc7ae315608fd68eb",
+    "artifactId": 12343111541,
+    "artifactZipDigestVerified": true,
+    "publicManifestMatchesDeployedArtifact": true,
+    "searchHTMLMatchesDeployedArtifact": true,
+    "semanticEndpointBlank": true,
+    "localPreviewFlagAbsent": true,
+    "articles": 33,
+    "passages": 2633,
+    "assets": {
+      "index": {
+        "digest": "1e75875cf3e5c1193cc88a80b73f9579d34fd3d67fae3e94e492ac603fa474ad",
+        "publicMatchesArtifact": true,
+        "bytes": 1375779
+      },
+      "passages": {
+        "digest": "a5cc672e0e1c8c886bbf40284c102e2c9c777d2bf5a645b4ead1970a4913d7a5",
+        "publicMatchesArtifact": true,
+        "bytes": 1464252
+      },
+      "connections": {
+        "digest": "35886d2655b76937535a17e5acd58f0ae994202e92620f52563c930f9c315c2d",
+        "publicMatchesArtifact": true,
+        "bytes": 97025
+      }
+    }
+  },
+  "computerUse": "PASS",
+  "screenshots": {
+    "desktop-dark.jpg": {
+      "path": "evidence/production-20261021/desktop-dark.jpg",
+      "sha256": "0bf988226e1cff07427ec96e9728e292efb143a872c575e7761bb7f8bdb3b6e0"
+    },
+    "phone-390-dark-top.jpg": {
+      "path": "evidence/production-20261021/phone-390-dark-top.jpg",
+      "sha256": "b8bd8ec43e33c8e5f8c21e78c12b8d975ad12eb7e1723d3f896313b67d9843db"
+    },
+    "phone-320-light.jpg": {
+      "path": "evidence/production-20261021/phone-320-light.jpg",
+      "sha256": "dd922db8fff179be2809ce22d87880a23cd1221f342e426da3074f2f9285e027"
+    }
+  },
+  "viewportOverrideReset": true,
+  "originalThemeRestored": true,
+  "cloudModelActivated": false,
+  "modelInferenceCalls": 0,
+  "otherWipUnchanged": true,
+  "pr": "https://github.com/gcake119/gcake-dev/pull/50",
+  "originalCommit": "d651cabd1e17118e88775025a78d17497c7d91dd",
+  "syncCommit": "72053b5d521c29fc5419b3bda37bfc6e90e22743",
+  "updatedPrCI": "https://github.com/gcake119/gcake-dev/actions/runs/39593043863",
+  "mainCI": "https://github.com/gcake119/gcake-dev/actions/runs/39593464408",
+  "deploymentCompletedAtUTC": "2026-10-21T11:49:13Z",
+  "deploymentCompletedAtTaipei": "2026-10-21T19:49:13+08:00",
+  "artifactZipSha256": "sha256:7c78a46a807a593dc2f2b0936920f3a14dd7cc3db76727f12ecd0f60d6b4d8b9",
+  "browserEvidence": {
+    "desktop": {
+      "dropdowns": 0,
+      "extraSuggestions": 0,
+      "overflow": false,
+      "rows": 10,
+      "semanticEndpoint": "",
+      "status": "找到 24 篇文章，第 1 頁。",
+      "titles": [
+        "Day 8｜沒有告訴 AI 的事",
+        "當程式主要由 AI 寫，我怎麼決定網站要用什麼技術框架？",
+        "Day 30｜AI 都會寫程式了，Coding 到底要懂多深？",
+        "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+        "Day 25｜用測試約束 AI 改程式",
+        "Day 2｜當實作跑得比理解更快",
+        "Day 21｜我幾乎不讀程式碼，那我是怎麼理解系統的？",
+        "Day 1｜做得出來，卻完全改不動",
+        "Day 22｜從理解工程概念，到形成自己的判斷",
+        "Day 3｜功能是從觀察和許願長出來的"
+      ],
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=AI"
+    },
+    "page2": {
+      "status": "找到 24 篇文章，第 2 頁。",
+      "titles": [
+        "Day 27｜主要流程走得通，還有哪些地方我沒驗到？",
+        "Day 7｜一句「平常都這樣做」，後面藏了多少事情？",
+        "Day 19｜把「為什麼這樣決定」也留下來",
+        "Day 17｜從「這個功能怎麼做」開始看懂系統怎麼分工",
+        "Day 18｜系統分工之後，怎麼讓不同部分一起工作",
+        "Day 12｜原來我在做翻譯",
+        "原本只是想自動發文，最後怎麼做成一整套鐵人賽工具？",
+        "Day 10｜我以為功能做完，產品就完成了",
+        "Day 11｜看到 n8n 時，我以為找到做預約系統的方法了",
+        "Day 29｜工作真的要做進系統，我現在知道要問什麼了"
+      ],
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=AI&page=2"
+    },
+    "back": {
+      "input": "AI",
+      "status": "找到 24 篇文章，第 1 頁。",
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=AI"
+    },
+    "phone390": {
+      "firstTitle": "Day 25｜用測試約束 AI 改程式",
+      "input": "測試",
+      "overflow": false,
+      "rows": 10,
+      "scrollWidth": 375,
+      "semanticEndpoint": "",
+      "status": "找到 11 篇文章，第 1 頁。",
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=%E6%B8%AC%E8%A9%A6",
+      "width": 390
+    },
+    "phone320": {
+      "firstTitle": "Day 25｜用測試約束 AI 改程式",
+      "overflow": false,
+      "scrollWidth": 305,
+      "status": "找到 11 篇文章，第 1 頁。",
+      "theme": "light",
+      "width": 320
+    },
+    "article": {
+      "hasContent": true,
+      "title": "Day 25｜用測試約束 AI 改程式",
+      "url": "https://gcake119.github.io/gcake-dev/series/ithome-2026/day-25/"
+    },
+    "articleBack": {
+      "input": "測試",
+      "status": "找到 11 篇文章，第 1 頁。",
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=%E6%B8%AC%E8%A9%A6"
+    },
+    "noMatch": {
+      "rows": 0,
+      "status": "找不到相關文章，試試其他關鍵字或說法。"
+    },
+    "consoleErrors": []
+  },
+  "scope": "Static GitHub Pages production search acceptance; cloud semantic service not activated",
+  "evidenceFreshness": "Observed during the 2026-10-21 deployment acceptance; not a continuous availability guarantee"
+}
