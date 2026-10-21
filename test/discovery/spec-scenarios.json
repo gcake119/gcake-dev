@@ -1,0 +1,464 @@
+[
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Citation creates backlink",
+    "gherkin": "- **GIVEN** public article A links twice to public article B and once to itself\n- **WHEN** the next public release is generated\n- **THEN** A lists B once under articles mentioned and B lists A once under articles mentioning this article, with no self-citation",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Recommendation is not a citation",
+    "gherkin": "- **GIVEN** article C is recommended for A but A's authored body does not link to C\n- **WHEN** connections are generated\n- **THEN** C does not gain an incoming authored citation from A",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Hidden target and unsafe link",
+    "gherkin": "- **GIVEN** an authored link targets a draft or uses an executable URL scheme\n- **WHEN** the connection panel is rendered\n- **THEN** it reveals no draft metadata and offers no executable connection link",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Complementary next reading",
+    "gherkin": "- **GIVEN** A explains workflow decomposition, B explains the same topic, and C explains error recovery within that workflow\n- **WHEN** connections are generated with sufficient evidence\n- **THEN** B is eligible for related reading and C is eligible for further reading with a recovery-specific explanation",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Insufficient candidates",
+    "gherkin": "- **GIVEN** only one suitable public article exists\n- **WHEN** connections are generated\n- **THEN** the system displays that article in only one recommendation group and does not pad the other group with unrelated content",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Local and imported reading",
+    "gherkin": "- **GIVEN** a local article and an imported article both have connections\n- **WHEN** each page is opened on a phone or desktop with either theme\n- **THEN** labelled links and reasons are readable, keyboard accessible, and do not obstruct article reading or series navigation",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "No connections",
+    "gherkin": "- **GIVEN** an article has no citations, backlinks, or relevant recommendations\n- **WHEN** its page is opened\n- **THEN** no empty connection headings or inactive controls appear",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "automatic-article-connections",
+    "scenario": "Semantic enrichment unavailable",
+    "gherkin": "- **GIVEN** the current release's text and topic evidence is available but embedding generation fails\n- **WHEN** the public site is built\n- **THEN** citations and evidence-qualified lexical recommendations remain available without including withdrawn articles",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md",
+    "sourceDigest": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Local and imported articles share a slug",
+    "gherkin": "- **GIVEN** two publicly readable articles from different sources have the same slug\n- **WHEN** the public corpus is prepared\n- **THEN** both articles remain independently searchable with their correct titles and reading links",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Draft and future article exclusion",
+    "gherkin": "- **GIVEN** a draft article and an article scheduled for tomorrow are present in the repository\n- **WHEN** today's public release is prepared\n- **THEN** neither article's title, passages, terms, nor recommendations appear in public discovery assets or provider uploads",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Article becomes public",
+    "gherkin": "- **GIVEN** a scheduled article reaches its confirmed publication time and its site release succeeds\n- **WHEN** a reader loads the new release\n- **THEN** the article is discoverable without a separate editorial indexing action and articles it cites gain the corresponding backlinks",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Public article changes",
+    "gherkin": "- **GIVEN** an already public article has revised content and a changed title\n- **WHEN** the revised public release succeeds\n- **THEN** new searches, excerpts, terms, recommendations, and semantic retrieval use the revised content rather than cached passages from the old release",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Article is withdrawn or deleted",
+    "gherkin": "- **GIVEN** an article was previously public\n- **WHEN** a public release removing that article succeeds\n- **THEN** new searches, recommendations, backlinks, and retrieval results exclude the removed article and the semantic service cannot select an older release to restore it",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Publication fails",
+    "gherkin": "- **GIVEN** source has changed but the public site deployment fails\n- **WHEN** a reader uses discovery\n- **THEN** the service retains the last confirmed public release and does not claim the unpublished revision is live",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Article reading URL changes",
+    "gherkin": "- **GIVEN** a public article is renamed and the new release contains its replacement reading URL\n- **WHEN** that public release succeeds\n- **THEN** search results and generated recommendations use the replacement URL and no generated panel invents a redirect or preserves an obsolete target",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Explicit acronym definition",
+    "gherkin": "- **GIVEN** a public article defines Retrieval-Augmented Generation as RAG\n- **WHEN** terminology is regenerated\n- **THEN** searches for the defined full expression and RAG can retrieve that article and the equivalence has an inspectable supporting passage",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Ambiguous token",
+    "gherkin": "- **GIVEN** unrelated public passages use the same short token without defining an equivalence\n- **WHEN** terms are extracted\n- **THEN** no synonym relationship is asserted solely from token co-occurrence",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "No usable terms",
+    "gherkin": "- **GIVEN** a public article contains no extractable technical terms\n- **WHEN** indexing completes\n- **THEN** the article remains searchable by its content without invented keywords",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Click a retrieved passage",
+    "gherkin": "- **GIVEN** a result cites a section in a public article\n- **WHEN** the reader follows its passage link\n- **THEN** the correct article section opens or the article opens when no stable section anchor exists",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Identical source rebuild",
+    "gherkin": "- **GIVEN** unchanged public source content and extraction configuration\n- **WHEN** discovery assets are regenerated twice\n- **THEN** their content identities match and no duplicate article or citation is introduced",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Sparse terminology evidence",
+    "gherkin": "- **GIVEN** the public corpus provides one explicit bilingual definition and no other supported aliases\n- **WHEN** evaluation data is prepared and scored\n- **THEN** only supported aliases are included, available category counts are reported, and evaluation is not blocked by a minimum alias count",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "New public evidence",
+    "gherkin": "- **GIVEN** an additional public article contains an explicit acronym definition\n- **WHEN** discovery is rebuilt and evaluation data is regenerated\n- **THEN** the new article and supported definition enter the current sample without an editorial task to fill a quota",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "No judged public sources",
+    "gherkin": "- **GIVEN** no eligible public source supports an evaluation query\n- **WHEN** evaluation runs\n- **THEN** it reports no judged data and unavailable rates without inventing queries or claiming quality acceptance",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "public-article-knowledge",
+    "scenario": "Different article identities share one reading URL",
+    "gherkin": "- **GIVEN** two public articles with different identities resolve to the same reading URL after removing query, fragment and trailing slash\n- **WHEN** the public corpus is prepared\n- **THEN** preparation fails explicitly rather than creating two article results for one reading location; equal slugs with distinct reading URLs remain valid",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md",
+    "sourceDigest": "39035c8b0607712853317c47bbc05c054e7aeb3bd8aaf688ed5fc1d014f8a425"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Title outranks incidental body mention",
+    "gherkin": "- **GIVEN** article A has RAG in its title and article B mentions RAG only in its body\n- **WHEN** the reader searches for RAG with otherwise equal relevance\n- **THEN** A precedes B and both show the matching text",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Natural Chinese query",
+    "gherkin": "- **GIVEN** an article discusses automatic publishing\n- **WHEN** the reader searches for 自動發文 without inserting spaces\n- **THEN** matching content is retrievable and more relevant matches precede incidental partial matches",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Technical punctuation",
+    "gherkin": "- **GIVEN** public articles discuss C++, C#, and AI agents\n- **WHEN** the reader searches for C++\n- **THEN** C++ matches are not treated as equivalent to C# solely because punctuation was removed",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Share simple search",
+    "gherkin": "- **GIVEN** a reader searches RAG and opens result page two\n- **WHEN** another reader opens the copied URL or the first reader navigates back\n- **THEN** the query and page are restored with no hidden topic or series restrictions",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Safe highlighted excerpt",
+    "gherkin": "- **GIVEN** a query or article includes HTML-like text\n- **WHEN** an excerpt is highlighted\n- **THEN** the text is displayed without executing markup or event handlers",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Empty and excessive input",
+    "gherkin": "- **GIVEN** the reader submits whitespace or more than 200 code points\n- **WHEN** search processes the query\n- **THEN** it gives a useful prompt or length message without contacting a model or silently truncating the query",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "No matches",
+    "gherkin": "- **GIVEN** no public article matches the query in the public corpus\n- **WHEN** search completes\n- **THEN** it displays the no-result state, invites another query without displaying vocabulary suggestions, and preserves the original query",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Index request fails",
+    "gherkin": "- **GIVEN** loading the static search index fails\n- **WHEN** the reader uses retry after connectivity returns\n- **THEN** the same query is searched successfully without requiring a new query or losing the query",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "JavaScript unavailable",
+    "gherkin": "- **GIVEN** JavaScript is disabled\n- **WHEN** the search page is opened\n- **THEN** it provides working series and topic navigation and explains the search limitation",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Different wording finds same meaning",
+    "gherkin": "- **GIVEN** an active semantic release contains an article about converting repeated manual work into automation\n- **WHEN** the reader explicitly searches semantically for 如何減少每天重複操作\n- **THEN** relevant articles can be returned even without that exact sentence, with source-derived excerpts",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Service timeout and query race",
+    "gherkin": "- **GIVEN** a semantic query is pending and the reader submits a newer keyword query\n- **WHEN** the old request completes or times out\n- **THEN** only the newer query remains displayed and no stale result replaces it",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Provider release mismatch",
+    "gherkin": "- **GIVEN** the browser's site release differs from the semantic service's active release\n- **WHEN** semantic search is requested\n- **THEN** no passages from a different release are substituted and the page offers keyword results with a clear availability message",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Type a query before submit",
+    "gherkin": "- **GIVEN** the reader types a query without choosing a remote mode\n- **WHEN** the reader types without submitting\n- **THEN** no model request is made and no query history is stored by the application",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Budget exhausted",
+    "gherkin": "- **GIVEN** the shared daily semantic request or embedding-token budget is exhausted\n- **WHEN** a reader requests semantic search\n- **THEN** no new embedding call occurs and keyword results remain available with an availability message",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Semantic retrieval without generation",
+    "gherkin": "- **GIVEN** semantic search is enabled and public article vectors are ready\n- **WHEN** a reader searches for a concept\n- **THEN** the service uses a compatible embedding model, returns ranked existing articles and excerpts, and makes no text-generation call",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Admission unavailable",
+    "gherkin": "- **GIVEN** shared budget reservation cannot be confirmed\n- **WHEN** a semantic request arrives\n- **THEN** the service makes no model call and offers keyword fallback without an automatic retry",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Explicit temporary BGE configuration",
+    "gherkin": "- **GIVEN** EmbeddingGemma free eligibility remains unverified and the configured model is the official BGE-M3 under the recorded temporary exception\n- **WHEN** all free-only and other activation conditions are satisfied and public passages or a reader query require embeddings\n- **THEN** the service uses that BGE-M3 configuration and records its actual model provenance without approving other Chinese-developed models",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Prohibited or unidentified fallback",
+    "gherkin": "- **GIVEN** the approved model is unavailable and an alternative has unverified developer provenance or Chinese provenance outside the explicitly approved BGE-M3 exception\n- **WHEN** the service handles semantic search or article indexing\n- **THEN** it makes no call to that alternative and preserves current keyword search instead",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Article mentions a prohibited runtime model",
+    "gherkin": "- **GIVEN** a public article discusses BGE or Qwen as a technical subject\n- **WHEN** that article is indexed using the approved embedding model\n- **THEN** its authored content remains searchable without invoking the models it discusses",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Model price is absent from public documentation",
+    "gherkin": "- **GIVEN** the provider lists the embedding model but omits its rate and model-specific quota treatment\n- **WHEN** the operator reviews activation readiness\n- **THEN** the delivery records billing as unverified, makes no unsupported free-usage claim, and keeps remote processing disabled",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Model-specific evidence is obtained",
+    "gherkin": "- **GIVEN** current official provider evidence identifies the exact model's rate or no-charge terms and applicable allowance for the intended account plan\n- **WHEN** the operator authorizes matching usage ceilings and the remaining quality checks pass\n- **THEN** activation readiness records the evidence date and exact model configuration without treating research as deployment authorization",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Pricing or model identity changes",
+    "gherkin": "- **GIVEN** the service's approved pricing evidence no longer applies to its configured model or provider terms\n- **WHEN** remote activation or continued eligibility is checked\n- **THEN** the service requires renewed applicable evidence before making further calls and preserves keyword search during the interruption",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Free allowance is exhausted",
+    "gherkin": "- **GIVEN** the applicable daily or monthly free allowance cannot cover a semantic request\n- **WHEN** a reader requests semantic search\n- **THEN** no new remote embedding or vector query is made and current keyword search remains usable without paid fallback",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Concurrent requests compete for the final free units",
+    "gherkin": "- **GIVEN** the verified remaining free allocation covers one request and two requests arrive concurrently\n- **WHEN** admission is evaluated\n- **THEN** at most one request reserves and consumes that allocation and the other uses keyword fallback",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Paid account has uncoordinated consumers",
+    "gherkin": "- **GIVEN** the account permits paid overage and other consumers can use the same free allowance without coordinated reservations\n- **WHEN** remote activation or admission is evaluated\n- **THEN** this service remains disabled unless an applicable provider-enforced no-charge boundary is verified, and an application-local counter is not reported as a zero-cost guarantee",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Index preparation exceeds free storage or compute",
+    "gherkin": "- **GIVEN** preparing a new article index including retained releases would exceed a free allowance\n- **WHEN** publication preparation runs\n- **THEN** remote enrichment stops without paid usage, the new static site can still publish current keyword assets, and no old article visibility is restored",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Provider reset has not been confirmed",
+    "gherkin": "- **GIVEN** a free allowance was exhausted and the provider's reset or current usage cannot be verified\n- **WHEN** a reader retries or the local calendar day changes\n- **THEN** no local reset fabricates free capacity and keyword search remains available",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Replace temporary BGE only through a compatible release",
+    "gherkin": "- **GIVEN** EmbeddingGemma free eligibility and quality are later verified and an existing public index uses BGE-M3\n- **WHEN** the replacement embedding release is prepared\n- **THEN** article and query embeddings switch together only after the replacement index is complete and release-matched, and no query mixes the two models or vector dimensions",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Two different embedding spaces",
+    "gherkin": "- **GIVEN** installed BGE-M3 and EmbeddingGemma 2 are explicitly authorized for local comparison\n- **WHEN** the same public articles and queries are embedded\n- **THEN** each model has a separate pinned index and observed dimensions, and no query is compared with another model's vectors",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Model is missing or changed",
+    "gherkin": "- **GIVEN** a requested local model is absent or differs from its pinned digest\n- **WHEN** local evaluation starts or resumes\n- **THEN** it stops with an explicit model identity error and does not download, substitute, call a cloud model or change production settings",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Overlong input or malformed output",
+    "gherkin": "- **GIVEN** local embedding input exceeds the model endpoint limit or returned vectors have invalid shape or values\n- **WHEN** the endpoint is invoked with truncation disabled\n- **THEN** the affected operation fails visibly without storing an incompatible vector or claiming a completed comparison",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Local results remain local evidence",
+    "gherkin": "- **GIVEN** both local models complete evaluation on available public source judgments\n- **WHEN** results are reported\n- **THEN** lexical, dense and hybrid rankings and observed costs in time and local storage are distinguished, while Cloudflare quality, billing, deployment and activation remain unverified and disabled",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Actual local semantic search in the existing page",
+    "gherkin": "- **GIVEN** a compatible current public corpus and pinned installed BGE-M3 index\n- **WHEN** the reader submits the sole search form in the local preview\n- **THEN** actual local embeddings produce current source-linked hybrid results with shareable query, pagination and browser back behavior, while keyword search and typing make no model calls",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Local inference unavailable and recovered",
+    "gherkin": "- **GIVEN** the local semantic service is unavailable or exceeds its deadline\n- **WHEN** the reader submits semantic search and later retries after recovery\n- **THEN** the page first retains keyword results with a degraded message and then displays actual local semantic results after successful retry",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Incompatible local preview or invalid request",
+    "gherkin": "- **GIVEN** a stale corpus, changed model, incompatible cached vectors, nonlocal caller or invalid bounded input\n- **WHEN** preview startup or search admission checks the request\n- **THEN** the operation fails explicitly without cloud substitution, downloads, incompatible results or generation",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Local preview cleanup",
+    "gherkin": "- **GIVEN** this foreground preview owns its listener and loaded BGE-M3 only if it was not already loaded\n- **WHEN** it stops, is interrupted or reaches its lifetime limit\n- **THEN** it closes its listener and releases only its newly loaded model while retaining cleanup evidence and preserving shared Ollama and pre-existing loaded models",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Legacy filters do not hide articles",
+    "gherkin": "- **GIVEN** an old shared search URL includes topic, series or sort parameters\n- **WHEN** the reader opens it in the simplified page\n- **THEN** the query and page remain, obsolete filters are removed, and results cover all current public articles",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Search shows only the requested reader content",
+    "gherkin": "- **GIVEN** the reader submits a query in the existing header form\n- **WHEN** search completes successfully\n- **THEN** the result count and source article list appear directly, with no device-processing explanation, vocabulary suggestions, filter controls or repeated page heading",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Release conflict refreshes lexical fallback",
+    "gherkin": "- **GIVEN** a search page has an older article corpus and the current release withdraws one article\n- **WHEN** semantic search returns a release conflict or the latest manifest changes during a successful response\n- **THEN** fallback reloads the current static release and excludes the withdrawn article without automatically retrying a model request",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Current release cannot be loaded after conflict",
+    "gherkin": "- **GIVEN** the page detects a release conflict and the current static assets are unavailable\n- **WHEN** recovery fails\n- **THEN** old article results and pagination are cleared, the query is preserved, and an unavailable message and retry action appear",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "New search supersedes release recovery",
+    "gherkin": "- **GIVEN** loading current assets after a release conflict is pending\n- **WHEN** the reader submits a newer search and the old recovery later completes\n- **THEN** only the newer query and its current-source results remain displayed",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  },
+  {
+    "capability": "reader-search",
+    "scenario": "Repeated preview runs preserve independent evidence",
+    "gherkin": "- **GIVEN** an earlier local preview has saved its start, status and finish receipts\n- **WHEN** another foreground preview starts and saves its own receipts\n- **THEN** each run exposes a distinct evidence location and the earlier receipts remain unchanged",
+    "source": "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md",
+    "sourceDigest": "c0c3952408a778359e55c1ec95ba0956cce932e22b69dfec3b526c889d0b1e06"
+  }
+]

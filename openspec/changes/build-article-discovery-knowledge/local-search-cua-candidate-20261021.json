@@ -1,0 +1,208 @@
+{
+  "scope": "User-authorized foreground BGE-M3 local search preview and Computer Use acceptance only",
+  "baseHead": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+  "sourceFiles": {
+    "apps/search-worker/migrations/0001_admission.sql": "9d1709b83a829457db32c8fe41f45f9617839f831e033581be1637a873883e77",
+    "apps/search-worker/package.json": "5414e2e1c600d7c08be501effaad9448aa84766decdbeacc7a02613309d1c196",
+    "apps/search-worker/src/admission.ts": "a23fe284df7b4931667d38dce22b2c70cac274f17db621dc6e51711e2501c7ea",
+    "apps/search-worker/src/deployed.ts": "fd6a3f9f8fab8c698ecff04c3d029f83add2c940346ad94d17c06b11b7658684",
+    "apps/search-worker/src/index.ts": "e6d2936883f5666881b7a1f952d16563db5ad0394e66ed206e3b67a2804f489a",
+    "apps/search-worker/src/provider.ts": "ebf7851b88e880d35355969c40013d66f3287f49dd4461066416f8fd73e3e1aa",
+    "apps/search-worker/src/service.ts": "ef7b0d3f89674739863d93bcd9367f6517cb3bc4a2e8e9a9220c51064a380327",
+    "apps/search-worker/tsconfig.json": "7d0ef36f0f93a0dfbe40de9de8d171b34b873263bc4e67b4fb4075e5cf432518",
+    "apps/search-worker/wrangler.jsonc": "676d85995f3c05232f55f9385686f4bff234d011d395d79ac25bf59780fee922",
+    "docs/article-discovery-runbook.md": "615d32fc1d399652f49a0ec7e35716f7ae5787f2ce339d2f8a2d0b501bd9b53d",
+    "openspec/changes/build-article-discovery-knowledge/acceptance-map.md": "550a953006e4ec9a190cc2a1c44ce011e68c4638037c9e8e20d5c2dd9930446d",
+    "openspec/changes/build-article-discovery-knowledge/design.md": "2ed9623ee4820acd4c7450969da29dcd093457c25eaae3b683e6e9a4a6a7eaba",
+    "openspec/changes/build-article-discovery-knowledge/local-search-cua-20261021.md": "f2085d2dfc6cd950d971d048513a62274d5894d406b0f9e5f3d1ae6dcc23f332",
+    "openspec/changes/build-article-discovery-knowledge/proposal.md": "8c9079f1057ac00878db3d6d686e70a6ab6cb5715f16682a0edd7fc742a7e1ed",
+    "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638",
+    "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md": "ca306723ac01a3c1e3584be774110ae2faf37f7d046d7b3ff51632646adb2bd7",
+    "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md": "e7222ac6c5faff99d153c4287c22f4680739e517f93b1d4d660f6f3b69629b4e",
+    "openspec/changes/build-article-discovery-knowledge/tasks.md": "e49606b955b3f6b92d971fd4c6901bcba15cc000fb696e6b5830478cbe893191",
+    "package.json": "4d0d3f16731ae9fa6cb732648298b0ae8cabfcb1d895a71b6a9b987e38169369",
+    "pnpm-lock.yaml": "40450f86ad225b37cc910e89080af12123007b427dbb9983e545dea3924d509d",
+    "scripts/discovery/evaluate.ts": "a9eb2eb6548eed485e6d9ce993e0716ccc8469595ed3eb044616cb4351b603d9",
+    "scripts/discovery/freeze-sample.ts": "9f8681af11e386dbfc50bddbc1fe3c51c38294e556b041a6926962b956bba764",
+    "scripts/discovery/inspect.ts": "ea64ee1df9a7620a8996bffa473ec825f4e3b691ddafb0796aeb93c5085a0c1f",
+    "scripts/discovery/lifecycle.ts": "ffcd4af70bde473640d543f9ae49810fab1529816867a70e3391fdf9d60b8bda",
+    "scripts/discovery/local-preview.ts": "c877953959d7cc17151431ef02ae1108b4e02410a2ba62db322d33887842c5d3",
+    "scripts/discovery/local-search.ts": "9f469d111a351d33d6d921dfe14a48884503e1cfccec5a86158d24f3c850b930",
+    "scripts/discovery/ollama-compare.ts": "5dccd3a25c9ee5d619293a6dcb41e80ef32b9aafe26fccc4bbb92c63a8bc290c",
+    "scripts/discovery/ollama.ts": "ebade502ad87ed47a2eabe0b86024d609916be36530d7ec8c43c73973651a2f5",
+    "src/lib/discovery/assets.ts": "c14a570e30dee6425dc9df52a161055af4c867c18fdb739f6f6f53c9b500e68c",
+    "src/lib/discovery/build.ts": "f45ea1034b5035011e34d8e3ccbebe3333381c496a8215d8e1ed6977eb54b395",
+    "src/lib/discovery/client.ts": "20170eaa5db88dfb0f2810e53f3b700bd861dcdd5c49cdfacd25ce22214543a8",
+    "src/lib/discovery/search.ts": "a8b42b9b88861623b1a8f177840897fe0731170d81fd85e0733eb449bea366d6",
+    "src/lib/discovery/site.ts": "5cf1c81043129e7ba15dc1661d7cbf20eaa3911462c76cf6274d5a8f7012365a",
+    "src/lib/discovery/types.ts": "9e13ac12d7b8d5122ab780304a92fa312d585b764d7ba6f4281cbeabd9ecb4ae",
+    "src/pages/discovery-manifest.json.ts": "e3c7f1c5cafa03030c72fe7a0cad1b487bd970756185b66bbdba34c33e13095d",
+    "src/pages/search.astro": "0236555fb538551c1c44af12ffd18b250e1c0db4e0226d6be070f796226a9265",
+    "test/discovery/assets.acceptance.test.ts": "0930d7e9d1df205fc0e1caa48f95b50f7c0a4ab319fffd07db80eede3eb1ffe2",
+    "test/discovery/browser.mjs": "4e15ba0a8e35a6967a046c0fd4a722b63a6dfa22a319a85ef597440e0043a7a9",
+    "test/discovery/corpus.acceptance.test.ts": "8921d7f2254855ee76323f83b138445db59bec82e4c806ec1e46236035f448da",
+    "test/discovery/lifecycle.acceptance.test.ts": "602b9355e6dfa30d66ec01def9c20686e2026818b21b0f9a93a249af2cf291e9",
+    "test/discovery/local-preview.acceptance.test.ts": "2be9bcb4df84c9f28918d41e336210b1852c4414a6f1dfce141cbda2947eaa2d",
+    "test/discovery/public-terminology-review.json": "d5d1dc5433240e25bda7bbd21263d750ebe384455d0e7088dbfab7d16eb7a263",
+    "test/discovery/retrieval-judgments-current.json": "087d44497074080e04ecb274e9fc0901d7fe2799f168f0723afa77b0a574df5e",
+    "test/discovery/retrieval-judgments-v2.json": "699f9617096676b61e57250e1838faf6a69f717ddbcb2208acdae1841a077df0",
+    "test/discovery/retrieval-judgments-v3.json": "dad0f371538a61eb7aa7f89a4191d9620f600095c6b6cfbb853ac7879e565beb",
+    "test/discovery/retrieval-judgments-v4.json": "ce68b84a83e10b3ea49ea953d69c558a7d065e3b7c9d1549b3985763556cfe40",
+    "test/discovery/retrieval-judgments-v5.json": "6ed5253eb3cbc26eea102ba7171bde39cc41f8884bdda4967c2233e88d681d66",
+    "test/discovery/retrieval-judgments.json": "fd26f90cd917560ad6535f1738a85da5639bfde7a2784fe7404e00bf486b14b2",
+    "test/discovery/semantic.acceptance.test.ts": "ff1fb6453c215337c68f25c54c302d6cd14b829d5d6dceabdd5d0937615bf8d5",
+    "test/discovery/spec-scenarios.json": "9149c292881ff529a6e76ac518aad1c49042d9c88b7a0c14d8ceddfa8b750f61"
+  },
+  "runtime": {
+    "origin": "http://127.0.0.1:56528",
+    "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+    "configurationDigest": "b1189acb716fb138ce038bc9cff26468c2b82da61bf09097d7d1f4cea24330ef",
+    "manifestDigest": "15148a639150a6838adbe6b76f66e07fe93c313fdba80b576ca65de23e01bb73",
+    "model": {
+      "name": "bge-m3:latest",
+      "dimensions": 1024,
+      "format": "plain-title-text-v1",
+      "digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab"
+    },
+    "space": {
+      "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+      "modelConfig": "da99046162564e53300f7c8b11db9a946df4ac06b7fe5a2b784b3ddfa6c7edd4",
+      "dimensions": 1024
+    },
+    "articles": 33,
+    "passages": 2633,
+    "documentEmbeddings": 0,
+    "loadedBefore": {
+      "models": []
+    },
+    "startedAt": "2026-10-20T19:55:03.552Z",
+    "sourceDigests": {
+      "scripts/discovery/local-preview.ts": "c877953959d7cc17151431ef02ae1108b4e02410a2ba62db322d33887842c5d3",
+      "scripts/discovery/local-search.ts": "9f469d111a351d33d6d921dfe14a48884503e1cfccec5a86158d24f3c850b930",
+      "scripts/discovery/ollama.ts": "ebade502ad87ed47a2eabe0b86024d609916be36530d7ec8c43c73973651a2f5"
+    },
+    "endedAt": "2026-10-20T19:59:35.384Z",
+    "reason": "stdin",
+    "counts": {
+      "semanticRequests": 10,
+      "embeddingCalls": 9,
+      "embeddingCompleted": 9,
+      "embeddingFailed": 0,
+      "cloudCalls": 0,
+      "generationCalls": 0,
+      "downloadCalls": 0
+    },
+    "listenerClosed": true,
+    "ownedModel": true,
+    "released": true,
+    "loadedAfter": {
+      "models": []
+    },
+    "sharedDaemonUnchanged": true
+  },
+  "independentCleanup": {
+    "listenerClosedIndependent": true,
+    "ollamaAvailable": true,
+    "loadedAfterIndependent": {
+      "models": []
+    },
+    "port": 56528
+  },
+  "unchangedPublic": {
+    "unchangedPublicAndWorkerSources": [
+      "apps/search-worker/migrations/0001_admission.sql",
+      "apps/search-worker/package.json",
+      "apps/search-worker/src/admission.ts",
+      "apps/search-worker/src/deployed.ts",
+      "apps/search-worker/src/index.ts",
+      "apps/search-worker/src/provider.ts",
+      "apps/search-worker/src/service.ts",
+      "apps/search-worker/tsconfig.json",
+      "apps/search-worker/wrangler.jsonc",
+      "src/components/ArticleConnections.astro",
+      "src/data/discovery/terminology-reviewed.json",
+      "src/lib/content/publication.ts",
+      "src/lib/discovery/assets.ts",
+      "src/lib/discovery/build.ts",
+      "src/lib/discovery/client.ts",
+      "src/lib/discovery/search.ts",
+      "src/lib/discovery/site.ts",
+      "src/lib/discovery/types.ts",
+      "src/pages/discovery-manifest.json.ts",
+      "src/pages/discovery/[corpusId]/[kind].json.ts",
+      "src/pages/posts/[...slug].astro",
+      "src/pages/search.astro",
+      "src/pages/series/ithome-2026/[post].astro",
+      "src/styles/global.css"
+    ],
+    "comparedReceipt": "local-candidate-final-20261021.json",
+    "publicEndpointBlank": true,
+    "publicHtmlDigest": "418a19d0ee610d1b6c3e9c9b8a46373bb6897f24990f03ae8ff41d6c8eadefad"
+  },
+  "gates": {
+    "pnpm test": "PASS with local-listener-capable environment; original sandbox permission failure preserved",
+    "pnpm check": "PASS; 0 errors, 0 warnings, 0 hints",
+    "pnpm test:public": "PASS 86/86; included again in complete aggregate after fixture snapshot refresh",
+    "spectra validate": "PASS",
+    "spectra analyze": "PASS; no findings",
+    "git diff --check": "PASS",
+    "build/release/editorial/browser": "Prior same production-source evidence retained; local UI acceptance freshly executed through Computer Use"
+  },
+  "uiEvidence": {
+    "tool": "cua_repl; IAB; actual native AX controls",
+    "mockedInference": false,
+    "acceptedByUserPersonally": false,
+    "phoneWidths": [
+      390,
+      320
+    ],
+    "temporaryViewportReset": true,
+    "agentTabClosed": true,
+    "limit": "No full relevance study; no separate SIGINT/SIGTERM/lifetime execution"
+  },
+  "progress": {
+    "complete": 16,
+    "total": 19,
+    "remaining": [
+      "1.1 historical preimplementation red evidence",
+      "3.3 actual Cloudflare/provider integration and activation",
+      "4.3 remote release/account/billing/deployed acceptance"
+    ]
+  },
+  "delivery": {
+    "deployed": false,
+    "cloudModelsEnabled": false,
+    "commit": false,
+    "push": false,
+    "merge": false,
+    "sharedOllamaStopped": false
+  },
+  "artifacts": {
+    "output/discovery/local-preview-20261021/analyze.json": "86b5153e21bb0aa5bf32972281d7fd8415e74e7222162c1ee55aa38c59ea567e",
+    "output/discovery/local-preview-20261021/check.log": "a4aba81e0eaa8bcb379fe436cb4ba1e863818c4d33143bc978dcf99b70b6b065",
+    "output/discovery/local-preview-20261021/cleanup-independent.json": "45d36bb819ed64031bcf386eb8f647472ca4edcab9a8b0745bda97aff3eda622",
+    "output/discovery/local-preview-20261021/degraded-ax.txt": "3ca6e53f5787c0a8be4c1505fa8a4fdbaa30d40201ce95df1dd9ef7f001336e4",
+    "output/discovery/local-preview-20261021/degraded-desktop.png": "3de2006bc3407ca3ab51413339e198b93e815ac2b6575216d7cc23439403cfb4",
+    "output/discovery/local-preview-20261021/explicitOptIn.log": "2c166e85384e60a5099a49e49c692f5b1f446638ddce31cea2f8fccbe5eaeed5",
+    "output/discovery/local-preview-20261021/filter-ax.txt": "f61f3601656f794d0f58c70fac252cc5ed96846f5bfcb737e2417d7bd422824b",
+    "output/discovery/local-preview-20261021/finished.json": "b5402589dad0e7527bcf2a36089267b82d4214579370ab5d3545bdecea02370c",
+    "output/discovery/local-preview-20261021/full.log": "2ea844933aba5497e303b716dc7d6a4205ca483b4c110d8678bae5d91808435e",
+    "output/discovery/local-preview-20261021/fullSandboxFailure.log": "37e3aabca0a1c9d25e31126000445a222097ef629c15aaae8f0f995d4aaff6db",
+    "output/discovery/local-preview-20261021/newest-ax.txt": "821c6c83d4ee26855f026e708eb065bd5e12f4bd9289ca93beb5b125f10d97d0",
+    "output/discovery/local-preview-20261021/page2-ax.txt": "84a46ea7007b8d61a48a0b11123548a1f6ac4d35ad279c52081118bcd1571504",
+    "output/discovery/local-preview-20261021/phone-320.png": "a30cf2fd07c60eb9efbd40a4c1c53ed952b231c186d595a74ffff528160a898c",
+    "output/discovery/local-preview-20261021/phone-dark.png": "bfc8aaa506f6c6885ec8d211bb19e380cc0e6989c027375b95e5d0169f554c58",
+    "output/discovery/local-preview-20261021/phone-light.png": "51434c29c7dfb47d190a0a10bcd0f81f9d4b0aef4bbcf0976c1c537728dc9446",
+    "output/discovery/local-preview-20261021/public-unchanged.json": "4033e4f7fa4638498924670b4e71ffab61df9b5f7898a456d9ac10a62b51aac1",
+    "output/discovery/local-preview-20261021/public.log": "026694f772c6ea563a8636d4e4ffe17fdf25f2449fb59f9391c994fb804092b7",
+    "output/discovery/local-preview-20261021/recovered-ax.txt": "9bccc5a25790445b96eb926be2f960111f12057e956b353bf45ce3419d31f3a1",
+    "output/discovery/local-preview-20261021/red.log": "9a7890e030859b12a126d9f37497c3288a9b6ed15a32ca9b0435b755c0d5210d",
+    "output/discovery/local-preview-20261021/semantic-ax.txt": "956dce2185831a038ad20b4af2d0bb0fb962358a020ad8983f7146068142cb4e",
+    "output/discovery/local-preview-20261021/semantic-desktop.png": "df9bc16c8115d8aafa4258f69c417b41bd0d37a17abc53549c61c0cad46f64d3",
+    "output/discovery/local-preview-20261021/series-empty-ax.txt": "00679f80a3e692c80e94c0d80bbf35d06b92fe1ab5b5e2bdcfb1a77dade072e1",
+    "output/discovery/local-preview-20261021/source-ax.txt": "baf767d5e4d1568fc6e94134ab63a81e57f5f39e4f002432f88520491331f09b",
+    "output/discovery/local-preview-20261021/started.json": "0525bc00bbdf732b12375a1e7e9efa7f338a70daff4aaba57190a75aeba90102",
+    "output/discovery/local-preview-20261021/status.json": "83c341af8c883fb3bfffaba09b091f0397a14dc29b8d13c04b453da02faa5cd4",
+    "output/discovery/local-preview-20261021/validate.log": "53e88cd1978cff6127fa68dc4e7edb120c9d33e7738db16b8fcbc131e8a2b3f6"
+  }
+}

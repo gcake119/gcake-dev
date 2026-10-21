@@ -1,0 +1,344 @@
+{
+  "scope": "User-authorized foreground local Ollama comparison only",
+  "baseHead": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+  "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+  "models": [
+    {
+      "model": "bge-m3:latest",
+      "digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab",
+      "dimensions": 1024,
+      "judgedQueries": 54,
+      "metrics": {
+        "lexical": {
+          "targetRecall5": 0.9814814814814815,
+          "ndcg5": 0.9722222222222222
+        },
+        "dense": {
+          "targetRecall5": 1,
+          "ndcg5": 0.9588822605175724
+        },
+        "hybrid": {
+          "targetRecall5": 1,
+          "ndcg5": 0.9839061065476196
+        }
+      },
+      "byCategory": {
+        "exact-technical": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          }
+        },
+        "explicit-alias": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          }
+        },
+        "chinese-multiword": {
+          "lexical": {
+            "targetRecall5": 0.9,
+            "ndcg5": 0.9
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 0.8517782560806
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 0.95
+          }
+        },
+        "paraphrase": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 0.95
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 0.9261859507142916
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 0.9630929753571458
+          }
+        }
+      },
+      "exactTitleRegressions": [],
+      "warm": {
+        "n": 5,
+        "median": 37.43945800000802,
+        "p95": 44.88245800002187,
+        "min": 33.66287499999453,
+        "max": 44.88245800002187
+      },
+      "queryEmbeddingWallMs": {
+        "n": 54,
+        "median": 24.214709000007133,
+        "p95": 40.129083000007086,
+        "min": 13.435458000007202,
+        "max": 70.97641600000497
+      },
+      "noMatchDenseNonempty": 10
+    },
+    {
+      "model": "embeddinggemma-2:latest",
+      "digest": "eaff2253e2bac3d274a149848ff2af480c47c42d28c81ee7b4ced9246e3d9ba0",
+      "dimensions": 768,
+      "judgedQueries": 54,
+      "metrics": {
+        "lexical": {
+          "targetRecall5": 0.9814814814814815,
+          "ndcg5": 0.9722222222222222
+        },
+        "dense": {
+          "targetRecall5": 0.9629629629629629,
+          "ndcg5": 0.9356244261904784
+        },
+        "hybrid": {
+          "targetRecall5": 0.9814814814814815,
+          "ndcg5": 0.9814814814814815
+        }
+      },
+      "byCategory": {
+        "exact-technical": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          }
+        },
+        "explicit-alias": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 0.6309297535714575
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          }
+        },
+        "chinese-multiword": {
+          "lexical": {
+            "targetRecall5": 0.9,
+            "ndcg5": 0.9
+          },
+          "dense": {
+            "targetRecall5": 0.8,
+            "ndcg5": 0.7261859507142916
+          },
+          "hybrid": {
+            "targetRecall5": 0.9,
+            "ndcg5": 0.9
+          }
+        },
+        "paraphrase": {
+          "lexical": {
+            "targetRecall5": 1,
+            "ndcg5": 0.95
+          },
+          "dense": {
+            "targetRecall5": 1,
+            "ndcg5": 0.9630929753571458
+          },
+          "hybrid": {
+            "targetRecall5": 1,
+            "ndcg5": 1
+          }
+        }
+      },
+      "exactTitleRegressions": [],
+      "warm": {
+        "n": 5,
+        "median": 38.019708000007086,
+        "p95": 42.18299999998999,
+        "min": 32.88550000000396,
+        "max": 42.18299999998999
+      },
+      "queryEmbeddingWallMs": {
+        "n": 54,
+        "median": 20.406209000007948,
+        "p95": 23.574582999994163,
+        "min": 12.922041999991052,
+        "max": 23.996333000002778
+      },
+      "noMatchDenseNonempty": 10
+    }
+  ],
+  "observedResult": {
+    "complete": true,
+    "successfulEmbeddingRequests": 468,
+    "failedEmbeddingRequests": 0,
+    "queriesPerModel": 64,
+    "sourceGroundedQueriesPerModel": 54,
+    "unrelatedQueriesPerModel": 10
+  },
+  "sourceFiles": {
+    "docs/article-discovery-runbook.md": "cb374545f200ccd596f6e97b7f53f155b3f1a7026a40f9dfc314dea1a58c131d",
+    "openspec/changes/build-article-discovery-knowledge/acceptance-map.md": "b5336894d5605aed190804db3f65dee96165394cfdcb4c27b70cd1644c3ccb13",
+    "openspec/changes/build-article-discovery-knowledge/design.md": "fe9686a68dba770a11d4d42b1f077a46ff78008f25e385265bba4491297c5bb1",
+    "openspec/changes/build-article-discovery-knowledge/embeddinggemma-pricing-verification-20261021.md": "37e84dd1c6a4eb61bc09552ab8d145d0758edd86992de9f4f955fe8e2122bd03",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/README.md": "962d341a45931d59a35e4e733efb8333a539c3bc028badc7d6fa9a51059b0ca0",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/design.md": "6cfadac5be8fd426cf409b021fb507cf4168d0cca11aec716857ccddbfda0924",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/proposal.md": "2559393c0169b00a3a1cc9c551de4c695e610a5b80f7a15f7c4500153907f9cd",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/reader-search-spec.md": "0ae2ae98f983ea38a6f5da8833facfc5a99986767e6ffbcb69f42241540f8c97",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/tasks.md": "ee05a7b42f0fa36fb5c88d184ed1ac4ac9bf36f6f1341c278d417ece2f76d8e1",
+    "openspec/changes/build-article-discovery-knowledge/history/before-non-chinese-model-policy/閱讀版規劃.md": "e5e4d354fb18f5f8848bed2fc5b0788b7d75a074b9a8bdb55a5ea174dd0b6fdf",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/README.md": "39959a6046a190267767e2ce76604257937b98a8353d85440a8b6e0bc31a7278",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/design.md": "22b7aa1922180bcae6a5f256d699f913443ee9963236488717cd862632df0ca8",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/grounded-article-answers-spec.md": "3dad84f2c4fd12e0fe2a05df02395f19110b0305b829071f441307c6b5f74f48",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/proposal.md": "a083d287a0abf42a8ae5098975e4706690c19c8eef913ffe3429bb92a2208fb3",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/tasks.md": "fa57c51a2dc77a1a09efecaefd3973532fa4a082abad8316090669000d138611",
+    "openspec/changes/build-article-discovery-knowledge/history/initial-plan-with-answers/閱讀版規劃.md": "c7686ebd976a4f3e928a740318532dc9dcb8d4eefc2bf980650b722f7369e68f",
+    "openspec/changes/build-article-discovery-knowledge/implementation-evidence.md": "f1cf958ad81fab338d07a79c1a15c663d3b642374a7e7ce4db618ce2c03713c8",
+    "openspec/changes/build-article-discovery-knowledge/ollama-comparison-20261021.md": "0970b1e4e789eec7b24ff7dde201856d38e3f0ae2c0583eedae633f15655c4d0",
+    "openspec/changes/build-article-discovery-knowledge/proposal.md": "866b7f91bc2bcd78378872db1a44b97c4aad4095a76522ab21342c9c04c77cc1",
+    "openspec/changes/build-article-discovery-knowledge/public-terminology-extraction-20261021.md": "f0c73bb9b38b95133eb232c9f999b16589ac03ecfb630e2519b671043e11ff9d",
+    "openspec/changes/build-article-discovery-knowledge/recommendation-review-20261021.md": "2d04dcc85dcb0cd7b53df6ffda6c4745513e0350078b942b638b3e23b92779c0",
+    "openspec/changes/build-article-discovery-knowledge/specs/automatic-article-connections/spec.md": "1621499a5933b3dda007592e1b52ea8201a2d15ba45385aa4a805d5bdff9f638",
+    "openspec/changes/build-article-discovery-knowledge/specs/public-article-knowledge/spec.md": "ca306723ac01a3c1e3584be774110ae2faf37f7d046d7b3ff51632646adb2bd7",
+    "openspec/changes/build-article-discovery-knowledge/specs/reader-search/spec.md": "b5a20ae242ee24eba03a5ff234692b7d1d25b5430ef84dde30bb6324d241e2a5",
+    "openspec/changes/build-article-discovery-knowledge/tasks.md": "8e2ef46e35eeeadafe10520dc8407865af3a3fdce2016a7d4bd7c476b5cb8b93",
+    "openspec/changes/build-article-discovery-knowledge/閱讀版規劃.md": "df35ad2debcba00b572344dfbd41d942c9f387c2d6129e66b37288785a50b64e",
+    "scripts/discovery/ollama-compare.ts": "5dccd3a25c9ee5d619293a6dcb41e80ef32b9aafe26fccc4bbb92c63a8bc290c",
+    "scripts/discovery/ollama.ts": "fca3ac0713fbe6548c483c2b7e13b7ed14c3b124f2d4a69c2a30b172dcea5302",
+    "test/discovery/assets.acceptance.test.ts": "0930d7e9d1df205fc0e1caa48f95b50f7c0a4ab319fffd07db80eede3eb1ffe2",
+    "test/discovery/spec-scenarios.json": "7fdf436ba78595655b69da12fad4b9fcbedd9967759c801d31093bdfa3c3dbd1"
+  },
+  "experimentArtifacts": {
+    "output/discovery/ollama/comparison-20261021/embeddinggemma-2-checkpoint.json": "a7992b4d544121f414b6959c2c58f09630acfc7bda94520735181e989a65c2f3",
+    "output/discovery/ollama/comparison-20261021/warm.json": "db6506502fce81237638ded15a5ccac796c11a98a08ae7d87bf156c30afa257f",
+    "output/discovery/ollama/comparison-20261021/plan.json": "455931c584101ef8fdae850771ad7d34b7859edc9d2a9712cd75fc58d3b9c427",
+    "output/discovery/ollama/comparison-20261021/result.json": "3c6c898f0ff17b97ab58a476c3e3b2faa8aae1bfe8ff0f4e64532a34cedd13d5",
+    "output/discovery/ollama/comparison-20261021/judgments.json": "087d44497074080e04ecb274e9fc0901d7fe2799f168f0723afa77b0a574df5e",
+    "output/discovery/ollama/comparison-20261021/queries.json": "f2782b8258cf1783e4e239449c75351ccdf5005720379acaf5c71f8f40bbca6a",
+    "output/discovery/ollama/comparison-20261021/type-only-fix.json": "c2a04d69780a83cc119608757abf0bbcf83cdbd996a4a431a3517bf687fd7534",
+    "output/discovery/ollama/comparison-20261021/verification.json": "9ff010ba6936bff2354520fae4ccbc8c482073195e10922a6040663dc7138f68",
+    "output/discovery/ollama/comparison-20261021/calls.jsonl": "190d4d3db96953a7ed629ca0336e9a51239bf9d594de3f9435e01ecf4a456de7",
+    "output/discovery/ollama/comparison-20261021/evaluated-runner.ts.txt": "7854ad555333aee57529d6354d6aea9bfc115a8c9e8b92fae5f6450e0e953ff8",
+    "output/discovery/ollama/comparison-20261021/evaluated-adapter.ts.txt": "fca3ac0713fbe6548c483c2b7e13b7ed14c3b124f2d4a69c2a30b172dcea5302",
+    "output/discovery/ollama/comparison-20261021/indexes.json": "7b73100e3cc3f34e78e044f02cdd1402c333435fc2d630d3125190f21f3f02a5",
+    "output/discovery/ollama/comparison-20261021/bge-m3-checkpoint.json": "7b88244c8223f3c4e7fff569c98657d376b1fb680c0d8ecd50bcc00e3543c8bb"
+  },
+  "cacheDigests": {
+    "bge-m3:latest": {
+      "files": 2633,
+      "combinedDigest": "300cdf5fbc224494020093ff349c9d69ad199b9f0ed05548430696c631804cba",
+      "space": {
+        "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+        "modelConfig": "da99046162564e53300f7c8b11db9a946df4ac06b7fe5a2b784b3ddfa6c7edd4",
+        "dimensions": 1024
+      }
+    },
+    "embeddinggemma-2:latest": {
+      "files": 2633,
+      "combinedDigest": "71b23c11b8295e599d8e42f98e61a4a3dfe3ca66a219edea9ccacb4469d6ae40",
+      "space": {
+        "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+        "modelConfig": "d6289e0449e623c235629df2b91ec603f424d7e6394cbd92615e3903c16b5c35",
+        "dimensions": 768
+      }
+    }
+  },
+  "independentVerification": {
+    "independentVerification": true,
+    "articles": 33,
+    "queryRows": 128,
+    "vectorFilesValidated": 5266,
+    "sourcePassageRevisionsVerified": true,
+    "hitsAt5": {
+      "bge-m3:latest": {
+        "lexical": 53,
+        "dense": 54,
+        "hybrid": 54
+      },
+      "embeddinggemma-2:latest": {
+        "lexical": 53,
+        "dense": 52,
+        "hybrid": 53
+      }
+    },
+    "rawResultDigest": "3c6c898f0ff17b97ab58a476c3e3b2faa8aae1bfe8ff0f4e64532a34cedd13d5",
+    "evaluatedRunnerSourceDigest": "7854ad555333aee57529d6354d6aea9bfc115a8c9e8b92fae5f6450e0e953ff8",
+    "evaluatedAdapterDigest": "fca3ac0713fbe6548c483c2b7e13b7ed14c3b124f2d4a69c2a30b172dcea5302"
+  },
+  "evaluatedSource": {
+    "runnerSnapshot": "output/discovery/ollama/comparison-20261021/evaluated-runner.ts.txt",
+    "adapterSnapshot": "output/discovery/ollama/comparison-20261021/evaluated-adapter.ts.txt",
+    "runnerDigest": "7854ad555333aee57529d6354d6aea9bfc115a8c9e8b92fae5f6450e0e953ff8",
+    "adapterDigest": "fca3ac0713fbe6548c483c2b7e13b7ed14c3b124f2d4a69c2a30b172dcea5302",
+    "typeOnlyCorrection": {
+      "runtimeEquivalent": true,
+      "transpiledJavaScriptDigest": "e0ae36f6c8446815d479fe8d1dbe4d3b18295df094409425d95653a99cf0d451",
+      "reason": "Readonly tuple annotation for TypeScript indexing; evaluated original source retained; no inference repeated"
+    }
+  },
+  "gates": {
+    "publicTests": "PASS 82/82",
+    "fullPnpmTest": "PASS /tmp/gcake-ollama-full-test.log",
+    "typeCheck": "PASS 0 errors/warnings/hints after readonly annotation and text-only evidence extension",
+    "spectraAnalyze": "PASS zero findings",
+    "spectraValidate": "PASS",
+    "diffWhitespace": "PASS",
+    "previousBuildBrowserReleaseEvidence": "REUSED: all production/build source hashes match local-candidate-final-20261021.json"
+  },
+  "progress": {
+    "total": 17,
+    "complete": 14,
+    "remaining": 3
+  },
+  "remainingTaskNumbers": [
+    "1.1",
+    "3.3",
+    "4.3"
+  ],
+  "boundaries": {
+    "cloudCalls": 0,
+    "generationCalls": 0,
+    "modelDownload": false,
+    "deployment": false,
+    "productionModelPolicyChanged": false,
+    "formalScheduleChanged": false,
+    "commitPushMergeArchive": false
+  },
+  "cleanup": [
+    {
+      "model": "bge-m3:latest",
+      "released": true
+    },
+    {
+      "model": "embeddinggemma-2:latest",
+      "released": true
+    }
+  ],
+  "loadedAfter": {
+    "models": []
+  }
+}

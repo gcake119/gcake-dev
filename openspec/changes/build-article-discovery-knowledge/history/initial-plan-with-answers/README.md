@@ -1,0 +1,1 @@
+Historical planning snapshot before the user deferred AI question answering on 2026-10-21. These files are not active requirements or implementation tasks. No implementation or provider activation was performed.
