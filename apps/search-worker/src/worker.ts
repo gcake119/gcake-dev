@@ -20,4 +20,3 @@ export function createWorker(dependencies: Dependencies) {
         } };
 }
 export const disabledWorker = createWorker({ policy: disabledPolicy, admission: { reserve: unavailable }, manifest: unavailable, embed: unavailable, vectors: unavailable });
-
