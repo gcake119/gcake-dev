@@ -154,3 +154,9 @@ Vectorize 先建立 metadata indexes，再 upsert；上傳與索引處理完成�
 `wrangler.jsonc` 的預設及 production 開關都保留 false。第一次準備資源或重新部署後，透過 Cloudflare 控制台核對 AI／DISCOVERY_DB／VECTOR_INDEX 三個綁定、已加密的 THROTTLE_SECRET，以及 Workers Logs／追蹤停用；有效 D1 policy、當期公開 corpus 與真實 provider 驗證齊備後，才將 production 的 SEMANTIC_ENABLED 改為 true。靜態建置僅接受指定的公開搜尋端點，來源由部署流程的 PUBLIC_SEARCH_ENDPOINT 提供。
 
 每日自動額度只適用 ADR-001 已確認的 Workers Free 硬限制；D1 的當日列只建立一次，重新部署不補回已用額度。帳戶升級前先關閉語意服務，不能把已記錄的免費方案證據沿用到付費帳戶。政策證據有有效期限，過期仍停用，不自動延長價格／隱私證明。
+
+### Workers 來源下載相容性
+
+正式環境診斷發現 Workers 的 fetch 僅接受 `redirect: 'manual'`／`'follow'`，使用瀏覽器／Node 可接受的 `'error'` 會在下載前拋錯。搜尋來源下載採 manual，收到任何非成功狀態（含重新導向）即拒絕，不追蹤到其他來源；仍驗證固定資產路徑、digest 與 corpus。不要改成 follow 來消除錯誤。
+
+２０２６－１０－２１的暫時遠端診斷不綁 AI、D1 或 Vectorize，先重現原錯誤，再以修正後相同 deployedReader 實際讀回正式 manifest、index、passages 三份成功回應。這只證明來源下載已修復，正式模型查詢與 UI 驗收另記；原先啟用後的５０３仍保留為失敗證據。純 Worker 修復可更新 Worker 而保留已驗證的 Pages 產物與相容 corpus，不必為不變的文章重新推論或重建 namespace。

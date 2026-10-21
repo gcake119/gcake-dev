@@ -25,6 +25,25 @@ test('Verified cloud release uses actual bindings, current source links and BGE 
  const h=await fixture();h.setPolicy(policy);const r=await h.worker.fetch(makeRequest(),h.env);assert.equal(r.status,200);const body=await r.json();assert.equal(body.mode,'hybrid');assert.equal(body.results[0].articleId,'local:automation');assert.deepEqual(h.calls(),[1,1]);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://gcake119.github.io');assert.equal(r.headers.get('Cache-Control'),'no-store');
 });
 
+test('Cloudflare source downloads use supported redirect handling and reject redirected sources',async()=>{
+ const h=await fixture();h.setPolicy(policy);
+ const edgeFetch:typeof fetch=async(input,init)=>{
+  if(init?.redirect==='error')throw new TypeError('Invalid redirect value: Workers supports follow or manual');
+  return h.fetcher(input,init);
+ };
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');
+ const response=await createProductionWorker(edgeFetch).fetch(makeRequest(),h.env);
+ assert.equal(response.status,200);assert.equal((await response.json()).mode,'hybrid');assert.deepEqual(h.calls(),[1,1]);
+ const {deployedReader}=await import('../../apps/search-worker/src/deployed');
+ let downloads=0;
+ const redirected:typeof fetch=async(_input,init)=>{
+  downloads++;assert.equal(init?.redirect,'manual');
+  return new Response(null,{status:302,headers:{Location:'https://untrusted.invalid/manifest.json'}});
+ };
+ await assert.rejects(()=>deployedReader(redirected)(new AbortController().signal),/INVALID_DEPLOYMENT/);
+ assert.equal(downloads,1);
+});
+
 test('Foreground index preparation can use a longer bounded static download than reader requests',async()=>{
  const h=await fixture();let first=true;
  const slow:typeof fetch=async(input,init)=>{if(first){first=false;await new Promise<void>((resolve,reject)=>{const timer=setTimeout(resolve,2100);init?.signal?.addEventListener('abort',()=>{clearTimeout(timer);reject(Error('download deadline'));},{once:true});});}return h.fetcher(input,init);};

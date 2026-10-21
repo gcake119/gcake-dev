@@ -29,7 +29,8 @@ export function deployedReader(fetcher: typeof fetch = fetch, timeoutMs = 2000) 
     if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 30000) throw new Error('INVALID_DOWNLOAD_DEADLINE');
     return async (signal: AbortSignal) => {
         const timeout = AbortSignal.timeout(timeoutMs), bounded = AbortSignal.any([signal, timeout]);
-        const response = await fetcher(manifestUrl, { cache: 'no-store', redirect: 'error', signal: bounded });
+        // Workers supports manual/follow only; textBounded rejects every 3xx before reading it.
+        const response = await fetcher(manifestUrl, { cache: 'no-store', redirect: 'manual', signal: bounded });
         const m = JSON.parse(await textBounded(response, 32768));
         if (m.schemaVersion !== 1 || !/^\w{64}$/.test(m.corpusId) || !m.assets)
             throw new Error('INVALID_MANIFEST');
@@ -37,7 +38,7 @@ export function deployedReader(fetcher: typeof fetch = fetch, timeoutMs = 2000) 
             const a = m.assets[kind], url = new URL(a?.href, manifestUrl);
             if (url.origin !== new URL(manifestUrl).origin || url.pathname !== `/gcake-dev/discovery/${m.corpusId}/${kind}.json` || url.search || url.hash || !/^\w{64}$/.test(a?.digest))
                 throw new Error('INVALID_ASSET');
-            const text = await textBounded(await fetcher(url, { cache: 'no-store', redirect: 'error', signal: bounded }));
+            const text = await textBounded(await fetcher(url, { cache: 'no-store', redirect: 'manual', signal: bounded }));
             if (await sha256(text) !== a.digest)
                 throw new Error('ASSET_DIGEST_MISMATCH');
             return JSON.parse(text);
