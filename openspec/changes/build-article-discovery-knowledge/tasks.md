@@ -123,3 +123,12 @@ Tasks 14.1/14.2 are complete locally; 32/34 tasks complete. [Private diagnostic 
 ## Local source repair closeout — 2026-10-22
 
 Tasks 15.1/15.2 are complete locally; 34/36 tasks complete. [Source download repair](source-download-repair-20261022.md) records the selected direct-read approach, revised bounded deadlines, RED/GREEN, 63 Worker and 7 client acceptance tests, all five existing local gates, real public-source HTTP with offline model/vector adapters, browser/mobile checks and cleaned preview. BGE-M3, free hard caps and current production settings were not changed; no cloud inference, commit, push or deployment. Historical 1.1 and first natural changed-corpus 12.2 remain open. Future publication must coordinate Worker and static client changes; this local result is not provider acceptance.
+
+
+## Source repair production closeout — 2026-10-22
+
+Separately authorized deployment of merged main `ecfebebaaaa1c0d070975d58dbd752ff497d1de7` completed for both Worker (`88aa9c47-20d6-4563-bbae-5c42b3f405e2`) and Pages (run `39658022913`), with exact artifact readback. The 2/15/20/22-second budgets are now jointly published. Actual hybrid API, natural release-conflict fallback, browser-only network fallback/recovery, mobile 320/390px and article anchor acceptance passed. See [source-timeout-production-acceptance-20261022.md](source-timeout-production-acceptance-20261022.md) and its portable JSON/screenshots.
+
+The rebuilt snapshot changed corpus identity without new article revisions. Natural cron detected it and verified the first reused batch; one-time foreground maintenance under the existing lease/shared reservation completed all 2633 provider vector readbacks and conditional promotion. No new article embeddings or storage dimensions were added; semantic smoke did use real BGE-M3 inference. Only activeCorpusId changed in policy; free hard caps, expiry, enabled switches and cron remain unchanged. Subsequent natural receipts 207–210 are no_change, lease released and pending zero.
+
+This records production delivery of the existing requirements and supersedes earlier local-only delivery status, retaining historical evidence. Tasks remain 34/36: 1.1 is historical RED provenance; 12.2 still requires a naturally new article release and full automatic sync/promotion. No acceptance conditions or checkboxes change. This documentation-only commit performs no push, deployment, provider/model call or production settings change.

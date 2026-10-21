@@ -89,3 +89,12 @@ Add privacy-preserving semantic error stages to responses so a future 503 can be
 ## Authorized source-download repair（2026-10-22）
 
 Real diagnostic 503s identify source_initial timeout before inference. Repair unnecessary serial index/passages downloads and the full second corpus download with revised manifest/full-source/server/browser budgets of 2/15/20/22 seconds, superseding the original provisional shared source/request deadlines. Independently verify required current assets in parallel and use a fresh manifest-only final identity check; no persistent cache, model change, quota change, cloud execution or deployment.
+
+
+## Source repair production closeout — 2026-10-22
+
+Separately authorized deployment of merged main `ecfebebaaaa1c0d070975d58dbd752ff497d1de7` completed for both Worker (`88aa9c47-20d6-4563-bbae-5c42b3f405e2`) and Pages (run `39658022913`), with exact artifact readback. The 2/15/20/22-second budgets are now jointly published. Actual hybrid API, natural release-conflict fallback, browser-only network fallback/recovery, mobile 320/390px and article anchor acceptance passed. See [source-timeout-production-acceptance-20261022.md](source-timeout-production-acceptance-20261022.md) and its portable JSON/screenshots.
+
+The rebuilt snapshot changed corpus identity without new article revisions. Natural cron detected it and verified the first reused batch; one-time foreground maintenance under the existing lease/shared reservation completed all 2633 provider vector readbacks and conditional promotion. No new article embeddings or storage dimensions were added; semantic smoke did use real BGE-M3 inference. Only activeCorpusId changed in policy; free hard caps, expiry, enabled switches and cron remain unchanged. Subsequent natural receipts 207–210 are no_change, lease released and pending zero.
+
+This records production delivery of the existing requirements and supersedes earlier local-only delivery status, retaining historical evidence. Tasks remain 34/36: 1.1 is historical RED provenance; 12.2 still requires a naturally new article release and full automatic sync/promotion. No acceptance conditions or checkboxes change. This documentation-only commit performs no push, deployment, provider/model call or production settings change.
