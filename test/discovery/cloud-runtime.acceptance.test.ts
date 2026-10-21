@@ -63,3 +63,15 @@ test('Verified Workers Free renewal creates each UTC allocation once and never r
  await activateFreeWindow(database,{...p,billing:{...p.billing,validUntil:'2000-01-01'}},now+86400000);assert.equal(db.prepare('SELECT count(*) n FROM discovery_windows').get()!.n,1);
  }finally{db.close();}
 });
+
+test('Runtime configuration and policy failures identify stage without credentials or reader data',async()=>{
+ const h=await fixture();h.setPolicy(policy);
+ for(const stage of ['configuration','policy']){
+  const env=stage==='configuration'?{...h.env,AI:undefined}:{...h.env,DISCOVERY_DB:{prepare(){throw new Error('private-query 203.0.113.9 private-secret');}}};
+  const r=await h.worker.fetch(makeRequest(),env);assert.equal(r.status,503);const b=await r.json();assert.equal(b.diagnostic?.stage,stage);assert.equal(b.diagnostic.reason,stage==='configuration'?'ineligible':'failure');assert.equal(r.headers.get('X-Search-Request-Id'),b.diagnostic.requestId);assert.equal(r.headers.get('Access-Control-Allow-Origin'),'https://gcake119.github.io');assert.equal(r.headers.get('Cache-Control'),'no-store');assert.doesNotMatch(JSON.stringify(b),/private-query|203\.0\.113\.9|private-secret/);
+ }assert.deepEqual(h.calls(),[0,0]);
+});
+test('Source download deadline is identified before any embedding or vector call',async()=>{
+ const h=await fixture();h.setPolicy(policy);const fetcher:typeof fetch=async(_input,init)=>new Promise((_resolve,reject)=>{init?.signal?.addEventListener('abort',()=>reject(new Error('private-query 203.0.113.9')),{once:true});});
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const response=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(response.status,503);const b=await response.json();assert.equal(b.diagnostic?.stage,'source_initial');assert.equal(b.diagnostic.reason,'timeout');assert.deepEqual(h.calls(),[0,0]);assert.doesNotMatch(JSON.stringify(b),/private-query|203\.0\.113\.9/);
+});

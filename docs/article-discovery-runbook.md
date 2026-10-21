@@ -216,3 +216,26 @@ PR ＃５４合併後，main `c0e30ed54e4d922522a44e2b6151dac7f12bbfe4` 的 CI `
 部署後自然收據＃３９／４０皆 no_change、pending 為零、２６３３個向量不變；正式 API 回 hybrid／２００。Computer Use 驗證３２０／３９０像素、語意結果、分頁及文章導覽正常，視窗已還原，本機 automation-2 維持暫停。[完整紀錄與可攜證據](../openspec/changes/build-article-discovery-knowledge/main-cloudflare-acceptance-20261022.md)。
 
 剩餘未完成仍為１．１歷史紅測試證據與１２．２首個自然新增文章版本的完整同步提升；這次沒有新公開版本，不將 no_change 收據當作新增文章驗收。免費／隱私證據維持２０２６－１１－２０ UTC ００：００到期，未自動延長。本節為結果回填，不授權新的推送、部署或正式設定變更。
+
+
+## ５０３錯誤階段識別（本機候選，尚未部署）
+
+本機候選對 Worker 自行產生的５０３維持 `code=SERVICE_UNAVAILABLE`、`fallback=keyword`、`retryable=true`，加上 `diagnostic: {requestId, stage, reason}`，並以 `X-Search-Request-Id` 回傳相同隨機 UUID。識別碼不取自查詢、IP、CF-Ray 或客戶端 header，不持久保存。正常結果與４００／４０３／４０４／４０９／４２９契約、CORS 與 no-store 均保留，畫面不增加技術資訊。
+
+| stage | 定位範圍 |
+| --- | --- |
+| request | 讀取或驗證請求，包括請求本文逾時 |
+| configuration | 開關未啟用或缺少必要綁定 |
+| policy | 讀取／解析政策、建立既有 UTC 額度視窗或資格核對 |
+| source_initial | 推論前下載並核對公開 manifest／index／passages |
+| admission | 既有短期識別及共享額度預留 |
+| embedding | BGE-M3 呼叫及向量輸出驗證 |
+| vector | Vectorize 查詢 |
+| ranking | 本機文章排序與結果組合 |
+| source_final | 回應前重新下載及核對當期公開來源 |
+
+reason 僅為 failure（未分類依賴錯誤）、timeout（既有下載／整體期限）、invalid_response（已知輸出或來源驗證失敗）、ineligible（設定／政策不合）。不回傳上游訊息、堆疊、查詢、secret 或 IP。未知結果不退額度，也不自動重試。兩秒來源下載與五秒語意期限不延長；此變更只讓失敗可辨識，不宣稱已修復先前那次５０３。
+
+未來經授權部署後，遇到５０３只保存失敗回應的 diagnostic、HTTP 狀態、觀察時間及必要時 CF-Ray；不要匯出整份 HAR、POST 本文或完整 header，以免包含查詢或個人資訊。requestId 只能配對此次回應，沒有後台日誌可用它反查讀者。若 Cloudflare 邊緣／平台在 Worker 回應前失敗，或瀏覽器已中止請求，可能沒有 diagnostic，仍須另保存平台錯誤識別與網路證據，不推測模型根因。
+
+這次只在本機完成規格、實作與測試，不呼叫雲端模型、不更動正式設定、不提交、不推送、不部署。正式版本仍是 `e9efcfb7-5543-4e61-98cb-72c6e0ba13e9`；此為前次讀回狀態，本次沒有重新查核或更新它。

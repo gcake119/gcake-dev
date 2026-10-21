@@ -65,3 +65,8 @@ D1 保存單一租約、進度、已核實向量清冊、待讀回向量及３�
 ## main 正式部署結果回填（２０２６－１０－２２）
 
 本節不新增決策。PR ＃５４合併後的 main `c0e30ed` 已完成 CI 與 Cloudflare 部署，正式版本 `b8922dce-07de-4c8f-b52b-d4207ccea347`。程式讀回、自然 cron、語意 API 與手機操作均通過；兩個開關、BGE-M3、免費方案硬上限、D1 policy 及證據期限完全保留。本機任務維持暫停，沒有重新部署 Pages。完整證據與自然新增文章仍待驗收的界線見 [main 部署驗收](../../openspec/changes/build-article-discovery-knowledge/main-cloudflare-acceptance-20261022.md)。
+
+
+## 本機錯誤階段識別（２０２６－１０－２２，尚未部署）
+
+使用者授權補上不記錄查詢與 IP 的錯誤階段識別並完成本機驗證。採５０３回應中的固定 stage／reason 與每請求隨機 requestId，不新增持久化、console、Workers Logs 或第三方監控。例外文字、stack、secret、原始或雜湊 IP、查詢及來自客戶端的 ID 均不寫入這份診斷。既有額度防濫用的短期帶密鑰識別不變。這是既有隱私決策下的回應契約補充，不改啟用設定、BGE-M3、期限或免費上限；必須另有部署授權才會在正式站生效。

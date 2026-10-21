@@ -1,3 +1,4 @@
+import { SearchFailure } from './diagnostics';
 import { approvedModel, eligible, type SearchPolicy } from './service';
 export interface EmbeddingBinding {
     run(model: typeof approvedModel, input: {
@@ -15,10 +16,10 @@ export async function bgeEmbedding(ai: EmbeddingBinding, text: string, policy: S
         throw new Error('ABORTED');
     const v = result.data?.[0];
     if (result.data.length !== 1 || v?.length !== 1024 || v.some(n => !Number.isFinite(n)))
-        throw new Error('INVALID_VECTOR');
+        throw new SearchFailure('invalid_response', 'INVALID_VECTOR');
     const norm = Math.hypot(...v);
     if (!norm)
-        throw new Error('INVALID_VECTOR');
+        throw new SearchFailure('invalid_response', 'INVALID_VECTOR');
     return v.map(n => n / norm);
 }
 export interface VectorBinding {
@@ -42,7 +43,7 @@ export async function vectorRetrieval(binding: VectorBinding, vector: number[], 
     series?: string;
 }, signal: AbortSignal) {
     if (signal.aborted || vector.length !== 1024 || vector.some(n => !Number.isFinite(n)))
-        throw new Error('INVALID_VECTOR');
+        throw new SearchFailure('invalid_response', 'INVALID_VECTOR');
     const filter: Record<string, string | boolean> = {};
     if (filters.topic) {
         if (!/^[a-z0-9-]+$/.test(filters.topic))

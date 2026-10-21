@@ -79,3 +79,8 @@ This adds an operator-maintenance requirement to public-article-knowledge. Updat
 ## Cloud-hosted indexing authorization（2026-10-21）
 
 The user explicitly replaces the local hourly Codex task with Cloudflare-hosted automatic public-index synchronization, authorizes implementation, deployment, verification and activation, and requires keeping the provider-enforced Free hard cap. Pause automation-2. Extend the existing search Worker with a minute cron and durable bounded batch progress, sharing its existing D1 admission and Vectorize binding. No dependency on a local computer or stored human OAuth token. No changes to publishing, subscriber delivery, reader UI, paid plans or model selection. Earlier local-heartbeat text is historical and superseded by this decision.
+
+
+## Authorized local diagnostic extension（2026-10-22）
+
+Add privacy-preserving semantic error stages to responses so a future 503 can be localized without recording queries, IPs or upstream exception text. Reuse existing response, quota and test boundaries; no logging service, telemetry store, deployment, model change or activation change.

@@ -1,0 +1,81 @@
+{
+  "sourceBase": "35cc2f8758f5843e9f127f053dc105156c75111b",
+  "state": "local-only-not-deployed",
+  "red": {
+    "tests": 10,
+    "failed": 10,
+    "cause": "missing diagnostic response fields"
+  },
+  "focused": {
+    "worker": {
+      "passed": 54,
+      "failed": 0
+    },
+    "client": {
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "localGates": [
+    {
+      "check": "test",
+      "exitCode": 0,
+      "at": "2026-10-21T17:13:56.551260+00:00"
+    },
+    {
+      "check": "check",
+      "exitCode": 0,
+      "at": "2026-10-21T17:14:04.143289+00:00"
+    },
+    {
+      "check": "build-all",
+      "exitCode": 0,
+      "at": "2026-10-21T17:14:09.705896+00:00"
+    },
+    {
+      "check": "release-dry-run",
+      "exitCode": 0,
+      "at": "2026-10-21T17:14:20.466032+00:00"
+    },
+    {
+      "check": "editorial-rehearse",
+      "exitCode": 0,
+      "at": "2026-10-21T17:14:32.044040+00:00"
+    }
+  ],
+  "spectra": {
+    "validate": "passed",
+    "analyze": "existing may wording suggestion at reader-search/spec.md:62 only"
+  },
+  "sourceDigests": {
+    "apps/search-worker/src/diagnostics.ts": "f566a1a4a742ce5142cc6e4a5829ba1375368f6688aaf18b2213d8bdff35af4c",
+    "apps/search-worker/src/service.ts": "0a515540ab1c143c45c231a668054e6a49b2579651fbaeaf363d677af8171346",
+    "apps/search-worker/src/runtime.ts": "02170d09dd711c6823f7aa42212e956d065cc70b9c09d9fc1d4cd6f66b03de2c",
+    "apps/search-worker/src/deployed.ts": "98a83c78a0569e68109572eb7c2ff5125c1dca41aedc05ecf9f54ba7a0e46a6f",
+    "apps/search-worker/src/provider.ts": "b8b20afa2fee42e99cb76e40c0404ed9091b942105f83b1adb79c5224a8f0746",
+    "test/discovery/semantic.acceptance.test.ts": "30e74a8740fce771d64e866a9fdab5e08fefda0cbe6989b6f88ac71b253806a1",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "6e5de1a7d26dcd7896f09164b1ad9282d01623d7a9e568326305a9a4ed55eca7",
+    "test/discovery/recovery.acceptance.test.ts": "a7e9031f810b911b424383d27e31b3b1758acd7b9603689dbbcac9d8e3c5b74a"
+  },
+  "logDigests": {
+    "client.log": "088ad5b950eb516b52d108e6e4311036c672d89384967c4e275f0d5c1e313446",
+    "red.log": "609ef44455b66457d72954698b45dc167dbe633c39bc3564618299254298babd",
+    "test.log": "880a5a010697a533a02ecf30fd6958796e21a2f5bf4ca5ac28d1115406629207",
+    "worker.log": "cc6a9f586d24b16df3deb85abef8ce1b5c9253b59003171e4b753ee09859a027",
+    "green.log": "34ceb3c40d4b3f46a00224dba9e08c9ab1af315394a8905f4da233d6e049a801",
+    "editorial-rehearse.log": "ae4e8dd5359436731b7652b90510778b0aac6cb7c4219adc548708c804850e7c",
+    "release-dry-run.log": "be7fb74c13815a8be1d5ecf33966291e6cc29f0fda30ffff558b5f5a491ed5bb",
+    "check.log": "f7db6b782315c5c3f801f0e5c1d048508bf9a779f3b71b9976884fa5b0cf7c8e",
+    "build-all.log": "08db696b78cce696c8001bdd19ca3915df02dbb37451659a1dd5de40d49a538d"
+  },
+  "constraints": {
+    "cloudCalls": 0,
+    "deployed": false,
+    "committed": false,
+    "pushed": false,
+    "productionSettingsChanged": false,
+    "newLoggingOrDiagnosticPersistence": false,
+    "model": "@cf/baai/bge-m3",
+    "freeHardCapsChanged": false
+  }
+}

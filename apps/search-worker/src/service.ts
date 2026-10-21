@@ -1,3 +1,4 @@
+import { unavailableResponse, failureReason, SearchFailure, type FailureStage, type FailureReason } from './diagnostics';
 import { search } from '../../../src/lib/discovery/search';
 import type { Corpus, SearchResult } from '../../../src/lib/discovery/types';
 import { unitNames, type Admission, type Units } from './admission';
@@ -104,14 +105,19 @@ export function createSearchService(d: Dependencies) {
             return error(404, 'NOT_FOUND');
         const now = d.now?.() ?? Date.now(), controller = new AbortController();
         let timer: ReturnType<typeof setTimeout> | undefined;
+        let stage: FailureStage = 'request';
+        const requestId = crypto.randomUUID();
+        const unavailable = (reason: FailureReason = 'failure') => unavailableResponse(stage, reason, requestId);
         try {
             const operation = async () => {
                 const input = await boundedBody(request, controller.signal);
                 if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(k => !['q', 'corpusId', 'topic', 'series', 'page', 'sort', 'limit'].includes(k)) || typeof input.q !== 'string' || !input.q.trim() || [...input.q].length > 200 || typeof input.corpusId !== 'string' || input.page !== undefined && (!Number.isSafeInteger(input.page) || input.page < 1) || input.limit !== undefined && (!Number.isSafeInteger(input.limit) || input.limit < 1 || input.limit > 10) || input.sort !== undefined && !['relevance', 'newest'].includes(input.sort) || ['topic', 'series'].some(k => input[k] !== undefined && typeof input[k] !== 'string'))
                     return error(400, 'INVALID_QUERY');
+                stage = 'policy';
                 const p = d.policy;
                 if (!eligible(p, now))
-                    return error(503, 'SERVICE_UNAVAILABLE');
+                    return unavailable('ineligible');
+                stage = 'source_initial';
                 const deployed = await d.manifest(controller.signal);
                 if(controller.signal.aborted)throw new Error('DEADLINE_EXCEEDED');
                 if (input.corpusId !== deployed.corpusId || input.corpusId !== p.activeCorpusId || deployed.corpus.corpusId !== input.corpusId)
@@ -123,18 +129,22 @@ export function createSearchService(d: Dependencies) {
                 const tokens = new TextEncoder().encode(input.q).length;
                 if (tokens > p.inputLimit)
                     return error(400, 'INVALID_QUERY');
+                stage = 'admission';
                 const window = p.billing.windowId, minute = Math.floor(now / 60000), key = await keyed(p.throttleSecret, minute + ':' + (request.headers.get('CF-Connecting-IP') ?? 'unknown'));
                 const cost = { requests: 1, tokens, units: Math.ceil(tokens * p.billing.rate * 1e6) / 1e6, vectorQueries: 1, storage: 0, worker: 1, admission: 4 };
                 if (!await d.admission.reserve(window, key, cost, p.limits, now))
                     return error(429, 'QUOTA_EXCEEDED');
                 // Unknown outcome retains the full conservative reservation; no automatic retry.
                 if(controller.signal.aborted)throw new Error('DEADLINE_EXCEEDED');
+                stage = 'embedding';
                 const vector = await d.embed(input.q, controller.signal);
                 if(controller.signal.aborted)throw new Error('DEADLINE_EXCEEDED');
                 if (vector.length !== 1024 || vector.some(n => !Number.isFinite(n)) || !vector.some(n => n !== 0))
-                    throw new Error('INVALID_VECTOR');
+                    throw new SearchFailure('invalid_response');
+                stage = 'vector';
                 const remote = await d.vectors(vector, input.corpusId, { topic: input.topic, series: input.series }, controller.signal);
                 if(controller.signal.aborted)throw new Error('DEADLINE_EXCEEDED');
+                stage = 'ranking';
                 const lexical = Array.from({ length: 5 }, (_, i) => search(c, input.q, { topic: input.topic, series: input.series, page: i + 1, limit: 10 }).results).flat();
                 const allowed = c.articles.filter(a => (!input.topic || a.topics.includes(input.topic)) && (!input.series || a.series === input.series)), ids = new Set(allowed.map(a => a.articleId));
                 const ranks = new Map<string, {
@@ -160,15 +170,17 @@ export function createSearchService(d: Dependencies) {
                     pool.sort((x, y) => (allowed.find(a => a.articleId === y[0])!.publishedAt).localeCompare(allowed.find(a => a.articleId === x[0])!.publishedAt) || x[0].localeCompare(y[0]));
                 const total = pool.length, limit = input.limit ?? 10, page = Math.max(1, Math.min(input.page ?? 1, Math.ceil(total / limit) || 1));
                 const results: SearchResult[] = pool.slice((page - 1) * limit, page * limit).map(([id, rank]) => { const a = allowed.find(a => a.articleId === id)!, p = c.passages.find(p => p.passageId === rank.passageId); return { articleId: id, title: a.title, readingHref: p?.href ?? a.href, excerpt: [...(p?.text ?? a.description)].slice(0, 120).join(''), passageId: p?.passageId, series: a.seriesTitle, topics: a.topics, score: rank.score }; });
+                stage = 'source_final';
                 const latest = await d.manifest(controller.signal);
                 if (latest.corpusId !== input.corpusId)
                     return error(409, 'CORPUS_MISMATCH');
                 return Response.json({ corpusId: input.corpusId, mode: 'hybrid', total, page, hasMore: page * limit < total, candidateLimited: ranks.size >= 50, results });
             };
-            return await Promise.race([operation(), new Promise<Response>(resolve => { timer = setTimeout(() => { controller.abort(); resolve(error(503, 'SERVICE_UNAVAILABLE')); }, 5000); })]);
+            return await Promise.race([operation(), new Promise<Response>(resolve => { timer = setTimeout(() => { const response = unavailable('timeout'); controller.abort(); resolve(response); }, 5000); })]);
         }
         catch (e) {
-            return error(String(e).includes('INVALID_QUERY') || e instanceof SyntaxError ? 400 : 503, String(e).includes('INVALID_QUERY') || e instanceof SyntaxError ? 'INVALID_QUERY' : 'SERVICE_UNAVAILABLE');
+            if (stage === 'request' && (String(e).includes('INVALID_QUERY') || e instanceof SyntaxError)) return error(400, 'INVALID_QUERY');
+            return unavailable(controller.signal.aborted ? 'timeout' : failureReason(e));
         }
         finally {
             clearTimeout(timer);

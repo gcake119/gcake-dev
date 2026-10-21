@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSearchService, approvedModel, type SearchPolicy } from '../../apps/search-worker/src/service';
+import { createSearchService, approvedModel, type SearchPolicy, type Dependencies } from '../../apps/search-worker/src/service';
 import { MemoryAdmission } from '../../apps/search-worker/src/admission';
 import { buildPublicDiscovery } from '../../src/lib/discovery/build';
 const corpus = buildPublicDiscovery([{ source: 'local', id: 'automation', title: '流程自動化', href: '/gcake-dev/posts/automation/', canonicalUrl: 'https://gcake119.github.io/gcake-dev/posts/automation/', status: 'published', topics: ['workflow'], series: 's', html: '<h2 id="tools">工作流程</h2><p>自動化 repeated manual work recovery</p>' }], { now: '2026-10-21T00:00:00Z', baseUrl: 'https://gcake119.github.io/gcake-dev', sourceTree: 'tree', snapshotDigest: 'snapshot' });
@@ -79,6 +79,35 @@ test('Request deadline cancels a caller body that never finishes before any mode
     let cancelled=false;
     const stream=new ReadableStream<Uint8Array>({start(controller){controller.enqueue(new TextEncoder().encode('{'));},cancel(){cancelled=true;}});
     const incoming=new Request('https://search.invalid/v1/search',{method:'POST',body:stream,duplex:'half'} as RequestInit);
-    const h=harness();assert.equal((await h.service(incoming)).status,503);
+    const h=harness();await diagnostic503(await h.service(incoming),'request','timeout');
     await new Promise(resolve=>setTimeout(resolve,10));assert.equal(cancelled,true);assert.equal(h.calls(),0);
+});
+
+async function diagnostic503(response:Response,stage:string,reason='failure') {
+ assert.equal(response.status,503);const body=await response.json();assert.equal(body.fallback,'keyword');assert.equal(body.retryable,true);
+ assert.deepEqual(Object.keys(body.diagnostic??{}).sort(),['reason','requestId','stage']);assert.equal(body.diagnostic.stage,stage);assert.equal(body.diagnostic.reason,reason);
+ assert.match(body.diagnostic.requestId,/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+ assert.equal(response.headers.get('X-Search-Request-Id'),body.diagnostic.requestId);assert.doesNotMatch(JSON.stringify(body),/private-query|203\.0\.113\.9|private-secret|caller-id|provider-stack/);return body.diagnostic;
+}
+const privateFailure=()=>new Error('private-query 203.0.113.9 private-secret provider-stack');
+const diagnosticDependencies=():Dependencies=>({policy,admission:new MemoryAdmission(),manifest:async()=>({corpusId:corpus.corpusId,corpus}),embed:async()=>Array(1024).fill(1),vectors:async()=>[],now:()=>Date.parse('2026-10-21T00:00:00Z')});
+for(const stage of ['source_initial','admission','embedding','vector','source_final'])test('Diagnostic 503 identifies '+stage+' without private input or provider text',async()=>{
+ const d=diagnosticDependencies();let reads=0,ai=0;d.embed=async()=>{ai++;if(stage==='embedding')throw privateFailure();return Array(1024).fill(1);};
+ d.manifest=async()=>{reads++;if(stage==='source_initial'||stage==='source_final'&&reads===2)throw privateFailure();return {corpusId:corpus.corpusId,corpus};};
+ if(stage==='admission')d.admission.reserve=async()=>{throw privateFailure();};if(stage==='vector')d.vectors=async()=>{throw privateFailure();};
+ const r=request({q:'private-query'});r.headers.set('CF-Connecting-IP','203.0.113.9');r.headers.set('X-Search-Request-Id','caller-id');await diagnostic503(await createSearchService(d)(r),stage);
+ if(['source_initial','admission'].includes(stage))assert.equal(ai,0);
+});
+test('Diagnostic timeout preserves the active stage and prevents late vector calls',async(t)=>{
+ t.mock.timers.enable({apis:['setTimeout']});let entered!:()=>void,release!:(v:number[])=>void;const started=new Promise<void>(r=>entered=r),held=new Promise<number[]>(r=>release=r);let vectors=0;
+ const d=diagnosticDependencies();d.embed=async()=>{entered();return held;};d.vectors=async()=>{vectors++;return [];};
+ const pending=createSearchService(d)(request());await started;t.mock.timers.tick(5000);await diagnostic503(await pending,'embedding','timeout');release(Array(1024).fill(1));await Promise.resolve();await Promise.resolve();assert.equal(vectors,0);
+});
+test('Overlapping failed requests retain independent stages and random identities',async()=>{
+ let entered!:()=>void,release!:()=>void;const started=new Promise<void>(r=>entered=r),held=new Promise<void>(r=>release=r);const d=diagnosticDependencies();
+ d.embed=async text=>{if(text==='one'){entered();await held;throw privateFailure();}return Array(1024).fill(1);};d.vectors=async()=>{throw privateFailure();};
+ const service=createSearchService(d),first=service(request({q:'one'}));await started;const second=await diagnostic503(await service(request({q:'two'})),'vector');release();const a=await diagnostic503(await first,'embedding');assert.notEqual(a.requestId,second.requestId);
+});
+test('Invalid embedding response has a fixed reason and quota rejection still has zero inference',async()=>{
+ const d=diagnosticDependencies();d.embed=async()=>[0];await diagnostic503(await createSearchService(d)(request()),'embedding','invalid_response');let calls=0;d.admission.reserve=async()=>false;d.embed=async()=>{calls++;return [];};const r=await createSearchService(d)(request());assert.equal(r.status,429);assert.equal(calls,0);
 });
