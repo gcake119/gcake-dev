@@ -1,12 +1,13 @@
 ---
 title: 正式開賽後，我怎麼知道自動發文真的完成了？
 description: 正式開賽後，自動發文開始遇到 Chrome、反自動化、發布結果不明與通知不清楚等問題，我也逐步把「有執行」和「真的完成」分開看。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - development-automation
   - debugging-operations
   - testing-verification
+publishedAt: 2026-10-22T07:00:00+08:00
 ---
 
 Day 1 本來就預計手動發文，因為要先拿到正式系列資訊。
