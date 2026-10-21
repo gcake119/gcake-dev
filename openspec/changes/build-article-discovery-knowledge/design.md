@@ -247,3 +247,8 @@ Reuse only ledger-proven matching model/format/content/revision vectors and matc
 Cost/verification: reuse existing Node acceptance tests with real SQLite plus controlled AI/Vectorize adapters; no new CI workflow, service, dependency or required gate. Main risk is overlapping/replayed paid-resource work and incomplete promotion. The existing foreground CLI has no hosted progress/shared reservation, so adding a bounded cron and D1 state closes that specific gap. Verify RED→GREEN, existing full local gates, real deployment no-change, real provider update/readback/recovery, and actual cron receipt. Free Workers CPU limits apply; provider execution must be checked rather than inferred from Node tests.
 
 The minute receipt-retention query uses a created-time index (0004_sync_receipt_retention.sql), avoiding a full scan of thirty days of check receipts on every unchanged release. This is a storage/query optimization within the existing D1 mechanism, not an added test or CI layer.
+
+
+## Observed deployed main — 2026-10-22
+
+The merged main c0e30ed54e4d922522a44e2b6151dac7f12bbfe4 passed exact-main CI and was deployed to the existing Cloudflare search Worker as b8922dce-07de-4c8f-b52b-d4207ccea347. Runtime bytes match its bundle, settings and policy are unchanged, independent cron receipts show no_change, and real hybrid/mobile/pagination/article acceptance passed. See [the deployment receipt](main-cloudflare-acceptance-20261022.md). This records the existing design in production without changing its contract or claiming a naturally changed corpus was promoted. Pages, BGE-M3, free hard caps, current enabled switches and evidence expiry remain unchanged.

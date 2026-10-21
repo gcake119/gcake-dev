@@ -94,3 +94,10 @@ Tasks 3.3 and 4.3 now have actual provider, free-plan, corpus/index promotion, e
 - [x] 13.1 Replace local execution with the Cloud-hosted public-index synchronization contract and Gherkin, pause automation-2, and validate the actual owned-worktree artifacts.
 - [x] 13.2 Prove concurrent execution, unknown inference, saved-output resume, shared quota denial, expiry/disablement, obsolete-only cleanup and current-release promotion with failing acceptance tests, then implement bounded scheduled synchronization and run the complete existing local gate.
 - [x] 13.3 Deploy migration/runtime disabled, bootstrap only verified owned vectors, verify actual Cloudflare no-change and provider update/readback with unchanged reader UI, then activate cron and preserve independent scheduled evidence; update ADR/runbook and record any future-new-article limitation honestly.
+
+
+## Current main deployment acceptance — 2026-10-22
+
+PR #54 is merged at main c0e30ed54e4d922522a44e2b6151dac7f12bbfe4; exact-main CI 39632905875 passed. The authorized Cloudflare redeployment produced version b8922dce-07de-4c8f-b52b-d4207ccea347 with exact bundle readback and unchanged production settings/policy. Natural receipts 39/40 are no_change; actual hybrid API, 320/390px mobile search, pagination and article navigation passed. See [main-cloudflare-acceptance-20261022.md](main-cloudflare-acceptance-20261022.md) and its portable JSON/screenshots.
+
+30/32 tasks remain complete. Task 1.1 remains a historical evidence limitation; 12.2 still requires the first naturally changed public corpus and its complete provider readback/promotion. No new article appeared during this acceptance. Task 13.3 remains complete; this is deployed-main provenance and operational evidence backfill, not a new requirement. No checkbox, model, free-plan limit, expiry or enabled setting changes.

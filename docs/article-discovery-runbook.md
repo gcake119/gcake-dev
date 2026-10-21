@@ -205,3 +205,14 @@ pnpm --filter @gcake/admin-worker exec wrangler deploy --config ../search-worker
 部署前仍須完成當次受影響的本機 gate；此指令不授權自動發布未驗證候選或變更免費方案。需要先停用背景更新驗證時，使用空 cron 的候選設定與 `INDEX_SYNC_ENABLED:false`，確認實際停用，再依授權開啟。`--keep-vars` 本身不能抵銷設定檔中明確的 false。
 
 若 `INDEX_SYNC_ENABLED`／`SEMANTIC_ENABLED` 已停用，或政策一開始就過期／不符，排程會在進入工作前停止，不新增內容處理收據；`disabled`／`ineligible` 是受保護操作入口可讀取的回覆。可唯讀核對開關、policy 與最後收據時間定位，不能把舊的 no_change 當成仍在有效處理。這不影響靜態關鍵字搜尋。
+
+
+## 最新 main 部署驗收（２０２６－１０－２２）
+
+PR ＃５４合併後，main `c0e30ed54e4d922522a44e2b6151dac7f12bbfe4` 的 CI `39632905875` 通過；已部署至 Cloudflare 搜尋 Worker，正式版本為 `b8922dce-07de-4c8f-b52b-d4207ccea347`，遠端程式與該 main bundle 完全一致。GitHub Pages 未重新部署。
+
+部署明確保留兩個 true 開關與原 cron；讀回 settings／D1 policy 均與部署前相同，仍使用 BGE-M3、免費方案硬上限、每日保守預留及原證據期限。後續部署沿用上節明確開關覆寫，不能僅用 --keep-vars 抵銷設定檔 false，也不重設額度或重跑既有 migrations。
+
+部署後自然收據＃３９／４０皆 no_change、pending 為零、２６３３個向量不變；正式 API 回 hybrid／２００。Computer Use 驗證３２０／３９０像素、語意結果、分頁及文章導覽正常，視窗已還原，本機 automation-2 維持暫停。[完整紀錄與可攜證據](../openspec/changes/build-article-discovery-knowledge/main-cloudflare-acceptance-20261022.md)。
+
+剩餘未完成仍為１．１歷史紅測試證據與１２．２首個自然新增文章版本的完整同步提升；這次沒有新公開版本，不將 no_change 收據當作新增文章驗收。免費／隱私證據維持２０２６－１１－２０ UTC ００：００到期，未自動延長。本節為結果回填，不授權新的推送、部署或正式設定變更。
