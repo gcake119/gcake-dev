@@ -1,0 +1,199 @@
+{
+  "at": "2026-10-21T16:27:49.957819+00:00",
+  "sourceCommit": "c0e30ed54e4d922522a44e2b6151dac7f12bbfe4",
+  "mainCI": 39632905875,
+  "moduleMatchesExactMainBundle": true,
+  "moduleSha256": "088e28c38e15467fe3e8fae128568ff693cff8346a894240a0d37cf1b1a30918",
+  "settingsUnchanged": true,
+  "policyUnchanged": true,
+  "policy": {
+    "enabled": true,
+    "activeCorpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "model": "@cf/baai/bge-m3",
+    "modelConfig": "cloudflare:@cf/baai/bge-m3:plain:1024:cosine:bytes4096:v1",
+    "dimensions": 1024,
+    "format": "plain",
+    "inputLimit": 4096,
+    "billing": {
+      "model": "@cf/baai/bge-m3",
+      "id": "cloudflare-free-account-20261021-ADR-001",
+      "validUntil": "2026-11-20T00:00:00Z",
+      "rate": 0.001075,
+      "freeVerified": true,
+      "noChargeBoundary": true,
+      "account": "979a3735f8dfa269e7474135f348cfdf",
+      "providerResetVerified": true,
+      "windowId": "2026-10-21",
+      "renewal": "verified-workers-free-utc",
+      "services": [
+        "embedding",
+        "vector-query",
+        "vector-storage",
+        "worker",
+        "admission"
+      ]
+    },
+    "limits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "paidOverage": 0,
+    "qualityVerified": true,
+    "providerInputVerified": true
+  },
+  "schedule": {
+    "schedules": [
+      {
+        "cron": "* * * * *",
+        "created_on": "2026-10-21T15:38:54.066822Z",
+        "modified_on": "2026-10-21T15:38:54.066822Z"
+      }
+    ]
+  },
+  "naturalScheduledReceipts": [
+    {
+      "id": 39,
+      "created": 1792599990661,
+      "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 40,
+      "created": 1792600050776,
+      "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+      "status": "no_change",
+      "detail": ""
+    }
+  ],
+  "maintenanceReservations": [
+    {
+      "created": 1792599990090,
+      "requests": 0,
+      "tokens": 0,
+      "units": 0,
+      "vectorQueries": 0,
+      "worker": 1,
+      "admission": 40,
+      "storage": 0
+    },
+    {
+      "created": 1792600050472,
+      "requests": 0,
+      "tokens": 0,
+      "units": 0,
+      "vectorQueries": 0,
+      "worker": 1,
+      "admission": 40,
+      "storage": 0
+    }
+  ],
+  "pending": 0,
+  "index": {
+    "dimensions": 1024,
+    "vectorCount": 2633,
+    "processedUpToDatetime": "2026-10-21T15:40:36.413Z",
+    "processedUpToMutation": "b5479c98-bd31-4755-a1a2-3da3b2cc3edc"
+  },
+  "publicCorpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+  "semantic": {
+    "httpStatus": 200,
+    "mode": "hybrid",
+    "total": 33,
+    "first": {
+      "articleId": "ithome:day-24",
+      "title": "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+      "readingHref": "/gcake-dev/series/ithome-2026/day-24/#%E6%88%91%E7%8F%BE%E5%9C%A8%E5%BB%BA%E7%AB%8B%E7%9A%84%E6%98%AF%E4%BF%A1%E4%BB%BB%E4%B8%8D%E6%98%AF%E5%AE%8C%E5%85%A8%E7%A2%BA%E5%AE%9A",
+      "excerpt": "我不用讀程式碼，也可以百分之百確定實作正確。 我目前做不到這件事。",
+      "passageId": "5983ac41ef85e34effc9f2c930a214d3",
+      "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+      "topics": [
+        "ai-assisted-development",
+        "testing-verification"
+      ],
+      "score": 0.03278688524590164
+    }
+  },
+  "limitation": "No newly published public corpus exists in this deployment window; natural cron verified no_change. Changed-corpus provider flow evidence retained from previous acceptance.",
+  "deployment": {
+    "id": "27dd7788-d62b-4e57-a69a-f552b015bfd1",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "versions": [
+      {
+        "version_id": "b8922dce-07de-4c8f-b52b-d4207ccea347",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-21T16:26:27.300359Z"
+  },
+  "browser": {
+    "ui390": {
+      "first": "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+      "scrollWidth": 375,
+      "searchboxes": 1,
+      "selects": 0,
+      "status": "依意思搜尋結果。找到 33 篇文章，第 1 頁。",
+      "width": 390
+    },
+    "ui320": {
+      "scrollWidth": 305,
+      "status": "依意思搜尋結果。找到 33 篇文章，第 1 頁。",
+      "width": 320
+    },
+    "page2": {
+      "status": "依意思搜尋結果。找到 33 篇文章，第 2 頁。",
+      "url": "https://gcake119.github.io/gcake-dev/search/?q=%E4%B8%8D%E7%9C%8B%E6%AF%8F%E4%B8%80%E8%A1%8C%E7%A8%8B%E5%BC%8F%E6%80%8E%E9%BA%BC%E7%A2%BA%E5%AE%9A%E5%AE%83%E5%81%9A%E5%B0%8D&page=2"
+    },
+    "article": {
+      "heading": "Day 19｜把「為什麼這樣決定」也留下來",
+      "scrollWidth": 305,
+      "title": "Day 19｜把「為什麼這樣決定」也留下來 | 雞蛋糕的開發筆記",
+      "url": "https://gcake119.github.io/gcake-dev/series/ithome-2026/day-19/#%E6%B1%BA%E7%AD%96%E5%AD%98%E5%9C%A8%E4%B8%8D%E4%BB%A3%E8%A1%A8%E5%B7%B2%E7%B6%93%E5%81%9A%E5%AE%8C",
+      "width": 320
+    },
+    "connectionResetDuringAcceptance": true,
+    "network": [
+      {
+        "method": "Network.responseReceived",
+        "status": 204,
+        "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+      },
+      {
+        "method": "Network.responseReceived",
+        "status": 200,
+        "url": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search"
+      }
+    ]
+  },
+  "evidenceFiles": {
+    "mobile-320.jpg": "ee4e20b8237e791d9f8c7811f10a7bd728df056268ca9cf02108665ea703574b",
+    "mobile-390.jpg": "9ee0dfac4e9ca6cc726b4c6846d4ea4d380977a0fe0952a07386fa730e9ab00b",
+    "mobile-article.jpg": "19059a3d32b01f61ffc54d0e0ff666540c83797d5129e15135d0ffe57d665711"
+  },
+  "scope": {
+    "pagesRedeployed": false,
+    "localHourlyTask": "PAUSED",
+    "originalDirtyCheckoutUnchanged": true,
+    "snapshotBeforeDocumentationCommit": true,
+    "newProductionCallsDuringBackfill": false
+  },
+  "documentationVerification": {
+    "spectraValidate": "passed",
+    "spectraAnalyze": {
+      "blockingFindings": 0,
+      "suggestion": "Existing may wording at specs/reader-search/spec.md:62, unchanged from main"
+    },
+    "taskCounts": {
+      "complete": 30,
+      "incomplete": 2
+    },
+    "screenshotDigestsVerified": true,
+    "localLinksVerified": true
+  }
+}
