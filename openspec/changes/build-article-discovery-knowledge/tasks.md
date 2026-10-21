@@ -101,3 +101,14 @@ Tasks 3.3 and 4.3 now have actual provider, free-plan, corpus/index promotion, e
 PR #54 is merged at main c0e30ed54e4d922522a44e2b6151dac7f12bbfe4; exact-main CI 39632905875 passed. The authorized Cloudflare redeployment produced version b8922dce-07de-4c8f-b52b-d4207ccea347 with exact bundle readback and unchanged production settings/policy. Natural receipts 39/40 are no_change; actual hybrid API, 320/390px mobile search, pagination and article navigation passed. See [main-cloudflare-acceptance-20261022.md](main-cloudflare-acceptance-20261022.md) and its portable JSON/screenshots.
 
 30/32 tasks remain complete. Task 1.1 remains a historical evidence limitation; 12.2 still requires the first naturally changed public corpus and its complete provider readback/promotion. No new article appeared during this acceptance. Task 13.3 remains complete; this is deployed-main provenance and operational evidence backfill, not a new requirement. No checkbox, model, free-plan limit, expiry or enabled setting changes.
+
+
+## 14. Private semantic failure diagnosis
+
+- [x] 14.1 Deliver Privacy-preserving semantic failure identification with fixed response-only stages/reasons and independent random request IDs, retaining all input/CORS/quota/deadline/model boundaries; first prove missing diagnostics through existing semantic/runtime acceptance failures, then verify dependency errors, source/overall timeout, concurrent isolation and absence of query/IP/secret/error text.
+- [x] 14.2 Verify diagnostic 503 keeps current keyword results and explicit retry recovery through existing client acceptance tests; run the complete existing local gate and Spectra validation, update ADR/runbook with response collection and platform limitations, and retain local-only evidence without deployment or changing production settings.
+
+
+## Local diagnostic closeout — 2026-10-22
+
+Tasks 14.1/14.2 are complete locally; 32/34 tasks complete. [Private diagnostic acceptance](private-error-diagnostics-20261022.md) preserves RED/GREEN, privacy/deadline/concurrency/fallback cases and full local gates. No deployment or cloud execution occurred; historical 1.1 and future natural-corpus 12.2 remain open.

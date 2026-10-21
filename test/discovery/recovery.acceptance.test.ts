@@ -7,7 +7,7 @@ const config={now:'2026-10-21T00:00:00Z',sourceTree:'fixture',snapshotDigest:'fi
 const article=(id:string)=>({source:'local',id,title:id+' workflow article',href:`/gcake-dev/posts/${id}/`,canonicalUrl:`https://example.org/${id}`,status:'published',topics:[],html:'<p>workflow recovery</p>'});
 const old=buildPublicDiscovery([article('withdrawn'),article('kept')],config),fresh=buildPublicDiscovery([article('kept')],config);
 async function until(predicate:()=>boolean){for(let i=0;i<300;i++){if(predicate())return;await new Promise(r=>setTimeout(r,2));}assert.fail('Expected observable state did not settle');}
-function setup(kind:'409'|'manifest',unavailable=false){
+function setup(kind:'409'|'manifest'|'503',unavailable=false){
     const {window,document}=parseHTML('<html><body><form class="nav-search"><input></form><p id="search-status"></p><ul id="search-results" data-manifest="/manifest" data-semantic="/semantic" data-local-semantic="true"></ul><nav id="search-pagination"></nav><button id="search-retry"></button></body></html>');
     const previous=Object.fromEntries(['window','document','location','history','fetch'].map(k=>[k,(globalThis as any)[k]]));
     let url=new URL('http://127.0.0.1/gcake-dev/search/?q=workflow'),live=old,published=false,calls=0;
@@ -27,6 +27,7 @@ function setup(kind:'409'|'manifest',unavailable=false){
         if(path.startsWith('/passages/'))return Response.json(c.passages);
         if(path==='/semantic'){
             calls++;
+            if(published&&kind==='503')return Response.json({code:'SERVICE_UNAVAILABLE',retryable:true,fallback:'keyword',diagnostic:{stage:'embedding',reason:'failure',requestId:'00000000-0000-4000-8000-000000000001'}},{status:503});
             if(published&&kind==='409')return new Response('',{status:409});
             if(published&&kind==='manifest')live=fresh;
             const sent=JSON.parse(String(init?.body)),responseCorpus=sent.corpusId===fresh.corpusId?fresh:old;
@@ -35,6 +36,7 @@ function setup(kind:'409'|'manifest',unavailable=false){
         throw Error('Unexpected fixture URL: '+path);
     };
     return {document,window,status:()=>document.querySelector('#search-status')!.textContent!,rows:()=>document.querySelector('#search-results')!.textContent!,calls:()=>calls,
+        recover(){published=false;},
         publish(){published=true;if(kind==='409')live=fresh;},
         retry(){(document.querySelector('#search-retry') as any).click();},
         navigate(q:string){url.searchParams.set('q',q);window.dispatchEvent(new window.Event('popstate'));},
@@ -62,4 +64,12 @@ test('Superseded release recovery cannot overwrite a newer query',async()=>{
 
 test('Authorized public endpoint searches directly without a mode selector or preview flag',async()=>{
  const h=setup('409');try{delete (h.document.querySelector('#search-results') as any).dataset.localSemantic;installSearch();await until(()=>h.status().includes('找到'));assert.equal(h.calls(),1);assert.equal(h.document.querySelectorAll('select').length,0);assert.match(h.rows(),/kept/);}finally{h.restore();}
+});
+
+
+test('Diagnostic 503 retains current keyword articles and explicit retry recovers without exposing diagnostic details',async()=>{
+ const h=setup('503');try{delete (h.document.querySelector('#search-results') as any).dataset.localSemantic;installSearch();await until(()=>h.status().includes('找到'));h.publish();h.retry();await until(()=>h.status().includes('關鍵字結果'));
+  assert.match(h.rows(),/kept/);assert.match(h.rows(),/withdrawn/);assert.equal(h.calls(),2);assert.equal((h.document.querySelector('#search-retry') as any).hidden,false);assert.equal((h.document.querySelector('input') as any).value,'workflow');assert.doesNotMatch(h.document.body.textContent!,/embedding|00000000|SERVICE_UNAVAILABLE/);
+  h.recover();h.retry();await until(()=>h.status().includes('依意思搜尋結果'));assert.equal(h.calls(),3);assert.equal((h.document.querySelector('#search-retry') as any).hidden,true);
+ }finally{h.restore();}
 });
