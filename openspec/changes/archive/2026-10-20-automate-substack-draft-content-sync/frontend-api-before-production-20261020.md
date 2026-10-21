@@ -1,6 +1,6 @@
 # Substack 草稿同步：後台前端 API
 
-本文件保留部署前契約，僅調整搬移後的相對連結；正式交付現況見 [API 契約](../../../docs/substack-draft-sync-api.md) 與 [部署驗收](api-production-20261020.md)。
+本文件保留部署前契約，僅調整搬移後的相對連結；正式交付現況見 [API 契約](../../../../docs/substack-draft-sync-api.md) 與 [部署驗收](api-production-20261020.md)。
 
 本文件描述已實作的後台唯讀 API；HTTP 路由尚未部署。私人 Chrome 草稿同步 runtime 已於 2026-10-19T15:54:47.369Z 啟用既有 ID 的持續寫入，新建與排程寫入保持停用。真實圖片／全文恢復及一次自然完整盤點皆已通過，證據見下方紀錄。API 部署、同步 runtime 與真人寄送收據是不同證據。
 

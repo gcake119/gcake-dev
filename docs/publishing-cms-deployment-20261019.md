@@ -72,3 +72,10 @@ D1 唯讀查核回覆無待套 migration，本次沒有套用 migration、還原
 - Python HTTP 客戶端曾遭 403；curl 與正式登入瀏覽器讀取成功，線上雜湊一致。非同步等待與在 modal 後方切換主題曾產生無效量測，已改為載入後量測、開啟 modal 前先設定主題並重做。這些工具失敗未計作通過，也未因此重部署。
 - 原始截圖、HTML 報告與 logs 保留在本機交付目錄 `~/.codex/visualizations/2026/10/19/01a153ab-2054-7613-8fb6-a0e9e54085b6/admin-improvement/production-acceptance/`。這是本機查核位置，並非其他協作者可直接開啟的 repo 相對連結；核心版本、雜湊、40 組量測與限制已放入上述 JSON。
 - 本輪依現有 DESIGN.md／設計規範與 Spectra 回填證據，未改產品決策或建立新 ADR／CI／驗收門檻；未 archive change。本輪只檢查文件、連結、JSON／來源收據一致性及 Spectra，不重跑已完成且輸入未改的產品測試，也不重新驗收或部署。
+
+
+## 文件合併與歸檔結案
+
+部署證據文件 commit `05314f9` 經 [PR #39](https://github.com/gcake119/gcake-dev/pull/39) 合併到 main `509d71b21e6261f5b674bdc77cb38deaf73d785d`。[PR CI](https://github.com/gcake119/gcake-dev/actions/runs/39273488924)、[Codex 審查](https://github.com/gcake119/gcake-dev/pull/39#issuecomment-6270242209) 與 [main CI](https://github.com/gcake119/gcake-dev/actions/runs/39276651575) 均已完成；CI 通過，Codex 無發現或未解決項目。合併僅包含五份正式部署／驗收文件，沒有 Substack 程式或工作區變更。
+
+使用者後續授權將 `simplify-admin-workflows` 歸檔，已由 Spectra 同步既有需求與 Gherkin 到主規格，完整結案紀錄見 [歸檔驗收紀錄](../openspec/changes/archive/2026-10-19-simplify-admin-workflows/verification.md)。本輪歸檔與獨立本機 commit 不推送、不再次部署，也不改變本文件記錄的正式部署版本或驗收範圍。

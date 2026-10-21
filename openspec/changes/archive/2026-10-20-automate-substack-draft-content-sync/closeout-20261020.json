@@ -1,0 +1,44 @@
+{
+  "observedAtUtc": "2026-10-20T09:10:31.598512+00:00",
+  "mainCommit": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+  "archiveScope": "existing-ID-only draft synchronization; creation unqualified and disabled",
+  "draft221099763": {
+    "evidenceLayer": "authenticated production GET API saved state; no new direct provider verification",
+    "checkedAtUtc": "2026-10-20T08:56:48.056Z",
+    "syncStatus": "verified",
+    "code": null,
+    "publication": "draft_prepared",
+    "delivery": "not_armed",
+    "subscriberReceipt": "unknown",
+    "unresolvedOperation": false,
+    "historicalDeploymentAcceptanceStatus": "inconclusive",
+    "historicalDeploymentAcceptanceCheckedAtUtc": "2026-10-19T19:39:20.992Z"
+  },
+  "runtime": {
+    "pinDigest": "1a07ebc26ed597c4d44a9402dec91fde9702978943a66b62f4d0b811b1f25b22",
+    "pinFiles": 19145,
+    "pinAllFilesMatched": true,
+    "pr43RuntimeFilesMatchMain": true,
+    "receiptPinDigestsMatched": true,
+    "latestObservedRound": "round-OKhvJ4",
+    "latestObservedRoundStatus": "completed",
+    "draftSyncEnabled": true,
+    "draftWriteEnabled": true,
+    "allowCreate": false,
+    "creationQualified": false,
+    "scheduledWriteEnabled": false,
+    "existingExpiry": "2026-11-18T15:44:12.782Z",
+    "newQualificationExecutedByCloseout": false
+  },
+  "actions": {
+    "providerWrites": 0,
+    "newDeployment": false,
+    "runtimeInstall": false,
+    "timerReloadOrKickstart": false,
+    "newSchedulingOrDeliveryActivation": false,
+    "ownedBrowserTabClosed": true
+  },
+  "remaining": {
+    "schedule-substack-drafts-ahead.5.3": "pending actual provider publication and ordinary browser-free observation; existing scheduled commitment not changed"
+  }
+}
