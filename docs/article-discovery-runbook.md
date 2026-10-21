@@ -1,5 +1,7 @@
 # 公開文章搜尋：正式站與本機操作手冊
 
+目前正式搜尋及索引更新皆由 Cloudflare 執行；最新操作方式見本文末「Cloudflare 自動同步索引」。以下前期停用／本機說明是階段紀錄，以最新決策與驗收收據為準。
+
 靜態文章搜尋已於２０２６－１０－２１依另行授權部署至正式 GitHub Pages；[正式部署與驗收紀錄](../openspec/changes/build-article-discovery-knowledge/production-acceptance-20261021.md) 保存來源、CI、資產讀回與手機畫面。本機 Ollama 比較／BGE-M3 預覽仍是獨立的前景工具；雲端語意服務維持停用，未建立 Cloudflare 資源或修改正式排程、Substack 設定。靜態上線不代表 provider 品質或雲端啟用驗收。
 
 ## 靜態文章庫
@@ -160,3 +162,46 @@ Vectorize 先建立 metadata indexes，再 upsert；上傳與索引處理完成�
 正式環境診斷發現 Workers 的 fetch 僅接受 `redirect: 'manual'`／`'follow'`，使用瀏覽器／Node 可接受的 `'error'` 會在下載前拋錯。搜尋來源下載採 manual，收到任何非成功狀態（含重新導向）即拒絕，不追蹤到其他來源；仍驗證固定資產路徑、digest 與 corpus。不要改成 follow 來消除錯誤。
 
 ２０２６－１０－２１的暫時遠端診斷不綁 AI、D1 或 Vectorize，先重現原錯誤，再以修正後相同 deployedReader 實際讀回正式 manifest、index、passages 三份成功回應。這只證明來源下載已修復，正式模型查詢與 UI 驗收另記；原先啟用後的５０３仍保留為失敗證據。純 Worker 修復可更新 Worker 而保留已驗證的 Pages 產物與相容 corpus，不必為不變的文章重新推論或重建 namespace。
+
+
+## 正式雲端驗收結果（２０２６－１０－２１）
+
+[完整驗收收據](../openspec/changes/build-article-discovery-knowledge/cloud-production-acceptance-20261021.md)記錄 PR ＃５１／５２／５３、Pages／Worker 不同的釘選版本、實際模型及索引、Computer Use 搜尋／手機／回復，以及免費界線。本次驗收結束時，正式語意搜尋已啟用，３．３／４．３已完成，規劃為２６／２７項；前文２４／２７與尚未授權的表格是當時的歷史紀錄，僅１．１的不可回補歷史測試證據保留未勾選。
+
+CLI 部署後，先重新載入 Cloudflare 控制台再變更開關。本次曾因舊控制台保留舊版本，在變更變數時復部署舊程式；不能只看 SEMANTIC_ENABLED，還要核對當前部署版本與正式程式讀回。停用時保留最新公開文章，確認關鍵字可用及預留額度不變；恢復後確認 hybrid 與重試隱藏。
+
+UTC 每日自動重設的例外已生效，不需每天人工重開；目前帳戶／計價／隱私證據期限是２０２６－１１－２０ UTC ００：００。屆期未重新核實仍停用；未來文章版本若沒有相容索引，維持新版關鍵字搜尋，不能自動升級付費或宣稱已有自動建索引排程。
+
+
+## 持續索引維護（歷史，已由下節 Cloudflare 排程取代）
+
+依使用者「持續更新雲端索引」要求，採每小時檢查的 Codex 對話持續任務；[維護流程與執行證據](../openspec/changes/build-article-discovery-knowledge/continuous-index-maintenance-20261021.md)保存排程識別與首次核對。這是前述「無自動建索引排程」現況的後續變更，原正式驗收收據仍保留當時狀態。
+
+沒有新公開版本時只讀、不推論。版本變更時，依原有準備／免費容量／共享 D1 預留／供應商完整讀回／提升程序執行；憑證先由 Wrangler 正常刷新並確認原帳戶，仍失敗就回報，不輸出權杖或擴權。不可只因有排程就把未來文章變更驗收標為完成。此排程依賴本機 Codex 執行，未增加 Cloudflare cron 或網站部署流程。
+
+原有免費證據期限持續適用；不自動延長期限、切換開關、推送或部署。額度不足或前提不完整時維持當期關鍵字搜尋。
+
+
+## Cloudflare 自動同步索引
+
+背景更新使用 `gcake-public-search-production` 的每分鐘 Cron Trigger，不需要本機 Codex、Ollama 或電腦持續開機。先前每小時的 Codex 任務 automation-2 已暫停。只有網站真正公開的新文章庫才觸發內容更新，沒有變更不會重新產生向量。一般檢查仍會留下簡短 D1 收據並扣背景執行／資料庫保守額度。
+
+流程是：核對公開 manifest 與政策 → 取得單一租約 → 清理可證明已過期的本搜尋向量 → 每批最多１６段重用或產生相容向量 → 保存結果 → 上傳 → 下一輪完整讀回核對 → 全部完成且來源未變後切換作用中版本。舊文章不會因更新失敗重新出現在結果。更新期間或免費額度不足時，網站保留目前版本的關鍵字搜尋。每分鐘是檢查／續作頻率，不是整份索引完成時間保證。
+
+日常狀態：唯讀查詢 `discovery_sync` 取得進度、`discovery_sync_pending` 取得待核對結果、`discovery_sync_receipts` 取得最近３０天的結果；讀取時不要印出向量 payload 或任何 secret。`no_change` 是正常無變更，`uploaded`／`awaiting_readback`／`verified` 是續作中，`promoted` 是完整核對後切換成功。`quota_exceeded` 等待下一個已核實的 UTC 日額度；`ineligible` 檢查證據期限及政策；`blocked`／`source_changed` 需要依保存的資料定位原因，不能刪除預留或盲目重播推論。
+
+停用背景更新只關閉 `INDEX_SYNC_ENABLED`；不要連帶關閉既有搜尋的 `SEMANTIC_ENABLED`。全部雲端處理停用則關閉後者。程式庫設定預設兩者皆停用，正式部署需明確保存當前開關，核對同一候選的部署結果後再開排程。不要直接重新部署預設設定而誤關正式服務；CLI 部署後先重新載入 Cloudflare 控制台，避免舊頁面複製舊版程式。
+
+`POST /internal/index-sync` 僅供持有加密 `INDEX_SYNC_TOKEN` 的操作人員執行固定公開來源的一步續作；未授權或非 POST 回覆４０４，不能指定網址、模型、corpus 或額度。秘密值只透過 Wrangler secret／secrets-file 設定，驗收暫存輸入檔會清除，不能放進 Git、文件、URL 或公開回應。需要人工處理時可在同一 Worker 以 Wrangler 更新秘密後使用，不需增加帳戶權限。一般排程不需要此憑證。
+
+每日最多８０００ Neurons 等既有本站上限及 Workers Free 供應商硬限制不變，與讀者查詢共用預留額度。任何未知結果保留扣額。當期免費／隱私證據仍於２０２６－１１－２０ UTC ００：００到期，到期未核實會停止雲端處理；每日重設不會延長此期限。最新實際部署、獨立 cron 收據、免費限制與驗收差異見 [雲端同步驗收](../openspec/changes/build-article-discovery-knowledge/cloud-hosted-sync-20261021.md)。
+
+後續經授權更新同一正式 Worker、且確定要維持目前兩個開關啟用時，從專案根目錄使用明確覆寫：
+
+```sh
+pnpm --filter @gcake/admin-worker exec wrangler deploy --config ../search-worker/wrangler.jsonc --env production --keep-vars --var SEMANTIC_ENABLED:true --var INDEX_SYNC_ENABLED:true
+```
+
+部署前仍須完成當次受影響的本機 gate；此指令不授權自動發布未驗證候選或變更免費方案。需要先停用背景更新驗證時，使用空 cron 的候選設定與 `INDEX_SYNC_ENABLED:false`，確認實際停用，再依授權開啟。`--keep-vars` 本身不能抵銷設定檔中明確的 false。
+
+若 `INDEX_SYNC_ENABLED`／`SEMANTIC_ENABLED` 已停用，或政策一開始就過期／不符，排程會在進入工作前停止，不新增內容處理收據；`disabled`／`ineligible` 是受保護操作入口可讀取的回覆。可唯讀核對開關、policy 與最後收據時間定位，不能把舊的 no_change 當成仍在有效處理。這不影響靜態關鍵字搜尋。

@@ -1,0 +1,216 @@
+{
+  "recordedAt": "2026-10-21T15:53:36.365314+00:00",
+  "scope": "Cloudflare-hosted public article index synchronization; current reader design preserved",
+  "candidate": {
+    "baseCommit": "fc2e3535d981cd1c587d6ea354a99adbab05d4e4",
+    "sourceSha256": {
+      "apps/search-worker/src/index.ts": "925efa74a777224834a754ab8d36b2dc9ea56ea4fe766ab40cdbc1689d4c6a50",
+      "apps/search-worker/src/sync.ts": "e4e25c0faacd54173b7ce919cc01a0df67803ffa8afc07dafb3f518532bf9547",
+      "apps/search-worker/src/sync-trigger.ts": "9e7d2fd05475882e910d98b589186e080c75f97f6cffe2a0bc1211e5dcfd82cf",
+      "apps/search-worker/migrations/0003_index_sync.sql": "18b41167c43d955d1dc9fd3f3ec96178cab8cc078630cf2719bdd1ec2d1fb01a",
+      "apps/search-worker/migrations/0004_sync_receipt_retention.sql": "8abb0f4b6bcb8b1ee69a1ee5d7649b5529b8a0c33ac7b72f3913491b60b1bf90",
+      "apps/search-worker/wrangler.jsonc": "075bbd67076817d8cc533171614c34a4e8ecf8f1855147e1c55308530a9d0ab7",
+      "test/discovery/cloud-sync.acceptance.test.ts": "d3c61490c2c61211c39206c1b07b0df714b4382a2f4aaa6f7196780f0c4e95c1"
+    },
+    "committed": false,
+    "pushed": false,
+    "newMainCI": false
+  },
+  "localVerification": {
+    "fullTests": {
+      "passed": true,
+      "log": "full-test-unrestricted.log"
+    },
+    "focusedSearchWorker": {
+      "passed": true,
+      "tests": 44,
+      "log": "green.log"
+    },
+    "astroCheck": {
+      "errors": 0,
+      "warnings": 0,
+      "log": "check-final.log"
+    },
+    "buildAll": {
+      "passed": true,
+      "log": "build.log"
+    },
+    "releaseDryRun": {
+      "passed": true,
+      "log": "release-unrestricted.log"
+    },
+    "editorialRehearsal": {
+      "passed": true,
+      "log": "rehearse-unrestricted.log"
+    }
+  },
+  "production": {
+    "worker": "gcake-public-search-production",
+    "account": "979a3735f8dfa269e7474135f348cfdf",
+    "versionId": "d254daa6-fc06-4d94-8d1c-5d7dc481f0cc",
+    "semanticEnabled": true,
+    "indexSyncEnabled": true,
+    "schedule": "every minute",
+    "batchSize": 16,
+    "liveModuleSha256": "088e28c38e15467fe3e8fae128568ff693cff8346a894240a0d37cf1b1a30918",
+    "liveModuleBytes": 38699,
+    "exactLocalBundleMatch": true,
+    "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "model": "@cf/baai/bge-m3",
+    "modelConfig": "cloudflare:@cf/baai/bge-m3:plain:1024:cosine:bytes4096:v1",
+    "providerEvidenceValidUntil": "2026-11-20T00:00:00Z",
+    "dailyLimits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "freeRenewal": "verified-workers-free-utc",
+    "paidOverage": 0,
+    "lastManualReceiptId": 1,
+    "independentCronReceipts": [
+      {
+        "id": 2,
+        "created": 1792597772207,
+        "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 3,
+        "created": 1792597830933,
+        "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+        "status": "no_change",
+        "detail": ""
+      }
+    ],
+    "zeroModelCronReservations": [
+      {
+        "id": "a1d5982c-97da-409e-9c5c-c0645f8e1241",
+        "created": 1792597770856,
+        "requests": 0,
+        "tokens": 0,
+        "units": 0,
+        "vectorQueries": 0,
+        "worker": 1,
+        "admission": 40,
+        "storage": 0
+      },
+      {
+        "id": "ac54d7f5-07f9-4d7b-9174-efef59d1f3a9",
+        "created": 1792597830074,
+        "requests": 0,
+        "tokens": 0,
+        "units": 0,
+        "vectorQueries": 0,
+        "worker": 1,
+        "admission": 40,
+        "storage": 0
+      },
+      {
+        "id": "92e424c5-067e-4887-831c-ef82a1d93bf6",
+        "created": 1792597890153,
+        "requests": 0,
+        "tokens": 0,
+        "units": 0,
+        "vectorQueries": 0,
+        "worker": 1,
+        "admission": 40,
+        "storage": 0
+      },
+      {
+        "id": "8c0b9e00-acff-4a3f-8e88-08033a0874f6",
+        "created": 1792597950660,
+        "requests": 0,
+        "tokens": 0,
+        "units": 0,
+        "vectorQueries": 0,
+        "worker": 1,
+        "admission": 40,
+        "storage": 0
+      }
+    ],
+    "currentCorpusPolicyUnchanged": true,
+    "vectorCount": 2633,
+    "quotaReservationRemaining": {
+      "window": "2026-10-21",
+      "verifiedUntil": 1792627200000,
+      "requests": 303,
+      "tokens": 1702626,
+      "units": 7679.322946999999,
+      "vectorQueries": 490,
+      "worker": 9971,
+      "admission": 79192,
+      "storage": 1285376
+    }
+  },
+  "bootstrap": {
+    "providerReadbackVerified": 2633,
+    "ledgerRows": 2633,
+    "modelCalls": 0,
+    "vectorMutations": 0
+  },
+  "cloudAcceptance": {
+    "realPublicSource": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "controlledNamespaces": true,
+    "realPassageBatches": [
+      2,
+      16
+    ],
+    "modelBatches": 2,
+    "reservedPassages": 18,
+    "stages": [
+      "uploaded",
+      "awaiting_readback",
+      "awaiting_readback",
+      "awaiting_readback",
+      "verified",
+      "promoted",
+      "no_change",
+      "cleaning",
+      "cleaned",
+      "uploaded",
+      "awaiting_readback",
+      "verified",
+      "promoted",
+      "no_change"
+    ],
+    "futureNaturalNewArticleVerified": false
+  },
+  "localAutomation": {
+    "id": "automation-2",
+    "status": "PAUSED"
+  },
+  "cleanup": {
+    "testWorkerDeleted": true,
+    "testVectorsAbsent": true,
+    "isolatedTablesRemoved": true,
+    "localSecretUploadFilesRemoved": true,
+    "sharedReservationsRetained": true
+  },
+  "publicPage": {
+    "matchesPreviouslyDeployedPagesArtifact": true,
+    "sha256": "891c03cecfd464a0c41c917265bba45db609fdd7f145a93327de3c46fd28b48e",
+    "desktop": {
+      "searchboxes": 1,
+      "selectors": 0,
+      "mode": "hybrid",
+      "total": 33,
+      "first": "Day 24"
+    },
+    "mobile320": {
+      "viewport": 320,
+      "scrollWidth": 305,
+      "overflow": false
+    }
+  },
+  "originalDirtyCheckoutUnchanged": true,
+  "remaining": [
+    "Historical initial-red evidence gap (task 1.1)",
+    "First naturally changed public release promotion observation (task 12.2)",
+    "Provider evidence renewal before 2026-11-20T00:00:00Z"
+  ]
+}
