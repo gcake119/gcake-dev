@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-21",
+  "status": "production-semantic-enabled",
+  "main": {
+    "sha": "ea343588c235d802a1785279193033a21517a780",
+    "ciRun": 39614815578,
+    "ci": "success",
+    "mergedPRs": [
+      51,
+      52,
+      53
+    ]
+  },
+  "pages": {
+    "sourceTree": "b21ef9d3610cab9e9676071f1b30d93785cfce44",
+    "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "artifactId": 12350865473,
+    "artifactDigest": "sha256:915393834ee5771d7b93caca72379b43db8edf877a698baa6fdd14b9a690768e",
+    "artifactDigestVerified": true,
+    "publicAssetsMatchArtifact": true,
+    "semanticEndpointConfigured": true,
+    "localPreviewFlagAbsent": true,
+    "articles": 33,
+    "passages": 2633,
+    "compatibleVectorsReusedWithoutInference": true,
+    "providerPromotionPending": false,
+    "workerOnlyFixDidNotRedeployPages": true
+  },
+  "worker": {
+    "name": "gcake-public-search-production",
+    "endpoint": "https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search",
+    "semanticEnabled": true,
+    "sourceBodySha256": "f47d9e21f04c5496abf7e294dfcfb39e56520ef4e308e4154f93367c2ac6645a",
+    "manualRedirectCount": 2,
+    "errorRedirectPresent": false,
+    "version": "94addcab-7bcb-4c19-ae59-430a252c2682",
+    "deployment": "3b111b90-fd51-4533-956d-4c0b672669a7",
+    "logsEnabled": false,
+    "tracesEnabled": false,
+    "bindings": [
+      {
+        "name": "AI",
+        "type": "ai"
+      },
+      {
+        "name": "DISCOVERY_DB",
+        "type": "d1"
+      },
+      {
+        "name": "SEMANTIC_ENABLED",
+        "type": "plain_text"
+      },
+      {
+        "name": "THROTTLE_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "VECTOR_INDEX",
+        "type": "vectorize"
+      }
+    ],
+    "productionMatchesExactMainBundle": {
+      "main": "ea343588c235d802a1785279193033a21517a780",
+      "modules": [
+        {
+          "name": "index.js",
+          "bytes": 24839,
+          "sha256": "ac2bd408feec51cce12bbe7d36527712ce4e622763ed95cc2c6757830246e226",
+          "productionMatchesExactMainBundle": true
+        }
+      ]
+    }
+  },
+  "index": {
+    "name": "gcake-public-search-bge-m3",
+    "namespace": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "vectors": 2633,
+    "dimensions": 1024,
+    "allNamespaceMetadataAndValuesVerified": true,
+    "vectorCount": 2633,
+    "oldPreparedNamespaceHasNoRemainingVectors": true,
+    "articleAndPassageContentUnchangedAcrossRetag": true,
+    "retagModelCalls": 0
+  },
+  "provider": {
+    "model": "@cf/baai/bge-m3",
+    "format": "plain",
+    "generationCalls": 0,
+    "graphQLObserved": {
+      "viewer": {
+        "accounts": [
+          {
+            "aiInferenceAdaptiveGroups": [
+              {
+                "count": 176,
+                "dimensions": {
+                  "modelId": "@cf/baai/bge-m3"
+                },
+                "sum": {
+                  "totalInputTokens": 121643,
+                  "totalOutputTokens": 0,
+                  "totalRequestBytesIn": 304800
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "budget": {
+    "plan": "Workers Free",
+    "paidOverage": 0,
+    "renewal": "verified-workers-free-utc",
+    "dailyReset": "00:00 UTC",
+    "evidenceValidUntil": "2026-11-20T00:00:00Z",
+    "dailyNeuronsApplicationCap": 8000,
+    "dailyRequestApplicationCap": 500,
+    "rolloverExistingRowsNeverReplenished": true,
+    "rollbackQuotaUnchanged": true,
+    "finalRemaining": {
+      "window": "2026-10-21",
+      "requests": 324,
+      "tokens": 1705439,
+      "units": 7682.346921999999,
+      "vectorQueries": 493,
+      "worker": 9993,
+      "admission": 79972,
+      "storage": 1303808
+    },
+    "amountsAreApplicationReservationsNotBilling": true,
+    "renewalValidation": {
+      "utcRollover": "local contract tests",
+      "sameDayDisableRecover": "production budget readback",
+      "actualCrossDayObservation": false
+    }
+  },
+  "validation": {
+    "localGate": [
+      "pnpm test",
+      "pnpm check",
+      "pnpm build",
+      "pnpm build:workspaces",
+      "pnpm release:dry-run",
+      "pnpm editorial:rehearse"
+    ],
+    "localGateResult": "all passed",
+    "node": "24.19.0",
+    "python": "3.12.14",
+    "redirectRegression": "red then green plus actual Cloudflare no-model probe",
+    "actualAPI": {
+      "naturalQueryStatus": 200,
+      "mode": "hybrid",
+      "expectedFirstArticle": "ithome:day-24",
+      "observedSeconds": 1.484308,
+      "timingSampleCount": 1,
+      "notAPercentileOrBenchmark": true,
+      "wrongOriginStatus": 403,
+      "wrongCorpusStatus": 409
+    },
+    "computerUse": {
+      "typingWithoutSubmissionSearchRequests": 0,
+      "naturalQueryFirstArticle": "ithome:day-24",
+      "naturalQueryResultCountObserved": 33,
+      "AIResultCountObserved": 24,
+      "formSubmit": true,
+      "paginationAndBack": true,
+      "articleAnchorLink": true,
+      "disabledKeywordFallback": true,
+      "recoveryHybridAndRetryHidden": true,
+      "mobile": [
+        {
+          "width": 320,
+          "scrollWidth": 305,
+          "theme": "light"
+        },
+        {
+          "width": 390,
+          "scrollWidth": 375,
+          "theme": "dark"
+        }
+      ],
+      "singleSearchField": true,
+      "filterControls": 0
+    }
+  },
+  "quality": {
+    "sampleSize": 54,
+    "sample": "existing revision-valid frozen partial judgments",
+    "notFullRelevanceOrFreshHeldoutOrHumanAcceptance": true,
+    "expectedTargetHitsAt5": {
+      "lexical": 53,
+      "dense": 51,
+      "hybrid": 54
+    }
+  },
+  "cleanup": {
+    "probeScriptStatus": 404,
+    "loopbackClosed": true,
+    "remotePreviewStopped": true,
+    "tailStopped": true
+  },
+  "remaining": [
+    "Task 1.1 historical complete initial-red evidence cannot be reconstructed",
+    "EmbeddingGemma migration remains a separately reviewed compatible release",
+    "Future public corpus needs compatible index preparation/promotion; otherwise keyword fallback",
+    "Renew dated account/pricing/privacy evidence before 2026-11-20; expired policy fails closed"
+  ],
+  "rootWip": {
+    "originalWipHashesUnchanged": true,
+    "originalStatusUnchanged": true,
+    "originalHead": "cb9a9d3c363d4c060f89ba9898d6362cfd5bb3dd",
+    "changedOriginalFiles": []
+  }
+}

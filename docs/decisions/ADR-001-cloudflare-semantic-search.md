@@ -30,6 +30,7 @@
 
 ## 證據及來源
 
+- [２０２６－１０－２１正式語意搜尋驗收](../../openspec/changes/build-article-discovery-knowledge/cloud-production-acceptance-20261021.md)：保存正式啟用、實際模型／索引、CI、手機與停用／恢復證據。此為既有決策的驗收回填，不改變付費超額授權或正式設定。
 - Spectra：`openspec/changes/build-article-discovery-knowledge/`，任務３．３／４．３；１．１的歷史先紅後綠缺口不能回補成已發生。
 - 本機原始操作紀錄：`output/discovery/merge-deploy-cloud-20261021/`。免費方案截圖／DOM、全帳戶 AI GraphQL 用量、模型輸出識別、部署產物與索引計畫分別保存，不將準備檔當作供應商餘額。
 - [Workers AI 計價與免費硬上限](https://developers.cloudflare.com/workers-ai/platform/pricing/)。BGE-M3 的 Neurons 換算與美元顯示精度差異，沿用既有費率查核文件，不套用到其他模型。

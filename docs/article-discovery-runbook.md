@@ -160,3 +160,12 @@ Vectorize 先建立 metadata indexes，再 upsert；上傳與索引處理完成�
 正式環境診斷發現 Workers 的 fetch 僅接受 `redirect: 'manual'`／`'follow'`，使用瀏覽器／Node 可接受的 `'error'` 會在下載前拋錯。搜尋來源下載採 manual，收到任何非成功狀態（含重新導向）即拒絕，不追蹤到其他來源；仍驗證固定資產路徑、digest 與 corpus。不要改成 follow 來消除錯誤。
 
 ２０２６－１０－２１的暫時遠端診斷不綁 AI、D1 或 Vectorize，先重現原錯誤，再以修正後相同 deployedReader 實際讀回正式 manifest、index、passages 三份成功回應。這只證明來源下載已修復，正式模型查詢與 UI 驗收另記；原先啟用後的５０３仍保留為失敗證據。純 Worker 修復可更新 Worker 而保留已驗證的 Pages 產物與相容 corpus，不必為不變的文章重新推論或重建 namespace。
+
+
+## 正式雲端驗收結果（２０２６－１０－２１）
+
+[完整驗收收據](../openspec/changes/build-article-discovery-knowledge/cloud-production-acceptance-20261021.md)記錄 PR ＃５１／５２／５３、Pages／Worker 不同的釘選版本、實際模型及索引、Computer Use 搜尋／手機／回復，以及免費界線。本次驗收結束時，正式語意搜尋已啟用，３．３／４．３已完成，規劃為２６／２７項；前文２４／２７與尚未授權的表格是當時的歷史紀錄，僅１．１的不可回補歷史測試證據保留未勾選。
+
+CLI 部署後，先重新載入 Cloudflare 控制台再變更開關。本次曾因舊控制台保留舊版本，在變更變數時復部署舊程式；不能只看 SEMANTIC_ENABLED，還要核對當前部署版本與正式程式讀回。停用時保留最新公開文章，確認關鍵字可用及預留額度不變；恢復後確認 hybrid 與重試隱藏。
+
+UTC 每日自動重設的例外已生效，不需每天人工重開；目前帳戶／計價／隱私證據期限是２０２６－１１－２０ UTC ００：００。屆期未重新核實仍停用；未來文章版本若沒有相容索引，維持新版關鍵字搜尋，不能自動升級付費或宣稱已有自動建索引排程。
