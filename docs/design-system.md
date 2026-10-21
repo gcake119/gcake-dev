@@ -91,7 +91,7 @@
 
 ## Publishing Admin 工作介面（2026-10-19）
 
-本節只適用於後台。依使用者採納的介面審查報告與 Spectra change「simplify-admin-workflows」實作；已部署的 commit `1f3e8cf` 與正式四組驗收見 [部署紀錄](publishing-cms-deployment-20261019.md)，不宣稱獨立人工驗收。
+本節只適用於後台。依使用者採納的介面審查報告與已歸檔的 [Spectra change「simplify-admin-workflows」](../openspec/changes/archive/2026-10-19-simplify-admin-workflows/verification.md) 實作；已部署的 commit `1f3e8cf` 與正式四組驗收見 [部署紀錄](publishing-cms-deployment-20261019.md)，不宣稱獨立人工驗收。
 
 - 文章、系列、發布管理使用獨立工作入口；文章為預設入口，發布摘要保留下一篇、預計時間與需處理數。
 - 每個真實操作情境最多兩個按鈕，一主一次；「更多操作」若使用按鈕也計入。不能另排第二串按鈕規避上限。設定使用原生收合區，選項使用有標籤的選單，收合入口本身不執行資料變更。
@@ -105,7 +105,7 @@
 
 ## 後台視覺基礎規範（2026-10-19 採納）
 
-本節為使用者採納 design-conformance-report.html 後的正式後台規範。以目前 Spectra change `simplify-admin-workflows` 保留驗收及版本證據；公開站的排版與版寬不因本節而改動。
+本節為使用者採納 design-conformance-report.html 後的正式後台規範。由 [Spectra 歸檔結案](../openspec/changes/archive/2026-10-19-simplify-admin-workflows/verification.md) 保留驗收及版本證據，主規格見 [focused-admin-workflows](../openspec/specs/focused-admin-workflows/spec.md) 與 [safe-content-editor](../openspec/specs/safe-content-editor/spec.md)；公開站的排版與版寬不因本節而改動。
 
 ### 字級與閱讀
 

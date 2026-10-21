@@ -6,6 +6,8 @@
 
 已授權試行僅含 `ithome-2026-publishing-in-production`、原 ID `221098688`、2026／10／22 07：00 台北時間，首次電子郵件／App inbox 開啟；另兩篇 `221099415`、`221099763` 保留草稿。Substack 可在 Pages 失敗時獨立公開與首次寄送。3.1 的真實保存／Scheduled-list 讀回／解除／同 ID 重排已完成；5.3 仍待實際 provider 發布、其後普通背景輪次及獨立寄送證據，個別訂閱者實收無證據時仍為 unknown。詳見 [試行紀錄](../openspec/changes/schedule-substack-drafts-ahead/pilot-20261019.md)。
 
+2026／10／20 到期前唯讀核對：原 ID `221098688` 仍為 10／22 07：00 台北時間排程，所有人、email／App 的既有承諾保留；Substack 畫面確認電子郵件，App 個別欄位由正式 D1 核對。這只是已安排寄送，平台寄送結果與真人實收均未知。任務 5.3 保持未完成；完整分層證據、缺口及待執行的發布後驗收步驟見 [唯讀核對紀錄](../openspec/changes/schedule-substack-drafts-ahead/schedule-readonly-221098688-20261020.md)。本次不重做排程／解除／重排，也不新增寄送或部署。
+
 正式背景觀察為 anonymous-only，`observeEnabled=true`、`writeEnabled=false`；只讀 Git、D1 與匿名公開頁，不讀私人草稿、不操作 Chrome。通知修正已部署，詳見 [部署證據](../openspec/changes/schedule-substack-drafts-ahead/notification-false-positives-deployment.md)。草稿全文寫入已有另行授權的本機 Computer Use 實作，見 [草稿同步與前端 API](substack-draft-sync-api.md)；後續已另行授權完成既有 ID 的 Chrome 持續草稿同步與自然盤點，證據見文末「已核准的一般草稿持續同步補充」及其連結。匿名 observer 與草稿 worker 的權限分開；HTTP API 部署另行追蹤，本輪 Git 整理不重新驗收、啟用或部署。此政策文件不會自行啟用寫入。以下前景命令須逐次符合授權，不是可直接執行的 rollout 清單。
 
 使用已核准並釘選的 runtime 與 Git 外私人政策；unattended.targets 必須只有 substack。啟動入口仍為 scripts/publishing/sync-distribution.ts，參數保留 --config、--pin、--acceptance、--out、--lock；預設僅產生計畫，既有授權執行才加 --execute。憑證只以既有 env-file 載入，不讀回、列印或複製。
@@ -105,4 +107,4 @@ pnpm distribution:run prepare-draft article-slug substack --source-root /absolut
 
 圖片等價僅接受獨立未包超連結的 PNG，最多 8 張、每張 8 MiB；控制程式由 UI 實際指向的託管原圖獨立驗證 SHA256，順序、alt、正文連結、程式碼與其餘內容仍嚴格比對。帶圖片超連結的舊驗收失敗保留，不能用外框正規化掩蓋連結遺失。寫入前父程序重新驗證完整實際基準與權限，負向／缺失判決不得貼上。未知結果留 intent，先同 ID 唯讀對帳，不重貼。範圍、期限、pin、自然驗收及停用見持續驗收紀錄與 launchd runbook；本次沒有啟用任何 schedule write、發布或寄送。
 
-2026／10／20 原草稿清單修正：已發佈清單的實際 `/publish/posts/detail/ID` 與草稿 `/publish/post/ID` 都必須計入，不可由執行者自行採單一網址過濾或固定篇數。原始三清單由同一確定性驗證器在子程序及父控制器檢查，缺漏／身分衝突仍停止；唯讀導覽逾時保留原分頁觀察，不能提前關閉而失去查核機會，也不能重貼。原 ID 221099415 的全文重載與第 10 次自然輪次、正式後台查核均完成，見 [修正驗收](../openspec/changes/automate-substack-draft-content-sync/read-repair-20261020.md)。沿用原內容與媒體比較標準，沒有新增內容寫入、排程／發布／訂閱者寄送或新建授權。
+2026／10／20 原草稿清單修正：已發佈清單的實際 `/publish/posts/detail/ID` 與草稿 `/publish/post/ID` 都必須計入，不可由執行者自行採單一網址過濾或固定篇數。原始三清單由同一確定性驗證器在子程序及父控制器檢查，缺漏／身分衝突仍停止；唯讀導覽逾時保留原分頁觀察，不能提前關閉而失去查核機會，也不能重貼。原 ID 221099415 的全文重載與第 10 次自然輪次、正式後台查核均完成，見 [修正驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/read-repair-20261020.md)。沿用原內容與媒體比較標準，沒有新增內容寫入、排程／發布／訂閱者寄送或新建授權。

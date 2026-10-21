@@ -9,7 +9,7 @@
 - 原 ID **221099763** 驗收時為 **inconclusive／驗證未完成**，台北 03：39：20.992 查核代碼 SUBSTACK_DRAFT_LIST_INCOMPLETE；API／畫面如實顯示，沒有把先前 verified 或相同內容版本當成當次同步成功。發布仍為草稿、未安排寄送，真人實收未知。
 - 新建草稿與排程寫入關閉，既有原站發布設定、六篇原身分與排程／寄送承諾保留；沒有新啟用寄送。
 
-詳見 [f4ea22f 正式部署與驗收](../openspec/changes/automate-substack-draft-content-sync/production-main-f4ea22f-20261020.md) 與 [機器摘要](../openspec/changes/automate-substack-draft-content-sync/production-main-f4ea22f-results.json)。後文各具日期的部署、候選與成功狀態屬歷史證據；最早唯讀 API 版本 66a6ea7d 的紀錄保留於原驗收文件。
+詳見 [f4ea22f 正式部署與驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/production-main-f4ea22f-20261020.md) 與 [機器摘要](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/production-main-f4ea22f-results.json)。後文各具日期的部署、候選與成功狀態屬歷史證據；最早唯讀 API 版本 66a6ea7d 的紀錄保留於原驗收文件。
 
 ## 讀取方式
 
@@ -156,13 +156,13 @@ async function readDraftStatus(slug: string, signal?: AbortSignal) {
 | 221098688 | excluded | scheduled | armed |
 | 其餘三篇已公開原 ID | excluded | verified | not_armed |
 
-上表的 `221099763=verified` 僅屬上述舊版驗收快照，不適用於 03：38 部署後的驗收。`f4ea22f` 驗收時，該筆於台北 03：39：20.992 回報 `inconclusive／驗證未完成`，代碼 `SUBSTACK_DRAFT_LIST_INCOMPLETE`；詳見 [本次正式部署紀錄](../openspec/changes/automate-substack-draft-content-sync/production-main-f4ea22f-20261020.md)。前端以 API 的 checkedAt／version 為準；不得把歷史表格當成持續即時保證。既有 221098688 排程仍為 10／22 07：00 台北時間，原寄送承諾未更動。
+上表的 `221099763=verified` 僅屬上述舊版驗收快照，不適用於 03：38 部署後的驗收。`f4ea22f` 驗收時，該筆於台北 03：39：20.992 回報 `inconclusive／驗證未完成`，代碼 `SUBSTACK_DRAFT_LIST_INCOMPLETE`；詳見 [本次正式部署紀錄](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/production-main-f4ea22f-20261020.md)。前端以 API 的 checkedAt／version 為準；不得把歷史表格當成持續即時保證。既有 221098688 排程仍為 10／22 07：00 台北時間，原寄送承諾未更動。
 
 正式 HTTP 實測：健康 200；匿名列表／單篇 GET 401；匿名 POST／PUT／PATCH／DELETE 401，均為 UNAUTHENTICATED，私有路由帶 no-store。登入狀態以真實 Chrome 讀到成功列表／單篇、首末頁及 INVALID_PAGINATION／ARTICLE_NOT_FOUND。**已登入非 GET 的 405 與狀態讀取失敗 503 沿用相同候選本機路由測試證據，沒有宣稱正式注入故障或匯出 owner session 做該項測試。**
 
 三個既有 HTML／JS／CSS 雜湊、正式變數與 bindings、六篇 Substack 身分／排程／寄送承諾及同步設定雜湊都與部署前一致。沒有 migration、排程／文章寫入、發布或通知。正常 OAuth 登入會建立 CMS session，因此不宣稱整個驗收零 D1 寫入。
 
-部署與證據細節見 [正式部署驗收](../openspec/changes/automate-substack-draft-content-sync/api-production-20261020.md)；完整同步資格／圖片支援見 [持續同步驗收](../openspec/changes/automate-substack-draft-content-sync/continuous-provider-20261019.md)。前端 API 與同步 runtime 是不同交付層；圖片目前支援獨立 PNG，原圖雜湊、順序、alt 與連結均須驗證，無需增加前端寫入端點。
+部署與證據細節見 [正式部署驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/api-production-20261020.md)；完整同步資格／圖片支援見 [持續同步驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/continuous-provider-20261019.md)。前端 API 與同步 runtime 是不同交付層；圖片目前支援獨立 PNG，原圖雜湊、順序、alt 與連結均須驗證，無需增加前端寫入端點。
 
 
 ## 已實作的後台介面（2026／10／20）
@@ -173,7 +173,7 @@ async function readDraftStatus(slug: string, signal?: AbortSignal) {
 
 Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415 單篇／刷新，三次新端點請求皆 200 與 no-store。當時 ID 221099763 回報 inconclusive，畫面如實顯示「驗證未完成」，不推定寄送失敗或自動重試寫入。既有舊發布查詢另有「發佈中心尚未設定。」訊息，未改動該舊流程。
 
-此為隔離 worktree 的實作與候選介面驗收；正式前端尚未部署、沒有 commit／push。真實 API 驗收只在自建 Chrome 分頁暫時載入候選 JS／CSS，正式 HTML、登入、API 與部署資產均維持原版本；分頁與覆寫已清除。詳細範圍、故障模擬與證據見 [前端介面驗收](../openspec/changes/automate-substack-draft-content-sync/frontend-ui-20261020.md)。
+此為隔離 worktree 的實作與候選介面驗收；正式前端尚未部署、沒有 commit／push。真實 API 驗收只在自建 Chrome 分頁暫時載入候選 JS／CSS，正式 HTML、登入、API 與部署資產均維持原版本；分頁與覆寫已清除。詳細範圍、故障模擬與證據見 [前端介面驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/frontend-ui-20261020.md)。
 
 
 ## 已正式部署的後台介面（2026／10／20 01：37 台北）
@@ -182,14 +182,14 @@ Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415
 
 本次 Chrome 使用實際正式 Document／資產，兩端點及刷新皆 200／no-store，三種狀態獨立呈現；桌機與手機明暗主題通過。六篇原 ID、slug、既有排程與寄送承諾、私有同步設定皆保留，新建仍停用。既有舊發布查詢「發佈中心尚未設定。」訊息未改，新 Substack API 獨立成功。沒有新增真人實收證據。
 
-前一節的候選預覽屬歷史紀錄；最新部署及驗收見 [正式前端驗收](../openspec/changes/automate-substack-draft-content-sync/frontend-production-20261020.md)。
+前一節的候選預覽屬歷史紀錄；最新部署及驗收見 [正式前端驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/frontend-production-20261020.md)。
 
 
 ## 舊發布紀錄查詢已修正（2026／10／20）
 
 正式 version `099cf828-63ac-41c9-aadf-5ce8e4f1b707` 已接通舊 `/api/v1/publications/:slug?sourceRevision=…` 的既有歷史唯讀讀取。先前「發佈中心尚未設定。」來自 Worker 遺漏讀取器接線，已以正式 Chrome 200／no-store 及實際畫面驗收修復。缺少 Pages 歷史顯示「尚無發布紀錄」，不推定公開狀態。真實儲存讀取失敗仍顯示錯誤，production 舊操作沒有啟用。
 
-新 Substack 列表與單篇端點、三種獨立狀態保持原有契約；新建仍停用，六篇原身分／既有排程／寄送承諾未變。詳見 [舊查詢修正與驗收](../openspec/changes/automate-substack-draft-content-sync/publication-read-fix-20261020.md)。
+新 Substack 列表與單篇端點、三種獨立狀態保持原有契約；新建仍停用，六篇原身分／既有排程／寄送承諾未變。詳見 [舊查詢修正與驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/publication-read-fix-20261020.md)。
 
 
 ## GitHub Pages 已接上現行發布證據（2026／10／20）
@@ -198,4 +198,9 @@ Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415
 
 `pages.source=release-queue`；`state` 為當前有效發布狀態或 not-recorded；`historyCount` 保留解鎖歷史數。`deployment.state` 只採相同發布 commit 的部署；`verification.state` 為 verified／page-only／incomplete／not-verified，時間取已保存的 verifiedAt／pageVerifiedAt，publicUrl 只在完整證據時提供。無關 main commit 不會令歷史查核變 stale；畫面明確標示這是已保存的結果，不代表現在內容重新驗證。
 
-此查詢只有 D1 SELECT，沒有 ingest、重新驗證、發布或 provider 存取。未發布稿仍顯示無紀錄；多個有效身分與讀取失敗維持 503，不當成空清單。Substack 兩個唯讀 API 與同步／發布／寄送三狀態維持原契約，新建仍停用。詳見 [Pages 現行紀錄正式驗收](../openspec/changes/automate-substack-draft-content-sync/pages-current-20261020.md)。
+此查詢只有 D1 SELECT，沒有 ingest、重新驗證、發布或 provider 存取。未發布稿仍顯示無紀錄；多個有效身分與讀取失敗維持 503，不當成空清單。Substack 兩個唯讀 API 與同步／發布／寄送三狀態維持原契約，新建仍停用。詳見 [Pages 現行紀錄正式驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/pages-current-20261020.md)。
+
+
+## 草稿同步結案與後續保存狀態（2026／10／20）
+
+草稿同步 change 已歸檔；03：38 正式部署驗收的 221099763「驗證未完成」保留。後續唯讀 API 保存查核時間台北 16：56：48.056 已為 verified，仍是草稿、未安排寄送、真人實收未知。這是不同時間的證據，不回寫舊驗收，也不代表本次重驗 provider。現行安裝與既有資格連結盤點見 [結案紀錄](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/closeout-20261020.md)。新建與排程寫入仍關閉，排程真實公開驗收 5.3 尚未完成。

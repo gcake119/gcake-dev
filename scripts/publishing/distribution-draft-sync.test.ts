@@ -321,10 +321,13 @@ test('rename holds rotate fairly to the missing original without allowing replac
  }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
 });
 
-test('executor ignoring SIGTERM is bounded and its owned process group is stopped',async()=>{
+for(const handlerPauseMs of [0,1300])test('executor ignoring SIGTERM is bounded and its owned process group is stopped; handler pause '+handlerPauseMs+'ms',async()=>{
  const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-executor-timeout-'));let pid:number|undefined;let execution:Promise<unknown>|undefined;
  try{
-  const executable=root+'/ignore-term.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`const fs=require('node:fs');process.on('SIGTERM',()=>fs.writeFileSync(${JSON.stringify(root+'/term-seen')},'yes'));fs.writeFileSync(${JSON.stringify(root+'/pid')},String(process.pid));setInterval(()=>{},100);`,{mode:0o700});
+  // Publish an already complete marker atomically: SIGKILL may interrupt a handler after truncate but before write.
+  // The delayed case must still prove SIGTERM delivery and forced group cleanup without requiring handler completion.
+  await fs.writeFile(root+'/term-ready','yes');await assert.rejects(fs.access(root+'/term-seen'),{code:'ENOENT'});
+  const executable=root+'/ignore-term.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`const fs=require('node:fs');process.on('SIGTERM',()=>{fs.renameSync(${JSON.stringify(root+'/term-ready')},${JSON.stringify(root+'/term-seen')});Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,${handlerPauseMs});});fs.writeFileSync(${JSON.stringify(root+'/pid')},String(process.pid));setInterval(()=>{},100);`,{mode:0o700});
   const {executeComputerUse}=await import('./substack-draft-qualification');
   execution=executeComputerUse('fixture only',{executor:executable,directory:root,timeoutMs:1500}).then(()=> 'resolved',e=>e.message);
   const result=await Promise.race([execution,new Promise<string>(r=>setTimeout(()=>r('still-running'),4500))]);

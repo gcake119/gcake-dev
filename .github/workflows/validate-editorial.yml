@@ -30,7 +30,7 @@ jobs:
           version: 10.17.1
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Install Chrome and Linux dependencies for distribution fixtures
