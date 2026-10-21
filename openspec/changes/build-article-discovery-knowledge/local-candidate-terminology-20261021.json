@@ -1,0 +1,118 @@
+{
+  "scope": "Local public-article terminology extraction and source-bound alias correction; earlier incomplete gates retained",
+  "baseHead": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+  "corpusId": "b66c9191798652d4f2ef33536d2adb1020fd2a72b23ab41c3409be8ca19256e0",
+  "configurationDigest": "1a43d3aedc083eda4dc4270ce897e871499f11e2e5ab7261d360021ea02ee067",
+  "previousCandidate": "local-candidate-20261021.json",
+  "sourceFiles": {
+    ".gitignore": "0b1650f3196e83c6901642051dee455f52ccc743cf2372649b1834faa15afe9e",
+    "apps/search-worker/migrations/0001_admission.sql": "9d1709b83a829457db32c8fe41f45f9617839f831e033581be1637a873883e77",
+    "apps/search-worker/package.json": "5414e2e1c600d7c08be501effaad9448aa84766decdbeacc7a02613309d1c196",
+    "apps/search-worker/src/admission.ts": "767039e0773045b02b224bef1934a2ffdfb92ed6a27af30d165ecb879060dd1e",
+    "apps/search-worker/src/deployed.ts": "fd6a3f9f8fab8c698ecff04c3d029f83add2c940346ad94d17c06b11b7658684",
+    "apps/search-worker/src/index.ts": "e6d2936883f5666881b7a1f952d16563db5ad0394e66ed206e3b67a2804f489a",
+    "apps/search-worker/src/provider.ts": "ebf7851b88e880d35355969c40013d66f3287f49dd4461066416f8fd73e3e1aa",
+    "apps/search-worker/src/service.ts": "164ccb7b3edbb9e0c042d946e9d4de7d35fa2506b4f57f9a4b68888d3d330262",
+    "apps/search-worker/tsconfig.json": "7d0ef36f0f93a0dfbe40de9de8d171b34b873263bc4e67b4fb4075e5cf432518",
+    "apps/search-worker/wrangler.jsonc": "676d85995f3c05232f55f9385686f4bff234d011d395d79ac25bf59780fee922",
+    "docs/article-discovery-runbook.md": "44fcf1e53c155ba07412ce31162c20e22f21092a087ee0ad1130623c28c10715",
+    "docs/blog-redesign-approved.md": "0b8de2e49105bfb8c1bb5c42eb7952b5372ad123a7c39220a460caefbadc0188",
+    "docs/design-system.md": "ad5513faa764197010ead992b58ce9a921d8b08da20fd482824e137fbb1c742b",
+    "openspec/changes/build-article-discovery-knowledge/implementation-evidence.md": "c50eaefccdc7f3b430db76cbdf7c257397e95119686a85278d682f3380ea43bd",
+    "openspec/changes/build-article-discovery-knowledge/public-terminology-extraction-20261021.md": "f0c73bb9b38b95133eb232c9f999b16589ac03ecfb630e2519b671043e11ff9d",
+    "package.json": "6b74f9c4ff8405b708759b75273f3bffe02765ea50456126798f848e63c30459",
+    "pnpm-lock.yaml": "40450f86ad225b37cc910e89080af12123007b427dbb9983e545dea3924d509d",
+    "scripts/discovery/evaluate.ts": "64f56ce01caad8a6895e81af3296e53521c779730c86a75c43369bacb4a96cde",
+    "scripts/discovery/freeze-sample.ts": "d29b7c69dbf76a37b458ed61b37c845695f6d0747485b49cbe87a2355bd73070",
+    "scripts/discovery/inspect.ts": "ea64ee1df9a7620a8996bffa473ec825f4e3b691ddafb0796aeb93c5085a0c1f",
+    "scripts/discovery/lifecycle.ts": "f5573dcdf652b69787473a08cb03c7fde192a6d30c14a89e20a511a8a39b5335",
+    "src/components/ArticleConnections.astro": "d16fc422091a2fd528b5c656fa092ea745d727b345fb14506169f2a4eeaa27db",
+    "src/data/discovery/terminology-reviewed.json": "af45a4be0ac216d4a8448c54639effc05501520b964ab9c153cd059d998c6c31",
+    "src/lib/content/publication.ts": "07f7ff970f69b59a23e2ac7d8b7bd41ebcaf2fffdc435076ae682f687c16e839",
+    "src/lib/discovery/assets.ts": "c14a570e30dee6425dc9df52a161055af4c867c18fdb739f6f6f53c9b500e68c",
+    "src/lib/discovery/build.ts": "bc8d7b689faa178318ecd88cbe9fcf3da710fcbe54626c2fa62d461b463b713e",
+    "src/lib/discovery/client.ts": "53634f599192c11e6a46dee855cb34571072e7bafea914010be79bbcbadaf02e",
+    "src/lib/discovery/search.ts": "694c3c8bb9518a2cedd5701d171cfccd4df478cdbcf6fded9bfc71e008c54185",
+    "src/lib/discovery/site.ts": "5cf1c81043129e7ba15dc1661d7cbf20eaa3911462c76cf6274d5a8f7012365a",
+    "src/lib/discovery/types.ts": "9e13ac12d7b8d5122ab780304a92fa312d585b764d7ba6f4281cbeabd9ecb4ae",
+    "src/pages/discovery-manifest.json.ts": "e3c7f1c5cafa03030c72fe7a0cad1b487bd970756185b66bbdba34c33e13095d",
+    "src/pages/discovery/[corpusId]/[kind].json.ts": "09f9cdf272bc6229439f219c0c540911d1d6140183253109898e61c8565791b9",
+    "src/pages/posts/[...slug].astro": "270515fd5031a725d250830a7ab028b95ac18d9559ea9b5cd676946acb43148f",
+    "src/pages/search.astro": "0236555fb538551c1c44af12ffd18b250e1c0db4e0226d6be070f796226a9265",
+    "src/pages/series/ithome-2026/[post].astro": "fe285465d3764a70d578e8d8ff93626834898b2173c455fe197be9f879257eb4",
+    "src/styles/global.css": "2ca96bed044e7aa8de12211b256a4aedda3d6eae836918a492f1453c95712d35",
+    "test/discovery/assets.acceptance.test.ts": "a3619b508ba41483e009c6c5e4aefdf4edb6a2a47580334ba2a50c36e4e053c5",
+    "test/discovery/browser.mjs": "b34d0db34c84f16121ddd300d6c8c1317791a1ceed31a5f8b09c45f99a01a1cd",
+    "test/discovery/corpus.acceptance.test.ts": "be9e0201b61a05549c057225816728f098579bd7fa0f7d30e2644c48f0522172",
+    "test/discovery/lifecycle.acceptance.test.ts": "60426190cffcafad33928aab40165d6e94dae652a1a5f6800a6d8de09dbd2c04",
+    "test/discovery/public-terminology-review.json": "d5d1dc5433240e25bda7bbd21263d750ebe384455d0e7088dbfab7d16eb7a263",
+    "test/discovery/retrieval-judgments-v2.json": "699f9617096676b61e57250e1838faf6a69f717ddbcb2208acdae1841a077df0",
+    "test/discovery/retrieval-judgments-v3.json": "dad0f371538a61eb7aa7f89a4191d9620f600095c6b6cfbb853ac7879e565beb",
+    "test/discovery/retrieval-judgments-v4.json": "ce68b84a83e10b3ea49ea953d69c558a7d065e3b7c9d1549b3985763556cfe40",
+    "test/discovery/retrieval-judgments-v5.json": "6ed5253eb3cbc26eea102ba7171bde39cc41f8884bdda4967c2233e88d681d66",
+    "test/discovery/retrieval-judgments.json": "fd26f90cd917560ad6535f1738a85da5639bfde7a2784fe7404e00bf486b14b2",
+    "test/discovery/semantic.acceptance.test.ts": "582fc987b4f6a6ca6136e54ecdafaf71178e7d6c0e8a49a2d6546d690be8681d",
+    "test/discovery/spec-scenarios.json": "9fc8c90eeea1d739b519052f9aa2d725ed23228e4a1ce053c74acc78eda86ab0"
+  },
+  "completedTasks": [
+    "1.2",
+    "1.3",
+    "1.4",
+    "2.1",
+    "2.4",
+    "3.1"
+  ],
+  "nodeDiscoveryTests": {
+    "passed": 39,
+    "failed": 0
+  },
+  "browser": {
+    "passed": true,
+    "base": "http://127.0.0.1:61250/gcake-dev",
+    "viewports": [
+      1280,
+      390,
+      320
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "corpusId": "b66c9191798652d4f2ef33536d2adb1020fd2a72b23ab41c3409be8ca19256e0",
+    "providerCalls": 0,
+    "semanticContractRequests": 2,
+    "serverStopped": true,
+    "serverPid": 99650
+  },
+  "publicReview": {
+    "articles": 33,
+    "passages": 2633,
+    "quotedRecords": 10,
+    "acceptedEquivalences": 1,
+    "explanationsOnly": 9
+  },
+  "evaluation": {
+    "sourceGroundedQueries": 31,
+    "unresolvedAliasSlots": 9,
+    "previouslyObservedHeldOut": true,
+    "releaseQualityGate": "INCOMPLETE"
+  },
+  "assetInspection": {
+    "initialKeywordGzipBytes": 416496,
+    "digestsVerified": true,
+    "anchorsVerified": true
+  },
+  "gates": {
+    "check": "PASS current change",
+    "buildAll": "PASS current change",
+    "discoveryTests": "PASS 39",
+    "browser": "PASS current corpus",
+    "fullAggregate": "NOT_PASSED: preceding unrelated distribution PID fixture failure remains unresolved; not rerun to mask failure",
+    "spectraAnalyze": "PASS zero findings",
+    "spectraValidate": "PASS"
+  },
+  "providerCalls": 0,
+  "deployment": false,
+  "remoteActivation": false,
+  "gitMutations": false
+}

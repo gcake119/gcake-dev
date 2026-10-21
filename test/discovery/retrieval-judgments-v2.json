@@ -1,0 +1,602 @@
+{
+  "schemaVersion": 1,
+  "corpusId": "c96e38b20b2f3bb3decf65008bfb331c8e446a57cc0b9b12a822a0f4fbe56056",
+  "configurationDigest": "061ed876f3c54e573d6e8a65bb65bcd558cb85a53ef0bd757c19f36beb5ab4b8",
+  "rankingTuned": false,
+  "assessor": "Codex, source descriptions; incomplete judgments are not a passed release gate",
+  "queries": [
+    {
+      "id": "0-0",
+      "category": "exact-technical",
+      "split": "tuning",
+      "q": "Day 1｜做得出來，卻完全改不動",
+      "judgments": [
+        {
+          "articleId": "ithome:day-01",
+          "grade": 3,
+          "evidence": "從靠 ChatGPT 做出網站卻完全改不動的經驗出發，整理 AI 降低實作門檻後，開發新手仍需要補上的理解與判斷。",
+          "sourceRevision": "e0a82cdd3b67d2bbb75dbd9aa9675aa48b6e4b4c518f0c874627c0ba2acccafe"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-1",
+      "category": "exact-technical",
+      "split": "held-out",
+      "q": "Day 2｜當實作跑得比理解更快",
+      "judgments": [
+        {
+          "articleId": "ithome:day-02",
+          "grade": 3,
+          "evidence": "透過 n8n 與第一個產品的卡關經驗，說明 AI 如何讓學習順序變成先做、先遇到問題，再逐漸學會描述問題。",
+          "sourceRevision": "d0e398a13ea7aab848416da31a6ea988d182fc1f37aa48cd5d35857622051834"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-2",
+      "category": "exact-technical",
+      "split": "tuning",
+      "q": "Day 3｜功能是從觀察和許願長出來的",
+      "judgments": [
+        {
+          "articleId": "ithome:day-03",
+          "grade": 3,
+          "evidence": "從觀察諮商所實際工作與提出改善願望開始，回看預約管理產品的需求與功能如何一個一個長出來。",
+          "sourceRevision": "2e582fe8391fbd75e00b8f534c9e0d44bddeb9fea41ac5765dabef9c350fb80c"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-3",
+      "category": "exact-technical",
+      "split": "held-out",
+      "q": "Day 4｜如果所有事情都能交給 LINE 機器人就好了",
+      "judgments": [
+        {
+          "articleId": "ithome:day-04",
+          "grade": 3,
+          "evidence": "回顧把預約流程全部放進 LINE 機器人的最初構想，以及熟悉入口、對話流程與前端能力如何影響產品形式。",
+          "sourceRevision": "8509dd3be41ad96b98288199d2441cf2501083c538907db32781761a006a275b"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-4",
+      "category": "exact-technical",
+      "split": "tuning",
+      "q": "Day 5｜做自己的系統，不代表什麼都要自己做",
+      "judgments": [
+        {
+          "articleId": "ithome:day-05",
+          "grade": 3,
+          "evidence": "整理 Google Calendar、Sheets、Drive 與 Gmail 等成熟工具如何補上產品能力，也看見工具串接不等於工作流程順暢。",
+          "sourceRevision": "8d16b6d9b54abf215bd08016b605ab471cb3229dc867753cf241a107c2fc4200"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-5",
+      "category": "exact-technical",
+      "split": "held-out",
+      "q": "Day 6｜把反覆確認的工作交給系統之後",
+      "judgments": [
+        {
+          "articleId": "ithome:day-06",
+          "grade": 3,
+          "evidence": "從預約背後的固定確認與例外判斷，說明系統適合接手哪些工作，以及自動化與順手完成工作之間的差距。",
+          "sourceRevision": "36eabf4ebe496e5295233ddb46868a604ccc9c6695d8dd193d118c2a4ee42675"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-6",
+      "category": "exact-technical",
+      "split": "tuning",
+      "q": "Day 7｜一句「平常都這樣做」，後面藏了多少事情？",
+      "judgments": [
+        {
+          "articleId": "ithome:day-07",
+          "grade": 3,
+          "evidence": "以提醒、跨情境與颱風假等例外為例，說明人的經驗如何藏著未明說的條件，以及需求如何被持續追問撐開。",
+          "sourceRevision": "753897d4bb20e3001d034b329bae581f49ab8651623a51906469b7547a32891a"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-7",
+      "category": "exact-technical",
+      "split": "held-out",
+      "q": "Day 8｜沒有告訴 AI 的事",
+      "judgments": [
+        {
+          "articleId": "ithome:day-08",
+          "grade": 3,
+          "evidence": "整理 AI 規劃與反問如何提早暴露需求缺口，並區分使用者忘了說與使用者自己尚未理解的兩種資訊缺失。",
+          "sourceRevision": "97d03e2fbfa8b95f568f1ed3b5bd88d1e47628572b855d425ac0b0a72bb096f5"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-8",
+      "category": "exact-technical",
+      "split": "tuning",
+      "q": "Day 9｜系統知道怎麼做，不代表使用者就該這樣做",
+      "judgments": [
+        {
+          "articleId": "ithome:day-09",
+          "grade": 3,
+          "evidence": "從把系統步驟直接變成使用者流程的失敗經驗，說明系統怎麼處理與人要怎麼完成工作是兩個不同問題。",
+          "sourceRevision": "3ba5ded29d3e852804ca538beac015d5c42b547aafc570ecb4859bc814616dc2"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "0-9",
+      "category": "exact-technical",
+      "split": "held-out",
+      "q": "Day 10｜我以為功能做完，產品就完成了",
+      "judgments": [
+        {
+          "articleId": "ithome:day-10",
+          "grade": 3,
+          "evidence": "回顧功能都能運作卻仍撤回上線的預約產品，說明完成標準、日常可用性與功能清單之間的差異。",
+          "sourceRevision": "4e9fd0b01e084a251e76a1118eedad782e42017f0c0546930ebf55bd21f893bf"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-0",
+      "category": "chinese-multiword",
+      "split": "tuning",
+      "q": "自動化 狀態管理",
+      "judgments": [
+        {
+          "articleId": "ithome:day-11",
+          "grade": 3,
+          "evidence": "以 n8n 預約流程為例，說明當需求從自動化轉為狀態管理時，真正需要改變的是問題框架，而不只是工具設定。",
+          "sourceRevision": "81081fc71ddb394ae402cb71b5879bf99393cf10cfbd6f2a383d3fa2819ebcb8"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-1",
+      "category": "chinese-multiword",
+      "split": "held-out",
+      "q": "現場工作 工程問題",
+      "judgments": [
+        {
+          "articleId": "ithome:day-12",
+          "grade": 3,
+          "evidence": "從陌生行政委託案出發，整理如何把現場工作翻譯成工程可處理的問題，以及第一個產品留下的可轉移能力。",
+          "sourceRevision": "db00a418d0e7f566c459730601a588760df94546d5571e6dc896f1fbbcd2ade5"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-2",
+      "category": "chinese-multiword",
+      "split": "tuning",
+      "q": "訪談 觀察",
+      "judgments": [
+        {
+          "articleId": "ithome:day-13",
+          "grade": 3,
+          "evidence": "說明面對陌生行政流程時，如何先訪談、再觀察實際操作，最後把零散步驟整理成可討論的工作流程圖。",
+          "sourceRevision": "5905c7abb7463ca3072076efc1fba36a4986817bc1304b79ca95387296951247"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-3",
+      "category": "chinese-multiword",
+      "split": "held-out",
+      "q": "案件階段 系統需求",
+      "judgments": [
+        {
+          "articleId": "ithome:day-14",
+          "grade": 3,
+          "evidence": "從工作流程圖往下推導案件階段、狀態與系統需求，說明如何在實作前提早看見系統需要管理的事情。",
+          "sourceRevision": "ca16d66b7f840fd0be47012ab21b169fbbb195c19de304e51946da686527a6d0"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-4",
+      "category": "chinese-multiword",
+      "split": "tuning",
+      "q": "今日工作 入口",
+      "judgments": [
+        {
+          "articleId": "ithome:day-15",
+          "grade": 3,
+          "evidence": "從案件進度走向今日工作入口，整理產品如何幫使用者判斷現在該做什麼，同時保留需要由人完成的判斷。",
+          "sourceRevision": "7d9e7e45d04f1b9488ead075103bbcfbc721253cdeb55432cb4c9fd6b4437e71"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-5",
+      "category": "chinese-multiword",
+      "split": "held-out",
+      "q": "以終為始 完成條件",
+      "judgments": [
+        {
+          "articleId": "ithome:day-16",
+          "grade": 3,
+          "evidence": "以工作終點反推畫面、資料、操作與完成條件，說明如何用「以終為始」設計真正幫人完成工作的產品功能。",
+          "sourceRevision": "b3a598667fef2f081d4c7707827c2636b1c065a731a335673d52a55bf289297d"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-6",
+      "category": "chinese-multiword",
+      "split": "tuning",
+      "q": "前端 後端 文件服務",
+      "judgments": [
+        {
+          "articleId": "ithome:day-17",
+          "grade": 3,
+          "evidence": "從一項功能如何拆進前端、後端、文件服務與資料層，說明使用者看到的功能背後其實包含不同性質的系統責任。",
+          "sourceRevision": "d2f7dfc290cb97553298b56171e28357c9485a6f1ded96ba106e2ae772527fc6"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-7",
+      "category": "chinese-multiword",
+      "split": "held-out",
+      "q": "共同規格 多個repo",
+      "judgments": [
+        {
+          "articleId": "ithome:day-18",
+          "grade": 3,
+          "evidence": "整理前端、後端與文件服務拆成多個 repo 後，如何用共同規格與 Coordination repo 維持完整產品脈絡。",
+          "sourceRevision": "816b79312b00971cdd2acce282d0aef25fba52c48fb4d9a40dbb76d9c5e47ad8"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-8",
+      "category": "chinese-multiword",
+      "split": "tuning",
+      "q": "工程決策 取捨 理由",
+      "judgments": [
+        {
+          "articleId": "ithome:day-19",
+          "grade": 3,
+          "evidence": "說明為什麼工程決策不只要記錄結果，也要保留當時的限制、取捨與理由，讓後續修改仍能理解原本判斷。",
+          "sourceRevision": "1a79b6ce0b2f0fa359e5b19dd9e482a226e6796af49e480dd91e2fdcb2096883"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "1-9",
+      "category": "chinese-multiword",
+      "split": "held-out",
+      "q": "身分 權限 一致性",
+      "judgments": [
+        {
+          "articleId": "ithome:day-20",
+          "grade": 3,
+          "evidence": "以 QA 情境切換為例，把功能需求拆成身分、權限與一致性等不可破壞的條件，並追問誰負責守住這些保證。",
+          "sourceRevision": "c50b70bc3c83ee7d7dba6a54ea99fae46f63eccc51af734f5f1f45a0044c99aa"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-0",
+      "category": "paraphrase",
+      "split": "tuning",
+      "q": "我不直接看程式碼要如何了解系統",
+      "judgments": [
+        {
+          "articleId": "ithome:day-21",
+          "grade": 3,
+          "evidence": "整理幾乎不直接讀程式碼的情況下，如何透過工作流程、規格、系統分工與追問理解系統，也釐清這不等於能獨立修改。",
+          "sourceRevision": "a45bd3f745dc539f77be2e27baf7b4b861a909b4b7fb5ad4acb457bd0f4c845e"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-1",
+      "category": "paraphrase",
+      "split": "held-out",
+      "q": "聽懂解釋之後怎麼變成自己的判斷",
+      "judgments": [
+        {
+          "articleId": "ithome:day-22",
+          "grade": 3,
+          "evidence": "從聽懂工程概念到能在新需求中主動運用，整理如何判斷一個由 AI 解釋的觀念是否逐漸變成自己的判斷。",
+          "sourceRevision": "3f1b401c93d6e955f0fe8f4a639b5c8953381c98fce51c7328f1f46aca9ee32a"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-2",
+      "category": "paraphrase",
+      "split": "tuning",
+      "q": "知道系統組成仍然找不到程式的錯誤",
+      "judgments": [
+        {
+          "articleId": "ithome:day-23",
+          "grade": 3,
+          "evidence": "區分系統層級與程式層級的理解，說明能判斷責任與影響範圍，仍不代表能沿著程式碼追出完整實作。",
+          "sourceRevision": "d19679f655a8ce0c6ecbf5a04e26ef82068db87ca4a5a0873a29d91b38aff143"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-3",
+      "category": "paraphrase",
+      "split": "held-out",
+      "q": "不能逐行閱讀要如何信任AI的成果",
+      "judgments": [
+        {
+          "articleId": "ithome:day-24",
+          "grade": 3,
+          "evidence": "整理規格、實作證據、測試、AI review 與人工操作等多層驗證，說明如何在無法逐行讀碼時逐步建立信任。",
+          "sourceRevision": "cbb1e04dc916c0cf17a93af97e614540acf08d84ce1776b39bcac0b630008623"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-4",
+      "category": "paraphrase",
+      "split": "tuning",
+      "q": "怎麼讓人工智慧改程式時守住已知期待",
+      "judgments": [
+        {
+          "articleId": "ithome:day-25",
+          "grade": 3,
+          "evidence": "說明測試如何保存已知期待、約束 Agent 後續修改，以及為什麼測試通過不等於所有問題都已被驗證。",
+          "sourceRevision": "14a56b8e50c4e05425d018342b7d125d7191e82b361430100e89b074fe58d506"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-5",
+      "category": "paraphrase",
+      "split": "held-out",
+      "q": "除了功能正確還要檢查實作是否合適",
+      "judgments": [
+        {
+          "articleId": "ithome:day-26",
+          "grade": 3,
+          "evidence": "從設計一致性、系統整合與對抗式 review 三個角度，檢查功能不只做對，也用適合既有系統的方式完成。",
+          "sourceRevision": "a785b4fa95408af2fade3e38bbe2e99eca0d8778c77934e65b66fc3945cf1b92"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-6",
+      "category": "paraphrase",
+      "split": "tuning",
+      "q": "主要操作成功之後還有什麼例外沒驗到",
+      "judgments": [
+        {
+          "articleId": "ithome:day-27",
+          "grade": 3,
+          "evidence": "回看人工 UI 驗收能確認哪些主要流程，又會漏掉哪些例外，並坦率整理目前在完整 QA 能力上的缺口。",
+          "sourceRevision": "c851c08c2e4fef7463b4acc5599387ef381104be88c465c80845b5f37cca194a"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-7",
+      "category": "paraphrase",
+      "split": "held-out",
+      "q": "開發新產品以前要先觀察現場",
+      "judgments": [
+        {
+          "articleId": "ithome:day-28",
+          "grade": 3,
+          "evidence": "在開始想功能以前，先觀察工作流程、所需資料、例外與完成標準，整理現在做產品時更靠前的思考起點。",
+          "sourceRevision": "34b47cb4ace6a5c681dfc87360854dfa51f84f33736871a528c9773ad8354505"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-8",
+      "category": "paraphrase",
+      "split": "tuning",
+      "q": "把工作交給電腦以前有哪些工程問題要問",
+      "judgments": [
+        {
+          "articleId": "ithome:day-29",
+          "grade": 3,
+          "evidence": "把工作做進系統前，依序追問必要保證、責任歸屬、跨系統協作與驗證證據，整理不能省略的工程問題。",
+          "sourceRevision": "d40a3baf56405f4435e7332aab6fc97890d8337614757d1d9340c7d9489a4982"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "2-9",
+      "category": "paraphrase",
+      "split": "held-out",
+      "q": "人工智慧能寫程式之後人要懂到什麼程度",
+      "judgments": [
+        {
+          "articleId": "ithome:day-30",
+          "grade": 3,
+          "evidence": "回到 AI 已能大量寫程式後 Coding 要懂多深的核心問題，區分系統理解與程式理解，並保留尚未回答的學習方向。",
+          "sourceRevision": "a4da5feb94e45b7819a0877ed49e142b19c8628d63887c5d2ced3ab784f68bd3"
+        }
+      ],
+      "reviewer": "Codex source-description review; no independent human acceptance"
+    },
+    {
+      "id": "alias-0",
+      "category": "explicit-alias",
+      "split": "tuning",
+      "q": "Retrieval-Augmented Generation",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-1",
+      "category": "explicit-alias",
+      "split": "held-out",
+      "q": "Test-Driven Development",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-2",
+      "category": "explicit-alias",
+      "split": "tuning",
+      "q": "Behavior-Driven Development",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-3",
+      "category": "explicit-alias",
+      "split": "held-out",
+      "q": "Application Programming Interface",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-4",
+      "category": "explicit-alias",
+      "split": "tuning",
+      "q": "Model Context Protocol",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-5",
+      "category": "explicit-alias",
+      "split": "held-out",
+      "q": "Continuous Integration",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-6",
+      "category": "explicit-alias",
+      "split": "tuning",
+      "q": "Continuous Delivery",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-7",
+      "category": "explicit-alias",
+      "split": "held-out",
+      "q": "Document Object Model",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-8",
+      "category": "explicit-alias",
+      "split": "tuning",
+      "q": "Single Page Application",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    },
+    {
+      "id": "alias-9",
+      "category": "explicit-alias",
+      "split": "held-out",
+      "q": "Server-Side Rendering",
+      "judgments": [],
+      "reviewer": "pending source",
+      "status": "INSUFFICIENT_EXPLICIT_PUBLIC_SOURCE"
+    }
+  ],
+  "noMatch": [
+    {
+      "q": "xqzNoArticle0zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle1zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle2zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle3zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle4zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle5zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle6zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle7zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle8zzzz",
+      "expected": []
+    },
+    {
+      "q": "xqzNoArticle9zzzz",
+      "expected": []
+    }
+  ],
+  "hostile": [
+    "javascript:alert(1)",
+    "<img src=x onerror=evil()>",
+    "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
+    "%E0%A4%A",
+    "\u0000"
+  ],
+  "previousFrozenCorpusId": "f93476ac6d4bb726b9de6342404321a00bc0749c215cc64ec1ea7381e5737d87",
+  "previousConfigurationDigest": "3b641a5d5d3e6e8b7271c0c78b2cf9cc48583b19ab3d31432d9d250775764784",
+  "previouslyObservedHeldOut": true,
+  "assessmentLimit": "Regression sample reused after term-frequency/extraction correction; a fresh held-out set remains required for release acceptance."
+}

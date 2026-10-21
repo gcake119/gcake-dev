@@ -168,3 +168,23 @@ summary { cursor: pointer; padding: 12px 16px; color: var(--accent); }
   .site-nav { flex-wrap: wrap; justify-content: flex-end; flex: 1; }
   .nav-search { order: 4; width: 100%; }
 }
+
+/* Discovery uses the established editorial rows and both theme tokens. */
+.search-filters { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+.search-filters label { display: flex; flex-direction: column; min-width: 0; flex: 1 1 140px; font-size: .85rem; }
+.search-filters select, .search-actions button { min-height: 44px; max-width: 100%; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 5px; padding: 8px; }
+.search-actions, #search-pagination { display: flex; flex-wrap: wrap; gap: 16px; }
+.search-actions a, #search-pagination a { display: inline-flex; align-items: center; min-height: 44px; }
+#search-results { overflow-wrap: anywhere; }
+#search-results .post-row { padding: 16px 0; }
+#search-results .search-result-title { margin: 0 0 6px; }
+#search-results .post-row p { margin: 6px 0 0; }
+mark { background: var(--accent-soft); color: var(--ink); font-weight: 650; }
+.article-connections { margin: 40px 0 24px; border-top: 1px solid var(--rule); padding-top: 24px; }
+.article-connections h2, .article-references h2 { font-size: 1.18rem; }
+.article-connections ul, .article-references ul { list-style: none; margin: 0; padding: 0; }
+.article-connections li { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.article-connections a, .article-references a { display: inline-block; min-height: 44px; overflow-wrap: anywhere; }
+.article-connections p { color: var(--muted); font-size: .82rem; margin: 0; }
+.article-references { border-top: 1px solid var(--rule); padding-top: 12px; }
+.article-references section { margin: 16px 0; }

@@ -1,0 +1,1 @@
+{"compilerOptions":{"strict":true,"target":"ES2022","module":"ESNext","moduleResolution":"Bundler","lib":["ES2023","DOM","ESNext.Intl"],"skipLibCheck":true,"noEmit":true},"include":["src/**/*.ts","../../src/lib/discovery/search.ts","../../src/lib/discovery/types.ts"]}

@@ -26,3 +26,6 @@ hermes-gateway-source/
 hermes-gateway-env311/
 combined-gateway-inputs/
 production-rollout-inputs/
+
+# Reproducible local discovery evidence
+output/discovery/

@@ -1,3 +1,6 @@
+/** One eligibility instant per site build; source saves do not assert deployment. */
+const frozenInstant = new Date(process.env.PUBLICATION_NOW ?? Date.now());
+export const publicationInstant = () => new Date(frozenInstant);
 /** Publication dates are normalized to an exact instant; legacy dates begin at Taipei midnight. */
 export function taipeiDay(date = new Date()): string {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Taipei' }).format(date);
@@ -40,7 +43,7 @@ export function serializeTaipeiSchedule(date: string, time: string): string {
 
 export function isPublicPost(
   post: { readonly status: string; readonly publishedAt?: Date },
-  now = new Date(),
+  now = publicationInstant(),
 ): boolean {
   return post.status === 'published' && isPublishedDate(post.publishedAt, now);
 }
@@ -48,7 +51,7 @@ export function isPublicPost(
 export function publicationStatus(
   editorial: string,
   publication?: { status: 'active' | 'completed' | 'paused'; endsAt?: string },
-  now = new Date(),
+  now = publicationInstant(),
 ): 'active' | 'completed' | 'paused' {
   if (publication) {
     if (publication.status === 'paused') return 'paused';

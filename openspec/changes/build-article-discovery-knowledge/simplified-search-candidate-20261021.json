@@ -1,0 +1,87 @@
+{
+  "scope": "Simplified reader search only; local BGE-M3 direct form submission; no cloud activation",
+  "sourceFiles": {
+    "src/pages/search.astro": "7b9ea7ae8409bf936d724c197b76c8d8bd60ac8876816a047b27d9f4476949dd",
+    "src/lib/discovery/client.ts": "31cd437a239a022f5fe0c5f8f0135e877eab5ccd7d1c928445f323457c9e049c",
+    "scripts/discovery/local-search.ts": "ba9b319385a9e36cb05e06c06427d16ee2484f1f19080a0b9d0e9c1099ffa38d",
+    "scripts/discovery/local-preview.ts": "65b8b135496837b647d6b38cf0acf2a56bb6e85b898ad44472e680670c4e0abc",
+    "test/discovery/browser.mjs": "9a7e71455c9ad2671ab276be11aec2cd0f5a1b157c1be5a19caaad66ae6d072b",
+    "test/discovery/local-preview.acceptance.test.ts": "cf3ee3293ddc3af3d05cbe3c0326c17bb5d188263423f5399837b9cca7317d41"
+  },
+  "runtime": {
+    "origin": "http://127.0.0.1:59243",
+    "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+    "configurationDigest": "b1189acb716fb138ce038bc9cff26468c2b82da61bf09097d7d1f4cea24330ef",
+    "manifestDigest": "a87eeb23b4a133a35d6ad5f060d0fb682234bc758f544b2e6019e05ea392ee48",
+    "model": {
+      "name": "bge-m3:latest",
+      "dimensions": 1024,
+      "format": "plain-title-text-v1",
+      "digest": "7907646426070047a77226ac3e684fbbe8410524f7b4a74d02837e43f2146bab"
+    },
+    "space": {
+      "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+      "modelConfig": "da99046162564e53300f7c8b11db9a946df4ac06b7fe5a2b784b3ddfa6c7edd4",
+      "dimensions": 1024
+    },
+    "articles": 33,
+    "passages": 2633,
+    "documentEmbeddings": 0,
+    "loadedBefore": {
+      "models": []
+    },
+    "startedAt": "2026-10-20T20:17:52.600Z",
+    "sourceDigests": {
+      "scripts/discovery/local-preview.ts": "65b8b135496837b647d6b38cf0acf2a56bb6e85b898ad44472e680670c4e0abc",
+      "scripts/discovery/local-search.ts": "ba9b319385a9e36cb05e06c06427d16ee2484f1f19080a0b9d0e9c1099ffa38d",
+      "scripts/discovery/ollama.ts": "ebade502ad87ed47a2eabe0b86024d609916be36530d7ec8c43c73973651a2f5"
+    },
+    "endedAt": "2026-10-20T20:19:44.426Z",
+    "reason": "stdin",
+    "counts": {
+      "semanticRequests": 5,
+      "embeddingCalls": 4,
+      "embeddingCompleted": 4,
+      "embeddingFailed": 0,
+      "cloudCalls": 0,
+      "generationCalls": 0,
+      "downloadCalls": 0
+    },
+    "listenerClosed": true,
+    "ownedModel": true,
+    "released": true,
+    "loadedAfter": {
+      "models": []
+    },
+    "sharedDaemonUnchanged": true
+  },
+  "browser": {
+    "passed": true,
+    "base": "http://127.0.0.1:59948/gcake-dev",
+    "viewports": [
+      1280,
+      390,
+      320
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+    "providerCalls": 0,
+    "semanticContractRequests": 8,
+    "generationRequests": 0,
+    "serverStopped": true,
+    "serverPid": 15610
+  },
+  "publicEndpointBlank": true,
+  "gates": {
+    "build": "PASS",
+    "check": "PASS",
+    "publicTests": "86/86 PASS",
+    "browser": "PASS",
+    "spectra": "PASS"
+  },
+  "cloudActivated": false,
+  "deployed": false
+}

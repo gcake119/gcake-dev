@@ -1,0 +1,10 @@
+{
+  "name": "gcake-public-search",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": { "SEMANTIC_ENABLED": "false" },
+  "observability": { "enabled": false }
+}
