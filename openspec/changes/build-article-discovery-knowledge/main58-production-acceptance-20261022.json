@@ -1,0 +1,568 @@
+{
+  "recordType": "recorded-production-acceptance",
+  "localDate": "2026-10-22",
+  "scope": "Backfill existing authorized main deployment observations only; no provider calls or settings changes in this documentation commit.",
+  "result": {
+    "passed": true,
+    "sourceCommit": "d92a05ba66bb6adb26e551e791924a0a86facd8e",
+    "mainCI": 39664070757,
+    "workerVersion": "1ddf7f63-75bb-4f04-8d04-2d118503a77e",
+    "pagesRun": "https://github.com/gcake119/gcake-dev/actions/runs/39664907333",
+    "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+    "semanticApi": 200,
+    "keywordFallbackAndRetry": true,
+    "mobileWidths": [
+      320,
+      390
+    ],
+    "indexReuse": {
+      "vectors": 2633,
+      "newEmbeddings": 0,
+      "newStorageDimensions": 0,
+      "foregroundDeploymentMaintenance": true
+    },
+    "naturalCronResumed": true,
+    "model": "@cf/baai/bge-m3",
+    "freeHardLimitsUnchanged": true,
+    "enabledSettingsUnchanged": true,
+    "expiryUnchanged": "2026-11-20T00:00:00Z",
+    "originalDirtyCheckoutUnchanged": true,
+    "networkOverridesCleared": true,
+    "viewportReset": true,
+    "uploadInputsRemovedBytes": 34523819
+  },
+  "worker": {
+    "sourceCommit": "d92a05ba66bb6adb26e551e791924a0a86facd8e",
+    "mainCI": 39664070757,
+    "at": "2026-10-21T19:49:13.281881+00:00",
+    "deployment": {
+      "id": "a2051ded-2d5c-47d3-99e3-de4f7d986fa7",
+      "source": "wrangler",
+      "strategy": "percentage",
+      "annotations": {
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "1ddf7f63-75bb-4f04-8d04-2d118503a77e",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-10-21T19:48:54.95036Z"
+    },
+    "moduleMatchesMainBundle": true,
+    "moduleSha256": "d1d5f1b58b132866f78fd1b951d4d1bb2ef229cbab631893ed11050fb085f115",
+    "settingsUnchanged": true,
+    "policyUnchanged": true,
+    "schedulesUnchanged": true,
+    "model": "@cf/baai/bge-m3",
+    "paidOverage": 0,
+    "limits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T19:14:12.240Z",
+      "processedUpToMutation": "021eeb45-d51e-4428-9d62-f44c4ef3ed95"
+    }
+  },
+  "pages": {
+    "sourceCommit": "d92a05ba66bb6adb26e551e791924a0a86facd8e",
+    "run": 39664907333,
+    "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+    "htmlMatchesArtifact": true,
+    "manifestMatchesArtifact": true,
+    "scripts": [
+      {
+        "href": "/gcake-dev/_astro/search.astro_astro_type_script_index_0_lang.FypUu2Z1.js",
+        "sha256": "5020c215fe0838b2f2bc87e9d7af26401dd88817d12b273b309fa542b9d7ae59",
+        "browser22sPresent": true
+      }
+    ],
+    "assets": [
+      {
+        "kind": "index",
+        "bytes": 1375779,
+        "digest": "e3f5510cb89aa34a9b70e381e38542cc0c2e78747d1750a47398557be9957f5c"
+      },
+      {
+        "kind": "passages",
+        "bytes": 1464252,
+        "digest": "a5cc672e0e1c8c886bbf40284c102e2c9c777d2bf5a645b4ead1970a4913d7a5"
+      }
+    ]
+  },
+  "alignment": {
+    "owner": "deploy-align:2380f042-48ae-45b7-8310-4bf881bab03f",
+    "target": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+    "previous": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+    "vectors": 2633,
+    "cloudEmbeddingCalls": 0,
+    "newStorageDimensions": 0,
+    "phase": "promoted",
+    "upserts": [
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 500
+      },
+      {
+        "index": "gcake-public-search-bge-m3",
+        "count": 133
+      }
+    ],
+    "reservation": {
+      "requests": 0,
+      "tokens": 0,
+      "units": 0,
+      "vectorQueries": 0,
+      "worker": 1,
+      "admission": 12000,
+      "storage": 0
+    },
+    "providerVectorsFullyVerified": 2633,
+    "policyOnlyActiveCorpusChanged": true,
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T19:53:00.307Z",
+      "processedUpToMutation": "30365ea3-534e-4eaa-a334-d78d0c650a94"
+    },
+    "finishedAt": "2026-10-21T19:56:07.337776+00:00",
+    "leaseReleased": true
+  },
+  "finalReadback": {
+    "at": "2026-10-21T19:58:44.193067+00:00",
+    "settingsUnchanged": true,
+    "schedulesUnchanged": true,
+    "policyOnlyCurrentCorpusChanged": true,
+    "model": "@cf/baai/bge-m3",
+    "limits": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "paidOverage": 0,
+    "evidenceValidUntil": "2026-11-20T00:00:00Z",
+    "currentCorpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+    "index": {
+      "dimensions": 1024,
+      "vectorCount": 2633,
+      "processedUpToDatetime": "2026-10-21T19:53:00.307Z",
+      "processedUpToMutation": "30365ea3-534e-4eaa-a334-d78d0c650a94"
+    },
+    "syncState": {
+      "id": 1,
+      "owner": null,
+      "leaseUntil": 0,
+      "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+      "previousCorpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+      "cursor": 2633,
+      "status": "no_change",
+      "detail": "",
+      "updated": 1792612710445
+    },
+    "pending": 0,
+    "independentCronReceipts": [
+      {
+        "id": 245,
+        "created": 1792612710445,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 244,
+        "created": 1792612652021,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 243,
+        "created": 1792612590831,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 242,
+        "created": 1792612566535,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "promoted",
+        "detail": "Deployment foreground reuse: 2633 verified; 0 embeddings; no additional storage dimensions"
+      },
+      {
+        "id": 241,
+        "created": 1792612238033,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "uploaded",
+        "detail": "0 embeddings; 16 reused"
+      }
+    ],
+    "existingDailyCreditNeverReplenished": true,
+    "originalDirtyCheckoutUnchanged": true
+  },
+  "naturalSyncStart": {
+    "state": [
+      {
+        "id": 1,
+        "owner": null,
+        "leaseUntil": 0,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "previousCorpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "cursor": 0,
+        "status": "uploaded",
+        "detail": "0 embeddings; 16 reused",
+        "updated": 1792612238033
+      }
+    ],
+    "pending": [
+      {
+        "id": "313cadcc31110e7dd73a44d2f911d90d",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "0b06f2977fe90422e3654211ca50dbd3",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "ea47d25bebdb4cc7971308cdb49ba8e9",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "d709b7815dd19f45f2cc02c89adc2430",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "895999d38cab8fed41d23e82eedb519a",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "7f377c6dec7a13c9b8750d86b34ffb07",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "e54cb5902a79d70f631e4dfcc035cdfc",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "a07e85f027ae67b80cf5550a97556495",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "7357d728f8f8811b6a98cc93638ea751",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "794937c809b92d61018dd1fad81a11cb",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "c8d612e97e1ab02f83df35ee531d0fea",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "835864d68b3ca8e219b3440da82cd025",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "4d874a9f465a62d65583cf7d52f70b5f",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "9311d07948e56e806f87b193a50f9c67",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "77618d8378e446c67414b13e6c8bbfb1",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      },
+      {
+        "id": "a877ea2952e97e2609539e9caafe464a",
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "stage": "uploaded"
+      }
+    ],
+    "receipts": [
+      {
+        "id": 241,
+        "created": 1792612238033,
+        "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+        "status": "uploaded",
+        "detail": "0 embeddings; 16 reused"
+      },
+      {
+        "id": 240,
+        "created": 1792612171029,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 239,
+        "created": 1792612110752,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 238,
+        "created": 1792612050622,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 237,
+        "created": 1792611992077,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      },
+      {
+        "id": 236,
+        "created": 1792611930636,
+        "corpusId": "5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae",
+        "status": "no_change",
+        "detail": ""
+      }
+    ]
+  },
+  "browser": {
+    "passed": true,
+    "observations": [
+      {
+        "phase": "natural-release-fallback",
+        "width": 390,
+        "retry": true,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋暫時無法使用，已顯示關鍵字結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "keyword-pagination-320",
+        "width": 320,
+        "retry": true,
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "依意思搜尋暫時無法使用，已顯示關鍵字結果。找到 24 篇文章，第 2 頁。"
+      },
+      {
+        "phase": "semantic-retry-page2-320",
+        "width": 320,
+        "retry": false,
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 2 頁。"
+      },
+      {
+        "phase": "semantic-320",
+        "width": 320,
+        "retry": false,
+        "rows": 10,
+        "scrollWidth": 305,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "semantic-390",
+        "width": 390,
+        "retry": false,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "browser-only-network-failure",
+        "width": 390,
+        "retry": true,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋暫時無法使用，已顯示關鍵字結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "network-restored-semantic",
+        "width": 390,
+        "retry": false,
+        "rows": 10,
+        "scrollWidth": 375,
+        "status": "依意思搜尋結果。找到 24 篇文章，第 1 頁。"
+      },
+      {
+        "phase": "network-status-observations",
+        "statuses": [
+          {
+            "status": 204
+          },
+          {
+            "status": 409
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          },
+          {
+            "status": 204
+          },
+          {
+            "status": 200
+          }
+        ],
+        "failures": [
+          {
+            "errorText": "net::ERR_ABORTED"
+          },
+          {
+            "errorText": "net::ERR_ABORTED"
+          },
+          {
+            "blockedReason": "inspector",
+            "errorText": ""
+          }
+        ]
+      }
+    ],
+    "viewportWidths": [
+      320,
+      390
+    ],
+    "networkOverridesCleared": true,
+    "viewportReset": true
+  },
+  "semanticSmoke": {
+    "at": "2026-10-21T19:56:56.345665+00:00",
+    "status": 200,
+    "corpusId": "e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637",
+    "mode": "hybrid",
+    "total": 33,
+    "firstResult": {
+      "articleId": "ithome:day-24",
+      "title": "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+      "readingHref": "/gcake-dev/series/ithome-2026/day-24/#%E6%88%91%E7%8F%BE%E5%9C%A8%E5%BB%BA%E7%AB%8B%E7%9A%84%E6%98%AF%E4%BF%A1%E4%BB%BB%E4%B8%8D%E6%98%AF%E5%AE%8C%E5%85%A8%E7%A2%BA%E5%AE%9A"
+    },
+    "scope": "Limited actual inference smoke with a synthetic public paraphrase; no query/IP/header capture or latency/quality benchmark."
+  },
+  "cleanup": {
+    "files": [
+      {
+        "file": "reuse-0000.ndjson",
+        "bytes": 6550006,
+        "sha256": "125882a5d90959b52f9ff2d0ba461e053afeb1d22f9f600c54b0c6e68752789e"
+      },
+      {
+        "file": "reuse-0500.ndjson",
+        "bytes": 6558340,
+        "sha256": "2e2fce66b2d96db7342d850ddbc7a6814634a40afd3663237ddcdff20804eb83"
+      },
+      {
+        "file": "reuse-1000.ndjson",
+        "bytes": 6547336,
+        "sha256": "5091844a6a7e3a05d1b00e069677cc880650128a1329a3f14d7dcf70b0b55e64"
+      },
+      {
+        "file": "reuse-1500.ndjson",
+        "bytes": 6555980,
+        "sha256": "49efb8029ad3866479d58269c5bc4e05c430152bcf99eca6b771fb0ad7668bcc"
+      },
+      {
+        "file": "reuse-2000.ndjson",
+        "bytes": 6562535,
+        "sha256": "9568fef4210430b0d7c15169a1570f5046c72125ae311a23c61a33ae3ccd4fed"
+      },
+      {
+        "file": "reuse-2500.ndjson",
+        "bytes": 1749622,
+        "sha256": "bbb415255833aa8e37ff7f341651ac2b0203050927f666359512a4aa2da7ce40"
+      }
+    ],
+    "removedBytes": 34523819,
+    "reason": "Complete provider readback and conditional promotion passed; remove only owned disposable upload inputs"
+  },
+  "remainingTasks": [
+    "1.1 historical RED provenance",
+    "12.2 first natural new-article complete automatic sync/promotion"
+  ],
+  "rawReceiptSha256": {
+    "result.json": "e20f665eefb6bb2a4c89e5083a6a6ef038a95500f83ef0dbb68fbf8f50ed9b33",
+    "worker-readback.json": "9a2b81f2386e4e413f9a1b4e191eeaed863bae83abdc598f28f358c0c7b8c52a",
+    "pages-readback.json": "a819995c6e97a4d023703e36dc1dee56643e4263b8ef0fb9cc26723f786e3ee9",
+    "pages-run.json": "9d640dbdac71c70cd53ba58fbd33fdb5ab7643121d95c084f63344853067b40d",
+    "sync-readback-initial.json": "ed9609ca59445bff33163124025bb7ea9b1a918fb038a053b603de3cfc28f23a",
+    "index-alignment.json": "cdc9eb6b1e50c6fd73c60b4ca90e5a80c59bfff4570bb1e599239b96d07b2601",
+    "final-readback.json": "95a21685118dfe12b07b70d195abf11fe9de75ff64b1224d659c549af6727a17",
+    "semantic-api.json": "1e4fce42e0ad5f91b5d6ea2126c76accf085c41d98afc4044a109bf0996634bc",
+    "browser-result.json": "a06d6be1b3a77fe4a6510d09e34bb2600e8be2f7349fcbdeebb0e4b428d90834",
+    "reuse-input-cleanup.json": "594ead4b6cb494b63aadf58510cc89bb6e162fbd5ae4887bea231e15ec1a2e7a",
+    "public-manifest.json": "4331fb57632bc4a1188f90eccdec9fe421dbc7b93e4cf133cd4e739c7cccce73"
+  },
+  "screenshots": {
+    "evidence/main58-production-20261022/semantic-390.jpg": "6a5fe9422448f5c43624dce9f86d42cf1ff226fa6ec3e1c758bb0eca8bc2b356",
+    "evidence/main58-production-20261022/semantic-320.jpg": "5aaebb6afa95afa1cc0e751ab027a998fd5aa0cbcd702188fed99df1ad891964",
+    "evidence/main58-production-20261022/network-fallback-390.jpg": "6b562c999a1d820bf954adf093ef54d1b16200637a3a16016a1c29c383a8074b",
+    "evidence/main58-production-20261022/natural-fallback-390.jpg": "6b562c999a1d820bf954adf093ef54d1b16200637a3a16016a1c29c383a8074b"
+  },
+  "documentationValidation": {
+    "links": 38,
+    "screenshots": 4,
+    "taskProgress": "34/36",
+    "originalDirtyStatusUnchanged": true,
+    "spectraValidate": "pass on isolated exact openspec snapshot",
+    "spectraAnalyze": {
+      "critical": 0,
+      "coverage": "Clean",
+      "consistency": "Clean",
+      "gaps": "Clean",
+      "existingSuggestion": "specs/reader-search/spec.md:62 may"
+    },
+    "scope": "Local docs/evidence checks only; no new runtime/provider validation"
+  }
+}

@@ -254,12 +254,23 @@ reason 僅為 failure（未分類依賴錯誤）、timeout（既有下載／整�
 完整修正、取捨與本機驗證見 [來源下載修正紀錄](../openspec/changes/build-article-discovery-knowledge/source-download-repair-20261022.md)。
 
 
-## 目前正式版本：來源修正共同發布（２０２６－１０－２２）
+## 前次正式版本：來源修正共同發布（２０２６－１０－２２，ecfebeb）
 
-上述本機候選與舊版部署段落保留為階段紀錄。目前已驗收 main `ecfebebaaaa1c0d070975d58dbd752ff497d1de7`，Worker `88aa9c47-20d6-4563-bbae-5c42b3f405e2`，Pages 部署 `39658022913`。兩份正式產物均與同一 main 建置相符；前端２２秒、Worker 整體２０秒、完整來源１５秒、小型 manifest 每次２秒已共同生效。操作與讀回見[正式驗收收據](../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)。本節僅回填結果，未再次部署或變更服務。
+上述本機候選與舊版部署段落保留為階段紀錄。此階段已驗收 main `ecfebebaaaa1c0d070975d58dbd752ff497d1de7`，Worker `88aa9c47-20d6-4563-bbae-5c42b3f405e2`，Pages 部署 `39658022913`。兩份正式產物均與同一 main 建置相符；前端２２秒、Worker 整體２０秒、完整來源１５秒、小型 manifest 每次２秒已共同生效。操作與讀回見[正式驗收收據](../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)。本節僅回填結果，未再次部署或變更服務。
 
 Pages 重建即使文章修訂未變，也可能因快照資訊產生新 corpus。發布成功後仍需核對 manifest、作用中 policy、完整索引讀回與自然 cron 收據；兩版本未對齊時，４０９保留新版關鍵字結果是預期降級。本次自動同步已開始首批重用，但整庫以前景一次性維護完成：同一 D1 租約與共享保守預留，逐筆核對來源／修訂／模型／供應商向量，再重用既有數值；完整讀回全部１０２４維與 metadata／namespace、確認公開版本未變後才條件式提升 activeCorpusId。不能先改 policy 假裝就緒，也不能補滿已消耗額度。這是此次既有維護授權的紀錄，不是新的排程或可直接重播的操作腳本。
 
-目前 corpus 為 `5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae`；２６３３個向量、pending＝０、租約釋放，自然收據２０７至２１０為 no_change。BGE-M3、兩個 true 開關、每分鐘 cron、免費方案硬上限與原本站每日上限全部保留，automation-2 維持暫停。索引對齊零新嵌入與正式搜尋實際推論分開計算；收據保存各自證據，避免把零索引推論誤說為整次沒有模型呼叫。
+此階段 corpus 為 `5a6e5ce10e4886b9d33c565163315e4647961e6ecea0420f3475b8fae9af12ae`；２６３３個向量、pending＝０、租約釋放，自然收據２０７至２１０為 no_change。BGE-M3、兩個 true 開關、每分鐘 cron、免費方案硬上限與原本站每日上限全部保留，automation-2 維持暫停。索引對齊零新嵌入與正式搜尋實際推論分開計算；收據保存各自證據，避免把零索引推論誤說為整次沒有模型呼叫。
 
 剩餘為任務１．１的歷史紅測試證據限制，以及１２．２的首次自然新增文章全程同步／讀回／提升驗收；本次僅快照版本改變且曾由前景完成對齊，不能關閉後者。免費／隱私證據仍於２０２６－１１－２０ UTC ００：００到期，需到期前重新核實；每日重設不延長期限。正式成功為有限 smoke，不保證往後所有來源下載均無逾時。若再遇５０３，沿用固定 stage／reason／隨機 requestId 的最小收集方式，不保存查詢、IP、完整 header 或 HAR。
+
+
+## 目前正式版本：main d92a05b（２０２６－１０－２２）
+
+[本次完整驗收與可攜證據](../openspec/changes/build-article-discovery-knowledge/main58-production-acceptance-20261022.md)：Worker `1ddf7f63-75bb-4f04-8d04-2d118503a77e`、Pages 部署 `39664907333` 均來自 main `d92a05ba66bb6adb26e551e791924a0a86facd8e`，正式程式與靜態產物讀回一致。程式、依賴與設定相對前次發布未變，既有２／１５／２０／２２秒預算持續生效。
+
+Pages 重建使 corpus 更新為 `e58ec806125977462eb0cf00285c3ab6c554a8ffb4535877556f388ce18e6637`，文章修訂與 passages digest 不變。自然收據２４１重用首批１６段；沿用上節一次性前景流程，以同一租約／共享預留完整核對並重用２６３３個向量，供應商非同步處理後完整讀回才條件式提升，收據２４２。自然 cron 收據２４３至２４５為新版 no_change；pending＝０、租約釋放。只改 activeCorpusId，未新建嵌入或增加儲存維度；沒有新增本機排程。
+
+實際 API 為２００／hybrid；Computer Use 驗證真實４０９降級、分頁、語意恢復、瀏覽器限定連線阻擋後的關鍵字降級及清除後恢復，３２０／３９０像素無水平溢出。臨時網路覆寫與 viewport 已還原，上傳用暫存檔已清除。搜尋驗收使用實際 BGE-M3 額度，不能與索引零新嵌入混稱。
+
+BGE-M3、免費硬上限、原每日上限、兩個 true 開關、cron 與２０２６－１１－２０ UTC ００：００期限保留，已消耗額度未補滿。剩餘仍為１．１歷史證據及１２．２首次自然新增文章完整同步驗收，本次不關閉。此為文件回填，沒有重跑正式驗收、推送、部署或變更設定。

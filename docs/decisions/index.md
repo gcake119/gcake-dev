@@ -8,4 +8,4 @@
 
 既有視覺決策仍見 `DESIGN.md`、`docs/design-system.md` 與 `docs/blog-redesign-approved.md`，不因新增索引而重新設計。
 
-２０２６－１０－２２的來源逾時修正已隨 main `ecfebeb` 完成 Worker 與 GitHub Pages [正式部署及驗收](../../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)；新版索引以前景維護重用２６３３個向量完成對齊，自然 cron 已恢復 no_change。BGE-M3、免費硬上限、啟用開關與期限保留；首次自然新增文章的完整同步仍待驗收。
+２０２６－１０－２２目前已驗收 main `d92a05b`，Worker `1ddf7f63-75bb-4f04-8d04-2d118503a77e` 與 Pages 部署 `39664907333`；[本次正式驗收](../../openspec/changes/build-article-discovery-knowledge/main58-production-acceptance-20261022.md)保存索引對齊及自然 cron 恢復證據。[前次 ecfebeb 紀錄](../../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)保留為歷史。BGE-M3、免費硬上限、啟用開關與期限未改；首次自然新增文章完整同步仍待驗收。
