@@ -98,3 +98,56 @@ Evaluation data SHALL derive from current public article evidence and grow as el
 - **GIVEN** two public articles with different identities resolve to the same reading URL after removing query, fragment and trailing slash
 - **WHEN** the public corpus is prepared
 - **THEN** preparation fails explicitly rather than creating two article results for one reading location; equal slugs with distinct reading URLs remain valid
+
+
+### Requirement: Authorized recurring cloud-index maintenance
+The operator-maintenance task SHALL check the actual public corpus through the hosted schedule under standing user authorization, perform no enrichment writes for an unchanged active corpus, and process changed public revisions only with compatible model data, verified free capacity, shared durable pre-reservation and complete provider readback before promotion. It SHALL preserve source visibility, operator disablement and evidence expiry; no paid upgrade, unrelated deployment or automatic evidence extension is authorized. Hosted scheduling evidence SHALL be distinguished from future-new-article acceptance; the superseded local task SHALL remain paused.
+
+#### Scenario: The active public corpus is unchanged
+- **GIVEN** the published corpus matches the active semantic corpus
+- **WHEN** the scheduled maintenance check runs
+- **THEN** it records no change without an embedding request or index/policy write
+
+#### Scenario: A changed public release can be maintained within verified limits
+- **GIVEN** a different publicly deployed corpus, compatible cached vectors and verified remaining free capacity
+- **WHEN** one owned maintenance run reserves planned shared costs, prepares the remaining vectors and verifies the complete current-release provider data
+- **THEN** the compatible current corpus is promoted and subsequent semantic results reference only its public revisions, without a site or Worker deployment
+
+#### Scenario: A maintenance prerequisite is unavailable
+- **GIVEN** expired evidence, insufficient or unknown free capacity, unavailable access, another unresolved maintenance run, or an operator-disabled service
+- **WHEN** the maintenance task checks a changed corpus
+- **THEN** it reports the unmet prerequisite without a model call, paid fallback, evidence extension or override of the operator switch; keyword search stays available
+
+#### Scenario: The public release changes or the provider outcome is unknown
+- **GIVEN** enrichment preparation has started under a reserved allocation
+- **WHEN** the public release changes or provider completion cannot be verified
+- **THEN** the unverified corpus is not promoted, reservations and prior receipts are retained, and inference is not blindly replayed
+
+
+### Requirement: Cloud-hosted public-index synchronization
+The Cloudflare runtime SHALL automatically synchronize newly public article releases without a local computer, using bounded resumable batches, a single durable lease, compatible BGE vectors, shared atomic Free allocations and complete provider verification before conditional promotion. It SHALL preserve operator disablement, source visibility, the existing evidence expiry and zero paid overage. The superseded local hourly task SHALL be paused.
+
+#### Scenario: A new public article becomes available
+- **GIVEN** a changed actual public release and valid verified Free capacity
+- **WHEN** Cloudflare scheduled executions prepare and verify every current passage
+- **THEN** semantic search automatically uses the new release and links only to current public revisions without local execution
+
+#### Scenario: Concurrent or interrupted synchronization
+- **GIVEN** another active lease or an inference with unknown completion
+- **WHEN** synchronization runs again
+- **THEN** it cannot duplicate inference or promote an incomplete release, and the previous reservation remains consumed
+
+#### Scenario: Capacity, policy or source changes during synchronization
+- **GIVEN** insufficient shared allocation, expired evidence, disabled service, incompatible vectors or a changed public release
+- **WHEN** synchronization checks its prerequisites or final promotion
+- **THEN** it retains keyword search and reports the reason without paid fallback, evidence renewal or overwriting operator decisions
+
+#### Scenario: Confirmed output awaits provider visibility
+- **GIVEN** saved compatible vectors whose upload is not yet fully readable
+- **WHEN** a later scheduled execution resumes
+- **THEN** it verifies or idempotently uploads the saved vectors without repeating embedding and promotes only after all current values and revision metadata match
+
+#### Scenario: No new release
+- **GIVEN** the active semantic release matches the public release and there is no pending work
+- **WHEN** Cloudflare checks the site
+- **THEN** it records a check without inference, vector mutations or policy changes

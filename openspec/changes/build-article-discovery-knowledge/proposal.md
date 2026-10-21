@@ -67,3 +67,15 @@ The separately authorized static Pages deployment of main f488015757d2cb337734c5
 ## Authorized cloud activation（2026-10-21）
 
 The user explicitly authorized merging PR #51, deploying main and using Computer Use to configure Cloudflare, then confirmed completing actual wiring, verification and public semantic activation. This supersedes the earlier current-status prohibition on cloud execution while preserving historical receipts. Continue existing tasks 3.3 and 4.3; do not close historical task 1.1. Preserve the accepted minimal search UI and model provenance restrictions. Use only official @cf/baai/bge-m3 with 1024-dimensional cosine vectors, zero paid overage and the current confirmed public corpus. Record account/fee/privacy/provider evidence and durable decisions in docs/decisions and the existing runbook. Missing, expired or incompatible bindings/policy/index deny model calls; current keyword search remains available. No plan upgrade, paid fallback, generation, Admin credentials or changes to distribution schedules are authorized.
+
+
+## Standing cloud-index maintenance authorization（2026-10-21）
+
+The user requests continuing cloud-index updates after production activation. Reuse one hourly Codex thread heartbeat and existing operator/index preparation tools rather than adding a deployment workflow, external service, credential or Cloudflare schedule. Check the actual public release first and make no embedding/index/policy write when its corpus is unchanged. A changed release may update only this search index and its active corpus policy under ADR-001: reserve shared daily costs atomically before inference, reuse only compatible cached vectors, verify total stored dimensions and complete provider readback before promotion, and retain current keyword results on any failed prerequisite. Expired pricing/privacy/account evidence still stops processing; this authorization does not automatically extend the 2026-11-20 expiry or authorize Git pushes, site/Worker deployments, paid plans, different models or distribution writes.
+
+This adds an operator-maintenance requirement to public-article-knowledge. Update the existing design, Gherkin scenarios, task evidence, ADR-001 and docs/article-discovery-runbook.md; preserve completed work and the original production acceptance receipt.
+
+
+## Cloud-hosted indexing authorization（2026-10-21）
+
+The user explicitly replaces the local hourly Codex task with Cloudflare-hosted automatic public-index synchronization, authorizes implementation, deployment, verification and activation, and requires keeping the provider-enforced Free hard cap. Pause automation-2. Extend the existing search Worker with a minute cron and durable bounded batch progress, sharing its existing D1 admission and Vectorize binding. No dependency on a local computer or stored human OAuth token. No changes to publishing, subscriber delivery, reader UI, paid plans or model selection. Earlier local-heartbeat text is historical and superseded by this decision.

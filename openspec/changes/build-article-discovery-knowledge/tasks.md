@@ -81,3 +81,16 @@ The operator now authorizes actual free-only BGE-M3 wiring, provider verificatio
 ## Authorized cloud production closeout — 2026-10-21
 
 Tasks 3.3 and 4.3 now have actual provider, free-plan, corpus/index promotion, exact-main CI, production API, Computer Use mobile and disable/recover evidence in [cloud-production-acceptance-20261021.md](cloud-production-acceptance-20261021.md). Earlier static-only tables remain historical. Task 1.1 remains unchecked because missing historical initial-red evidence cannot be reconstructed. Future corpus promotions and dated provider-evidence renewals remain explicit operations; no unattended indexing scheduler is claimed.
+
+
+## 12. Authorized recurring cloud-index maintenance
+
+- [x] 12.1 Configure one hourly Codex thread heartbeat for standing public-index maintenance with unchanged-corpus no-op, shared atomic quota reservation, compatible cache/readback/promotion, expiry and operator-disable boundaries; verify the returned scheduler identity/status, initial current public corpus versus D1 policy, durable ADR/runbook scope and spectra validation without deployment or model calls.
+- [ ] 12.2 Verify Authorized recurring cloud-index maintenance on the first actually changed public corpus: execute the already-authorized maintenance procedure and retain provider reservation, cache/new-vector counts, complete namespace/revision readback, final manifest comparison and active-corpus promotion evidence; until then do not label future changed-article maintenance as accepted.
+
+
+## 13. Cloud-hosted public-index synchronization
+
+- [x] 13.1 Replace local execution with the Cloud-hosted public-index synchronization contract and Gherkin, pause automation-2, and validate the actual owned-worktree artifacts.
+- [x] 13.2 Prove concurrent execution, unknown inference, saved-output resume, shared quota denial, expiry/disablement, obsolete-only cleanup and current-release promotion with failing acceptance tests, then implement bounded scheduled synchronization and run the complete existing local gate.
+- [x] 13.3 Deploy migration/runtime disabled, bootstrap only verified owned vectors, verify actual Cloudflare no-change and provider update/readback with unchanged reader UI, then activate cron and preserve independent scheduled evidence; update ADR/runbook and record any future-new-article limitation honestly.
