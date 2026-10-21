@@ -2,12 +2,14 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { site } from '@/data/site';
 import { localCanonical } from '@/lib/seo/canonical';
+const semanticEndpoint = import.meta.env.PUBLIC_SEARCH_ENDPOINT ?? '';
+if (semanticEndpoint && semanticEndpoint !== 'https://gcake-public-search-production.wwhowbuhow.workers.dev/v1/search') throw new Error('UNAPPROVED_SEARCH_ENDPOINT');
 ---
 <BaseLayout title="搜尋" canonical={localCanonical('/search/')}>
  <section class="simple-page" aria-label="搜尋結果">
   <p id="search-status" role="status" aria-live="polite">在導覽列輸入關鍵字，搜尋已公開的文章。</p>
   <div class="search-actions"><button id="search-retry" type="button" hidden>重試</button></div>
-  <ul id="search-results" class="post-list" data-manifest={`${site.basePath}/discovery-manifest.json`} data-semantic=""></ul>
+  <ul id="search-results" class="post-list" data-manifest={`${site.basePath}/discovery-manifest.json`} data-semantic={semanticEndpoint}></ul>
   <nav id="search-pagination" aria-label="搜尋結果分頁"></nav>
   <noscript><p>全文搜尋需要啟用 JavaScript，可以從<a href={`${site.basePath}/series/`}>系列總覽</a>或<a href={`${site.basePath}/topics/`}>主題總覽</a>找到文章。</p></noscript>
  </section>

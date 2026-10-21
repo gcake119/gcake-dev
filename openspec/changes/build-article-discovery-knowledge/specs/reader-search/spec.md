@@ -59,7 +59,7 @@ The existing header search SHALL remain the sole keyword input. The search page 
 - **THEN** it provides working series and topic navigation and explains the search limitation
 
 ### Requirement: Explicit semantic search with current-release fallback
-Remote semantic search SHALL require explicit authorization and disclosure before sending the query to its service. In the separately authorized local-only preview, submitting the single search form SHALL directly use the installed BGE-M3 endpoint without a model-mode choice; typing SHALL NOT call it. The public site SHALL keep its empty endpoint and local keyword search. It SHALL merge semantic and lexical article rankings without duplicate articles, enforce the active public release, and retain keyword results on timeout, quota exhaustion, incompatible releases, or service failure. Old responses SHALL NOT overwrite a newer query or mode.
+Remote semantic search SHALL require explicit authorization and disclosure before sending the query to its service. In the separately authorized local-only preview, submitting the single search form SHALL directly use the installed BGE-M3 endpoint without a model-mode choice; typing SHALL NOT call it. Until separately authorized activation passes account, provider and release verification, the public site SHALL keep its empty endpoint and local keyword search. After that activation, explicit form submission MAY send the query to the isolated BGE-M3 service; typing SHALL make no model calls. It SHALL merge semantic and lexical article rankings without duplicate articles, enforce the active public release, and retain keyword results on timeout, quota exhaustion, incompatible releases, or service failure. Old responses SHALL NOT overwrite a newer query or mode.
 
 #### Scenario: Different wording finds same meaning
 - **GIVEN** an active semantic release contains an article about converting repeated manual work into automation
@@ -162,7 +162,7 @@ The discovery service SHALL permit only operations confirmed to remain inside ap
 - **THEN** remote enrichment stops without paid usage, the new static site can still publish current keyword assets, and no old article visibility is restored
 
 #### Scenario: Provider reset has not been confirmed
-- **GIVEN** a free allowance was exhausted and the provider's reset or current usage cannot be verified
+- **GIVEN** a free allowance was exhausted and neither the provider's reset/current usage nor an applicable verified Workers Free hard-limit renewal policy can be verified
 - **WHEN** a reader retries or the local calendar day changes
 - **THEN** no local reset fabricates free capacity and keyword search remains available
 
@@ -224,7 +224,7 @@ The existing built search page SHALL support explicitly authorized foreground lo
 - **THEN** the query and page remain, obsolete filters are removed, and results cover all current public articles
 
 ### Requirement: Minimal reader search surface
-The normal search surface SHALL display the existing header search form, result count and article list without an explanatory paragraph, repeated visible page heading or extra catalog links. Pagination and failure-only retry SHALL remain available when needed; no-JavaScript recovery SHALL remain accessible. Public remote execution SHALL remain disabled.
+The normal search surface SHALL display the existing header search form, result count and article list without an explanatory paragraph, repeated visible page heading or extra catalog links. Pagination and failure-only retry SHALL remain available when needed; no-JavaScript recovery SHALL remain accessible. Public remote execution SHALL remain disabled until the separately authorized account, provider and release checks pass.
 
 #### Scenario: Search shows only the requested reader content
 - **GIVEN** the reader submits a query in the existing header form
@@ -250,3 +250,20 @@ The normal search surface SHALL display the existing header search form, result 
 - **GIVEN** an earlier local preview has saved its start, status and finish receipts
 - **WHEN** another foreground preview starts and saves its own receipts
 - **THEN** each run exposes a distinct evidence location and the earlier receipts remain unchanged
+
+
+#### Scenario: Authorized cloud binding is incomplete
+- **GIVEN** the operator has authorized cloud activation but the model, atomic admission, verified policy or compatible index is absent
+- **WHEN** the public search service receives a query
+- **THEN** it makes no model call and the reader retains current keyword results
+
+#### Scenario: Verified cloud release is active
+- **GIVEN** the operator has authorized the verified free-only BGE-M3 release and the published privacy policy describes query processing
+- **WHEN** the reader submits the existing search form
+- **THEN** the cloud service returns source-linked current-release results using only BGE-M3, without adding controls, suggestions or explanatory paragraphs
+
+
+#### Scenario: Verified free-plan daily renewal
+- **GIVEN** the operator has approved the current Workers Free hard-limit evidence, zero paid overage and a conservative daily allocation
+- **WHEN** the Cloudflare runtime enters a new UTC provider day
+- **THEN** it atomically creates that day's bounded allocation once, never replenishes an existing consumed allocation, and preserves keyword fallback when provider capacity is exhausted or the evidence expires

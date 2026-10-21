@@ -123,7 +123,7 @@ export function installSearch() {
             const lexical = search(corpus, q, options);
             let found = lexical, notice = '', semanticSucceeded = false;
             render(lexical.results, q);
-            if (results.dataset.localSemantic === 'true' || params.get('mode') === 'semantic') {
+            if (results.dataset.semantic || results.dataset.localSemantic === 'true' || params.get('mode') === 'semantic') {
                 notice = '依意思搜尋暫時無法使用，已顯示關鍵字結果。';
                 if (results.dataset.semantic) {
                     let timer: ReturnType<typeof setTimeout> | undefined;

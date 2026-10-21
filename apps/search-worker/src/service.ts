@@ -21,6 +21,7 @@ export interface SearchPolicy {
         providerResetVerified: boolean;
         windowId: string;
         noChargeTerms?: string;
+        renewal?: 'verified-workers-free-utc';
         services: string[];
     };
     limits: Units;

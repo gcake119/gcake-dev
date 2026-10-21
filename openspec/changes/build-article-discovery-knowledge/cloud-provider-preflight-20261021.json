@@ -1,0 +1,127 @@
+{
+  "recordedAt": "2026-10-21",
+  "stage": "cloud resources and provider preflight, public semantic activation pending final exact-main CI and browser acceptance",
+  "staticDeployment": {
+    "main": "9c3fb56d4856d7c02b77bd7945a073626ded53c9",
+    "pr": 51,
+    "mainCI": 39602173609,
+    "pagesRun": 39602684040,
+    "manifestAndAllAssetsMatchArtifact": true
+  },
+  "account": {
+    "account": "979a3735f8dfa269e7474135f348cfdf",
+    "currentPlan": "Workers Free",
+    "planEvidence": "cloudflare-free-plan.txt",
+    "planScreenshot": "cloudflare-free-plan.jpg",
+    "planEvidenceSha256": "adc1fd5c029436ddb1c1d1ffd87992df68d54447a83b0446cd08a2e6f80bdca2",
+    "zeroPaidOverageBoundary": "Workers Free requires upgrade to use beyond the free allocation; no upgrade performed.",
+    "officialSource": "https://developers.cloudflare.com/workers-ai/platform/pricing/",
+    "officialRetrieval": "official-pricing-retrieval.json",
+    "capNeuronsPerUTCDate": 10000,
+    "applicationCeilingNeurons": 8000,
+    "knownProbeReservationNeurons": 1,
+    "note": "Calculated headroom is a conservative application bound, not provider-reported balance. Unknown outcomes are never refunded.",
+    "observedAt": "2026-10-21T13:02:17.698006+00:00"
+  },
+  "modelProbe": {
+    "status": 200,
+    "success": true,
+    "shape": [
+      1,
+      1024
+    ],
+    "elapsedSeconds": 1.26375262500369,
+    "responseDigest": "7cebfaf9caf10a607cbc5a29b7f80879c1096446d6b5a99cdefeb0e57a4da24f",
+    "errors": []
+  },
+  "indexPlan": {
+    "corpusId": "7a898d6aa3505f7c08b109fda3b3d3a400cff197c14a446a682f93f14c49d8d5",
+    "configurationDigest": "b1189acb716fb138ce038bc9cff26468c2b82da61bf09097d7d1f4cea24330ef",
+    "modelConfig": "cloudflare:@cf/baai/bge-m3:plain:1024:cosine:bytes4096:v1",
+    "dimensions": 1024,
+    "articles": 33,
+    "passages": 2633,
+    "storageDimensions": 2696192,
+    "topics": [
+      "ai-assisted-development",
+      "developer-learning",
+      "development-automation",
+      "product-development",
+      "system-design",
+      "technical-writing",
+      "testing-verification"
+    ],
+    "embeddingNeuronsCeiling": 8000,
+    "paidOverage": 0,
+    "providerWindow": "2026-10-21"
+  },
+  "modelPreparation": {
+    "completedInputVectors": 2685,
+    "providerBatchRequests": 168,
+    "conservativeReservedNeuronsIncludingProbe": 317.50902800000006,
+    "notProviderBilledUsage": true
+  },
+  "vectorReadback": {
+    "corpusId": "7a898d6aa3505f7c08b109fda3b3d3a400cff197c14a446a682f93f14c49d8d5",
+    "verified": 2633,
+    "dimensions": 1024,
+    "everyNamespaceSourceRevisionAndValueVerified": true,
+    "maxFloat32Error": 2.818339567278727e-08
+  },
+  "quality": {
+    "corpusId": "7a898d6aa3505f7c08b109fda3b3d3a400cff197c14a446a682f93f14c49d8d5",
+    "model": "cloudflare:@cf/baai/bge-m3:plain:1024:cosine:bytes4096:v1",
+    "queries": 54,
+    "passages": 2633,
+    "errors": 0,
+    "mode": "Observed cloud BGE embeddings, offline cosine and production RRF; actual Vectorize/Worker still require separate readback",
+    "sample": "Revision-verified regression, partial expected targets, not new held-out or human relevance acceptance",
+    "lexicalRecall5": 0.9814814814814815,
+    "denseRecall5": 0.9444444444444444,
+    "hybridRecall5": 1
+  },
+  "localVerification": {
+    "commands": [
+      "pnpm test",
+      "pnpm check",
+      "pnpm build:all",
+      "pnpm release:dry-run",
+      "pnpm editorial:rehearse"
+    ],
+    "allPassed": true,
+    "node": "24.19.0",
+    "python": "3.12.14",
+    "astroCheckErrors": 0,
+    "newWorkerFocusedTests": 30,
+    "rawLogs": "output/discovery/merge-deploy-cloud-20261021/cloud-final-*.log"
+  },
+  "worker": {
+    "name": "gcake-public-search-production",
+    "initialVersion": "b9c31284-e798-4827-bcc5-fd713fc4c0be",
+    "semanticEnabled": false,
+    "bindings": [
+      "AI",
+      "DISCOVERY_DB",
+      "VECTOR_INDEX"
+    ],
+    "logsAndTracesEnabled": false,
+    "secretValuePublished": false
+  },
+  "limitations": [
+    "Regression judgments contain partial expected targets and are not a fresh held-out sample or independent human relevance acceptance.",
+    "Initial bulk read of 100 IDs was rejected by provider maximum 20; subsequent all-vector readback used batches of 20.",
+    "Python 3.14 under high host load had existing Hermes recovery timeouts; isolated reproduction and unchanged full gate on Python 3.12 passed.",
+    "Generated platform globals initially affected other workspace types; module scoping corrected without weakening assertions.",
+    "A non-browser HTTP probe received platform 1010; final public browser behavior remains to be verified."
+  ],
+  "evidenceImages": [
+    {
+      "path": "evidence/cloud-20261021/search-worker-bindings.jpg",
+      "sha256": "61e1b4e363b63062d27f22e579d1d58e25871d8867e9da8fce6b13e4b213408b"
+    },
+    {
+      "path": "evidence/cloud-20261021/workers-free-plan.jpg",
+      "sha256": "60676deef961b618b65e895c80cd540d8e8189a79f67eb221fa6ad6290262f36"
+    }
+  ]
+}

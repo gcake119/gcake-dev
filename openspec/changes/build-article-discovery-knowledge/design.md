@@ -209,3 +209,13 @@ Before constructing the reading URL lookup, canonicalize each primary href consi
 ## Observed production static release（2026-10-21）
 
 Static Stage A is now deployed and read back, with the same approved compact reader design. Source main f488015757d2cb337734c5c735f9b590c510adae produced corpus 1e14c449ba244e3be6872d968b86aabcd1ff782315e53dacc7ae315608fd68eb. production-acceptance-20261021.md records actual browser and artifact evidence; the deployed data-semantic is empty and no local-preview flag is present. Earlier local-only scope text describes its authorization at that time, not the latest static release status. Production keyword acceptance does not establish cloud semantic model quality, billing, provider retention or resource wiring. No new UI, runtime contract or acceptance condition is introduced by this documentation backfill.
+
+
+## Authorized cloud activation（2026-10-21）
+
+The user explicitly authorized merging PR #51, deploying main and using Computer Use to configure Cloudflare, then confirmed completing actual wiring, verification and public semantic activation. This supersedes the earlier current-status prohibition on cloud execution while preserving historical receipts. Continue existing tasks 3.3 and 4.3; do not close historical task 1.1. Preserve the accepted minimal search UI and model provenance restrictions. Use only official @cf/baai/bge-m3 with 1024-dimensional cosine vectors, zero paid overage and the current confirmed public corpus. Record account/fee/privacy/provider evidence and durable decisions in docs/decisions and the existing runbook. Missing, expired or incompatible bindings/policy/index deny model calls; current keyword search remains available. No plan upgrade, paid fallback, generation, Admin credentials or changes to distribution schedules are authorized.
+
+
+### Adopted free-plan renewal decision
+
+The user approved automatic conservative daily renewal under the verified Workers Free provider-enforced hard cap, replacing daily manual reopening for this confirmed free-plan environment. Only policy carrying this explicit renewal decision may derive its day from Cloudflare runtime UTC. D1 creates an absent day exactly once using INSERT OR IGNORE; consumed/current-day rows are never replenished. Existing unverified/Paid policies still fail closed, and evidence expiry still denies calls. Provider quota denial keeps keyword results and never upgrades plans or uses a paid alternative. The application allocation is a conservative bound, not a claim to know the provider's live balance; record this distinction.
