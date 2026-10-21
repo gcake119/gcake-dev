@@ -1,3 +1,4 @@
+import { browserDeadlineMs } from './deadlines';
 import { normalize, search, tokenize } from './search';
 import type { Corpus, Passage, SearchResult } from './types';
 export function highlight(node: HTMLElement, text: string, query: string) {
@@ -80,6 +81,18 @@ export function installSearch() {
             results.append(item);
         }
     }
+    function renderPagination(found: ReturnType<typeof search>) {
+        pagination.replaceChildren();
+        for (const [label, page] of [['上一頁', found.page - 1], ['下一頁', found.page + 1]] as const)
+            if (page >= 1 && page <= Math.ceil(found.total / 10)) {
+                const a = document.createElement('a'), u = new URL(location.href);
+                u.searchParams.set('page', String(page));
+                a.href = u.href;
+                a.textContent = label;
+                a.addEventListener('click', e => { e.preventDefault(); change('page', String(page)); });
+                pagination.append(a);
+            }
+    }
     async function run() {
         const current = ++request;
         abort?.abort();
@@ -123,6 +136,8 @@ export function installSearch() {
             const lexical = search(corpus, q, options);
             let found = lexical, notice = '', semanticSucceeded = false;
             render(lexical.results, q);
+            status.textContent = lexical.total ? `找到 ${lexical.total} 篇文章${lexical.partial ? '（部分符合）' : ''}，第 ${lexical.page} 頁。` : '找不到相關文章，試試其他關鍵字或說法。';
+            renderPagination(lexical);
             if (results.dataset.semantic || results.dataset.localSemantic === 'true' || params.get('mode') === 'semantic') {
                 notice = '依意思搜尋暫時無法使用，已顯示關鍵字結果。';
                 if (results.dataset.semantic) {
@@ -130,7 +145,7 @@ export function installSearch() {
                     let releaseConflict = false;
                     try {
                         const activeAbort = abort!;
-                        timer = setTimeout(() => activeAbort.abort(), 5000);
+                        timer = setTimeout(() => activeAbort.abort(), browserDeadlineMs);
                         const r = await fetch(results.dataset.semantic, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q, corpusId: corpus.corpusId, ...options, sort: options.sort, limit: 10 }), signal });
                         if (r.status === 409) releaseConflict = true;
                         if (!r.ok)
@@ -188,15 +203,7 @@ export function installSearch() {
             if (corrected)
                 history.replaceState(null, '', '?' + params);
             status.textContent = notice + (found.total ? `找到 ${found.total} 篇文章${found.partial ? '（部分符合）' : ''}，第 ${found.page} 頁。` : '找不到相關文章，試試其他關鍵字或說法。');
-            for (const [label, page] of [['上一頁', found.page - 1], ['下一頁', found.page + 1]] as const)
-                if (page >= 1 && page <= Math.ceil(found.total / 10)) {
-                    const a = document.createElement('a'), u = new URL(location.href);
-                    u.searchParams.set('page', String(page));
-                    a.href = u.href;
-                    a.textContent = label;
-                    a.addEventListener('click', e => { e.preventDefault(); change('page', String(page)); });
-                    pagination.append(a);
-                }
+            renderPagination(found);
         }
         catch {
             if (current === request) {

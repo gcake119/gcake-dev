@@ -1,4 +1,5 @@
 import { unavailableResponse, failureReason, SearchFailure, type FailureStage, type FailureReason } from './diagnostics';
+import { semanticDeadlineMs } from '../../../src/lib/discovery/deadlines';
 import { search } from '../../../src/lib/discovery/search';
 import type { Corpus, SearchResult } from '../../../src/lib/discovery/types';
 import { unitNames, type Admission, type Units } from './admission';
@@ -33,6 +34,7 @@ export interface SearchPolicy {
 }
 export interface Deployed {
     corpusId: string;
+    sourceIdentity?: string;
     corpus: Corpus;
 }
 export interface VectorMatch {
@@ -44,6 +46,7 @@ export interface Dependencies {
     policy: SearchPolicy;
     admission: Admission;
     manifest(signal: AbortSignal): Promise<Deployed>;
+    currentManifest?(signal: AbortSignal): Promise<Pick<Deployed, 'corpusId' | 'sourceIdentity'>>;
     embed(text: string, signal: AbortSignal): Promise<number[]>;
     vectors(vector: number[], corpusId: string, filters: {
         topic?: string;
@@ -171,12 +174,12 @@ export function createSearchService(d: Dependencies) {
                 const total = pool.length, limit = input.limit ?? 10, page = Math.max(1, Math.min(input.page ?? 1, Math.ceil(total / limit) || 1));
                 const results: SearchResult[] = pool.slice((page - 1) * limit, page * limit).map(([id, rank]) => { const a = allowed.find(a => a.articleId === id)!, p = c.passages.find(p => p.passageId === rank.passageId); return { articleId: id, title: a.title, readingHref: p?.href ?? a.href, excerpt: [...(p?.text ?? a.description)].slice(0, 120).join(''), passageId: p?.passageId, series: a.seriesTitle, topics: a.topics, score: rank.score }; });
                 stage = 'source_final';
-                const latest = await d.manifest(controller.signal);
-                if (latest.corpusId !== input.corpusId)
+                const latest = d.currentManifest ? await d.currentManifest(controller.signal) : await d.manifest(controller.signal);
+                if (latest.corpusId !== input.corpusId || latest.sourceIdentity !== deployed.sourceIdentity)
                     return error(409, 'CORPUS_MISMATCH');
                 return Response.json({ corpusId: input.corpusId, mode: 'hybrid', total, page, hasMore: page * limit < total, candidateLimited: ranks.size >= 50, results });
             };
-            return await Promise.race([operation(), new Promise<Response>(resolve => { timer = setTimeout(() => { const response = unavailable('timeout'); controller.abort(); resolve(response); }, 5000); })]);
+            return await Promise.race([operation(), new Promise<Response>(resolve => { timer = setTimeout(() => { const response = unavailable('timeout'); controller.abort(); resolve(response); }, semanticDeadlineMs); })]);
         }
         catch (e) {
             if (stage === 'request' && (String(e).includes('INVALID_QUERY') || e instanceof SyntaxError)) return error(400, 'INVALID_QUERY');

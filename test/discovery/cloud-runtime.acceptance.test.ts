@@ -75,3 +75,48 @@ test('Source download deadline is identified before any embedding or vector call
  const h=await fixture();h.setPolicy(policy);const fetcher:typeof fetch=async(_input,init)=>new Promise((_resolve,reject)=>{init?.signal?.addEventListener('abort',()=>reject(new Error('private-query 203.0.113.9')),{once:true});});
  const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const response=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(response.status,503);const b=await response.json();assert.equal(b.diagnostic?.stage,'source_initial');assert.equal(b.diagnostic.reason,'timeout');assert.deepEqual(h.calls(),[0,0]);assert.doesNotMatch(JSON.stringify(b),/private-query|203\.0\.113\.9/);
 });
+
+test('Independent public assets start together and final source check does not redownload them',async()=>{
+ const h=await fixture();h.setPolicy(policy);const calls:string[]=[];let startBoth!:()=>void;const both=new Promise<void>(r=>startBoth=r);let started=0;
+ const fetcher:typeof fetch=async(input,init)=>{
+  const u=String(input);calls.push(u);assert.equal(init?.cache,'no-store');assert.equal(init?.redirect,'manual');
+  if(!u.endsWith('discovery-manifest.json')){started++;if(started===2)startBoth();await Promise.race([both,new Promise((_,reject)=>init?.signal?.addEventListener('abort',()=>reject(Error('shared deadline')),{once:true}))]);}
+  return h.fetcher(input,init);
+ };
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const r=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);
+ assert.equal(r.status,200);assert.equal((await r.json()).mode,'hybrid');assert.equal(calls.filter(u=>u.endsWith('discovery-manifest.json')).length,2);assert.equal(calls.filter(u=>u.endsWith('index.json')).length,1);assert.equal(calls.filter(u=>u.endsWith('passages.json')).length,1);assert.deepEqual(h.calls(),[1,1]);
+});
+test('Production final verification rejects changed asset identity even when corpus ID was reused',async()=>{
+ const h=await fixture();h.setPolicy(policy);let reads=0,assets=0;
+ const fetcher:typeof fetch=async(input,init)=>{const u=String(input);const r=await h.fetcher(input,init);if(!u.endsWith('discovery-manifest.json')){assets++;return r;}reads++;if(reads===2){const m=await r.json();m.assets.index.digest='f'.repeat(64);return Response.json(m);}return r;};
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const r=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(r.status,409);assert.equal((await r.json()).fallback,'keyword');assert.equal(assets,2);assert.deepEqual(h.calls(),[1,1]);
+});
+test('Failed asset aborts its pending sibling and never reaches inference',async()=>{
+ const h=await fixture();h.setPolicy(policy);let cancelled=false,started=false;
+ const fetcher:typeof fetch=async(input,init)=>{const u=String(input);if(u.endsWith('index.json')){await Promise.resolve();return new Response('{}');}if(u.endsWith('passages.json')){started=true;return new Promise((_resolve,reject)=>{init?.signal?.addEventListener('abort',()=>{cancelled=true;reject(Error('sibling cancelled'));},{once:true});});}return h.fetcher(input,init);};
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const r=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(r.status,503);assert.equal((await r.json()).diagnostic.reason,'invalid_response');assert.equal(started,true);assert.equal(cancelled,true);assert.deepEqual(h.calls(),[0,0]);
+});
+
+test('Both asset descriptors are validated before any full asset request',async()=>{
+ const h=await fixture();h.setPolicy(policy);let assets=0;const fetcher:typeof fetch=async(input,init)=>{if(!String(input).endsWith('discovery-manifest.json')){assets++;return h.fetcher(input,init);}const m=await (await h.fetcher(input,init)).json();m.assets.passages.href='https://untrusted.invalid/passages.json';return Response.json(m);};
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const r=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(r.status,503);assert.equal((await r.json()).diagnostic.stage,'source_initial');assert.equal(assets,0);assert.deepEqual(h.calls(),[0,0]);
+});
+for(const kind of ['changed','redirect','timeout'] as const)test('Manifest-only final check preserves '+kind+' rejection and never retries inference',async()=>{
+ const h=await fixture();h.setPolicy(policy);let manifests=0,assets=0;const fetcher:typeof fetch=async(input,init)=>{if(!String(input).endsWith('discovery-manifest.json')){assets++;return h.fetcher(input,init);}if(++manifests===2){if(kind==='redirect')return new Response(null,{status:302,headers:{Location:'https://untrusted.invalid/'}});if(kind==='timeout')return new Promise((_resolve,reject)=>init?.signal?.addEventListener('abort',()=>reject(Error('deadline')),{once:true}));const m=await (await h.fetcher(input,init)).json();m.corpusId='b'.repeat(64);for(const k of ['index','passages'])m.assets[k].href=m.assets[k].href.replace(c.corpusId,m.corpusId);return Response.json(m);}return h.fetcher(input,init);};
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const r=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(r.status,kind==='changed'?409:503);const b=await r.json();assert.equal(b.fallback,'keyword');if(kind!=='changed'){assert.equal(b.diagnostic.stage,'source_final');assert.equal(b.diagnostic.reason,kind==='timeout'?'timeout':'invalid_response');}assert.equal(assets,2);assert.deepEqual(h.calls(),[1,1]);
+});
+
+test('Ten-second public bodies complete without the old shared source or request timeout',async()=>{
+ const h=await fixture();h.setPolicy(policy);let bodies=0;
+ const fetcher:typeof fetch=async(input,init)=>{if(!String(input).endsWith('discovery-manifest.json')){bodies++;await new Promise<void>((resolve,reject)=>{const timer=setTimeout(resolve,10000);init?.signal?.addEventListener('abort',()=>{clearTimeout(timer);reject(Error('source deadline'));},{once:true});});}return h.fetcher(input,init);};
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const response=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(response.status,200);assert.equal((await response.json()).mode,'hybrid');assert.equal(bodies,2);assert.deepEqual(h.calls(),[1,1]);
+});
+
+test('Incomplete public article bodies stop at the full-source budget before inference',async()=>{
+ const h=await fixture();h.setPolicy(policy);let cancelled=0;
+ const fetcher:typeof fetch=async(input,init)=>{
+  if(String(input).endsWith('discovery-manifest.json'))return h.fetcher(input,init);
+  return new Response(new ReadableStream({start(controller){init?.signal?.addEventListener('abort',()=>{cancelled++;controller.error(Error('body cancelled'));},{once:true});}}));
+ };
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const response=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(response.status,503);const b=await response.json();assert.equal(b.diagnostic.stage,'source_initial');assert.equal(b.diagnostic.reason,'timeout');assert.equal(cancelled,2);assert.deepEqual(h.calls(),[0,0]);
+});

@@ -1,0 +1,183 @@
+{
+  "sourceBase": "1006d056323887c159b28451b7bef5e46e3276e3",
+  "state": "local-only-not-deployed",
+  "decision": {
+    "selected": "direct verified parallel source downloads and lightweight final manifest check",
+    "rejectedForNow": "D1 corpus snapshot or new cache service adds migration/storage/lifecycle complexity before it is needed",
+    "deadlinesMs": {
+      "manifest": 2000,
+      "fullSource": 15000,
+      "semanticServer": 20000,
+      "browser": 22000
+    },
+    "basis": "Original 2s was a provisional manifest-only choice, not a provider rule. A single local parallel body read took 9826.851ms; full-source 15s adds provisional headroom. No provider latency or reliability guarantee."
+  },
+  "red": {
+    "parallelAndFinalVerification": {
+      "tests": 7,
+      "failed": 5
+    },
+    "revisedDeadlineAndPendingKeyword": {
+      "tests": 2,
+      "failed": 2
+    },
+    "oldDigestFixture": "Full gate exposed missing second asset descriptor; fixed the fixture, retained DIGEST rejection assertion."
+  },
+  "liveSourceSmoke": {
+    "environment": "local Node, real public source; offline model/vector/admission fixtures",
+    "at": "2026-10-21T18:05:18.516Z",
+    "status": 200,
+    "mode": "hybrid",
+    "total": 24,
+    "corpusId": "ebb16a407bbbf0c3f8ec2895b79d200f9603fc7c6254a6bddbdd5991ff3deefb",
+    "articles": 33,
+    "passages": 2633,
+    "sourceMs": 5996.392875,
+    "elapsedMs": 7530.398,
+    "events": [
+      {
+        "asset": "discovery-manifest.json",
+        "headersMs": 1045.796708,
+        "status": 200
+      },
+      {
+        "asset": "discovery-manifest.json",
+        "headersMs": 1114.43775,
+        "status": 200
+      },
+      {
+        "asset": "index.json",
+        "headersMs": 1433.014333,
+        "status": 200
+      },
+      {
+        "asset": "passages.json",
+        "headersMs": 1635.9015000000002,
+        "status": 200
+      },
+      {
+        "asset": "discovery-manifest.json",
+        "headersMs": 7529.338,
+        "status": 200
+      }
+    ],
+    "modelFixtures": 1,
+    "vectorFixtures": 1,
+    "cloudModelCalls": 0,
+    "cloudWrites": 0,
+    "deployed": false
+  },
+  "additionalObservedFailures": [
+    "Sandbox denied DNS/socket before allowed local verification.",
+    "One public-manifest preflight read timed out at 2s before semantic service started; subsequent bounded smoke passed. No claim all network failures are removed."
+  ],
+  "localGates": [
+    {
+      "check": "test",
+      "exitCode": 0,
+      "elapsedSeconds": 151.29322981834412
+    },
+    {
+      "check": "check",
+      "exitCode": 0,
+      "elapsedSeconds": 7.620729923248291
+    },
+    {
+      "check": "build-all",
+      "exitCode": 0,
+      "elapsedSeconds": 5.581844806671143
+    },
+    {
+      "check": "release-dry-run",
+      "exitCode": 0,
+      "elapsedSeconds": 11.835095167160034
+    },
+    {
+      "check": "editorial-rehearse",
+      "exitCode": 0,
+      "elapsedSeconds": 12.067011833190918
+    }
+  ],
+  "sourceFileSha256": {
+    "apps/search-worker/src/deployed.ts": "99485bd15bf54b78f0fe86fccc4fdeab7ec78870de3ac6df4bcb16bb2ccd5175",
+    "apps/search-worker/src/runtime.ts": "4ad889c5e989443b300b1485b57f979e439803d12d111ca538f1a6df123a06fb",
+    "apps/search-worker/src/service.ts": "a403ea58cf046e9979951859c47c31e4da9c3a28dfb6abf998f7a963392f561d",
+    "src/lib/discovery/client.ts": "8e5525adc85553d5861d67a8742eaf0aef7bb29798cce6fdd9856753719dcba2",
+    "test/discovery/assets.acceptance.test.ts": "fa0de23eb451907bf7d549b6212299ca809c40c8833f94005b10f8397cf41428",
+    "test/discovery/browser.mjs": "ce9c43264e1782ce7f0bc97a9f5d73fa5c49720e1551a61f54930e2567ed2925",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "3c853157c54553f8820ba90779e0a33b09d4e73ecb0217b295903596cc725b59",
+    "test/discovery/recovery.acceptance.test.ts": "552f030d219601ccf9c4ba93f887e7ce1eab97bd9286bb251d73ebfd60e4808c",
+    "test/discovery/semantic.acceptance.test.ts": "75eb029e680b4c16d3d7d42d655a822082798f7696c5844612db42abd63a168d",
+    "src/lib/discovery/deadlines.ts": "6680eaa4f2591ae311f750a9db8cd7138f42099d9c317b0cd9e1564285c21dcc"
+  },
+  "production": {
+    "writes": 0,
+    "modelCalls": 0,
+    "deployed": false,
+    "pushed": false,
+    "committed": false,
+    "model": "@cf/baai/bge-m3",
+    "freeHardLimitsChanged": false,
+    "enabledSettingsChanged": false
+  },
+  "limitations": [
+    "Real public asset HTTP and local flow verified; embedding/vector/admission use offline fixtures.",
+    "No new Cloudflare runtime or provider acceptance in this task.",
+    "Future authorized release must publish both Worker and static client to align deadlines.",
+    "Historical task 1.1 and first natural changed-corpus task 12.2 remain open.",
+    "Built browser corpus differs from deployed public corpus: browser fixture uses exact local candidate build; live source smoke separately records production corpus."
+  ],
+  "browser": {
+    "passed": true,
+    "base": "http://127.0.0.1:52654/gcake-dev",
+    "viewports": [
+      1280,
+      390,
+      320
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "corpusId": "9c7fbc69dc237f25f430acfd1e1f7099f24463d0d4a861a69646435082713b22",
+    "providerCalls": 0,
+    "semanticContractRequests": 12,
+    "generationRequests": 0,
+    "serverStopped": true,
+    "serverPid": 45763
+  },
+  "focused": {
+    "workerPassed": 63,
+    "clientPassed": 7
+  },
+  "unrelatedFullGateFailure": {
+    "test": "existing Substack SIGTERM executor marker startup",
+    "failure": "PID file missing under concurrent full run",
+    "isolatedRetestPassed": 2,
+    "fullUnchangedRetest": "all aggregate gates passed; no Substack source or assertions changed"
+  },
+  "originalDirtyCheckoutUnchanged": true,
+  "spectra": {
+    "valid": true,
+    "critical": 0,
+    "existingSuggestions": 1
+  },
+  "recordedPhase": "pre-commit local verification; production.committed=false records that phase, not the later authorized Git commit",
+  "portableRedEvidence": [
+    "evidence/source-download-repair-20261022/red-source-reads.log",
+    "evidence/source-download-repair-20261022/red-deadlines-and-keyword.log"
+  ],
+  "artifactSha256": {
+    "evidence/source-download-repair-20261022/red-deadlines-and-keyword.log": "186b798ff6571756c5c9a5a9c1a30cd5f06633073876f6d55ce435fc44334607",
+    "evidence/source-download-repair-20261022/red-source-reads.log": "032f020ed3436f3df5bc28d862ccaafdb69b7601dd723cf45557310ef00d4aca",
+    "evidence/source-download-repair-20261022/search-320-light.png": "0944be6964716073da45068c4fe2ff8a8c5a4df83aa4524ebd320ebd5af0ab6f",
+    "evidence/source-download-repair-20261022/search-390-dark.png": "ef81b16b2a584a17389630b65e14b8dccb8b459a8effae32cf0cc4cbd08aa88d"
+  },
+  "portableLogFormatting": {
+    "transformation": "strip trailing whitespace only; original unmodified logs retained in local output",
+    "originalSha256": {
+      "red-source-reads.log": "5bb3fb74dfed316352b9075a5554ddc5fe514693926e78f688e07d2ccd74cf7d",
+      "red-deadlines-and-keyword.log": "54c012eb1491e655f6e5769ba6856a1a3c94a017ca7265314e07a08633299742"
+    }
+  }
+}

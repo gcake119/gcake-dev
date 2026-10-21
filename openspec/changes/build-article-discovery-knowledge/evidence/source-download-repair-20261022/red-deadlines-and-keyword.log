@@ -1,0 +1,46 @@
+✖ Ten-second public bodies complete without the old shared source or request timeout (2030.81575ms)
+✖ Keyword count stays usable past five seconds and browser timeout preserves retry (17.388875ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2388.634834
+
+✖ failing tests:
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:15498
+✖ Ten-second public bodies complete without the old shared source or request timeout (2030.81575ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  503 !== 200
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:112:173)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 503,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/discovery/recovery.acceptance.test.ts:1:7092
+✖ Keyword count stays usable past five seconds and browser timeout preserves retry (17.388875ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /找到 2 篇/. Input:
+
+  '搜尋中…'
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/recovery.acceptance.test.ts:84:66)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '搜尋中…',
+    expected: /找到 2 篇/,
+    operator: 'match',
+    diff: 'simple'
+  }
