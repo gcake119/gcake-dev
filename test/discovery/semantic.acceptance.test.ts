@@ -101,7 +101,7 @@ for(const stage of ['source_initial','admission','embedding','vector','source_fi
 test('Diagnostic timeout preserves the active stage and prevents late vector calls',async(t)=>{
  t.mock.timers.enable({apis:['setTimeout']});let entered!:()=>void,release!:(v:number[])=>void;const started=new Promise<void>(r=>entered=r),held=new Promise<number[]>(r=>release=r);let vectors=0;
  const d=diagnosticDependencies();d.embed=async()=>{entered();return held;};d.vectors=async()=>{vectors++;return [];};
- const pending=createSearchService(d)(request());await started;t.mock.timers.tick(5000);await diagnostic503(await pending,'embedding','timeout');release(Array(1024).fill(1));await Promise.resolve();await Promise.resolve();assert.equal(vectors,0);
+ const pending=createSearchService(d)(request());await started;t.mock.timers.tick(20000);await diagnostic503(await pending,'embedding','timeout');release(Array(1024).fill(1));await Promise.resolve();await Promise.resolve();assert.equal(vectors,0);
 });
 test('Overlapping failed requests retain independent stages and random identities',async()=>{
  let entered!:()=>void,release!:()=>void;const started=new Promise<void>(r=>entered=r),held=new Promise<void>(r=>release=r);const d=diagnosticDependencies();

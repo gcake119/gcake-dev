@@ -10,7 +10,7 @@ import { buildPublicDiscovery } from '../../src/lib/discovery/build';
 import { createRequire } from 'node:module';
 import { deployedReader, manifestUrl } from '../../apps/search-worker/src/deployed';
 test('Fixed deployed manifest rejects malicious asset URLs before fetching external content', async () => { const calls: string[] = []; const read = deployedReader(async (input) => { calls.push(String(input)); return Response.json({ schemaVersion: 1, corpusId: 'a'.repeat(64), assets: { index: { href: 'https://evil.invalid/corpus', digest: 'a'.repeat(64) } } }); }); await assert.rejects(read(new AbortController().signal)); assert.deepEqual(calls, [manifestUrl]); });
-test('Manifest digest mismatch is rejected', async () => { let calls = 0; const read = deployedReader(async () => ++calls === 1 ? Response.json({ schemaVersion: 1, corpusId: 'a'.repeat(64), assets: { index: { href: '/gcake-dev/discovery/' + 'a'.repeat(64) + '/index.json', digest: '0'.repeat(64) } } }) : Response.json({})); await assert.rejects(read(new AbortController().signal), /DIGEST/); });
+test('Manifest digest mismatch is rejected', async () => { let calls = 0; const read = deployedReader(async () => ++calls === 1 ? Response.json({ schemaVersion: 1, corpusId: 'a'.repeat(64), assets: { index: { href: '/gcake-dev/discovery/' + 'a'.repeat(64) + '/index.json', digest: '0'.repeat(64) }, passages: { href: '/gcake-dev/discovery/' + 'a'.repeat(64) + '/passages.json', digest: '0'.repeat(64) } } }) : Response.json({})); await assert.rejects(read(new AbortController().signal), /DIGEST/); });
 test('Admission SQL enforces durable verified-window caps atomically', async () => {
     const { DatabaseSync } = await import('node:sqlite');
     const db = new DatabaseSync(':memory:');

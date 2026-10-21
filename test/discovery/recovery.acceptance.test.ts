@@ -12,6 +12,7 @@ function setup(kind:'409'|'manifest'|'503',unavailable=false){
     const previous=Object.fromEntries(['window','document','location','history','fetch'].map(k=>[k,(globalThis as any)[k]]));
     let url=new URL('http://127.0.0.1/gcake-dev/search/?q=workflow'),live=old,published=false,calls=0;
     let delayed=false,delayStarted=false,release:()=>void=()=>{};
+    let hold=false,releaseSemantic:()=>void=()=>{};
     Object.assign(globalThis,{window,document,location:{get href(){return url.href;},get search(){return url.search;}},history:{pushState(_a:unknown,_b:unknown,u:string){url=new URL(u,url);},replaceState(_a:unknown,_b:unknown,u:string){url=new URL(u,url);}}});
     globalThis.fetch=async(input,init)=>{
         const path=String(input);
@@ -27,6 +28,7 @@ function setup(kind:'409'|'manifest'|'503',unavailable=false){
         if(path.startsWith('/passages/'))return Response.json(c.passages);
         if(path==='/semantic'){
             calls++;
+            if(hold)await new Promise<void>((resolve,reject)=>{releaseSemantic=resolve;init?.signal?.addEventListener("abort",()=>reject(Error("browser deadline")),{once:true});});
             if(published&&kind==='503')return Response.json({code:'SERVICE_UNAVAILABLE',retryable:true,fallback:'keyword',diagnostic:{stage:'embedding',reason:'failure',requestId:'00000000-0000-4000-8000-000000000001'}},{status:503});
             if(published&&kind==='409')return new Response('',{status:409});
             if(published&&kind==='manifest')live=fresh;
@@ -36,6 +38,7 @@ function setup(kind:'409'|'manifest'|'503',unavailable=false){
         throw Error('Unexpected fixture URL: '+path);
     };
     return {document,window,status:()=>document.querySelector('#search-status')!.textContent!,rows:()=>document.querySelector('#search-results')!.textContent!,calls:()=>calls,
+        holdSemantic(){hold=true;},releaseSemantic(){hold=false;releaseSemantic();},
         recover(){published=false;},
         publish(){published=true;if(kind==='409')live=fresh;},
         retry(){(document.querySelector('#search-retry') as any).click();},
@@ -51,7 +54,7 @@ for(const kind of ['409','manifest'] as const)test('Withdrawn results are replac
     }finally{h.restore();}
 });
 test('Unavailable current assets after conflict clear old rows and preserve retry/query',async()=>{
-    const h=setup('409',true);try{installSearch();await until(()=>h.status().includes('找到'));h.publish();h.retry();await until(()=>!h.status().includes('搜尋中'));
+    const h=setup('409',true);try{installSearch();await until(()=>h.status().includes('找到'));h.publish();h.retry();await until(()=>h.status().includes('搜尋暫時無法載入'));
         assert.equal(h.rows(),'');assert.match(h.status(),/搜尋暫時無法載入/);assert.equal((h.document.querySelector('#search-retry') as any).hidden,false);assert.equal((h.document.querySelector('input') as any).value,'workflow');assert.equal(h.calls(),2);
     }finally{h.restore();}
 });
@@ -72,4 +75,14 @@ test('Diagnostic 503 retains current keyword articles and explicit retry recover
   assert.match(h.rows(),/kept/);assert.match(h.rows(),/withdrawn/);assert.equal(h.calls(),2);assert.equal((h.document.querySelector('#search-retry') as any).hidden,false);assert.equal((h.document.querySelector('input') as any).value,'workflow');assert.doesNotMatch(h.document.body.textContent!,/embedding|00000000|SERVICE_UNAVAILABLE/);
   h.recover();h.retry();await until(()=>h.status().includes('依意思搜尋結果'));assert.equal(h.calls(),3);assert.equal((h.document.querySelector('#search-retry') as any).hidden,true);
  }finally{h.restore();}
+});
+
+
+test('Keyword count stays usable past five seconds and browser timeout preserves retry',async(t)=>{
+ const h=setup('503');try{h.holdSemantic();t.mock.timers.enable({apis:['setTimeout']});installSearch();
+  for(let i=0;i<100&&h.calls()===0;i++)await new Promise<void>(r=>setImmediate(r));
+  assert.equal(h.calls(),1);assert.match(h.rows(),/kept/);assert.match(h.status(),/找到 2 篇/);
+  t.mock.timers.tick(5001);await new Promise<void>(r=>setImmediate(r));assert.doesNotMatch(h.status(),/暫時無法/);
+  t.mock.timers.tick(16999);await new Promise<void>(r=>setImmediate(r));assert.match(h.status(),/關鍵字結果/);assert.equal((h.document.querySelector('#search-retry') as any).hidden,false);assert.match(h.rows(),/kept/);assert.equal(h.calls(),1);
+ }finally{h.releaseSemantic();h.restore();}
 });

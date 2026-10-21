@@ -84,3 +84,8 @@ The user explicitly replaces the local hourly Codex task with Cloudflare-hosted 
 ## Authorized local diagnostic extension（2026-10-22）
 
 Add privacy-preserving semantic error stages to responses so a future 503 can be localized without recording queries, IPs or upstream exception text. Reuse existing response, quota and test boundaries; no logging service, telemetry store, deployment, model change or activation change.
+
+
+## Authorized source-download repair（2026-10-22）
+
+Real diagnostic 503s identify source_initial timeout before inference. Repair unnecessary serial index/passages downloads and the full second corpus download with revised manifest/full-source/server/browser budgets of 2/15/20/22 seconds, superseding the original provisional shared source/request deadlines. Independently verify required current assets in parallel and use a fresh manifest-only final identity check; no persistent cache, model change, quota change, cloud execution or deployment.

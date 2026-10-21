@@ -291,3 +291,40 @@ Semantic service 503 responses SHALL preserve keyword fallback and retry behavio
 - **GIVEN** semantic configuration is disabled, policy is ineligible or shared quota is exhausted
 - **WHEN** a query is submitted
 - **THEN** no model is called, existing rejection status and keyword fallback remain, and diagnostics neither replenish quota nor enable service or persist reader content
+
+
+### Requirement: Bounded efficient public source verification
+This requirement supersedes the earlier shared two-second source and five-second semantic timing clauses only. The semantic server SHALL stop at twenty seconds; the browser SHALL bound semantic waiting and its final verification to twenty-two seconds. Current keyword rows, count and pagination SHALL remain usable while optional semantic work is pending. These are provisional wall-clock budgets, independent of free-plan billing ceilings.
+
+The semantic service SHALL fetch its fixed public manifest without cache reuse, validate both asset descriptors before any asset request, and download the independent index and passage assets concurrently within a shared fifteen-second full-source deadline, with each small manifest fetch bounded separately to two seconds. Both asset digests and corpus identity SHALL be verified before inference. Before returning semantic results, production SHALL freshly fetch and validate only the manifest and compare the corpus ID and both asset URLs/digests with the initially verified identity; it SHALL NOT redownload unchanged full assets. A changed, unavailable, redirected, invalid or timed-out final manifest SHALL reject semantic results and preserve current keyword recovery. Asset failures SHALL cancel outstanding sibling reads. No cross-request corpus cache, automatic inference retry, alternate model or change to free-only admission SHALL be introduced.
+
+#### Scenario: Independent asset waits do not serialize
+- **GIVEN** the valid index and passages can each finish once both independent downloads have started
+- **WHEN** an authorized semantic search loads the public release
+- **THEN** both downloads start without waiting for the other's body, both digests are verified, and the request reaches semantic results within its bounded execution
+
+#### Scenario: Final verification uses fresh release identity only
+- **GIVEN** the initial corpus is verified and semantic retrieval completes
+- **WHEN** the current public manifest still identifies the same corpus and both asset URLs/digests
+- **THEN** the service returns semantic results after a fresh manifest check without downloading the full index or passages again
+
+#### Scenario: Changed or unavailable final source cannot expose stale results
+- **GIVEN** semantic retrieval used a previously verified release
+- **WHEN** the final manifest changes its corpus or an asset identity, becomes invalid, redirects or cannot complete within the source deadline
+- **THEN** semantic results are rejected with the existing version-conflict or source_final diagnostic contract and the reader retains current keyword recovery without another inference
+
+#### Scenario: Asset rejection stops further work
+- **GIVEN** a public asset descriptor is outside the allowed source or a downloaded asset fails digest verification while its sibling is pending
+- **WHEN** initial source verification fails
+- **THEN** no untrusted destination or model is called, pending sibling work is cancelled, and source_initial diagnostic keyword fallback remains available
+
+
+#### Scenario: Slow complete assets within the revised budget remain usable
+- **GIVEN** a valid small manifest completes within two seconds and valid public article assets take ten seconds
+- **WHEN** the reader submits a semantic search
+- **THEN** the server permits the source load within fifteen seconds, verifies the final manifest and returns semantic results before its twenty-second overall deadline
+
+#### Scenario: Bounded optional enrichment preserves usable keyword results
+- **GIVEN** keyword results are available and semantic enrichment is still pending
+- **WHEN** the server exceeds twenty seconds or the browser wait exceeds twenty-two seconds
+- **THEN** current keyword rows, count and pagination remain usable, retry is available after failure, outstanding work is cancelled and no automatic model retry begins

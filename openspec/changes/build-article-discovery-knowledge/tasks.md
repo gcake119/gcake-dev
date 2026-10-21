@@ -112,3 +112,14 @@ PR #54 is merged at main c0e30ed54e4d922522a44e2b6151dac7f12bbfe4; exact-main CI
 ## Local diagnostic closeout — 2026-10-22
 
 Tasks 14.1/14.2 are complete locally; 32/34 tasks complete. [Private diagnostic acceptance](private-error-diagnostics-20261022.md) preserves RED/GREEN, privacy/deadline/concurrency/fallback cases and full local gates. No deployment or cloud execution occurred; historical 1.1 and future natural-corpus 12.2 remain open.
+
+
+## 15. Bounded source download repair
+
+- [x] 15.1 Deliver Bounded efficient public source verification by parallel verified asset loading and a fresh final manifest identity check without full redownloads or cross-request caching, using separate manifest/full-source/server/browser budgets of 2/15/20/22 seconds; first reproduce serial-wait and repeated-download acceptance failures, then verify changed identities, invalid descriptors/digests, cancellation, source diagnostics and zero model calls on initial failure.
+- [x] 15.2 Verify local semantic success and current keyword fallback/retry using existing runtime/client acceptance plus a bounded read-only current public-source smoke; run the complete local gate and Spectra validation, update ADR/runbook and preserve local-only evidence without cloud model calls or deployment.
+
+
+## Local source repair closeout — 2026-10-22
+
+Tasks 15.1/15.2 are complete locally; 34/36 tasks complete. [Source download repair](source-download-repair-20261022.md) records the selected direct-read approach, revised bounded deadlines, RED/GREEN, 63 Worker and 7 client acceptance tests, all five existing local gates, real public-source HTTP with offline model/vector adapters, browser/mobile checks and cleaned preview. BGE-M3, free hard caps and current production settings were not changed; no cloud inference, commit, push or deployment. Historical 1.1 and first natural changed-corpus 12.2 remain open. Future publication must coordinate Worker and static client changes; this local result is not provider acceptance.

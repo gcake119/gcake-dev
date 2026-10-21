@@ -1,0 +1,102 @@
+✖ Independent public assets start together and final source check does not redownload them (2050.670958ms)
+✖ Production final verification rejects changed asset identity even when corpus ID was reused (24.992666ms)
+✖ Failed asset aborts its pending sibling and never reaches inference (6.5495ms)
+✖ Both asset descriptors are validated before any full asset request (3.940291ms)
+✖ Manifest-only final check preserves changed rejection and never retries inference (10.170417ms)
+✔ Manifest-only final check preserves redirect rejection and never retries inference (8.774709ms)
+✔ Manifest-only final check preserves timeout rejection and never retries inference (2019.82925ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 2
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5243.071
+
+✖ failing tests:
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:10209
+✖ Independent public assets start together and final source check does not redownload them (2050.670958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  503 !== 200
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:87:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 503,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:11424
+✖ Production final verification rejects changed asset identity even when corpus ID was reused (24.992666ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  503 !== 409
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:92:166)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 503,
+    expected: 409,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:12273
+✖ Failed asset aborts its pending sibling and never reaches inference (6.5495ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:97:261)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:13248
+✖ Both asset descriptors are validated before any full asset request (3.940291ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:102:258)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/discovery/cloud-runtime.acceptance.test.ts:1:14123
+✖ Manifest-only final check preserves changed rejection and never retries inference (10.170417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  503 !== 409
+
+      at TestContext.<anonymous> (/private/tmp/gcake-pr51-cloud-20261021/test/discovery/cloud-runtime.acceptance.test.ts:106:166)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 503,
+    expected: 409,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
