@@ -89,3 +89,8 @@ Minimal reader search surface：既有瀏覽器測試檢查移除說明、重複
 | Different article identities share one reading URL | corpus.acceptance.test.ts 覆蓋相同、尾斜線及 query／fragment 正規化衝突，保留同 slug 不同路徑來源。 |
 
 這６個新驗收測試最初確實失敗，修正後相關３３項全部通過。延伸既有 Node runner 與 browser suite，沒有新增測試層或 CI。前景啟停另外重現管線輸入保持開啟導致程序無法退出；修正後必須同時驗證程序退出與獨立 socket 連線被拒絕，不能只採信 finished 收據。
+
+
+## 正式靜態搜尋驗收補證（２０２６－１０－２１）
+
+既有 Stage A 與 Minimal reader search surface 的正式證據見 [production-acceptance-20261021.md](production-acceptance-20261021.md)：精確部署 SHA／manifest／資產與 HTML 一致、導覽列實際送出 AI／中文查詢、文章連結、分頁返回、無結果及３２０／３９０px 雙主題畫面。這是正式靜態站操作，不是本機替身，也沒有雲端模型呼叫。沒有修改既有 Gherkin 或擴張人工作品接受／雲端語意驗收；原歷史與 provider 缺口保持。

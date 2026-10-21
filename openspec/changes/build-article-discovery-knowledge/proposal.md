@@ -1,6 +1,6 @@
 ## Why
 
-The public blog currently matches whitespace-separated substrings without ranking or query-specific excerpts. Its articles can also support automatic citations, related reading, a corpus-derived terminology index, and semantic retrieval through one publication-aware knowledge pipeline.
+Before this change, the public blog matched whitespace-separated substrings without ranking or query-specific excerpts. Its articles can also support automatic citations, related reading, a corpus-derived terminology index, and semantic retrieval through one publication-aware knowledge pipeline.
 
 ## What Changes
 
@@ -57,3 +57,8 @@ Remove the remaining device-processing sentence and repeated reader-page chrome,
 ## Authorized conformance fixes
 
 Fix the reviewed client release-conflict fallback, preview receipt overwrite and duplicate reading URL validation while preserving the user-approved UI and disabled remote execution. Reuse existing Node and browser acceptance layers; no deployment, model downloads or cloud calls.
+
+
+## Production static milestone accepted（2026-10-21）
+
+The separately authorized static Pages deployment of main f488015757d2cb337734c5c735f9b590c510adae succeeded after PR #50 and exact-main CI. Published manifest/assets/search HTML match that deployment artifact; actual desktop and 320/390px browser interactions verified keyword results, pagination/back, article links and empty results with the approved minimal layout unchanged. See production-acceptance-20261021.md and its JSON/screenshots. This supersedes earlier current-status statements that only a local candidate existed; earlier authorization boundaries remain historical evidence. No cloud resources, model calls or semantic activation occurred. Tasks remain 24/27: 1.1 is historical red-test provenance; 3.3/4.3 retain actual cloud account/model/wiring and semantic release acceptance. This backfill changes documentation only, not requirements, scenarios, runtime or activation authority.
