@@ -1,0 +1,54 @@
+{
+  "status": "partial-awaiting-hermes-selected-runtime-access-diagnosis",
+  "base": "2224ce81f13a814e83c6349e9f64bebdc7f2827e",
+  "admin": {
+    "version": "f2bead75-bf5c-470b-9edb-902c7be66ff6",
+    "deployment": "7bab74fa-c15c-44e3-a1a4-fddee6b5e2c1",
+    "chrome": "real-production-desktop-dark",
+    "listStatus": 200,
+    "detailStatus": 200,
+    "noStore": true
+  },
+  "publication": {
+    "id": "221098688",
+    "slug": "ithome-2026-publishing-in-production",
+    "confirmedAt": "2026-10-21T23:00:00.000Z",
+    "actualAt": "2026-10-21T23:01:02.155Z",
+    "differenceSeconds": 62.155,
+    "idSlugCanonicalFullContent": "verified-in-natural-round-147",
+    "subscriberDelivery": "unknown",
+    "humanReceived": false
+  },
+  "naturalRounds": {
+    "147": "verified-original-publication-partial-draft-failure-isolated-but-feed-EACCES",
+    "148": "replacement-ACL-readable-but-stale-Hermes-selection-rejected-before-import"
+  },
+  "hermes": {
+    "originalUnknownEvent": 6,
+    "acknowledgement": "not-yet-confirmed",
+    "firstRepair": "feed-permissions-fixed",
+    "selectedRuntimeRepair": "blocked-at-account-access-preflight-before-ledger-or-job-changes"
+  },
+  "boundaries": {
+    "allowCreate": false,
+    "scheduledWriteEnabled": false,
+    "providerRepublish": 0,
+    "subscriberResend": 0,
+    "timerReload": 0,
+    "gatewayReload": 0,
+    "primaryDirtyFilesPreserved": 65
+  },
+  "localGates": {
+    "node": "v24.11.1",
+    "check": 0,
+    "test": 0,
+    "build:all": 0,
+    "release:dry-run": 0,
+    "editorial:rehearse": 0,
+    "candidateChanged": [],
+    "hermesFocusedTests": 23,
+    "selectedPython": "3.11-compatible",
+    "priorUnrelatedUpdaterTimeoutRootCause": "not-established-not-claimed-repaired"
+  },
+  "schedulePilotTask5_3": "still-open-independent-subscriber-delivery-evidence-absent"
+}

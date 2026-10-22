@@ -1,0 +1,52 @@
+{
+  "status": "installed-and-readback-verified-without-transport",
+  "scope": "future Substack success messages only",
+  "logicalLines": [
+    "Substack 同步發布驗證完成",
+    "正式開賽後，我怎麼知道自動發文真的完成了？",
+    "https://gcakedev.substack.com/p/ithome-2026-publishing-in-production"
+  ],
+  "python311Acceptance": {
+    "tests": 47,
+    "passed": true,
+    "source": "three-line-green.log"
+  },
+  "redEvidence": "three-line-red.log: two existing delivery assertions reject old extra lines",
+  "candidateSha256": "029046f3e05d612a6f5c02594af5d0c6664d0bb06170457e81a3aacc3eae7824",
+  "publicationKeyUnchanged": true,
+  "historicalLongMessageSuppressionPassed": true,
+  "localChecksScope": "Affected Python delivery, shared-monitor, wrapper and installation contracts; no Worker/frontend/producer code change. Earlier unrelated gates are not claimed as rerun.",
+  "notificationsSentByThisFollowup": 0,
+  "productionInstallation": {
+    "status": "installed-three-line-success-format",
+    "oldSha256": "9ca40f75f0e8817649069143c1f014b305fb8b40ff84633b418948166f7c2ba3",
+    "newSha256": "029046f3e05d612a6f5c02594af5d0c6664d0bb06170457e81a3aacc3eae7824",
+    "readback": {
+      "uid": 502,
+      "lines": [
+        "Substack 同步發布驗證完成",
+        "正式開賽後，我怎麼知道自動發文真的完成了？",
+        "https://gcakedev.substack.com/p/ithome-2026-publishing-in-production"
+      ],
+      "key": "publication:b4f32ab3908436c48fdfa32b457dc8d2ba8d3ec0e3447bb050456f87a4f6bbd0"
+    },
+    "ledgerPreserved": true,
+    "targetAttemptCount": 1,
+    "existingAckPreserved": 267,
+    "jobId": "550aaf17723d",
+    "jobHash": "d7e493e6988f1ce312fe62c164fb09dd32deb88fd368143cb3906f3abafb1a54",
+    "runtimeContextSha256": {
+      "/Users/caiyijun/Library/LaunchAgents/dev.gcake.distribution-sync.plist": "283c3620b1f99fbeafe1459a09f03f5565617d485e6f5c1f2e22155071df9055",
+      "/Library/LaunchDaemons/ai.hermes.gateway.boot.plist": "e99a7c8cdadd42d0d7a0877b2880bf3f31ad34b85576f7ce39618917e955656e",
+      "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-draft-continuous-media-chrome-20261019/unattended.json": "47c9ce819e25fec7ebec438495947de968712aa15e8d694b657ab30a16a47fdb",
+      "/Users/caiyijun/Library/Application Support/gcake-distribution/installed-draft-continuous-media-chrome-20261019/runtime-sha256.json": "cd16eb188d743ba39bdd70f5c38185b554b8f0794ea297108d89a60b361c2f07",
+      "/usr/local/share/gcake-hermes-runtime/active.json": "b0374296d0a04231cc46a30d5f916f6114e41ee23df002c2fcd43f90b2e345f6",
+      "/usr/local/share/gcake-hermes-runtime/gate.json": "d6801836b2137cd0d6f5f6ff9ce719b3b42a5c67f34779220efe9dd0873f1b40"
+    },
+    "installedAt": 1792668959.4274921,
+    "notificationsSent": 0,
+    "providerOperations": 0,
+    "timerChanged": false,
+    "gatewayChanged": false
+  }
+}

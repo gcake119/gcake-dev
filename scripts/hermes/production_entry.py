@@ -4,6 +4,7 @@ Rendering functions never read secrets, modify files or operate launchd.
 No arbitrary production path or service override is accepted.
 """
 import copy
+import subprocess
 from pathlib import Path
 import os
 import pwd
@@ -66,9 +67,19 @@ class ProductionStore(EntryStore):
             raise ValueError('existing-hermes-runner-required')
         return super().initialize(root,user.pw_uid)
 
-    def monitor(self,**kwargs):
+    def monitor(self, **kwargs):
         if os.geteuid()!=self.runner_uid:raise PermissionError('hermes-monitor-required')
-        return super().monitor(**kwargs)
+        return self._shared_monitor(**kwargs)
+
+    def _shared_monitor(self, *, job_id, legacy_env, summary_env, db, timeout=180):
+        from monitor_wrapper import render_wrapper
+        mode=self.active()['mode']
+        # Preserve the selected runtime lease across the original sender and both observations.
+        with self.lease(mode) as payload:
+            script=render_wrapper(job_id=job_id,legacy_env=legacy_env,summary_env=summary_env,
+                library=payload/'library',db=db,mode=mode,python=payload/'runtime/bin/python3.11',
+                entrypoint='shared_publication_monitor')
+            return subprocess.run(['/bin/bash','-c',script],timeout=timeout).returncode
 
     def approve(self,manifest,expected_digest):
         from packaging_contract import require_manifest

@@ -1,0 +1,44 @@
+{
+  "base": "2224ce81f13a814e83c6349e9f64bebdc7f2827e",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "gate": "check",
+      "exitCode": 0,
+      "seconds": 17.73,
+      "log": "../reader-final24/check.log",
+      "reused": true
+    },
+    {
+      "gate": "test",
+      "exitCode": 0,
+      "seconds": 134.93,
+      "log": "test.log"
+    },
+    {
+      "gate": "build:all",
+      "exitCode": 0,
+      "seconds": 6.17,
+      "log": "build-all.log"
+    },
+    {
+      "gate": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 10.88,
+      "log": "release-dry-run.log"
+    },
+    {
+      "gate": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 10.97,
+      "log": "editorial-rehearse.log"
+    }
+  ],
+  "priorUnrelatedTimeout": "../final-qualified/test.log",
+  "unrelatedTimeoutRootCause": "not-established-no-claim-of-repair",
+  "rawProbeColdStartDifference": "preserved-unresolved-qualification-now-uses-real-reader-once",
+  "preservedFailure": "../reader-final24/test.log",
+  "executorTimeoutDiagnostic": "../executor-start-reproduction.log",
+  "executorTimeoutRootCause": "not-established-no-claim-of-repair",
+  "candidateChanged": []
+}

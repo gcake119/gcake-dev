@@ -31,7 +31,7 @@ onUnmounted(()=>reader.dispose());
       </header>
       <dl class="substack-evidence">
         <div><dt>草稿同步</dt><dd><strong :data-tone="item.view.sync.tone">{{ item.view.sync.label }}</strong><span v-if="item.view.sync.detail">{{ item.view.sync.detail }}</span></dd></div>
-        <div><dt>發布</dt><dd><strong :data-tone="item.view.publication.tone">{{ item.view.publication.label }}</strong><span v-if="item.view.publication.detail">{{ item.view.publication.detail }}</span></dd></div>
+        <div><dt>發布</dt><dd><strong :data-tone="item.view.publication.tone">{{ item.view.publication.label }}</strong><span v-if="item.view.publication.detail">{{ item.view.publication.detail }}</span><span v-if="item.view.timing">{{ item.view.timing }}</span></dd></div>
         <div><dt>寄送</dt><dd><strong :data-tone="item.view.delivery.tone">{{ item.view.delivery.label }}</strong><span>{{ item.view.receipt }}</span><span v-if="item.view.delivery.detail">{{ item.view.delivery.detail }}</span></dd></div>
       </dl>
       <p v-if="item.view.attention" class="substack-attention" role="status">{{ item.view.attention }}</p>

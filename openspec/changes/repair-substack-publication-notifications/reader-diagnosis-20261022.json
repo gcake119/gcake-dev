@@ -1,0 +1,25 @@
+{
+  "rawProbeFourCaseCapture": {
+    "uid": 502,
+    "inode": 282751247,
+    "unchanged": true,
+    "failingOperation": "os.open snapshot path",
+    "errno": 13,
+    "explicitUUIDResolution": "did-not-improve"
+  },
+  "actualPinnedReaderComparison": {
+    "uid": 502,
+    "sameInode": true,
+    "beforeTemplate": "blocked",
+    "installedReadSnapshot": "passed",
+    "afterTemplate": "passed",
+    "publications": 1,
+    "issues": 0,
+    "readerSha256": "34646a0a98be86d6e1adccac9c60e2507074fbd02c88df0a057432ebd0a88ae6"
+  },
+  "qualificationCorrection": "reuse-hash-verified-installed-reader-once",
+  "rawProbeColdStartOSCause": "not-established",
+  "notificationsSent": 0,
+  "ledgerChanged": false,
+  "jobChanged": false
+}

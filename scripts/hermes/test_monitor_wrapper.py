@@ -95,4 +95,43 @@ urllib.request.OpenerDirector.open=_fixture_open
         self.assertNotIn('fixture-canary-private',result.stdout+result.stderr)
 
 
+    def test_shared_entrypoint_reuses_actual_sender_context_and_one_notification_ledger(self):
+        from unittest.mock import patch
+        import monitor_wrapper
+        tools=self.root/'tools';tools.mkdir()
+        for name in ['shared_publication_monitor.py','substack_attention.py']:
+            shutil.copy2(Path(__file__).with_name(name),tools/name)
+        helper=self.lib/'rss_monitor.py';raw=helper.read_text()
+        old="gitRevision='fixture',queueVersion=0,complete=True,articles=[]"
+        block="gitRevision='fixture',queueVersion=0,complete=True,articles=[],requestId=dict((k.lower(),v) for k,v in request.header_items()).get('x-gcake-observation-id'),substackPublications=dict(complete=True,publications=[dict(slug='published',id='221098688',revision='sha256:'+'a'*64,title='Published',actualAt='2026-10-21T23:01:02.155Z',confirmedAt='2026-10-21T23:00:00Z',differenceSeconds=62.155)])"
+        self.assertIn(old,raw);raw=raw.replace(old,block)
+        raw=raw.replace("    raise AssertionError('Unexpected fixture HTTP request')","    if request.full_url.startswith('https://api.telegram.org/'):\n        return _FixtureResponse(request.full_url,b'{\"ok\":true,\"result\":{\"message_id\":777}}','application/json')\n    raise AssertionError('Unexpected fixture HTTP request')")
+        helper.write_text(raw)
+        self.legacy.write_text('HERMES_RSS_NOTIFY_ENABLED=true\nTELEGRAM_BOT_TOKEN=123:fixture_only\nTELEGRAM_CHAT_ID=42\n')
+        with patch.object(monitor_wrapper,'__file__',str(tools/'monitor_wrapper.py')):
+            script=render_wrapper(job_id='test-job',legacy_env=self.legacy,summary_env=self.summary,library=self.lib,db=self.db,mode='live',entrypoint='shared_publication_monitor')
+        def invoke():return subprocess.run(['/bin/bash','-c',script],env=self.env,capture_output=True,text=True,timeout=10)
+        first=invoke();self.assertEqual(first.returncode,0,first.stdout+first.stderr)
+        self.assertEqual(json.loads(first.stdout)['substack']['sent'],1)
+        second=invoke();self.assertEqual(second.returncode,0,second.stdout+second.stderr)
+        with closing(sqlite3.connect(self.db)) as db:
+            self.assertEqual(db.execute('SELECT kind,status FROM monitor_events').fetchall(),[('substack','sent')])
+            self.assertEqual(db.execute('SELECT status,message_id FROM monitor_delivery_attempts').fetchall(),[('sent',777)])
+        self.assertNotIn('fixture-canary-private',first.stdout+first.stderr)
+        self.assertNotIn('fixture_only',first.stdout+first.stderr)
+
+    def test_shared_dry_run_keeps_the_existing_live_database_unchanged(self):
+        from unittest.mock import patch
+        import monitor_wrapper
+        tools=self.root/'tools';tools.mkdir()
+        for name in ['shared_publication_monitor.py','substack_attention.py']:shutil.copy2(Path(__file__).with_name(name),tools/name)
+        with patch.object(monitor_wrapper,'__file__',str(tools/'monitor_wrapper.py')):
+            script=render_wrapper(job_id='test-job',legacy_env=self.legacy,summary_env=self.summary,library=self.lib,db=self.db,entrypoint='shared_publication_monitor')
+        before=self.db.read_bytes();result=subprocess.run(['/bin/bash','-c',script],env=self.env,capture_output=True,text=True,timeout=10)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr);self.assertEqual(self.db.read_bytes(),before)
+
+    def test_unreviewed_monitor_entrypoint_is_rejected(self):
+        with self.assertRaises(ValueError):render_wrapper(job_id='test-job',legacy_env=self.legacy,summary_env=self.summary,library=self.lib,db=self.db,entrypoint='../unreviewed')
+
+
 if __name__=='__main__':unittest.main()

@@ -6,12 +6,13 @@ export interface ScheduleIntent {id:string;policyVersion?:typeof SCHEDULE_POLICY
 export interface DraftSyncEvidence {status:'pending'|'syncing'|'verified'|'excluded'|'conflict'|'inconclusive'|'foreground-required'|'reconciliation-required';desiredRevision?:string;savedRevision?:string;baselineDigest?:string;code?:string;checkedAt:string;transport:'computer-use'}
 export interface ScheduleRecord {
  draftSync?:DraftSyncEvidence;
+ publicationEvidence?:{title:string;confirmedAt?:string;actualAt:string;differenceSeconds?:number};
  policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;slug:string;previousSlugs?:string[];legacyNewsletterSentAt?:string;legacyPublished?:boolean;everPublished?:boolean;sourcePath?:string;sourceCommit?:string;sourceRevision?:string;version:number;remoteId?:string;
  editUrl?:string;expectedPublicUrl?:string;remoteUrl?:string;timeZone?:'Asia/Taipei';audience?:'everyone';
  observedState:'draft_prepared'|'scheduled'|'cancelled_draft'|'published_unverified'|'verified'|'reconciliation_required';
  desiredState?:'draft'|'scheduled'|'cancelled';desiredRevision?:string;desiredTime?:string;observedTime?:string;observedRevision?:string;contentDigest?:string;
  originalSite?:{status:'not_checked'|'not_published'|'unavailable'|'mismatch'|'verified';publishedAt?:string;dateDiffersFromSubstack?:boolean};
- verification?:{status:'verified'|'presentation_only'|'content_difference'|'identity_difference'|'inconclusive';checkedAt:string;code?:string};
+ verification?:{status:'verified'|'presentation_only'|'content_difference'|'identity_difference'|'time_difference'|'inconclusive';checkedAt:string;code?:string};
  lastComparison?:{sourceRevision:string;observedDigest:string;expectedDigest:string;mode:'draft'|'scheduled'|'public';differences:string[];result:'verified-no-change'|'pending-edit'|'verified-edit'};
  armedRevision?:string;deliveredRevision?:string;publicationMinute?:string;contentVerifiedRevision?:string;verifiedAt?:string;
  emailEnabled?:boolean;appInboxEnabled?:boolean;slot?:ConfirmedSlot;intent?:ScheduleIntent;pendingAction?:string;lastErrorCode?:string;delivery:'not_armed'|'armed'|'unknown'|'provider_reported';updatedAt:string;

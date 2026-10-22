@@ -68,6 +68,8 @@ export function makeScheduleApproval(r:ScheduleRequest){return {version:1 as con
 const publicState=(e:ScheduleObservation)=>e.state==='published'||e.state==='sending';
 const minute=(s:string)=>new Date(Math.floor(Date.parse(s)/60000)*60000).toISOString();
 const publicUrl=(slug:string)=>'https://gcakedev.substack.com/p/'+slug;
+// A legacy publicationMinute is already verified actual evidence, unlike observedTime.
+const publicationTimeChanged=(state:ScheduleRecord,actual:string)=>state.publicationEvidence?Date.parse(actual)!==Date.parse(state.publicationEvidence.actualAt):!!state.publicationMinute&&minute(actual)!==minute(state.publicationMinute);
 export function validateScheduleTime(slot:ConfirmedSlot|undefined,slug:string,now:string,zone='Asia/Taipei'){
  if(!slot?.confirmed||slot.slug!==slug||!slot.reservationId||!Number.isSafeInteger(slot.queueVersion)||slot.queueVersion<0)throw Error('SUBSTACK_SCHEDULE_SLOT_UNCONFIRMED');
  if(zone!=='Asia/Taipei')throw Error('SUBSTACK_SCHEDULE_TIMEZONE_MISMATCH');
@@ -121,9 +123,9 @@ export class ScheduleCoordinator {
     if(cp&&publicState(observed)&&['arm','update-public'].includes(cp.action)){
      checkSlug();const date=cp.action==='arm'?cp.scheduledAt:state.publicationMinute??observed.publishedAt;
      const e=valid(await this.context.readPublic(id,publicUrl(state.slug)),id);
-     if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!date||!e.publishedAt||minute(e.publishedAt)!==minute(date)||contentFingerprint(e.content)!==cp.expectedDigest)throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
-     const changed=!r.source||r.source.sourceRevision!==cp.sourceRevision;
-     return await write({intent:undefined,observedState:'verified',...(cp.action==='arm'?{armedRevision:cp.sourceRevision,slot:cp.slot,observedTime:cp.scheduledAt}:{}),publicationMinute:minute(date),deliveredRevision:state.deliveredRevision??(cp.action==='arm'?cp.sourceRevision:state.armedRevision),delivery:state.delivery==='not_armed'&&cp.action!=='arm'?'not_armed':'unknown',contentDigest:cp.expectedDigest,contentVerifiedRevision:cp.sourceRevision,sourceRevision:cp.sourceRevision,pendingAction:changed?'sync-content':undefined,lastErrorCode:undefined,verifiedAt:this.context.now()});
+     if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!date||!Number.isFinite(Date.parse(date))||!e.publishedAt||!Number.isFinite(Date.parse(e.publishedAt))||publicationTimeChanged(state,e.publishedAt)||contentFingerprint(e.content)!==cp.expectedDigest)throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
+     const changed=!r.source||r.source.sourceRevision!==cp.sourceRevision,actualAt=new Date(Date.parse(e.publishedAt!)).toISOString(),confirmedAt=cp.action==='arm'?cp.scheduledAt:state.observedTime;
+     return await write({publicationEvidence:{title:e.content.title,actualAt,...(confirmedAt?{confirmedAt,differenceSeconds:(Date.parse(actualAt)-Date.parse(confirmedAt))/1000}:{})},verification:{status:'verified',checkedAt:this.context.now()},intent:undefined,observedState:'verified',...(cp.action==='arm'?{armedRevision:cp.sourceRevision,slot:cp.slot,observedTime:cp.scheduledAt}:{}),publicationMinute:minute(actualAt),deliveredRevision:state.deliveredRevision??(cp.action==='arm'?cp.sourceRevision:state.armedRevision),delivery:state.delivery==='not_armed'&&cp.action!=='arm'?'not_armed':'unknown',contentDigest:cp.expectedDigest,contentVerifiedRevision:cp.sourceRevision,sourceRevision:cp.sourceRevision,pendingAction:changed?'sync-content':undefined,lastErrorCode:undefined,verifiedAt:this.context.now()});
     }
     if(cp?.action==='remove'&&publicState(observed)){await write({delivery:state.delivery==='not_armed'?'not_armed':'unknown',deliveredRevision:state.deliveredRevision??state.armedRevision});throw Error('SUBSTACK_SCHEDULE_TOO_LATE');}
     if(cp){const matches=cp.action==='remove'?observed.state==='draft'&&observed.listEvidence?.draft===true&&observed.listEvidence.scheduled===false:cp.action==='arm'?scheduledMatches(observed,cp.scheduledAt):cp.action==='create'?!!id:contentFingerprint(observed.content)===cp.expectedDigest;
@@ -175,9 +177,10 @@ export class ScheduleCoordinator {
  }
  private async verifyPublic(state:ScheduleRecord,source:ScheduledSource,date:string,evidence?:ScheduleObservation):Promise<Partial<ScheduleRecord>>{
   const e=evidence??await this.context.readPublic(state.remoteId!,publicUrl(state.slug));this.readValid(e,state.remoteId!);
-  if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!e.publishedAt||!date||!Number.isFinite(Date.parse(date))||minute(e.publishedAt)!==minute(date)||contentFingerprint(e.content)!==contentFingerprint(expectedContent(source)))throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
+  if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!e.publishedAt||!date||!Number.isFinite(Date.parse(date))||!Number.isFinite(Date.parse(e.publishedAt))||publicationTimeChanged(state,e.publishedAt)||contentFingerprint(e.content)!==contentFingerprint(expectedContent(source)))throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
   let originalSite:NonNullable<ScheduleRecord['originalSite']>={status:'not_checked'};try{originalSite=await this.context.readOriginalSite?.(source)??originalSite;}catch{originalSite={status:'unavailable'};}
-  return {verification:{status:'verified',checkedAt:this.context.now()},originalSite:{...originalSite,dateDiffersFromSubstack:!!source.article.publishedAt&&minute(source.article.publishedAt)!==minute(date)},observedState:'verified',contentVerifiedRevision:source.sourceRevision,sourceRevision:source.sourceRevision,sourceCommit:source.sourceCommit,contentDigest:contentFingerprint(e.content),publicationMinute:minute(date),deliveredRevision:state.deliveredRevision??state.armedRevision,delivery:state.delivery==='not_armed'?'not_armed':'unknown',verifiedAt:this.context.now()};
+  const actualAt=new Date(Date.parse(e.publishedAt!)).toISOString(),confirmedAt=state.observedTime;
+  return {publicationEvidence:{title:source.article.title,actualAt,...(confirmedAt?{confirmedAt,differenceSeconds:(Date.parse(actualAt)-Date.parse(confirmedAt))/1000}:{})},...(state.draftSync?.status==='foreground-required'&&!state.intent?{draftSync:{...state.draftSync,status:'excluded',code:undefined,desiredRevision:source.sourceRevision,checkedAt:this.context.now()}}:{}),verification:{status:'verified',checkedAt:this.context.now()},originalSite:{...originalSite,dateDiffersFromSubstack:!!source.article.publishedAt&&minute(source.article.publishedAt)!==minute(actualAt)},observedState:'verified',contentVerifiedRevision:source.sourceRevision,sourceRevision:source.sourceRevision,sourceCommit:source.sourceCommit,contentDigest:contentFingerprint(e.content),publicationMinute:minute(actualAt),deliveredRevision:state.deliveredRevision??state.armedRevision,delivery:state.delivery==='not_armed'?'not_armed':'unknown',verifiedAt:this.context.now()};
  }
  private async observePublic(state:ScheduleRecord,source:ScheduledSource,now:string,legacyVerificationHold:boolean):Promise<Partial<ScheduleRecord>>{
   const inconclusive=(code:string):Partial<ScheduleRecord>=>({verification:{status:'inconclusive',checkedAt:now,code}});
@@ -189,7 +192,7 @@ export class ScheduleCoordinator {
   const date=state.publicationMinute??state.observedTime;
   if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
   if(!date||!Number.isFinite(Date.parse(date))||!e.publishedAt||!Number.isFinite(Date.parse(e.publishedAt)))return inconclusive('SUBSTACK_PUBLICATION_TIME_UNCONFIRMED');
-  if(minute(e.publishedAt)!==minute(date))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
+  if(publicationTimeChanged(state,e.publishedAt))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLICATION_TIME_CHANGED',verification:{status:'time_difference',checkedAt:now}};
   const expected=expectedContent(source);
   try{
    if(attentionContentFingerprint(e.content)!==attentionContentFingerprint(expected))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH',verification:{status:'content_difference',checkedAt:now}};
@@ -202,7 +205,7 @@ export class ScheduleCoordinator {
  async observe(id:string,source:ScheduledSource|undefined,slot:ConfirmedSlot|undefined,now:string):Promise<ScheduleRecord>{
   let state=await this.repo.get(id);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');const owner=randomUUID();if(!await this.runtime.acquire(state.slug,'substack',owner,now))return state;
   try{state=(await this.repo.get(id))!;
-   const legacyVerificationHold=state.lastErrorCode==='SUBSTACK_PUBLIC_EVIDENCE_MISMATCH'&&state.pendingAction==='sync-content';
+   const legacyVerificationHold=['SUBSTACK_PUBLIC_EVIDENCE_MISMATCH','SUBSTACK_PUBLIC_IDENTITY_MISMATCH'].includes(state.lastErrorCode??'')&&state.pendingAction==='sync-content';
    if(state.intent||state.lastErrorCode&&!legacyVerificationHold)return state;
    let patch:Partial<ScheduleRecord>={};
    if(state.observedState==='cancelled_draft'&&!source)patch={};

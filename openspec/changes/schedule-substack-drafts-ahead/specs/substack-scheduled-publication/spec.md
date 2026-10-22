@@ -124,7 +124,7 @@ Same-ID public content corrections SHALL use the same persisted-intent and seria
 
 ### Requirement: Separate publication and delivery evidence
 
-Saved draft, armed schedule, public article verification, Pages availability and subscriber-delivery evidence SHALL be reported separately. Anonymous public verification SHALL match the original identity, exact slug/canonical, pinned full content, original-site link, media and confirmed publication minute. A Pages outage SHALL not prevent Substack-only verification. Public HTML or enabled delivery settings SHALL NOT prove that a subscriber received email or a device notification. Missing provider delivery evidence SHALL remain unknown and SHALL NOT trigger a resend. A later source publication time SHALL NOT rewrite the already delivered Substack date merely to hide cross-platform drift.
+Saved draft, armed schedule, public article verification, Pages availability and subscriber-delivery evidence SHALL be reported separately. Anonymous public verification SHALL match the original identity, exact slug/canonical, pinned full content, original-site link and media, and SHALL retain the confirmed schedule and actual publication timestamp with their signed difference. A time difference alone SHALL NOT be classified as an identity/content failure. A Pages outage SHALL not prevent Substack-only verification. Public HTML or enabled delivery settings SHALL NOT prove that a subscriber received email or a device notification. Missing provider delivery evidence SHALL remain unknown and SHALL NOT trigger a resend. A later source publication time SHALL NOT rewrite the already delivered Substack date merely to hide cross-platform drift.
 
 Initial publication verification SHALL compare against the armed source version. After a verified foreground content correction, subsequent public verification SHALL compare against the corrected source version while preserving the first-publication version, original minute and delivery history. A corrected website or App article SHALL NOT be reported as a correction to previously delivered email.
 
@@ -134,7 +134,7 @@ Initial publication verification SHALL compare against the armed source version.
 - **THEN** current public content remains verified for B, the first delivery retains version A, and no email correction or resend is claimed
 
 #### Scenario: Public content verifies while Pages is unavailable
-- **GIVEN** the original Substack article matches its armed content, slug and confirmed minute while Pages is unavailable
+- **GIVEN** the original Substack article matches its armed content and slug with a valid actual publication timestamp while Pages is unavailable
 - **WHEN** anonymous verification completes
 - **THEN** Substack is reported verified and Pages remains unavailable, with no claim that both sites completed
 
@@ -143,10 +143,15 @@ Initial publication verification SHALL compare against the armed source version.
 - **WHEN** no provider delivery result is available
 - **THEN** delivery remains unknown rather than received, and the workflow does not send again
 
-#### Scenario: Content or publication minute is wrong
-- **GIVEN** public content, identity, canonical or the confirmed publication minute differs from the armed commitment
+#### Scenario: Content or actual publication evidence is invalid
+- **GIVEN** public content, identity or canonical differs from the armed commitment, or the actual publication timestamp is unavailable
 - **WHEN** verification runs
 - **THEN** it reports the mismatch on the original article without re-publication, date repair or subscriber redelivery
+
+#### Scenario: Actual publication differs from the confirmed schedule
+- **GIVEN** the original ID, slug, canonical and armed full content match, with a confirmed 07:00 schedule and actual 07:01:02.155 publication
+- **WHEN** anonymous verification runs after publication
+- **THEN** it records verified publication with both times and a 62.155 second delay, preserves the original commitment and delivery history, and neither edits the date nor sends subscribers again
 
 ### Requirement: Source-authoritative content comparison and editing
 

@@ -118,3 +118,17 @@ test('repeated draft reconciliation without a new handoff cleans its new snapsho
  f.deps.syncDrafts=async source=>{const dir=path.join(path.dirname(source),'draft-sessions','unresolved');await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'request.json'),'{}');await fs.writeFile(path.join(dir,'reply.json'),'{}');return [{slug:'article',target:'substack',operation:'sync-draft',status:'manual_required',code:'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED'}];};
  const uncertain=await runSyncRound(f.options,f.deps);assert.equal(uncertain.cleanup.source,'retained');
 }finally{await f.cleanup();}});
+
+test('production success delivery moves to the original-site monitor while foreground attention remains',async()=>{
+ const {DatabaseSync}=await import('node:sqlite');const {SqliteD1Database}=await import('./sqlite-d1');const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');const {productionDependencies}=await import('./sync-distribution');
+ const f=await fixture(),sql=new DatabaseSync(':memory:');try{
+  for(const name of ['0003_publication_operations.sql','0007_substack_schedules.sql'])sql.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/'+name,import.meta.url),'utf8'));
+  const repo=new ScheduleRepository(new SqliteD1Database(sql));
+  await repo.save({policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'published',slug:'published',remoteId:'221098688',version:0,observedState:'verified',verification:{status:'verified',checkedAt:'now'},armedRevision:'sha256:'+'a'.repeat(64),publicationEvidence:{title:'Public title',confirmedAt:'2026-10-21T23:00:00Z',actualAt:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155},delivery:'unknown',updatedAt:'now'},0);
+  await repo.save({policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'held',slug:'held',remoteId:'123',version:0,observedState:'draft_prepared',delivery:'not_armed',pendingAction:'sync-content',updatedAt:'now'},0);
+  await fs.writeFile(f.options.configFile,JSON.stringify({scheduled:{policyVersion:'scheduled-source-first-delivery-v1'},unattended:{notifyViaHermes:true}}));
+  const file=path.join(f.root,'attention.json'),deps=productionDependencies(f.runtime,new SqliteD1Database(sql),file);
+  await deps.notify!({status:'attention',results:[{slug:'published',target:'substack',operation:'observe-schedule',status:'observed'}]},f.options.configFile);
+  const body=JSON.parse(await fs.readFile(file,'utf8'));assert.deepEqual(body.publications??[],[]);assert.deepEqual(body.issues,[{slug:'held',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'}]);
+ }finally{sql.close();await f.cleanup()}
+});

@@ -45,6 +45,8 @@
     "publication": {
       "state": "draft_prepared",
       "confirmedTime": null,
+      "actualTime": null,
+      "differenceSeconds": null,
       "armedRevision": null
     },
     "delivery": {
@@ -68,6 +70,9 @@
 | `sync.checkedAt` | 最後一次同步檢查時間；不代表當前 provider 一定仍相同 |
 | `sync.unresolvedOperation` | 有未決操作，不提供直接「重試建立／更新」按鈕 |
 | `publication` | 最後保存的文章／排程觀察；不得由同步狀態推算為已發布 |
+| `publication.confirmedTime` | 原來確認的排程承諾，不能以實際時間覆寫 |
+| `publication.actualTime` | 匿名全文／身分驗證記錄的實際公開時間；尚無證據時為 null |
+| `publication.differenceSeconds` | 實際減原定的秒數，正值為晚、負值為早；可含毫秒，不等於內容或身分錯誤 |
 | `delivery.evidence` | `not_armed`、`armed`、`unknown`、`provider_reported`；均不能當作真人實收 |
 | `delivery.subscriberReceipt` | 本 API 固定為 `unknown`，沒有獨立收件證據 |
 | `attention` | 獨立的排程／身分待辦與錯誤；草稿曾驗證成功也不能隱藏這些待辦 |
@@ -204,3 +209,26 @@ Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415
 ## 草稿同步結案與後續保存狀態（2026／10／20）
 
 草稿同步 change 已歸檔；03：38 正式部署驗收的 221099763「驗證未完成」保留。後續唯讀 API 保存查核時間台北 16：56：48.056 已為 verified，仍是草稿、未安排寄送、真人實收未知。這是不同時間的證據，不回寫舊驗收，也不代表本次重驗 provider。現行安裝與既有資格連結盤點見 [結案紀錄](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/closeout-20261020.md)。新建與排程寫入仍關閉，排程真實公開驗收 5.3 尚未完成。
+
+
+## 發布時間已正式部署，Hermes 尚待驗收（2026／10／22）
+
+兩個 GET 端點新增相容的 actualTime／differenceSeconds 欄位，舊資料回傳 null。原定 07：00、實際 07：01：02.155 的文章，公開全文可驗證完成，同時顯示晚 62.155 秒。寄送與實收仍為獨立證據；公開文章不代表訂閱者收到通知。
+
+實作、部分草稿失敗隔離、成功事件去重及管理員權限診斷見 [此次修復規格](../openspec/changes/repair-substack-publication-notifications/design.md)。正式後台 version f2bead75-bf5c-470b-9edb-902c7be66ff6 已部署，Chrome 真實列表／單篇 GET 皆為 200／no-store，原 ID 221098688 已顯示獨立原定、實際與時間差。第 147 自然輪次已完成同 ID／slug／canonical／全文驗證；第 148 輪次證明替換快照的 Hermes 讀取權限已修復。Hermes 成功通知尚無 ACK：既有工作仍指向舊選用版本，管理員修正先在實際帳戶存取預檢停止，尚未對帳原 unknown 或更新工作。不得把後台驗收當成通知成功。詳見 [分層驗收狀態](../openspec/changes/repair-substack-publication-notifications/production-acceptance-20261022.json)。
+
+
+## Hermes 已沿用原站流程完成自然驗收（2026／10／22）
+
+Substack 成功通知已改用原站 Hermes 私訊流程，沿用原傳送器、私人去重帳本與每小時原工作。既有 `GET /api/v1/monitoring/publications` 增加獨立的 `substackPublications` 區塊，只提供近期重新驗證、同 ID／slug／來源與公開網址一致的公開證據；使用既有 monitor 權限。後台前端仍使用上列兩個 session 驗證的唯讀 API，不需取得 monitor secret。
+
+正式 Worker version `10d512da-155c-4733-ac49-7136a30610c7`。新固定版本第 161 自然同步輪次於台北 18：30：06 完成 ID 221098688 的完整公開驗證；其他兩篇失敗草稿未阻擋本篇。原 Hermes 工作於 18：38：25 取得私訊平台 ACK 267，只有一次傳送嘗試；訊息分列原定、實際與晚 62.155 秒。原站三筆通知歷史與原 unknown 紀錄保留。
+
+沒有建立專用群組、改 timer／排程、重新發布或重寄訂閱者通知，新建仍停用。此成功通知已不依賴舊跨帳戶快照；其 PermissionError 的系統根因仍未確認，第 148 輪的單次成功不是永久修復證據。平台接受私訊、真人已讀與訂閱者寄送維持分開：後兩者仍 unknown，原排程試行 5.3 不因此完成。完整範圍及保留失敗見 [共用流程驗收](../openspec/changes/repair-substack-publication-notifications/shared-flow-20261022.md)。
+
+
+## Hermes 成功私訊縮為三行（2026／10／22）
+
+使用者已確認收到前述 ACK 267 的 Telegram 私訊；這是 Hermes 私訊實收證據，Substack 訂閱者寄送與實收仍未知。後續成功通知僅保留「Substack 同步發布驗證完成」、文章標題及公開連結三行。詳細發布時間與時間差仍由後台唯讀 API 及驗收紀錄保存。
+
+三行格式已安裝於正式共用通知流程，並以 Hermes 實際帳戶讀回確認；47 項相關 Python 驗證通過。此次沒有發送訊息，既有 ACK、單次傳送紀錄與去重識別保持不變，舊訊息不重送。排程、gateway、新建停用設定及原 ID／slug 均維持。詳見 [格式更新驗收](../openspec/changes/repair-substack-publication-notifications/three-line-format-20261022.json)。

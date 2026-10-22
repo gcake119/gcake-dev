@@ -9,7 +9,7 @@ export function draftStatusView(s:ScheduleRecord){
  const code=d?.code&&/^SUBSTACK_[A-Z_]+$/.test(d.code)?d.code:null;
  return {schemaVersion:1,slug:s.slug,providerId:s.remoteId??null,version:s.version,
   sync:{status,desiredRevision:text(d?.desiredRevision??s.desiredRevision),savedRevision:text(d?.savedRevision??s.contentVerifiedRevision),checkedAt:text(d?.checkedAt),code,transport:d?.transport==='computer-use'?'computer-use':null,unresolvedOperation:unresolved},
-  publication:{state:s.remoteId?s.observedState:'not-observed',confirmedTime:text(s.observedTime),armedRevision:text(s.armedRevision)},
+  publication:{state:s.remoteId?s.observedState:'not-observed',confirmedTime:text(s.observedTime),actualTime:text(s.publicationEvidence?.actualAt),differenceSeconds:Number.isFinite(s.publicationEvidence?.differenceSeconds)?s.publicationEvidence!.differenceSeconds:null,armedRevision:text(s.armedRevision)},
   delivery:{evidence:s.delivery,deliveredRevision:text(s.deliveredRevision),subscriberReceipt:'unknown'},
   attention:{pendingAction:text(s.pendingAction),code:s.lastErrorCode&&/^SUBSTACK_[A-Z_]+$/.test(s.lastErrorCode)?s.lastErrorCode:null},
   actions:unresolved?['foreground-reconcile']:status==='conflict'?['foreground-review']:status==='foreground-required'||s.lastErrorCode||s.pendingAction||s.observedState==='scheduled'||s.everPublished||s.legacyPublished?['foreground-review']:[],updatedAt:s.updatedAt};
