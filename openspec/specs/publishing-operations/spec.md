@@ -106,9 +106,9 @@ The CMS SHALL record significant auth, Git commit, series, media, preview, confl
 ---
 ### Requirement: Substack mirrors preserve the source slug
 
-Every Substack mirror SHALL use exactly the slug of its authoritative Git original, with public URL shaped as `https://gcakedev.substack.com/p/<source-slug>`. Under the scheduled-delivery policy the Git original SHALL be finalized and revision-pinned without requiring a public Pages route. Under the legacy policy Pages verification SHALL remain required. The publication workflow SHALL set and persist the source slug on the existing draft before first publication and SHALL NOT derive another slug from the title, accept a platform substitute or append a collision suffix. The platform canonical SHALL identify that exact Substack URL. Complete public evidence SHALL match the armed source version and confirmed publication minute before public verification is recorded; original-site availability SHALL be reported independently.
+Every Substack mirror SHALL use exactly the slug of its authoritative Git original, with public URL shaped as `https://gcakedev.substack.com/p/<source-slug>`. Under the scheduled-delivery policy the Git original SHALL be finalized and revision-pinned without requiring a public Pages route. Under the legacy policy Pages verification SHALL remain required. The publication workflow SHALL set and persist the source slug on the existing draft before first publication and SHALL NOT derive another slug from the title, accept a platform substitute or append a collision suffix. The platform canonical SHALL identify that exact Substack URL. Complete public evidence SHALL match the authoritative source content and original article identity before public verification is recorded. Confirmed schedule time and actual public timestamp SHALL be preserved separately with their signed difference; a time difference alone SHALL NOT be classified as an identity mismatch. Original-site availability SHALL be reported independently.
 
-After a verified foreground content correction, complete public evidence SHALL match that corrected authoritative source version at the original publication minute; the initial armed version and delivery history SHALL remain separately preserved.
+After a verified foreground content correction, complete public evidence SHALL match that corrected authoritative source version at the original actual publication minute; the initial armed version and delivery history SHALL remain separately preserved.
 
 #### Scenario: First publication uses the original slug
 - **GIVEN** a finalized original with slug `ithome-2026-astro-choice` and an authorized Substack draft
@@ -134,3 +134,15 @@ After a verified foreground content correction, complete public evidence SHALL m
 - **GIVEN** a scheduled mirror requires a slug correction
 - **WHEN** background work evaluates the correction
 - **THEN** it preserves the original identity and defers the correction to foreground handling without accessing Chrome or mutating the article
+
+
+#### Scenario: Provider publishes later than the confirmed time
+- **GIVEN** the confirmed time is 07:00 and the original article becomes public at 07:01:02.155 with matching identity and complete content
+- **WHEN** anonymous verification reads the article
+- **THEN** public verification succeeds, both timestamps and a 62.155 second delay are shown, and no publication or subscriber delivery is repeated
+
+
+#### Scenario: Existing actual publication evidence stays fixed
+- **GIVEN** an original article already has a verified actual publication minute from a prior runtime
+- **WHEN** a later public read reports a different publication minute
+- **THEN** the earlier actual evidence is preserved and a time change is reported independently, rather than treating it as first-publication scheduling delay

@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "base": "347dfd8f4df526422e25a01790b8cc4c12b4fd62",
+  "formalSpecs": 14,
+  "errors": 0,
+  "warnings": 0,
+  "brokenRelevantLinks": [],
+  "historicalArtifactsUnchangedExceptTasksSummaryAndCLIArchiveIdentity": true,
+  "existingScenarioTitlesPreserved": true,
+  "completedTasks": 16,
+  "sourceDependencyAndWorkflowChanges": false,
+  "runtimeTests": "Existing exact-main CI passed; not rerun for unchanged code, dependencies and workflows. New PR CI separately verifies its candidate.",
+  "unrelatedLocalChangesExcluded": true
+}

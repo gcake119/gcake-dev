@@ -26,3 +26,7 @@
 ## 4. Three-line message follow-up
 - [x] 4.1 Implement Three-line success messages for Independent verified publication notifications and Shared original-site Hermes notification flow: first reproduce the longer-message mismatch in existing delivery tests, then prove exact three-line output and preserve timing validation and old sent-message suppression.
 - [x] 4.2 Qualify and install only the shared formatter under the existing maintenance lock; verify its actual output and hashes without transport, preserve history/configuration and record the deployed format separately from the earlier successful long-message receipt.
+
+## Delivery closeout
+
+All 16 tasks are complete. Main CI, the completed remote review and separately qualified production evidence are consolidated in [closeout-20261022.md](closeout-20261022.md). Subscriber delivery remains unknown and the separate scheduling pilot task 5.3 remains open.
