@@ -60,6 +60,44 @@ class AttentionDelivery(unittest.TestCase):
                 self.assertEqual(self.run_once()['status'],'quiet')
         self.assertEqual(len(self.sent),len(cases))
 
+    def publication(self):
+        return {'slug':'trial','id':'123','revision':'sha256:'+'a'*64,'title':'Public title','actualAt':'2026-10-21T23:01:02.155Z','confirmedAt':'2026-10-21T23:00:00.000Z','differenceSeconds':62.155}
+    def test_success_once_after_restart_and_issue_recurrence(self):
+        self.snapshot([],schema=2,publications=[self.publication()]);self.assertEqual(self.run_once()['status'],'sent')
+        self.assertEqual(self.sent[0].splitlines(),['Substack 同步發布驗證完成','Public title','https://gcakedev.substack.com/p/trial'])
+        self.assertEqual(self.run_once()['status'],'quiet');self.assertEqual(len(self.sent),1)
+        self.snapshot();self.run_once();self.snapshot([],schema=2,publications=[self.publication()]);self.run_once();self.assertEqual(len(self.sent),2)
+    def test_unknown_success_never_resends_and_invalid_time_difference_is_rejected(self):
+        self.snapshot([],schema=2,publications=[self.publication()])
+        def unknown(message):self.sent.append(message);raise TimeoutError('secret')
+        self.assertEqual(self.run_once(unknown)['status'],'unknown');self.assertEqual(self.run_once()['status'],'unknown');self.assertEqual(len(self.sent),1)
+        for patch in [{'differenceSeconds':0},{'id':'../123'},{'actualAt':'invalid'},{'title':'private\ncontent'}]:
+            self.snapshot([],schema=2,publications=[dict(self.publication(),**patch)])
+            with self.assertRaises(ValueError):self.run_once()
+    def test_success_crash_preserves_intent_and_later_issue_failure_does_not_block_another_article(self):
+        self.snapshot([],schema=2,publications=[self.publication()])
+        def crash(message):self.sent.append(message);raise SystemExit()
+        with self.assertRaises(SystemExit):self.run_once(crash)
+        self.assertEqual(self.run_once()['status'],'unknown');self.assertEqual(len(self.sent),1)
+        other=dict(self.publication(),slug='second',id='456')
+        self.snapshot(schema=2,publications=[other])
+        def mixed(message):
+            self.sent.append(message)
+            if '前景待辦' in message:raise PermissionError(13,'secret')
+            return {'success':True,'message_id':456}
+        result=self.run_once(mixed);self.assertEqual(result['status'],'unknown');self.assertEqual(result['publications'][0]['status'],'sent');self.assertIn('https://gcakedev.substack.com/p/second',self.sent[-1])
+    def test_proven_selection_rejection_is_not_a_transport_attempt_and_can_send_after_repair(self):
+        self.snapshot([],schema=2,publications=[self.publication()])
+        def selection_rejected(message):raise product.HermesSelectionMismatch('hermes-selection-changed')
+        self.assertEqual(self.run_once(selection_rejected)['status'],'not_sent');self.assertEqual(self.sent,[])
+        self.assertEqual(self.run_once()['status'],'sent');self.assertEqual(self.run_once()['status'],'quiet');self.assertEqual(len(self.sent),1)
+    def test_permission_failure_reports_bounded_stage(self):
+        from unittest.mock import patch
+        self.snapshot()
+        with patch.object(product.os,'open',side_effect=PermissionError(13,'credential-secret')):
+            with self.assertRaises(PermissionError) as failure:self.run_once()
+        self.assertEqual(failure.exception.stage,'feed-read');self.assertNotIn('credential-secret',json.dumps(product.failure_report(failure.exception)))
+
     def test_nonlive_hermes_gate_blocks_before_credentials_or_send(self):
         from unittest.mock import patch
         import types
@@ -72,6 +110,13 @@ class AttentionDelivery(unittest.TestCase):
         with patch.object(product,'AUTHORITY',authority),patch.dict(product.sys.modules,mods):
             with self.assertRaises(ValueError):product.hermes_sender(code)
         self.assertEqual(effects,[])
+    def test_selection_preflight_creates_no_delivery_intent_and_never_loads_sender(self):
+        from unittest.mock import patch
+        self.snapshot()
+        args=['consumer','--feed',str(self.feed),'--state',str(self.db),'--receipt',str(self.receipt),'--producer-uid',str(os.getuid()),'--hermes-code','/old']
+        with patch.object(product.sys,'argv',args),patch.object(product,'hermes_selection',side_effect=product.HermesSelectionMismatch()),patch.object(product,'hermes_sender') as sender:
+            self.assertEqual(product.main(),1);sender.assert_not_called()
+        self.assertFalse(self.db.exists());self.assertEqual(json.loads(self.receipt.read_text())['stage'],'selection')
     def test_symlink_input_is_rejected_before_delivery(self):
         self.snapshot();other=self.root/'other';self.feed.rename(other);self.feed.symlink_to(other)
         with self.assertRaises((ValueError,OSError)):self.run_once()

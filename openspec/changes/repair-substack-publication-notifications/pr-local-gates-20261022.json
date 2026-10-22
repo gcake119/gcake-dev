@@ -1,0 +1,51 @@
+{
+  "base": "2224ce81f13a814e83c6349e9f64bebdc7f2827e",
+  "node": "v24.11.1",
+  "pnpm": "10.17.1",
+  "results": [
+    {
+      "gate": "test",
+      "exitCode": 0,
+      "seconds": 193.42,
+      "log": "test.log"
+    },
+    {
+      "gate": "check",
+      "exitCode": 0,
+      "seconds": 8.7,
+      "log": "check.log"
+    },
+    {
+      "gate": "build:all",
+      "exitCode": 0,
+      "seconds": 8.26,
+      "log": "build-all.log"
+    },
+    {
+      "gate": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 12.0,
+      "log": "release-dry-run.log"
+    },
+    {
+      "gate": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 13.63,
+      "log": "editorial-rehearse.log"
+    }
+  ],
+  "status": "all-five-local-gates-passed",
+  "sourceChangedDuringChecks": [],
+  "primaryDirtyFiles": {
+    "count": 65,
+    "changed": []
+  },
+  "scope": "Independent commit and PR only; no production operations or notifications",
+  "ci": "not-yet-run",
+  "productionEvidence": "Historical results in shared-production-acceptance-20261022.json; final formatter in three-line-format-20261022.json",
+  "retainedLimitations": [
+    "Legacy cross-account PermissionError OS root cause remains unresolved",
+    "Prior intermittent signal fixture startup mechanism remains unresolved; original fixture and assertions retained",
+    "Subscriber delivery and receipt remain unknown; schedule pilot 5.3 stays open"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "base": "2224ce81f13a814e83c6349e9f64bebdc7f2827e",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "gate": "check",
+      "exitCode": 0,
+      "seconds": 17.73,
+      "log": "check.log"
+    },
+    {
+      "gate": "test",
+      "exitCode": 1,
+      "seconds": 268.86,
+      "log": "test.log"
+    }
+  ],
+  "priorUnrelatedTimeout": "../final-qualified/test.log",
+  "unrelatedTimeoutRootCause": "not-established-no-claim-of-repair",
+  "rawProbeColdStartDifference": "preserved-unresolved-qualification-now-uses-real-reader-once"
+}

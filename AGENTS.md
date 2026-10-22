@@ -30,7 +30,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 ## Substack 同步發文規則
 
 - Substack 正式網址的 slug 必須與權威 Git 原文 slug 完全一致（舊政策另須已驗證 GitHub Pages）；禁止採用平台自動產生的縮寫、隨機代稱或追加後綴。
-- 首次發布前在原草稿設定並重新載入核對 slug；發布後依本篇生效的來源政策，驗證新網址的原文章 ID、canonical、完整內容、原文連結與已確認的發布分鐘，全部通過才能宣稱公開驗證完成。
+- 首次發布前在原草稿設定並重新載入核對 slug；發布後依本篇生效的來源政策，驗證新網址的原文章 ID、canonical、完整內容、原文連結與實際發布時間，全部通過才能宣稱公開驗證完成；原定時間、實際時間與差距分開呈現，時間差本身不視為身分或內容不符。
 - 既有文章網址修正保留原 ID，不重新發布、不重寄電子郵件或 App 通知；完整匿名驗證後對帳 D1 remote URL，保留來源版本與寄送紀錄。
 - slug 衝突、儲存失敗或身分／來源不符時停止，不另建文章或換用備選 slug。背景排程保持唯讀，網址修正交由明確前景操作。
 - 操作與驗收細節見 `docs/distribution-scripted-runbook.md`；文件規則與正式釘選 runtime 的實際能力須分別回報。

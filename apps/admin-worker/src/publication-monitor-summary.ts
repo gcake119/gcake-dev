@@ -1,3 +1,4 @@
+import type { ScheduleRecord } from './substack-schedules.js';
 import { D1ReleaseStore, type ReleaseDatabase, type ReleaseSnapshot } from './release-queue.js';
 import { instant } from '@gcake/publishing-contract/release-queue';
 
@@ -22,6 +23,43 @@ export async function monitorAuthorized(request: Request, secret: string | undef
   let different = 0;
   for (let i = 0; i < left.length; i++) different |= left[i] ^ right[i];
   return different === 0;
+}
+
+
+/** Existing monitor authority: disclose verified public evidence, never draft records. */
+async function substackPublications(db: ReleaseDatabase, posts: ReleaseSnapshot['posts']) {
+  try {
+    const read = async () => {
+      const row = await db.prepare('SELECT json_group_array(record_json) AS records FROM (SELECT record_json FROM publication_schedules ORDER BY schedule_id LIMIT 10001)').first<{records: string}>();
+      if (!row || typeof row.records !== 'string' || row.records.length > 4 * 1024 * 1024) throw new Error('Unavailable schedules');
+      return row.records;
+    };
+    const raw = await read();
+    const encoded: unknown = JSON.parse(raw);
+    if (!Array.isArray(encoded) || encoded.length > 10000 || encoded.some(value => typeof value !== 'string')) throw new Error('Invalid schedules');
+    const now = Date.now();
+    const fresh = (at: unknown) => typeof at === 'string' && Number.isFinite(Date.parse(at)) && now - Date.parse(at) >= -5000 && now - Date.parse(at) <= 3600000;
+    const revision = (value: unknown) => typeof value === 'string' && /^sha256:[a-f0-9]{64}$/.test(value);
+    const publications: {slug:string;id:string;revision:string;title:string;confirmedAt:string;actualAt:string;differenceSeconds:number}[] = [];
+    for (const value of encoded) {
+      const record = JSON.parse(value) as ScheduleRecord;
+      if (!record || record.policyVersion !== 'scheduled-source-first-delivery-v1' || record.observedState !== 'verified' || record.verification?.status !== 'verified' || record.intent || record.pendingAction || record.lastErrorCode) continue;
+      const post = posts.find(post => post.slug === record.slug);
+      const proof = record.publicationEvidence;
+      const url = 'https://gcakedev.substack.com/p/' + record.slug;
+      if (!post || !['ready','published'].includes(post.status) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug) || !record.remoteId || !/^[0-9]{1,30}$/.test(record.remoteId) || record.remoteUrl !== url || record.expectedPublicUrl && record.expectedPublicUrl !== url) continue;
+      if (!revision(record.armedRevision) || !revision(record.contentDigest) || !revision(record.contentVerifiedRevision) || record.sourceRevision !== record.contentVerifiedRevision || !fresh(record.verifiedAt) || !fresh(record.verification.checkedAt)) continue;
+      const current = 'sha256:' + Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(post.source))), byte => byte.toString(16).padStart(2,'0')).join('');
+      if (record.contentVerifiedRevision !== current || !proof || proof.title !== post.title || typeof proof.title !== 'string' || !proof.title.length || proof.title.length > 300 || /[\x00-\x1f\x7f]/.test(proof.title)) continue;
+      if (typeof proof.confirmedAt !== 'string' || typeof proof.actualAt !== 'string' || !Number.isFinite(Date.parse(proof.confirmedAt)) || !Number.isFinite(Date.parse(proof.actualAt)) || Date.parse(proof.actualAt) > now + 5000 || typeof proof.differenceSeconds !== 'number' || !Number.isFinite(proof.differenceSeconds) || Math.abs((Date.parse(proof.actualAt)-Date.parse(proof.confirmedAt))/1000-proof.differenceSeconds)>0.000001) continue;
+      if (!record.slot?.confirmed || record.slot.slug !== record.slug || Date.parse(record.slot.scheduledAt) !== Date.parse(proof.confirmedAt)) continue;
+      publications.push({slug:record.slug,id:record.remoteId,revision:record.armedRevision!,title:proof.title,confirmedAt:proof.confirmedAt,actualAt:proof.actualAt,differenceSeconds:proof.differenceSeconds});
+    }
+    if (new Set(publications.map(p=>p.slug)).size !== publications.length || new Set(publications.map(p=>p.id)).size !== publications.length || await read() !== raw) throw new Error('Changed schedule authority');
+    return {complete:true,publications};
+  } catch {
+    return {complete:false,publications:[]};
+  }
 }
 
 /** Only SELECT and immutable editorial reads are dependencies of this observer. */
@@ -66,10 +104,11 @@ export async function publicationSummary(db: ReleaseDatabase, catalogue: Publica
       return { ...base, scheduleState: 'unscheduled' };
     });
     // Repeat reads detect changes during enumeration. Do not return a mixed snapshot.
+    const substack = await substackPublications(db, snapshot.posts);
     const revision = await catalogue.revision();
     const current = await store.read();
     if (current.version !== stored.version || revision !== snapshot.revision) throw new Error('Source changed');
-    const payload = { schemaVersion: 1, generatedAt: new Date().toISOString(), gitRevision: snapshot.revision, queueVersion: stored.version, complete: true, articles, ...(requestId===undefined?{}:{requestId}) };
+    const payload = { substackPublications: substack, schemaVersion: 1, generatedAt: new Date().toISOString(), gitRevision: snapshot.revision, queueVersion: stored.version, complete: true, articles, ...(requestId===undefined?{}:{requestId}) };
     if (new TextEncoder().encode(JSON.stringify(payload)).length > 512 * 1024) throw new Error('Incomplete bounded response');
     return Response.json(payload, { headers });
   } catch {

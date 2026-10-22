@@ -41,3 +41,5 @@ test('checkpoint reconciliation without an intent exposes an unresolved operatio
   assert.equal(view.sync.status,'reconciliation-required');assert.equal(view.sync.unresolvedOperation,true);assert.deepEqual(view.actions,['foreground-reconcile']);
  }
 });
+
+test('read-only API keeps actual time separate from unchanged confirmed commitment',async()=>{const row={...record,publicationEvidence:{title:'Public title',confirmedAt:record.observedTime,actualAt:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155}};const request=await fixture({get:async()=>row,list:async()=>[row]});const body=await (await request('/trial')).json() as any;assert.equal(body.draft.publication.confirmedTime,record.observedTime);assert.equal(body.draft.publication.actualTime,row.publicationEvidence.actualAt);assert.equal(body.draft.publication.differenceSeconds,62.155);assert.equal(body.draft.delivery.subscriberReceipt,'unknown');});

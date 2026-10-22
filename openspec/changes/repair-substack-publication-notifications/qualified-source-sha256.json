@@ -1,0 +1,13 @@
+{
+  "scripts/hermes/substack_attention.py": "9ca40f75f0e8817649069143c1f014b305fb8b40ff84633b418948166f7c2ba3",
+  "scripts/hermes/install_substack_attention.py": "f23d1673e738a1f874b6cb845e6f672d36d75d4efd241b4c03bcd0fbf715236c",
+  "scripts/hermes/test_substack_attention.py": "28f9bd3771b4d530149d373081977179565a35dcba0fd943e0b2f466f290cc04",
+  "scripts/hermes/test_substack_attention_install.py": "42f7079a6976882becfc1843073acb4ec1a5b4d16f1a36d7009fb2fb7834fb3f",
+  "scripts/publishing/substack-schedule.ts": "db673cec6e5516c46122634eed7259d0d5470a8c1a59f1accf7122701ead997b",
+  "scripts/publishing/distribution-attention.ts": "0fa45a2311db8ceea57c31a12052a213afdf0de57094e1968fe371becf4473b0",
+  "scripts/publishing/sync-distribution.ts": "f63078bff094c3b0969f86c51c66e4e4386d6192d706f7eeef799f6e86924641",
+  "apps/admin-worker/src/substack-schedules.ts": "e82be855bf7843a084bf2f0beb771d3f660a713e41471132bfe634d880b5ffc1",
+  "apps/admin-worker/src/substack-draft-api.ts": "fdfaa3f8b6ed4d767cb566ed6aebc88dc7fa7edde6f9f59c2578a5761b89a52f",
+  "apps/admin/src/substack-status.ts": "2f7cb03d326c740e31908b78303dd37a10972465487e0b384a4286ea4b6325fc",
+  "apps/admin/src/SubstackStatusPanel.vue": "5712cb1e01cbebd10f367be851182d6b944c257941234fd3018e9badf623eca6"
+}

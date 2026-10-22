@@ -1,0 +1,185 @@
+{
+  "status": "passed-natural-hermes-success-ack",
+  "workerVersion": "10d512da-155c-4733-ac49-7136a30610c7",
+  "http": {
+    "version": "10d512da-155c-4733-ac49-7136a30610c7",
+    "anonymousChecks": [
+      {
+        "path": "/health",
+        "status": 200,
+        "noStore": false
+      },
+      {
+        "path": "/api/v1/monitoring/publications",
+        "status": 403,
+        "noStore": true
+      },
+      {
+        "path": "/api/v1/substack/drafts?limit=50&offset=0",
+        "status": 401,
+        "noStore": true
+      },
+      {
+        "path": "/api/v1/substack/drafts/ithome-2026-publishing-in-production",
+        "status": 401,
+        "noStore": true
+      }
+    ],
+    "assets": [
+      {
+        "path": "index.html",
+        "sha256": "29182e69dd68a9af13afae225bc19cb891ea7d588b9766946e7f305e3c831900"
+      },
+      {
+        "path": "assets/index-Bu458dni.js",
+        "sha256": "0fb263d5c22e1ef7ebadc6c57e64ea60a9fcbf569621e28691ba688656d6bcb1"
+      },
+      {
+        "path": "assets/index-EBQCjx1N.css",
+        "sha256": "a246324e9ac9d3993ba24ce72f2c11fc8fbe7a00fc239ccbcbe75d6156e79c0e"
+      }
+    ],
+    "subscriberDelivery": "unknown",
+    "nodeFetchObservation": "IPv4 connect timeout and IPv6 unreachable; system curl succeeded; no product retry change"
+  },
+  "producerNatural": {
+    "status": "passed-new-installed-producer-natural-round",
+    "checkedAt": "2026-10-22T10:32:29.955Z",
+    "round": "161 / round-7zbEOn",
+    "roundCreatedAt": "2026-10-22T10:18:14.860Z",
+    "pinDigest": "cd16eb188d743ba39bdd70f5c38185b554b8f0794ea297108d89a60b361c2f07",
+    "sourceFilesVerified": [
+      "scripts/publishing/substack-schedule.ts",
+      "scripts/publishing/sync-distribution.ts",
+      "scripts/hermes/substack_attention.py"
+    ],
+    "originalCommitmentsPreserved": true,
+    "allowCreate": false,
+    "scheduledWriteEnabled": false,
+    "policySha256": "47c9ce819e25fec7ebec438495947de968712aa15e8d694b657ab30a16a47fdb",
+    "target": {
+      "id": "221098688",
+      "slug": "ithome-2026-publishing-in-production",
+      "url": "https://gcakedev.substack.com/p/ithome-2026-publishing-in-production",
+      "state": "verified",
+      "verification": {
+        "status": "verified",
+        "checkedAt": "2026-10-22T10:30:06.045Z"
+      },
+      "sourceRevision": "sha256:fe50a791ee299e463a9c3e78034a7f55fbcdd63580dfaaaf031df385a4a4d91b",
+      "contentVerifiedRevision": "sha256:fe50a791ee299e463a9c3e78034a7f55fbcdd63580dfaaaf031df385a4a4d91b",
+      "publication": {
+        "title": "正式開賽後，我怎麼知道自動發文真的完成了？",
+        "actualAt": "2026-10-21T23:01:02.155Z",
+        "confirmedAt": "2026-10-21T23:00:00.000Z",
+        "differenceSeconds": 62.155
+      },
+      "delivery": "unknown"
+    },
+    "overallRound": "attention",
+    "unrelatedDraftFailures": [
+      {
+        "slug": "ithome-2026-template-hardening",
+        "code": "SUBSTACK_DRAFT_LIST_INCOMPLETE"
+      },
+      {
+        "slug": "ithome-2026-tech-blog-boundary",
+        "code": "SUBSTACK_DRAFT_LIST_INCOMPLETE"
+      }
+    ],
+    "legacyFeed": {
+      "publicationCount": 0,
+      "issueCount": 0
+    },
+    "subscriberDelivery": "unknown",
+    "providerCommandsDispatchedByAcceptance": 0
+  },
+  "sharedMonitorInstallation": {
+    "status": "installed-awaiting-natural-original-job",
+    "files": {
+      "production_entry.py": "c385280a9a34b3553d4067e5b2687d036976dda601b352a8c7040f64d47d0a01",
+      "monitor_wrapper.py": "2447f9eb1907622520bfc97d8caa62ce632e0060be6b181b19a4a5e74d1266bc",
+      "shared_publication_monitor.py": "7c04733dda01b57a52f9f9ff8419fe8a968f55fcc38c94d4c80cb17455781d44",
+      "substack_attention.py": "9ca40f75f0e8817649069143c1f014b305fb8b40ff84633b418948166f7c2ba3"
+    },
+    "selectedDigest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+    "jobId": "550aaf17723d",
+    "jobHash": "d7e493e6988f1ce312fe62c164fb09dd32deb88fd368143cb3906f3abafb1a54",
+    "migration": {
+      "originalUnknownPreserved": true,
+      "reconciledEventId": 6,
+      "importedPublicationStates": 1,
+      "proofSha256": "7b832940557934787241b4c39c363910ca7c7e51260cc79231248f8c20b5aaf5",
+      "notificationsSent": 0
+    },
+    "installedAt": 1792664851.1943831,
+    "timerChanged": false,
+    "gatewayChanged": false,
+    "notificationsSent": 0
+  },
+  "originalSiteHistory": {
+    "count": 3,
+    "sha256": "1c10329c8dab67f94c65dc86d2f369010eea884fbdedf7ffbc1c117f9e198e1c"
+  },
+  "hermesSuccessAck": {
+    "messageId": 267,
+    "attemptCount": 1,
+    "sentAtTaipei": "2026-10-22T18:38:25.684279+08:00",
+    "jobId": "550aaf17723d",
+    "executionId": "665ae2500bf4442ebddeba290e65aa54",
+    "scheduledInstant": "2026-10-22T10:36:02.749820+00:00",
+    "exitCode": 0,
+    "uid": 502,
+    "selectedDigest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+    "implementationSha256": "7c04733dda01b57a52f9f9ff8419fe8a968f55fcc38c94d4c80cb17455781d44",
+    "registry": {
+      "id": "665ae2500bf4442ebddeba290e65aa54",
+      "job_id": "550aaf17723d",
+      "status": "completed",
+      "started_at": "2026-10-22T18:36:57.379557+08:00",
+      "finished_at": "2026-10-22T18:38:27.822370+08:00",
+      "scheduled_instant": "2026-10-22T10:36:02.749820+00:00"
+    },
+    "humanReceiptConfirmed": true,
+    "humanReceiptEvidence": "Owner confirmed Telegram receipt in this conversation with screenshot; this does not establish Substack subscriber delivery."
+  },
+  "subscriberDelivery": "unknown",
+  "humanReceived": false,
+  "newGroupCreated": false,
+  "schedulerChanged": false,
+  "providerRepublish": false,
+  "subscriberResend": false,
+  "qualificationSourcePinsMatchInstalled": true,
+  "legacyRows": [
+    [
+      6,
+      "unknown",
+      null,
+      "ValueError",
+      0
+    ],
+    [
+      7,
+      "not_sent",
+      null,
+      "ConfirmedPretransportSelectionMismatch:6",
+      0
+    ]
+  ],
+  "naturalVerification": {
+    "status": "natural-success-ack",
+    "naturalContext": true,
+    "checkedAt": 1792665531.561284,
+    "installationTime": 1792664851.1943831,
+    "originalSiteHistoryPreserved": true,
+    "subscriberDelivery": "unknown",
+    "humanReceived": false,
+    "observerProviderOperations": 0,
+    "observerSchedulerChanges": 0
+  },
+  "primaryDirtyFiles": {
+    "count": 65,
+    "changed": []
+  },
+  "acceptanceObserverStoppedAfterSuccess": true
+}

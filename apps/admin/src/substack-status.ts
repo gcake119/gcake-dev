@@ -1,7 +1,7 @@
 export interface DraftStatus {
  schemaVersion:1;slug:string;providerId:string|null;version:number;
  sync:{status:string;checkedAt:string|null;unresolvedOperation:boolean;code?:string|null};
- publication:{state:string;confirmedTime:string|null};
+ publication:{state:string;confirmedTime:string|null;actualTime?:string|null;differenceSeconds?:number|null};
  delivery:{evidence:string;subscriberReceipt:string};
  attention:{pendingAction:string|null;code:string|null};actions:string[];
 }
@@ -12,7 +12,7 @@ const nullable=(v:unknown)=>v==null||typeof v==='string';
 function validDraft(v:unknown):v is DraftStatus {
  return object(v)&&v.schemaVersion===1&&typeof v.slug==='string'&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v.slug)&&nullable(v.providerId)&&Number.isSafeInteger(v.version)&&v.version>0
   &&object(v.sync)&&typeof v.sync.status==='string'&&nullable(v.sync.checkedAt)&&typeof v.sync.unresolvedOperation==='boolean'
-  &&object(v.publication)&&typeof v.publication.state==='string'&&nullable(v.publication.confirmedTime)
+  &&object(v.publication)&&typeof v.publication.state==='string'&&nullable(v.publication.confirmedTime)&&nullable(v.publication.actualTime)&&(v.publication.differenceSeconds==null||typeof v.publication.differenceSeconds==='number'&&Number.isFinite(v.publication.differenceSeconds))
   &&object(v.delivery)&&typeof v.delivery.evidence==='string'&&typeof v.delivery.subscriberReceipt==='string'
   &&object(v.attention)&&nullable(v.attention.code)&&nullable(v.attention.pendingAction)&&Array.isArray(v.actions)&&v.actions.every((a:unknown)=>typeof a==='string');
 }
@@ -44,7 +44,7 @@ export function createStatusReader(changed:(value:StatusReadState)=>void,fetcher
   finally{if(current()&&state.loading)publish({...state,loading:false});}
  },dispose(){disposed=true;++generation;controller?.abort();}};
 }
-export function taipeiTime(value:string|null){if(!value||!Number.isFinite(Date.parse(value)))return '尚無確認時間';return new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(value)).replace(/\s+/g,' ')+'（台北）';}
+export function taipeiTime(value:string|null,seconds=false){if(!value||!Number.isFinite(Date.parse(value)))return '尚無確認時間';return new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',...(seconds?{second:'2-digit' as const}:{}),hourCycle:'h23'}).format(new Date(value)).replace(/\s+/g,' ')+'（台北）';}
 interface EvidenceLabel {label:string;tone:'neutral'|'good'|'notice'|'danger';detail:string}
 const label=(text:string,tone:EvidenceLabel['tone']='neutral',detail=''):EvidenceLabel=>({label:text,tone,detail});
 export function statusPresentation(row:DraftStatus){
@@ -58,5 +58,6 @@ export function statusPresentation(row:DraftStatus){
  };
  const delivery:Record<string,EvidenceLabel>={not_armed:label('未安排寄送'),armed:label('已安排寄送','notice','依最後確認的寄送安排。'),unknown:label('寄送結果未知'),provider_reported:label('平台回報已寄送','notice','平台回報不等於真人實收。')};
  const syncView=row.sync.code==='SUBSTACK_DRAFT_CREATION_DISABLED'?label('自動新建未啟用','notice','請先人工確認既有文章身分。'):sync[row.sync.status]??label('同步狀態待確認');
- return {sync:syncView,publication:publication[row.publication.state]??label('發布狀態待確認'),delivery:delivery[row.delivery.evidence]??label('寄送結果待確認'),receipt:'尚無實收證據',checkedAt:taipeiTime(row.sync.checkedAt),attention:row.attention.pendingAction||row.attention.code?'另有發布或文章身分問題，需人工查核。':null};
+ const delta=row.publication.differenceSeconds;const timing=row.publication.actualTime?`原定：${taipeiTime(row.publication.confirmedTime,true)}；實際：${taipeiTime(row.publication.actualTime,true)}${typeof delta==='number'?`；${delta===0?'準時':`${delta>0?'晚':'早'} ${Math.abs(delta)} 秒`}`:''}`:null;
+ return {timing,sync:syncView,publication:publication[row.publication.state]??label('發布狀態待確認'),delivery:delivery[row.delivery.evidence]??label('寄送結果待確認'),receipt:'尚無實收證據',checkedAt:taipeiTime(row.sync.checkedAt),attention:row.attention.pendingAction||row.attention.code?'另有發布或文章身分問題，需人工查核。':null};
 }

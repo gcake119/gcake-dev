@@ -122,7 +122,18 @@ export function productionDependencies(runtime:string,database?:D1DatabaseLike,a
  const db=database??new CloudflareD1Database(process.env.CLOUDFLARE_ACCOUNT_ID??'',process.env.DISTRIBUTION_D1_DATABASE_ID??'',process.env.CLOUDFLARE_API_TOKEN??'');const repo=new D1PublicationRepository(db);
  const query=async<T=unknown>(sql:string)=>(await db.prepare(sql).all<T>()).results;
  return {
-  notify:async(round,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;if(config.unattended?.notifyViaHermes!==true)return {status:'disabled'};const holds:{post_slug:string;code?:string}[]=await query<{post_slug:string}>("SELECT post_slug FROM publication_target_states WHERE target = 'substack' AND status = 'manual_required'");if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');for(const state of await new ScheduleRepository(db).list())if(state.pendingAction||state.intent||state.lastErrorCode||['conflict','foreground-required','reconciliation-required'].includes(state.draftSync?.status??''))holds.push({post_slug:state.slug,code:scheduleAttentionCode(state)});}return publishAttentionSnapshot(attentionFile,round,holds.map(row=>({slug:String(row.post_slug),...(row.code?{code:row.code}:{})})));},
+  notify:async(round,configFile)=>{
+   const config=JSON.parse(await fs.readFile(configFile,'utf8')) as DistributionConfig;
+   if(config.unattended?.notifyViaHermes!==true)return {status:'disabled'};
+   const holds:{post_slug:string;code?:string}[]=await query<{post_slug:string}>("SELECT post_slug FROM publication_target_states WHERE target = 'substack' AND status = 'manual_required'");
+   if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){
+    const {ScheduleRepository}=await import('../../apps/admin-worker/src/substack-schedules');
+    for(const state of await new ScheduleRepository(db).list()){
+     if(state.pendingAction||state.intent||state.lastErrorCode||['conflict','foreground-required','reconciliation-required'].includes(state.draftSync?.status??''))holds.push({post_slug:state.slug,code:scheduleAttentionCode(state)});
+    }
+   }
+   return publishAttentionSnapshot(attentionFile,round,holds.map(row=>({slug:String(row.post_slug),...(row.code?{code:row.code}:{})})),[]);
+  },
   validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){if(config.scheduled.observeEnabled!==true||config.scheduled.writeEnabled!==false||config.substack?.ui?.origin!=='https://gcakedev.substack.com')throw Error('SUBSTACK_SCHEDULE_OBSERVER_POLICY_REQUIRED');}else assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));assertAnonymousAcceptance(accepted);if(config.scheduled&&accepted.policyVersion!==config.scheduled.policyVersion)throw Error('SUBSTACK_SCHEDULE_OBSERVER_ACCEPTANCE_REQUIRED');},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   observeSchedules:async(source,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion!=='scheduled-source-first-delivery-v1')return [];const {observeSubstackSchedules}=await import('./observe-substack-schedules');return observeSubstackSchedules(source,db,config.substack.ui);},

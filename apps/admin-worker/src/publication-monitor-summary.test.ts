@@ -36,3 +36,44 @@ test('unavailable catalogue, malformed authority, duplicate identities and revis
  if(mode==='failure')f.setFailure();if(mode==='revision')f.setRevision('revision-b');if(mode==='queue-race'){const original=f.catalogue.revision;f.catalogue.revision=async()=>{f.save();return original()}}if(mode==='malformed')f.db.prepare('UPDATE release_queue_runtime SET document=?').run('{}');if(mode==='duplicate'){f.catalogue.snapshot=async()=>{const s=snapshot();s.posts.push(s.posts[0]);return s}}assert.equal((await f.call()).status,503);assert.equal(f.mutation(),0);
  }finally{f.db.close()}}
 });
+
+function schedules(f:ReturnType<typeof fixture>) {
+ f.db.exec('CREATE TABLE publication_schedules(schedule_id TEXT PRIMARY KEY, record_json TEXT NOT NULL)');
+ return (record:any)=>f.db.prepare('INSERT OR REPLACE INTO publication_schedules VALUES(?,?)').run(record.scheduleId,JSON.stringify(record));
+}
+async function verifiedSubstack(){
+ const revision='sha256:'+Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('PRIVATE_BODY'))).toString('hex');
+ const checkedAt=new Date().toISOString();
+ return {policyVersion:'scheduled-source-first-delivery-v1',scheduleId:'substack:new',slug:'new',remoteId:'221098688',version:4,observedState:'verified',remoteUrl:'https://gcakedev.substack.com/p/new',expectedPublicUrl:'https://gcakedev.substack.com/p/new',armedRevision:'sha256:'+'a'.repeat(64),contentVerifiedRevision:revision,sourceRevision:revision,contentDigest:'sha256:'+'b'.repeat(64),verification:{status:'verified',checkedAt},verifiedAt:checkedAt,publicationEvidence:{title:'new',confirmedAt:'2026-10-21T23:00:00Z',actualAt:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155},slot:{confirmed:true,slug:'new',scheduledAt:'2026-10-21T23:00:00Z'},delivery:'unknown',updatedAt:checkedAt};
+}
+test('shared Hermes authority whitelists verified Substack timing independently of another failed draft without writes',async()=>{
+ const f=fixture();try{const save=schedules(f);const verified=await verifiedSubstack();save(verified);save({...verified,scheduleId:'substack:alone',slug:'alone',observedState:'draft_prepared',pendingAction:'PRIVATE_PENDING',publicationEvidence:{...verified.publicationEvidence,title:'PRIVATE_DRAFT'}});
+ const response=await f.call();assert.equal(response.status,200);const body=await response.json();assert.equal(body.complete,true);assert.equal(body.substackPublications.complete,true);
+ assert.deepEqual(body.substackPublications.publications,[{slug:'new',id:'221098688',revision:verified.armedRevision,title:'new',confirmedAt:verified.publicationEvidence.confirmedAt,actualAt:verified.publicationEvidence.actualAt,differenceSeconds:62.155}]);
+ assert(!JSON.stringify(body).includes('PRIVATE'));assert.equal(f.mutation(),0);
+ }finally{f.db.close()}
+});
+test('stale, unverified, changed-source, wrong-identity and inconsistent Substack timing cannot authorize success',async()=>{
+ for(const patch of [
+  {verification:{status:'inconclusive',checkedAt:new Date().toISOString()}},
+  {verifiedAt:new Date(Date.now()-3601000).toISOString()},
+  {verifiedAt:new Date(Date.now()+6000).toISOString()},
+  {contentVerifiedRevision:'sha256:'+'0'.repeat(64)},
+  {remoteUrl:'https://gcakedev.substack.com/p/wrong'},
+  {remoteId:'not-numeric'},
+  {armedRevision:undefined},
+  {intent:{action:'update-public'}},
+  {pendingAction:'sync-content'},
+  {publicationEvidence:{title:'new',confirmedAt:'2026-10-21T23:00:00Z',actualAt:'2026-10-21T23:01:02.155Z',differenceSeconds:0}},
+ ]){const f=fixture();try{const save=schedules(f);save({...await verifiedSubstack(),...patch});const body=await(await f.call()).json();assert.equal(body.complete,true);assert.equal(body.substackPublications.complete,true);assert.deepEqual(body.substackPublications.publications,[]);assert.equal(f.mutation(),0);}finally{f.db.close()}}
+});
+test('Substack authority read failure preserves successful original-site authority and exposes no private exception',async()=>{
+ const f=fixture();try{const body=await(await f.call()).json();assert.equal(body.complete,true);assert.deepEqual(body.substackPublications,{complete:false,publications:[]});assert.equal(body.articles.length,3);assert.equal(f.mutation(),0);}finally{f.db.close()}
+});
+
+test('Substack enumeration race is incomplete without invalidating original-site authority',async()=>{
+ const f=fixture();try{const save=schedules(f);const record=await verifiedSubstack();save(record);const prepare=f.db.prepare.bind(f.db);let reads=0;
+ f.db.prepare=((sql:string)=>{const statement=prepare(sql);if(sql.includes('json_group_array(record_json)')){const get=statement.get.bind(statement);statement.get=(()=>{const row=get();if(++reads===1)save({...record,version:record.version+1});return row;}) as any;}return statement;}) as any;
+ const body=await(await f.call()).json();assert.equal(body.complete,true);assert.deepEqual(body.substackPublications,{complete:false,publications:[]});assert.equal(f.mutation(),0);
+ }finally{f.db.close()}
+});

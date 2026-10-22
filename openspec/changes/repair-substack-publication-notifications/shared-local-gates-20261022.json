@@ -1,0 +1,64 @@
+{
+  "base": "2224ce81f13a814e83c6349e9f64bebdc7f2827e",
+  "node": "v24.11.1",
+  "results": [
+    {
+      "gate": "check",
+      "exitCode": 0,
+      "seconds": 9.01,
+      "log": "check.log"
+    },
+    {
+      "gate": "test",
+      "exitCode": 0,
+      "seconds": 145.99,
+      "log": "test.log"
+    },
+    {
+      "gate": "build:all",
+      "exitCode": 0,
+      "seconds": 7.91,
+      "log": "build-all.log",
+      "reused": true,
+      "source": "../shared-final/build-all.log",
+      "reuseReason": "Only Python installer and its tests changed; original signal fixture restored and production build/rehearsal inputs unchanged"
+    },
+    {
+      "gate": "release:dry-run",
+      "exitCode": 0,
+      "seconds": 13.63,
+      "log": "release-dry-run.log",
+      "reused": true,
+      "source": "../shared-final/release-dry-run.log",
+      "reuseReason": "Only Python installer and its tests changed; original signal fixture restored and production build/rehearsal inputs unchanged"
+    },
+    {
+      "gate": "editorial:rehearse",
+      "exitCode": 0,
+      "seconds": 20.13,
+      "log": "editorial-rehearse.log",
+      "reused": true,
+      "source": "../shared-final/editorial-rehearse.log",
+      "reuseReason": "Only Python installer and its tests changed; original signal fixture restored and production build/rehearsal inputs unchanged"
+    }
+  ],
+  "candidateChanged": [],
+  "status": "completed",
+  "preservedFailures": [
+    "shared-first-failure: production account-check order regression, repaired and verified",
+    "shared-handoff-final/preserved-timeout-failure: original signal fixture startup failure",
+    "shared-handoff-final/preserved-shell-counterexample: withdrawn shell hypothesis, failed Node 22 counterexample"
+  ],
+  "signalTimeoutIssue": "Original fixture, deadline and assertions retained. Final complete gate passed; intermittent startup root cause remains unresolved.",
+  "targetPython311": {
+    "tests": 29,
+    "passed": true
+  },
+  "runtimeNode22AffectedProducerTests": {
+    "passed": true,
+    "source": "shared-final/runtime-node22.log"
+  },
+  "rootControlRollback": {
+    "passed": true
+  }
+}

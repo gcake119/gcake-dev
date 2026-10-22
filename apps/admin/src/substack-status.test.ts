@@ -30,3 +30,5 @@ test('late replies cannot replace another article and disposing stops further pr
 test('malformed and wrong-identity responses cannot replace verified evidence or leak backend errors',async()=>{
  let bad=false;const reader=createStatusReader(()=>{},(async()=>bad?response({draft:{...original,slug:'another'}}):response({draft:original})) as typeof fetch);await reader.load('original');bad=true;await reader.load('original');assert.equal(reader.state.rows[0].slug,'original');assert.ok(reader.state.error);reader.dispose();
 });
+
+test('verified public state displays exact actual time and delay independently of subscriber receipt',()=>{const v=statusPresentation({...original,publication:{state:'verified',confirmedTime:'2026-10-21T23:00:00Z',actualTime:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155},delivery:{evidence:'unknown',subscriberReceipt:'unknown'}});assert.match(v.timing!,/07:00:00/);assert.match(v.timing!,/07:01:02/);assert.match(v.timing!,/晚 62.155 秒/);assert.equal(v.publication.label,'公開驗證完成');assert.equal(v.delivery.label,'寄送結果未知');assert.equal(v.receipt,'尚無實收證據');});

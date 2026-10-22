@@ -517,3 +517,5 @@ for(const timing of ['completed','late-success','late-error']) test(`new-draft-p
   assert.equal(s.pagesSummary.value,undefined,'new unsaved article must not link another article as verified');
  });
 });
+
+test('Substack actual template independently renders confirmed time, actual seconds and lateness without delivery success',async()=>{const record:DraftStatus={...statusRecord,sync:{...statusRecord.sync,status:'excluded'},publication:{state:'verified',confirmedTime:'2026-10-21T23:00:00Z',actualTime:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155},delivery:{evidence:'unknown',subscriberReceipt:'unknown'}};const doc=await renderSubstack(record);const evidence=[...doc.querySelectorAll('dd')].map(n=>n.textContent);assert.match(evidence[1],/公開驗證完成.*原定：.*07:00:00.*實際：.*07:01:02.*晚 62.155 秒/s);assert.match(evidence[2],/寄送結果未知.*尚無實收證據/);assert.deepEqual(buttons(doc),['重新讀取狀態']);});
