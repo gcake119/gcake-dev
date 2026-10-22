@@ -220,7 +220,7 @@ The observer and existing Hermes producer/consumer SHALL preserve bounded pendin
 
 For an unchanged authoritative source revision, background observation SHALL NOT notify content synchronization for a description-only presentation difference or the observed provider-only code wrappers and terminal empty-line artifacts. It SHALL still detect title, body structure, non-terminal code whitespace, links, images and alt-text changes. A changed authoritative source with changed supported content, including description, SHALL remain pending foreground synchronization. Strict foreground content verification SHALL remain unchanged; ignored presentation differences SHALL NOT qualify complete content synchronization.
 
-A failed or incomplete anonymous read SHALL record verification as inconclusive, preserve prior verified evidence and unresolved genuine holds, and SHALL NOT infer content drift or initiate an edit. Fresh complete evidence SHALL reassess a legacy generic public-verification content hold; presentation-only differences SHALL clear that false hold without provider writes. Confirmed meaningful drift, identity/time mismatches and unknown mutation intents SHALL remain actionable. Notification publication SHALL retain the previous attention snapshot during an inconclusive read rather than send newly inferred content issues or clear unresolved attention.
+A failed or incomplete anonymous read SHALL record verification as inconclusive, preserve prior verified evidence and unresolved genuine holds, and SHALL NOT infer content drift or initiate an edit. Fresh complete evidence SHALL reassess a legacy generic public-verification content hold; presentation-only differences SHALL clear that false hold without provider writes. Confirmed meaningful drift, identity mismatches, changes to a previously verified actual publication timestamp and unknown mutation intents SHALL remain actionable. A difference between confirmed schedule and actual first publication time alone SHALL NOT be treated as identity/content drift. During a partial round, notification publication SHALL retain prior issues for affected and unobserved articles without inferring content drift, while independent complete observations SHALL advance their own notification results.
 
 #### Scenario: Existing public originals have presentation-only differences
 
@@ -245,6 +245,12 @@ A failed or incomplete anonymous read SHALL record verification as inconclusive,
 - **GIVEN** presentation-only differences do not trigger a background content notification
 - **WHEN** an explicit foreground synchronization verifies the complete source-owned content
 - **THEN** its existing description, structure, link, media and meaningful code-whitespace checks still apply
+
+
+#### Scenario: Another article has complete current evidence
+- **GIVEN** one public read is inconclusive and another original article has complete matching public identity and full content
+- **WHEN** a partial round publishes its notification snapshot
+- **THEN** affected and unobserved prior holds remain, while the independently verified publication remains eligible for a success notification without any provider mutation
 
 ---
 ### Requirement: Queue revisions do not imply provider postponement

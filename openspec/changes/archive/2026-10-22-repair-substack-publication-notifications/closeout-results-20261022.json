@@ -1,0 +1,87 @@
+{
+  "status": "completed-for-spec-archive",
+  "mergeCommit": "347dfd8f4df526422e25a01790b8cc4c12b4fd62",
+  "pr": "https://github.com/gcake119/gcake-dev/pull/60",
+  "mainCI": {
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/gcake119/gcake-dev/actions/runs/39777583284",
+    "completedAt": "2026-10-22T12:23:48Z"
+  },
+  "remoteReview": {
+    "status": "completed",
+    "commit": "347dfd8f4df526422e25a01790b8cc4c12b4fd62",
+    "hasAnyFindings": false,
+    "hasUnresolvedFindings": false,
+    "receiptUrl": "https://github.com/gcake119/gcake-dev/pull/60#issuecomment-6340787012",
+    "summaryUpdatedAt": "2026-10-22T12:30:46Z",
+    "firstAttemptRootCause": "unconfirmed; one manual retrigger recovered completion"
+  },
+  "productionEvidence": {
+    "source": "shared-production-acceptance-20261022.json",
+    "workerVersion": "10d512da-155c-4733-ac49-7136a30610c7",
+    "naturalRound": 161,
+    "providerId": "221098688",
+    "slug": "ithome-2026-publishing-in-production",
+    "confirmedAt": "2026-10-21T23:00:00Z",
+    "actualAt": "2026-10-21T23:01:02.155Z",
+    "differenceSeconds": 62.155,
+    "hermesAck": 267,
+    "attemptCount": 1,
+    "hermesHumanReceiptConfirmed": true,
+    "subscriberDelivery": "unknown",
+    "subscriberReceipt": "unknown"
+  },
+  "messageFormat": {
+    "source": "three-line-format-20261022.json",
+    "status": "installed-and-readback-verified-without-transport",
+    "notificationReplay": false
+  },
+  "retainedLimitations": [
+    "Legacy cross-account snapshot PermissionError OS root cause unconfirmed; shared success delivery avoids that path",
+    "Prior intermittent signal fixture startup mechanism unconfirmed; original tested fixture retained in merged PR",
+    "schedule-substack-drafts-ahead task 5.3 remains incomplete"
+  ],
+  "boundaries": {
+    "allowCreate": false,
+    "scheduledWriteEnabled": false,
+    "newProviderAcceptancePerformedForArchive": false,
+    "schedulesChanged": false,
+    "notificationsSent": 0,
+    "subscriberResend": false
+  },
+  "archive": {
+    "status": "completed",
+    "date": "2026-10-22",
+    "capabilities": [
+      "publishing-operations",
+      "quiet-background-distribution",
+      "substack-publication-notifications"
+    ],
+    "addedRequirements": 4,
+    "modifiedRequirements": 2,
+    "incompleteTasks": 0,
+    "warnings": [],
+    "formalSpecsValidated": 14,
+    "relevantLinksValid": true
+  },
+  "worktreeCleanup": {
+    "mergedWorktree": "/Users/caiyijun/.codex/worktrees/substack-notify-main59/gcake-dev",
+    "toolStatus": "queued-without-worker-start",
+    "removalConfirmed": true,
+    "retainedDirtyWorktree": "/Users/caiyijun/.codex/worktrees/admin-draft-status/gcake-dev",
+    "reasonRetained": "Contains unrelated uncommitted and untracked work; preserved",
+    "activeRuntimeLinksToMergedWorktree": 0,
+    "status": "completed-with-verified-git-fallback",
+    "method": "git worktree remove, without force",
+    "recoveryRef": "refs/codex/manual-cleanup/pr60-20261022",
+    "recoveryCommit": "5cae49bcf1a51c95bdd42f1ca47bd549ed5cea66",
+    "recoveryBundleSha256": "20f436e467ccdfa6bdb03ca9a914ad3d051727e1581266688573b2d34c8985cc",
+    "recoveryBundleVerified": true,
+    "localBranchPreserved": true,
+    "filesystemAbsent": true,
+    "gitWorktreeRegistrationAbsent": true,
+    "appAttachmentStatus": "stale-worktree-entry; not claimed as managed-app archive completion",
+    "diagnosis": "Renderer acknowledged archive request with queued; no corresponding snapshot/delete worker start. Owner confirmed no dialog. Internal dispatcher root cause unconfirmed."
+  }
+}
