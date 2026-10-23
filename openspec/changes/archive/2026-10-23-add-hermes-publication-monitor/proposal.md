@@ -87,3 +87,8 @@ After local saveback and verification, the owner authorizes review and one local
 ## Native ACL inventory review — 2026-10-23
 
 The owner authorizes reviewing the pending native ACL inventory, preserving the existing authority/runner permission separation, adding missing observable acceptance coverage, and delivering only the scoped repair through an independent commit and PR. This does not authorize installed control changes, account ACL repair, scheduler changes, provider writes, or notification replay.
+
+
+## 2026-10-23 repository closeout
+
+PR #64 and #65 are merged; their exact-head remote reviews and PR/main CI succeeded. See [closeout evidence](closeout-20261023.md) and [machine record](closeout-20261023.json). This archive preserves all historical authority and qualification limits; it does not install the new native ACL implementation, change schedules or resend notifications.
