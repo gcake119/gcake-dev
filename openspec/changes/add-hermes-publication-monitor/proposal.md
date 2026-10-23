@@ -82,3 +82,8 @@ Owner authorizes local preservation and validation of the existing installed upd
 ## Scoped control saveback commit authorization, 2026-10-16
 
 After local saveback and verification, the owner authorizes review and one local commit containing only this control saveback, its tests, specification additions and evidence. This supersedes the saveback-stage commit exclusion for this scoped commit only. No push, production management, installation or runtime change is authorized.
+
+
+## Native ACL inventory review — 2026-10-23
+
+The owner authorizes reviewing the pending native ACL inventory, preserving the existing authority/runner permission separation, adding missing observable acceptance coverage, and delivering only the scoped repair through an independent commit and PR. This does not authorize installed control changes, account ACL repair, scheduler changes, provider writes, or notification replay.
