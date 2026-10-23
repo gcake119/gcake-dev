@@ -188,3 +188,47 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 650; }
 .article-connections p { color: var(--muted); font-size: .82rem; margin: 0; }
 .article-references { border-top: 1px solid var(--rule); padding-top: 12px; }
 .article-references section { margin: 16px 0; }
+
+.article-share { margin: 32px 0 24px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.article-share__actions { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+.article-share [hidden] { display: none; }
+.article-share button { gap: 8px; min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--accent); }
+.article-share button:hover { text-decoration: underline; }
+.article-share button:disabled { cursor: wait; }
+.article-share__status { margin: 8px 0 0; color: var(--ink-soft); }
+.article-share__status:empty { display: none; }
+.article-share__recovery { display: block; margin-top: 12px; color: var(--ink-soft); }
+.article-share input { display: block; width: 100%; min-width: 0; min-height: 44px; margin-top: 8px; padding: 8px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 5px; }
+
+/* Article endings use the public-site scale; these rules do not change prose. */
+.article-reading { margin: 32px 0 0; padding: 26px 0 30px; border-top: 1px solid var(--rule); }
+.article-reading h2 { font-size: 1.18rem; line-height: 1.45; margin: 0 0 22px; }
+.article-reading__eyebrow { font-size: .82rem; color: var(--muted); margin: 0 0 6px; }
+.article-reading__next { display: flex; align-items: center; gap: 24px; min-height: 44px; text-decoration: none; color: var(--ink); }
+.article-reading__next h3 { flex: 1; font-size: 1rem; font-weight: 700; line-height: 1.8; letter-spacing: normal; margin: 0; }
+.article-reading__next svg { width: 26px; height: 26px; color: var(--accent); flex-shrink: 0; }
+.article-reading__description { font-size: .82rem; line-height: 1.8; color: var(--muted); margin: 10px 0 0; }
+.article-reading__series { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+.article-reading__series a { font-size: 1rem; display: inline-flex; align-items: center; min-height: 44px; max-width: 65%; overflow-wrap: anywhere; }
+.article-reading__series .article-reading__overview { margin-left: auto; max-width: 100%; white-space: nowrap; }
+.article-reading .article-reading__subheading { font-size: 1rem; color: var(--muted); font-weight: 650; margin: 24px 0 0; }
+.article-reading__recommendations { list-style: none; padding: 0; margin: 0; }
+.article-reading__recommendations li { padding: 18px 0; border-bottom: 1px solid var(--rule-soft); }
+.article-reading__recommendations li:last-child { border-bottom: 0; padding-bottom: 0; }
+.article-reading__recommendations a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; font-size: 1rem; font-weight: 400; line-height: 1.8; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.article-reading__recommendations svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); }
+.article-reading__recommendations .article-reading__description { margin-top: 4px; }
+.article-reading__state { font-size: 1rem; color: var(--ink-soft); margin: -10px 0 18px; }
+.article-reading + .article-share { margin: 0; padding: 16px 0; }
+.article-share__row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.article-share__row > p { font-size: .82rem; color: var(--muted); margin: 0; }
+.article-share__row + .article-share__status { margin-top: 8px; }
+.article-page .article-references { padding: 4px 0 24px; }
+.article-page .article-references summary { font-size: 1rem; min-height: 44px; padding: 9px 0; color: var(--muted); }
+.article-page .article-references a { font-size: 1rem; }
+@media(max-width:700px) {
+  .article-reading__series { display: grid; gap: 4px; }
+  .article-reading__series a { max-width: 100%; }
+  .article-reading__series .article-reading__overview { margin-left: 0; }
+  .article-share__row { gap: 4px; }
+}

@@ -1,0 +1,40 @@
+---
+import type { ReadingPost, ReadingSeries } from '@/lib/content/catalog';
+import { loadDiscovery } from '@/lib/discovery/site';
+import { selectEndingRecommendations } from '@/lib/discovery/article-ending';
+import { site } from '@/data/site';
+interface Props {
+  articleId: string;
+  series?: ReadingSeries;
+  previous?: ReadingPost;
+  next?: ReadingPost;
+}
+const { articleId, series, previous, next } = Astro.props;
+const { corpus } = await loadDiscovery();
+const current = corpus.articles.find(article => article.articleId === articleId);
+const excluded = [current?.href, previous?.href, next?.href].filter((href): href is string => !!href);
+const recommendations = selectEndingRecommendations(corpus.articles, corpus.connections[articleId], excluded, !!next);
+---
+{(series || recommendations.length > 0) && <section class="article-reading" aria-labelledby="article-reading-heading" data-article-reading>
+  <h2 id="article-reading-heading">接著讀</h2>
+  {next && <>
+    <p class="article-reading__eyebrow">下一篇{series && `・${series.title}`}</p>
+    <a class="article-reading__next" href={next.href} data-ending-next>
+      <h3>{next.title}</h3>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" /></svg>
+    </a>
+    {next.description && <p class="article-reading__description">{next.description}</p>}
+  </>}
+  {series && !next && <p class="article-reading__state">{series.publicationState === 'completed' ? '這個系列已讀到最後一篇。也可以從這些文章，繼續往下探索。' : '目前已讀到最新一篇。'}</p>}
+  {series && <nav class="article-reading__series" aria-label="本系列導覽">
+    {previous && <a href={previous.href} data-ending-previous>← 上一篇：{previous.title}</a>}
+    <a class="article-reading__overview" href={`${site.basePath}/series/${series.slug}/`}>查看完整系列 →</a>
+  </nav>}
+  {recommendations.length > 0 && <>
+    {next && <h3 class="article-reading__subheading">也可以讀</h3>}
+    <ul class="article-reading__recommendations">{recommendations.map(article => <li>
+      <a href={article.href} data-ending-recommendation><span>{article.title}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" /></svg></a>
+      {article.description && <p class="article-reading__description">{article.description}</p>}
+    </li>)}</ul>
+  </>}
+</section>}

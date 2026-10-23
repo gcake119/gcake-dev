@@ -17,3 +17,13 @@
 ２０２６－１０－２２ 此修復已完成封存，16 項任務完成；main `347dfd8` CI 與重新觸發的遠端審查均通過，正式自然輪次、Hermes 實收與三行格式證據分開保留。詳見[結案紀錄](../../openspec/changes/archive/2026-10-22-repair-substack-publication-notifications/closeout-20261022.md)。新建及排程寫入仍停用，訂閱者寄送仍未知，另一項排程試行 5.3 保持未完成。
 
 ２０２６－１０－２３ Hermes 發布監控 `add-hermes-publication-monitor` 已完成 74／74 項並封存；[結案紀錄](../../openspec/changes/archive/2026-10-23-add-hermes-publication-monitor/closeout-20261023.md)保留 PR #64／#65 的已完成遠端審查、合併與各自 main CI 成功證據。這是來源與規格結案，原生 ACL 新版未正式安裝或新增正式資格驗收；舊 PermissionError 根因仍未知。新建及排程寫入維持停用，不改 timer、不重送通知；訂閱者監控依使用者決定停止，排程試行 5.3 保持未完成。ADR-001 與既有權限政策不變。
+
+２０２６－１０－２３ [add-article-sharing](../../openspec/changes/add-article-sharing/design.md)：文章正文後、延伸閱讀前提供複製及裝置支援時的原生分享。分享使用新部落格正式閱讀網址，與內容權威 canonical 分開；鐵人賽 canonical、Open Graph URL、原始版本連結保持舊站政策，接受平台可能依舊站 metadata 顯示預覽。沿用既有雙主題、鍵盤焦點與４４px 控制，不加平台 SDK、追蹤、登入或後端。複製成功、系統分享完成、實際發文／送達與人工驗收各自需要證據。[本機驗證紀錄](../../openspec/changes/add-article-sharing/local-verification.md)不構成部署或平台送達驗收；ADR-001 不受影響，無須新增 ADR。
+
+２０２６－１０－２３ 使用者修訂同一變更：僅保留「分享文章」，使用 SVG 圖示加可見文字；移除獨立複製按鈕及剪貼簿操作。不支援或分享失敗時顯示完整網址供手動複製，取消保持中性。本修訂取代上一段的雙按鈕政策，網址、canonical／OG 所有權及外部操作邊界維持；驗證見 [單一分享按鈕紀錄](../../openspec/changes/add-article-sharing/single-share-verification.md)。
+
+２０２６－１０－２３ 最終文案採「分享這篇文章」＋SVG。使用者已確認介面可接受、真實選單開啟及取消正常；僅授權完成驗證、提交與建立 PR，不合併或部署。人工回報與自動 payload／復原測試分別保存於本變更的 PR 驗證紀錄，不推定平台送達。
+
+２０２６－１０－２３ 使用者核准完整篇尾版面及公開站字級，後續僅授權更新 Spectra、實作、驗證與本機預覽，取代上一輪提交／PR 的執行範圍。新順序為接著讀（系列下一篇優先、前篇／系列集中、既有推薦合併去重）→分享→訂閱→收合參考與引用。推薦上限有下一篇為２、否則３；沒有公開下一篇不等於完結。不改排名、正文、canonical／OG 或首頁訂閱；[規格](../../openspec/changes/add-article-sharing/specs/article-ending/spec.md)與[本機紀錄](../../openspec/changes/add-article-sharing/reading-ending-verification.md)分別保存。沒有 commit、push、PR 或部署。
+
+２０２６－１０－２３ 使用者確認實際閱讀優先新版，重新授權完整提交前驗證、提交與建立 PR，取代上一輪僅本機的執行限制；仍不合併或部署。[提交前驗證](../../openspec/changes/add-article-sharing/pre-pr-verification.md)保存完整 gate、舊版面斷言修正及人工驗收界線。不改 ADR-001、canonical／OG、正文、provider 或正式排程權限。

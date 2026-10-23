@@ -1,0 +1,78 @@
+{
+  "base": "53f1e69dd284ff865ede5c5d218078a4290fe36a",
+  "branch": "codex/article-sharing",
+  "environment": {
+    "os": "macOS",
+    "node": "22.23.4",
+    "pnpm": "10.17.1",
+    "python": "3.11.15"
+  },
+  "gates": {
+    "pnpm test": {
+      "exitCode": 0,
+      "nodePassed": 790,
+      "pythonPassed": 286,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pnpm check": {
+      "exitCode": 0,
+      "files": 278,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0
+    },
+    "pnpm build:all": {
+      "exitCode": 0,
+      "publicPages": 52,
+      "allWorkspaces": true
+    },
+    "pnpm release:dry-run": {
+      "exitCode": 0,
+      "productionWrites": false,
+      "telegramNetworkCalls": 0
+    },
+    "pnpm editorial:rehearse": {
+      "exitCode": 0,
+      "productionWrites": false,
+      "telegramNetworkCalls": 0
+    },
+    "rendered and subscription": {
+      "exitCode": 0,
+      "passed": 3,
+      "publicArticles": 36
+    },
+    "spectra validate": {
+      "exitCode": 0
+    },
+    "spectra analyze": {
+      "exitCode": 0,
+      "critical": 0,
+      "warning": 0,
+      "suggestions": 23
+    }
+  },
+  "logSha256": {
+    "final-build-all.log": "6d78026266130b931de1c0cbc7092e633b653c98178bb80827fd457e9f0dfe01",
+    "final-check.log": "cebdda75e81d0448e7ef3dbe8eeaae1041a1f247d7cb94b9e23ad0ffbbc52d25",
+    "final-editorial-rehearse.log": "fe929d96f73d716f9b8d41721188ae7d76d05c0ffbcafbd83c4eb0c564c72499",
+    "final-release-dry-run-sandbox-blocked.log": "eb2d35879c192d9814cad4976c8dbe4a126354c1d7fdc77f57f18d82e8cb928b",
+    "final-release-dry-run.log": "c79004e34bf7ca14c521f4e0307cb3c9a69896b6cf2699b2f4476748ba532e03",
+    "final-rendered.log": "3aa17a9c15f354e82b0c6e2858f8d6891a277fb49b625db94dfe74cca7310cca",
+    "final-spectra-analyze.log": "c6953be0ab851c9b20f115905bbad3dce2a548cdcd72b26e056b08b01d608077",
+    "final-spectra-validate.log": "47a9cf0cc7731f73d56de55dfdac7559967174820e56aee90d80956142161e6c",
+    "final-test-before-visibility-fix.log": "97d51408c40e0498f0e260f48b94cf0f83368f9dc0d9412f20fc462e2193d051",
+    "final-test.log": "01a27eb5e06c971da72aaeb5a05b8986ca0aec88050c53841fa12abd0fc095fe",
+    "final-visibility-fix.log": "c41ac8cb3e6b34dba33f7ebc8edb9567264d426f7b7776e4fb965579828411c7",
+    "raw-initial-red.log": "09015432532ebec49ca3aa6743d653184a9a4c3268fb237d17838654103de10d",
+    "raw-label-red.log": "67b430c59b4a0a150522924abbc1e559511e73d803d31108b98685df16db3d68",
+    "raw-single-share-red.log": "ecec51647a631613756ef04e4b622f3532d979ab4a46cb3baddb0cf3517e0d32"
+  },
+  "nativeManual": {
+    "chooserOpened": "user-confirmed",
+    "cancelledNormally": "user-confirmed",
+    "receivingPlatformDelivery": "not-tested"
+  },
+  "merged": false,
+  "deployed": false
+}

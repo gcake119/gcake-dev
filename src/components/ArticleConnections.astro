@@ -1,11 +1,11 @@
 ---
 import { loadDiscovery } from '../lib/discovery/site';
-interface Props { articleId:string; placement:'further'|'related'|'references' }
-const {articleId,placement}=Astro.props;
+interface Props { articleId:string; placement:'further'|'related'|'references'; ending?:boolean }
+const {articleId,placement,ending=false}=Astro.props;
 const {corpus}=await loadDiscovery();
 const group=corpus.connections[articleId];
 const find=(id:string)=>corpus.articles.find(a=>a.articleId===id);
 const recommendations=group&&placement!=='references'?group[placement]:[];
 ---
 {recommendations.length>0&&<section class="article-connections" aria-label={placement==='further'?'延伸閱讀':'相關文章'}><h2>{placement==='further'?'延伸閱讀':'相關文章'}</h2><ul>{recommendations.map(r=>{const a=find(r.articleId)!;return <li><a href={a.href}>{a.title}</a><p>{r.reason}</p></li>;})}</ul></section>}
-{placement==='references'&&group&&(group.outgoing.length+group.incoming.length+group.external.length)>0&&<details class="article-references"><summary>引用與反向連結</summary>{group.outgoing.length>0&&<section><h2>本文提及的文章</h2><ul>{group.outgoing.map(id=>{const a=find(id)!;return <li><a href={a.href}>{a.title}</a></li>;})}</ul></section>}{group.incoming.length>0&&<section><h2>提及本文的文章</h2><ul>{group.incoming.map(id=>{const a=find(id)!;return <li><a href={a.href}>{a.title}</a></li>;})}</ul></section>}{group.external.length>0&&<section><h2>外部參考</h2><ul>{group.external.map(l=><li><a href={l.href} rel="noopener noreferrer">{l.title} ↗</a></li>)}</ul></section>}</details>}
+{placement==='references'&&group&&(group.outgoing.length+group.incoming.length+group.external.length)>0&&<details class="article-references"><summary>{ending ? '參考與引用' : '引用與反向連結'}</summary>{group.outgoing.length>0&&<section><h2>本文提及的文章</h2><ul>{group.outgoing.map(id=>{const a=find(id)!;return <li><a href={a.href}>{a.title}</a></li>;})}</ul></section>}{group.incoming.length>0&&<section><h2>{ending ? '引用本文的文章' : '提及本文的文章'}</h2><ul>{group.incoming.map(id=>{const a=find(id)!;return <li><a href={a.href}>{a.title}</a></li>;})}</ul></section>}{group.external.length>0&&<section><h2>外部參考</h2><ul>{group.external.map(l=><li><a href={l.href} rel="noopener noreferrer">{l.title} ↗</a></li>)}</ul></section>}</details>}
