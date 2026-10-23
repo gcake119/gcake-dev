@@ -137,3 +137,8 @@ Notification repair closeout: owner-reported single continuation exited 0 with T
 - [x] 16.1 Preserve Authority and runner permission separation with Complete bounded native ACL inventory scenarios; review current pending source and Apple SDK definitions, capture old-source RED for hidden descendants/root identity/failed evidence, and preserve unrelated dirty files.
 - [x] 16.2 Deliver complete native eligibility with all mutation rights, exact root identity, hidden descendants, no external symlink traversal and fail-closed reads; enforce the existing 30-second deadline even on blocked native execution with owned child cleanup, and verify existing plus missing acceptance cases RED/GREEN.
 - [x] 16.3 Complete focused Darwin acceptance, the existing repository gates and Spectra validation/analysis, record platform limits/source/scope and preserved production settings, then commit only reviewed ACL/spec artifacts and create the authorized PR; do not install, merge, alter timers/ACLs or send notifications.
+
+
+## 2026-10-23 repository closeout
+
+PR #64 and #65 are merged; their exact-head remote reviews and PR/main CI succeeded. See [closeout evidence](closeout-20261023.md) and [machine record](closeout-20261023.json). This archive preserves all historical authority and qualification limits; it does not install the new native ACL implementation, change schedules or resend notifications.

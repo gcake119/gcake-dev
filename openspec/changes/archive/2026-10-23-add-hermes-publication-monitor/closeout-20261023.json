@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "change": "add-hermes-publication-monitor",
+  "scope": "repository closeout only; no production adoption",
+  "tasks": {
+    "completed": 74,
+    "total": 74
+  },
+  "pullRequests": [
+    {
+      "number": 64,
+      "url": "https://github.com/gcake119/gcake-dev/pull/64",
+      "head": "c155e598d616030a0e160b4396c54cc50fed7da1",
+      "merge": "451805a68f9557c76b2e148541031e87e6e77fa6",
+      "mergedAt": "2026-10-23T09:23:39Z",
+      "codeReview": {
+        "commit_sha": "c155e598d616030a0e160b4396c54cc50fed7da1",
+        "has_any_findings": false,
+        "has_unresolved_findings": false,
+        "status": "completed"
+      },
+      "reviewUrl": "https://github.com/gcake119/gcake-dev/pull/64#issuecomment-6361470584",
+      "unresolvedThreads": 0,
+      "prCI": {
+        "conclusion": "success",
+        "createdAt": "2026-10-23T09:08:30Z",
+        "headSha": "c155e598d616030a0e160b4396c54cc50fed7da1",
+        "status": "completed",
+        "updatedAt": "2026-10-23T09:11:57Z",
+        "url": "https://github.com/gcake119/gcake-dev/actions/runs/39929695316"
+      },
+      "mainCI": {
+        "conclusion": "success",
+        "createdAt": "2026-10-23T09:23:42Z",
+        "headSha": "451805a68f9557c76b2e148541031e87e6e77fa6",
+        "status": "completed",
+        "updatedAt": "2026-10-23T09:35:59Z",
+        "url": "https://github.com/gcake119/gcake-dev/actions/runs/39931539813"
+      }
+    },
+    {
+      "number": 65,
+      "url": "https://github.com/gcake119/gcake-dev/pull/65",
+      "head": "934346b0375ffd549cd4b688aba6b3558f193147",
+      "merge": "ee21bab5c17f57a6f363b78dd4e8846802987716",
+      "mergedAt": "2026-10-23T09:55:47Z",
+      "codeReview": {
+        "commit_sha": "934346b0375ffd549cd4b688aba6b3558f193147",
+        "has_any_findings": false,
+        "has_unresolved_findings": false,
+        "status": "completed"
+      },
+      "reviewUrl": "https://github.com/gcake119/gcake-dev/pull/65#issuecomment-6362191633",
+      "unresolvedThreads": 0,
+      "prCI": {
+        "conclusion": "success",
+        "createdAt": "2026-10-23T09:50:27Z",
+        "headSha": "934346b0375ffd549cd4b688aba6b3558f193147",
+        "status": "completed",
+        "updatedAt": "2026-10-23T09:53:33Z",
+        "url": "https://github.com/gcake119/gcake-dev/actions/runs/39934774313"
+      },
+      "mainCI": {
+        "conclusion": "success",
+        "createdAt": "2026-10-23T09:55:50Z",
+        "headSha": "ee21bab5c17f57a6f363b78dd4e8846802987716",
+        "status": "completed",
+        "updatedAt": "2026-10-23T09:59:10Z",
+        "url": "https://github.com/gcake119/gcake-dev/actions/runs/39935424410"
+      }
+    }
+  ],
+  "cleanup": {
+    "pr64": {
+      "merged": "451805a",
+      "mainCI": 39931539813,
+      "conclusion": "success"
+    },
+    "pr65": {
+      "merged": "ee21bab",
+      "mainCI": 39935424410,
+      "conclusion": "success"
+    },
+    "cleanup": "completed",
+    "preservedPrimaryFiles": 32,
+    "formalFilesUnchanged": 5,
+    "remaining": [
+      "Backfill merged review and main CI evidence into closeout records",
+      "Evaluate archive of add-hermes-publication-monitor (74/74 done)",
+      "Production native ACL installation/qualification deferred by owner",
+      "schedule-substack-drafts-ahead 5.3 remains incomplete by owner decision; no subscriber monitoring required"
+    ],
+    "unrelatedLegacyAttachmentsStillListed": [
+      "admin-draft-status",
+      "substack-notify-main59"
+    ]
+  },
+  "cleanupReceiptSha256": "0de94c44696c694d669683a2c9bd34d89e73b80bd947370477e6f8a38512305e",
+  "boundaries": {
+    "allowCreate": false,
+    "scheduledWriteEnabled": false,
+    "productionInstallPerformed": false,
+    "scheduleChanged": false,
+    "notificationSent": false,
+    "legacyPermissionErrorRootCause": "unknown",
+    "nativeACLProductionQualification": "not performed",
+    "subscriberMonitoring": "owner declined; schedule task 5.3 stays incomplete"
+  },
+  "archiveVerification": {
+    "specParity": [
+      {
+        "capability": "hermes-publication-monitoring",
+        "requirements": 14,
+        "scenarios": 53
+      },
+      {
+        "capability": "hermes-runtime-update-safety",
+        "requirements": 5,
+        "scenarios": 11
+      },
+      {
+        "capability": "hermes-update-entry-integration",
+        "requirements": 11,
+        "scenarios": 36
+      },
+      {
+        "capability": "publication-monitor-summary",
+        "requirements": 4,
+        "scenarios": 11
+      }
+    ],
+    "totalRequirements": 34,
+    "totalScenarios": 111,
+    "historicalSourceAndEvidenceUnchanged": true,
+    "completedTasks": 74,
+    "localLinksChecked": 18,
+    "runtimeSourcesUnchanged": true,
+    "preservedPrimaryFiles": 32,
+    "mainCIEvidenceReused": "39935424410 exact ee21bab runtime; documentation-only candidate",
+    "mainSpecValidation": {
+      "specs": 18,
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+}

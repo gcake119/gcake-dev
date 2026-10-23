@@ -15,3 +15,5 @@
 本修復後續已沿用原站共用私訊流程完成自然輪次 ACK 267，使用者確認 Telegram 收到；詳細[正式驗收](../../openspec/changes/archive/2026-10-22-repair-substack-publication-notifications/shared-production-acceptance-20261022.json)與[三行格式讀回](../../openspec/changes/archive/2026-10-22-repair-substack-publication-notifications/three-line-format-20261022.json)分開保存。未採用專用群組；舊快照 PermissionError 系統根因與訂閱者實收仍未確立，原排程試行 5.3 維持未完成。
 
 ２０２６－１０－２２ 此修復已完成封存，16 項任務完成；main `347dfd8` CI 與重新觸發的遠端審查均通過，正式自然輪次、Hermes 實收與三行格式證據分開保留。詳見[結案紀錄](../../openspec/changes/archive/2026-10-22-repair-substack-publication-notifications/closeout-20261022.md)。新建及排程寫入仍停用，訂閱者寄送仍未知，另一項排程試行 5.3 保持未完成。
+
+２０２６－１０－２３ Hermes 發布監控 `add-hermes-publication-monitor` 已完成 74／74 項並封存；[結案紀錄](../../openspec/changes/archive/2026-10-23-add-hermes-publication-monitor/closeout-20261023.md)保留 PR #64／#65 的已完成遠端審查、合併與各自 main CI 成功證據。這是來源與規格結案，原生 ACL 新版未正式安裝或新增正式資格驗收；舊 PermissionError 根因仍未知。新建及排程寫入維持停用，不改 timer、不重送通知；訂閱者監控依使用者決定停止，排程試行 5.3 保持未完成。ADR-001 與既有權限政策不變。
