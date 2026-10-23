@@ -176,7 +176,7 @@
 
 原生分享帶原始文章標題與新部落格正式閱讀網址，不含查詢與片段。不支援或分享失敗時顯示完整唯讀網址供手動複製，不自動操作剪貼簿。鐵人賽的 canonical、Open Graph URL 與原始版本連結仍指向舊站；不同平台的預覽呈現由接收平台決定。取消分享保持中性，瀏覽器回報分享完成不代表已發文或送達。頁尾社群仍為作者個人入口，不新增平台 SDK、追蹤或登入。
 
-本機自動測試、真實系統分享選單、接收平台、部署與使用者人工確認分別記錄，不互相替代；原版證據見 `openspec/changes/add-article-sharing/local-verification.md`，單一 SVG 分享修訂見 `openspec/changes/add-article-sharing/single-share-verification.md`。
+本機自動測試、真實系統分享選單、接收平台、部署與使用者人工確認分別記錄，不互相替代；原版證據見 `openspec/changes/archive/2026-10-23-add-article-sharing/local-verification.md`，單一 SVG 分享修訂見 `openspec/changes/archive/2026-10-23-add-article-sharing/single-share-verification.md`。
 
 ## 閱讀優先的文章結尾（２０２６－１０－２３核准）
 
@@ -186,4 +186,4 @@
 
 字級依公開站：根字級１７px／１．８，正文１rem／１．９；篇尾標題１．１８rem／１．４５；下一篇標題１rem／７００，其他推薦標題１rem／４００；摘要及 metadata ．８２rem；導覽、分享、訂閱與引用連結１rem。手機不另縮小閱讀導覽字級。保留原雙主題 token、４４px 控制與鍵盤焦點，不改全站字級。
 
-分享列採「這篇文章對你有幫助嗎？」與 SVG＋「分享這篇文章」；文章訂閱採「持續讀新的開發筆記」，沿用 Substack／RSS 目的地，首頁訂閱不變。推薦不變成引用，正文及 canonical／OG／原始版本政策保留。核准版面保存於 `openspec/changes/add-article-sharing/design-source/`；本機證據見同變更的 `reading-ending-verification.md`。
+分享列採「這篇文章對你有幫助嗎？」與 SVG＋「分享這篇文章」；文章訂閱採「持續讀新的開發筆記」，沿用 Substack／RSS 目的地，首頁訂閱不變。推薦不變成引用，正文及 canonical／OG／原始版本政策保留。核准版面保存於 `openspec/changes/archive/2026-10-23-add-article-sharing/design-source/`；本機證據見同變更的 `reading-ending-verification.md`。

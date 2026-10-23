@@ -1,0 +1,83 @@
+{
+  "owner": "foreground-fill:228519d8-7737-435d-8b9e-3456cc9c91aa",
+  "target": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "phase": "missing_outputs_read_back_policy_unchanged",
+  "batches": [
+    {
+      "offset": 0,
+      "passages": 16,
+      "bytesReserved": 2906,
+      "outputSha256": "e1c5162b9ed7865dd03db9308e168eb5d6fb64d5633aaf3fa3819ebb8a6fd26d"
+    },
+    {
+      "offset": 16,
+      "passages": 16,
+      "bytesReserved": 3667,
+      "outputSha256": "a0723fce915eacd67a0392582896c9cbb21ac7581bc92bebb164852db2aa447e"
+    },
+    {
+      "offset": 32,
+      "passages": 16,
+      "bytesReserved": 4278,
+      "outputSha256": "8ea30a02fadee0aaa246c56b037bd4fceb6b92a2c8df4c3b0a6c6c72eeefac8c"
+    },
+    {
+      "offset": 48,
+      "passages": 16,
+      "bytesReserved": 2157,
+      "outputSha256": "dd8798f7a4b8d8fa173a43ff3c1c8669ec777ce7b93ff425e89be6ecbd4f1534"
+    },
+    {
+      "offset": 64,
+      "passages": 16,
+      "bytesReserved": 2115,
+      "outputSha256": "47ea778a7e43eec7502011a3276a55ad54277602a6658580c2f7782b4fe3ad2f"
+    },
+    {
+      "offset": 80,
+      "passages": 16,
+      "bytesReserved": 2313,
+      "outputSha256": "6d72d432b3838dd4e96938fc2c58c56fb08d31b5984e0fcb9cc3650bbb29e248"
+    },
+    {
+      "offset": 96,
+      "passages": 16,
+      "bytesReserved": 4040,
+      "outputSha256": "3c3e7b91eb8a2ce8b6fb322c32c23489ad418df92201c6ba1e70a1d5089f6395"
+    },
+    {
+      "offset": 112,
+      "passages": 16,
+      "bytesReserved": 3052,
+      "outputSha256": "2a9833af2764e05a9c55137de19a4858cc6e79a6be4cf9bdd72b84e6bb9c1d72"
+    },
+    {
+      "offset": 128,
+      "passages": 16,
+      "bytesReserved": 1638,
+      "outputSha256": "3ab982f5201359fb6be9b37a870823d2d4471ee6f50ed1fb0eef0f283bbfce56"
+    },
+    {
+      "offset": 144,
+      "passages": 16,
+      "bytesReserved": 1457,
+      "outputSha256": "4e1b9f4c31f89f107eb78d4f38657cbe83b71811f42eb03da09599cbbc676abe"
+    },
+    {
+      "offset": 160,
+      "passages": 11,
+      "bytesReserved": 2390,
+      "outputSha256": "ec73060e5a83a0c17c6fa834c99720ea2a50561065274c1904bec9456e976553"
+    }
+  ],
+  "passagesEmbedded": 171,
+  "previousDriverStopped": [
+    52126
+  ],
+  "savedPendingReused": 16,
+  "newPassagesPlanned": 171,
+  "ledgerBefore": 2768,
+  "providerVectorsVerified": 187,
+  "finishedAt": "2026-10-23T13:55:43.347678+00:00",
+  "leaseReleased": true
+}

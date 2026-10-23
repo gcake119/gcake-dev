@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "sourceCommit": "30ac9643baab718a7690bbea5af22658832cb616",
+  "deploymentRun": 39960141344,
+  "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "manifestMatchesArtifact": true,
+  "pages": [
+    {
+      "path": "",
+      "status": 200,
+      "sha256": "170bb6ae73dfe96960b54b75acc26485a2411176cd56a9a04f8717f708562dff"
+    },
+    {
+      "path": "search/",
+      "status": 200,
+      "sha256": "74ad7bbd4bddb28b75e4ca05f7d07216bbaf1a141629fa437e6d15d9944a40bd"
+    },
+    {
+      "path": "posts/ithome-2026-publishing-toolchain/",
+      "status": 200,
+      "sha256": "28255f2eae903f5ae6822d3e2c41992eabe18e55de364087ef5bd4b8db29a142"
+    },
+    {
+      "path": "posts/ithome-2026-astro-choice/",
+      "status": 200,
+      "sha256": "c2726e2e032899f767af7dca2c023a9a1b718b54fa84bedbbd3018758963e314"
+    },
+    {
+      "path": "posts/ai-ui-five-stage-workflow/",
+      "status": 200,
+      "sha256": "b71c3fdc2a4a8612fcf1dc20b8288cff6e493735c405bd48b150ddca936439fa"
+    },
+    {
+      "path": "posts/ai-agent-development-workflow/",
+      "status": 200,
+      "sha256": "a7a37fa9895f127fa81ddae769d7a13b345f3e9fd171cf6a0ef25ab6b369e719"
+    },
+    {
+      "path": "posts/ithome-2026-chatgpt-writing-workflow/",
+      "status": 200,
+      "sha256": "265c0294098fd28bb34e7aa987c04a41263515423eec1a523666b324103868c9"
+    },
+    {
+      "path": "posts/ithome-2026-publishing-in-production/",
+      "status": 200,
+      "sha256": "0501bc7ef8f63392c35baaaa43f4c3f8e7830de02f02ddfe02909fab6262a6e7"
+    },
+    {
+      "path": "series/ithome-2026/day-12/",
+      "status": 200,
+      "sha256": "f3d80897834117867f7d2929910040787876b8ba02720978303d395f00a60546"
+    },
+    {
+      "path": "series/ithome-2026/day-15/",
+      "status": 200,
+      "sha256": "06e7051395949ede66bd59cffb99b8a214402f68a4391c2afb43a6b5550d91d7"
+    },
+    {
+      "path": "series/ithome-2026/day-23/",
+      "status": 200,
+      "sha256": "2127d6870b0b00d4cc8c9918084e4351e863cbde6664ebe9cc5faa05674b7849"
+    },
+    {
+      "path": "series/ithome-2026/day-24/",
+      "status": 200,
+      "sha256": "c9e4fbb474340f73ebea0dba9beff35bf79b96cc06a3e990a949a209b7c0dc54"
+    },
+    {
+      "path": "series/ithome-2026/day-25/",
+      "status": 200,
+      "sha256": "4f4d5666f2865bec824c21c9a7ba285fac86affd8f06bbc3435e8f56efe56d77"
+    },
+    {
+      "path": "series/ithome-2026/day-22/",
+      "status": 200,
+      "sha256": "f673dc0d7a79aa223abdda8b20112d9a64800ac177136fd270747a0f8a698676"
+    },
+    {
+      "path": "series/ithome-2026/day-14/",
+      "status": 200,
+      "sha256": "deaa3972d9a2c4591a8f5bc4e14b837c584e0865c9c4e065e706f8d1d9f2e57e"
+    },
+    {
+      "path": "series/ithome-2026/day-13/",
+      "status": 200,
+      "sha256": "51d1fc2037f643e17769c5742b9303f1c170e6e8e0fcece19ca82431d12b6cc8"
+    },
+    {
+      "path": "series/ithome-2026/day-09/",
+      "status": 200,
+      "sha256": "65d5b3e2556834e27827d3bf3d5034ce317ae6aa7cb353670c9e3ef41f049525"
+    },
+    {
+      "path": "series/ithome-2026/day-07/",
+      "status": 200,
+      "sha256": "0ae36b305ddb573559ce7fef7c9edfeb16eaffd3ba2d11c66faf4d17ffce1743"
+    },
+    {
+      "path": "series/ithome-2026/day-06/",
+      "status": 200,
+      "sha256": "233c7ab42fa1597770eb79b93feec8789a356dd7e12c327ec88e0e726d162b4f"
+    },
+    {
+      "path": "series/ithome-2026/day-01/",
+      "status": 200,
+      "sha256": "070dd371df13b90b00c0b36241ad56e6ecd922abb35eaeadc710599682a8dc58"
+    },
+    {
+      "path": "series/ithome-2026/day-08/",
+      "status": 200,
+      "sha256": "007afabd272a8dcb5b5af48d8e154bfbeb3020c465a9f362b139fef785e2446b"
+    },
+    {
+      "path": "series/ithome-2026/day-30/",
+      "status": 200,
+      "sha256": "2da0688c01150018243a46678812b74e30b6238e2d51f1cfd1ba32b5214e2f47"
+    },
+    {
+      "path": "series/ithome-2026/day-16/",
+      "status": 200,
+      "sha256": "3e10aebe6537a98cb60401bba7de0354eb60f3c682848f7be43e268ec2509b7e"
+    },
+    {
+      "path": "series/ithome-2026/day-29/",
+      "status": 200,
+      "sha256": "064ff01905901eb8ea4a8d242fd39bc9d64c6b7cecdc280f59f6244e5bc651b2"
+    },
+    {
+      "path": "series/ithome-2026/day-11/",
+      "status": 200,
+      "sha256": "115aa85e49ebef1f54d9c85c66480b11bb3b70153c9eacb06ea81c6a7112581c"
+    },
+    {
+      "path": "series/ithome-2026/day-27/",
+      "status": 200,
+      "sha256": "892415b9e5d89f87f12a9c9b315d011626767242f161aba12fcd289faea02864"
+    },
+    {
+      "path": "series/ithome-2026/day-18/",
+      "status": 200,
+      "sha256": "98e09c47f93aa59fdd9743e02f88ba3b8045ec147fbd7b2cacd823a78adcdedf"
+    },
+    {
+      "path": "series/ithome-2026/day-20/",
+      "status": 200,
+      "sha256": "4492a69b58bba45c833534d4f53521aefc418b4a9003eecb51e99ef53242aa12"
+    },
+    {
+      "path": "series/ithome-2026/day-21/",
+      "status": 200,
+      "sha256": "b85f551916970b183b96c921649b25827efb4382303021f6d8d5912e59cc4490"
+    },
+    {
+      "path": "series/ithome-2026/day-26/",
+      "status": 200,
+      "sha256": "e11615cbec46e92a402126a2b0052311b271bf0580b6ee54574f40e13cfa9cf6"
+    },
+    {
+      "path": "series/ithome-2026/day-19/",
+      "status": 200,
+      "sha256": "fb77fbb23e0b81e1276d2f637f422382d18ba2cef57bd9b7c7eb483fe21902d3"
+    },
+    {
+      "path": "series/ithome-2026/day-10/",
+      "status": 200,
+      "sha256": "d0b6090e6523a2b67c402b8691055564114860e631f955597940432d72ec79a5"
+    },
+    {
+      "path": "series/ithome-2026/day-17/",
+      "status": 200,
+      "sha256": "d88e9bc3c1ff1d03bfc0fdfcc843a96c81efaabfa2b456187b866aae29b32bb6"
+    },
+    {
+      "path": "series/ithome-2026/day-28/",
+      "status": 200,
+      "sha256": "1f6efb7ee154a949d8d40dd55334ea78f4f6092dbc8f3c8707bdabe084ca22e2"
+    },
+    {
+      "path": "series/ithome-2026/day-04/",
+      "status": 200,
+      "sha256": "2483ea2b403c2d6e8bec21f678a5292bb00a4008c1d4a31323a8855ab1e029cb"
+    },
+    {
+      "path": "series/ithome-2026/day-03/",
+      "status": 200,
+      "sha256": "51a46dcbbd43788deaa03fc500b96bb455c0ef8c96b5b49fb98d59b14c1f1750"
+    },
+    {
+      "path": "series/ithome-2026/day-02/",
+      "status": 200,
+      "sha256": "012f9a426e9e2dd5f779db4db169219ed53516f022bcb4b119142b57f078e3e8"
+    },
+    {
+      "path": "series/ithome-2026/day-05/",
+      "status": 200,
+      "sha256": "db9e92e8f208e9be500fd4ad7666faccc7e9552ed073463ac0021ede8129777d"
+    }
+  ],
+  "scripts": [
+    {
+      "href": "/gcake-dev/_astro/search.astro_astro_type_script_index_0_lang.FypUu2Z1.js",
+      "sha256": "5020c215fe0838b2f2bc87e9d7af26401dd88817d12b273b309fa542b9d7ae59"
+    }
+  ],
+  "assets": [
+    {
+      "kind": "index",
+      "bytes": 1712103,
+      "sha256": "69f088d1b5c4d3fe080cd2e42496179b5c7e444b7808a9f9e1686ffaf9c58255"
+    },
+    {
+      "kind": "passages",
+      "bytes": 1660990,
+      "sha256": "dfd1be24affe8e88918f0c08f95b35971702bde5c29fe8ca57207e8066e737c1"
+    },
+    {
+      "kind": "connections",
+      "bytes": 117970,
+      "sha256": "3c693b31c4fcd3cc1e3e3d7cf95ade0e536c6b5cd947a7ff5bd329aba0f20599"
+    }
+  ]
+}

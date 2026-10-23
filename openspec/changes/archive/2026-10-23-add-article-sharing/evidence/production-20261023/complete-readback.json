@@ -1,0 +1,25 @@
+{
+  "target": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "owner": "complete-readback:8d68a796-4e00-41ea-8742-2a461f79d820",
+  "phase": "complete_provider_readback_policy_unchanged",
+  "vectorsVerified": 2955,
+  "originalValuesCompared": 2688,
+  "reservation": {
+    "requests": 0,
+    "tokens": 0,
+    "units": 0,
+    "vectorQueries": 0,
+    "worker": 1,
+    "admission": 4000,
+    "storage": 0
+  },
+  "knownPendingFullyReconciled": 0,
+  "index": {
+    "dimensions": 1024,
+    "vectorCount": 2955,
+    "processedUpToDatetime": "2026-10-23T13:56:34.229Z",
+    "processedUpToMutation": "b66745e6-10d6-45fa-8d96-be38a8b0cbe5"
+  },
+  "finishedAt": "2026-10-23T13:58:47.538362+00:00",
+  "leaseReleased": true
+}

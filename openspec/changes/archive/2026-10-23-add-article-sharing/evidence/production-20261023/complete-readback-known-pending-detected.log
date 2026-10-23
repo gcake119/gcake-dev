@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/output/article-sharing/production-20261023/verify-complete-index.py", line 23, in <module>
+    assert not sql('SELECT id FROM discovery_sync_pending')[0]['results'],'PENDING_RETAINED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: PENDING_RETAINED

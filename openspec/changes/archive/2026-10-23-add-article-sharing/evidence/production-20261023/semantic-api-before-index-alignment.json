@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-23T13:21:05.065644+00:00",
+  "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "status": 409,
+  "elapsedSeconds": 1.7104346670093946,
+  "body": {
+    "code": "CORPUS_MISMATCH",
+    "retryable": false,
+    "fallback": "keyword"
+  }
+}

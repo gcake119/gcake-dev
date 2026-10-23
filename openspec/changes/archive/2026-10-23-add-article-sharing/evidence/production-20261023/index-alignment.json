@@ -1,0 +1,56 @@
+{
+  "owner": "deploy-align:03d1da2d-d72d-4e40-a0b3-e709052fcea8",
+  "target": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "previous": "2574ea8ee01e6eb02dea51672d437b83e5922ba2b9b159bc4c4b132f267f64fa",
+  "vectors": 2688,
+  "cloudEmbeddingCalls": 0,
+  "newStorageDimensions": 0,
+  "phase": "existing_values_verified_missing_retained",
+  "upserts": [
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 500
+    },
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 500
+    },
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 500
+    },
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 500
+    },
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 500
+    },
+    {
+      "index": "gcake-public-search-bge-m3",
+      "count": 188
+    }
+  ],
+  "reservation": {
+    "requests": 0,
+    "tokens": 0,
+    "units": 0,
+    "vectorQueries": 0,
+    "worker": 1,
+    "admission": 12000,
+    "storage": 0
+  },
+  "providerVectorsFullyVerified": 2688,
+  "missingPassages": 267,
+  "resumeCursor": 2443,
+  "policyUnchanged": true,
+  "index": {
+    "dimensions": 1024,
+    "vectorCount": 2688,
+    "processedUpToDatetime": "2026-10-23T13:37:19.201Z",
+    "processedUpToMutation": "6ec35b55-3e37-4aea-a7c7-c830936b97f6"
+  },
+  "finishedAt": "2026-10-23T13:40:25.750756+00:00",
+  "leaseReleased": true
+}
