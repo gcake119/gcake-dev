@@ -31,6 +31,14 @@ An explicitly authorized one-use read-only qualification SHALL connect the real 
 - **WHEN** the natural round creates its own tab
 - **THEN** it selects Chrome by name, closes only its own tab after the read, and rejects qualification if actual execution evidence identifies any other browser
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Single existing draft actual write qualification
 
@@ -50,6 +58,14 @@ A separately authorized one-use write qualification SHALL use Chrome by name and
 - **GIVEN** an invalid baseline grant, a changed real before-content, or a scheduled or public identity
 - **WHEN** the write qualification evaluates the identity or prepares to edit
 - **THEN** it rejects the operation without overwriting that changed content or changing the protected provider state
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Qualified unattended draft integration
@@ -86,6 +102,14 @@ The worker SHALL remain disabled until an explicitly approved Computer Use hando
 - **WHEN** a round starts or reaches a mutation boundary
 - **THEN** no new authenticated operation outside current authority is dispatched and existing provider commitments are preserved
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Complete finalized draft coverage
 
@@ -114,6 +138,14 @@ The worker SHALL enumerate all eligible finalized complete full Markdown origina
 - **GIVEN** an attempted save omits a code block, changes meaningful inner whitespace, breaks a link or loses image alt
 - **WHEN** fresh saved readback is compared with the fixed source
 - **THEN** the same ID remains unverified or uncertain without a replacement draft or a complete-sync claim
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Actual comparison and human conflict protection
@@ -149,6 +181,14 @@ Every eligible synchronization round SHALL read actual complete saved content an
 - **GIVEN** a public unchanged-source article has known presentation-only differences
 - **WHEN** the anonymous observer evaluates attention
 - **THEN** it stays quiet under the existing rule and does not qualify a private full-draft save
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Persistent identity and uncertain outcome recovery
@@ -191,6 +231,14 @@ The worker SHALL preserve one durable source identity and original provider ID t
 - **WHEN** another writer attempts synchronization or the lock appears old
 - **THEN** the competitor issues no mutation and does not steal ownership or erase the intent
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Freshness and source lifecycle boundaries
 
@@ -225,6 +273,14 @@ The worker SHALL recheck source and provider versions at dispatch and source fre
 - **GIVEN** the qualified finite call or time budget is exhausted
 - **WHEN** a round stops
 - **THEN** it records incomplete coverage and a fair continuation point without claiming all sources synchronized or clearing prior issues
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Scheduled and public articles require foreground action
@@ -266,6 +322,14 @@ Automatic draft synchronization SHALL NOT arm, publish, unschedule, reschedule, 
 - **WHEN** the draft worker inventories that original
 - **THEN** it records exclusion from draft synchronization without authenticated access or a new foreground-required alert, preserves its provider commitments, and still requests foreground action if the source later changes
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Bounded recovery and truthful disablement
 
@@ -295,6 +359,14 @@ The worker SHALL retain original identity, last confirmed provider state, attemp
 - **WHEN** the owner reads the outcome
 - **THEN** draft verification is reported separately, publication and subscriber receipt are not asserted and scheduling task 5.3 stays pending
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Authenticated frontend status projection
 
@@ -318,6 +390,14 @@ The admin API SHALL provide authenticated read-only list and per-slug projection
 - **WHEN** an authenticated owner reads status
 - **THEN** the API returns the respective not-found, unavailable or invalid-input error and never substitutes successful empty evidence
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Ordinary Chrome executor and remaining live qualification
 
@@ -338,6 +418,14 @@ The explicitly authorized ordinary worker SHALL execute its existing validated h
 - **WHEN** the real executor saves and reloads that version and then restores the complete current Git content
 - **THEN** both complete saved versions are independently verified on the original ID and slug, the final content matches Git, and no Git, schedule, publication or subscriber operation occurs
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Independently gated creation capability
 
@@ -352,6 +440,14 @@ The owner's selected initial standing activation SHALL synchronize existing orig
 - **GIVEN** a known unscheduled original ID with baseline A and finalized Git B while creation is disabled
 - **WHEN** ordinary synchronization executes
 - **THEN** it can read and update that same ID without creating an article or changing its slug
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Approved original-image identity comparison
@@ -384,6 +480,14 @@ The owner explicitly approves media equivalence only when independently verified
 - **WHEN** the status API is deployed and the owner reads its list and single-article status through normal authentication
 - **THEN** real production records and separate sync/publication/delivery states are returned without cached private responses, unauthenticated access and attempted writes are rejected, and existing assets, provider identities, schedules, delivery commitments and disabled creation remain unchanged
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Read-only frontend status integration
 
@@ -414,6 +518,14 @@ The existing publishing workspace SHALL present the paginated status list, and t
 - **WHEN** the owner reads or refreshes status and navigates pages
 - **THEN** page boundaries are truthful, all three status labels remain readable without horizontal page overflow, and every new network operation is read-only
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Production frontend delivery preserves draft-only authority
 
@@ -434,6 +546,14 @@ The authorized frontend rollout SHALL serve the qualified assets with the existi
 - **WHEN** real production acceptance and owned-browser cleanup finish
 - **THEN** original IDs and slugs, existing schedule and subscriber commitments and the synchronization configuration remain unchanged, and only owned acceptance resources are closed
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Legacy publication history reads without write authority
 
@@ -453,6 +573,14 @@ The deployed legacy article status query SHALL read persisted publication histor
 - **GIVEN** the article view has a prior failed status read or another article
 - **WHEN** a later status read succeeds or fails
 - **THEN** prior error text disappears on success, and old article rows are not reused as evidence for the newly selected article; a genuine failed read stays visible
+
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
 
 ---
 ### Requirement: Current Pages publication evidence is visible independently
@@ -479,6 +607,14 @@ The owner article status SHALL include current saved Pages publication, matching
 - **WHEN** another article is read and Chrome verifies deployed output
 - **THEN** old Pages evidence is cleared, real saved evidence is displayed only for the selected article, original release and Substack commitments are preserved, creation remains disabled and only owned browser resources are cleaned
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Deterministic complete draft-list evidence
 
@@ -504,3 +640,10 @@ Unattended draft synchronization SHALL validate all three observed lists with th
 - **GIVEN** the qualified ordinary integration supports existing draft IDs and creation is not qualified
 - **WHEN** discovery of a new identity or draft creation is requested, even with a creation flag set to true
 - **THEN** both controller and direct executor reject before any browser process, preserve the original identity and pending intent, and require separately qualified creation support rather than infer permission from an empty discovery reply
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->

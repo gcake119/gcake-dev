@@ -58,6 +58,14 @@ Prepare, publish, verify, retry, draft synchronization and newsletter intent SHA
 - **WHEN** a foreground mutation is requested after draft synchronization
 - **THEN** the old approval is rejected under the existing exact-scope checks
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Failure isolation
 A failure for GitHub Pages observation or Substack SHALL NOT corrupt article content or roll back a successful independent target.

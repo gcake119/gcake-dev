@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "sourceMain": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+  "production": {
+    "passed": true,
+    "version": "c65baef6-faa6-40c8-bb89-6a5047db216d",
+    "deployment": "55c29a09-1ac7-4eb0-be36-ce0ec091d546",
+    "sourceCommit": "f4ea22f097973f4978e7dccbbaddad87bb3c4ec7",
+    "codeEqualsMain": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+    "resourcesUnchanged": true,
+    "assetsMatched": 3,
+    "redeployed": false
+  },
+  "runtime": {
+    "oldPinDigest": "154d919567c7eccb6a47674ef88b21b401680d84893a6739f151cb97f44f32ae",
+    "pinDigest": "1a07ebc26ed597c4d44a9402dec91fde9702978943a66b62f4d0b811b1f25b22",
+    "sourceFilesUpdated": 13,
+    "configUnchanged": true,
+    "expiresAt": "2026-11-18T15:44:12.782Z",
+    "allowCreate": false,
+    "scheduledWrites": false,
+    "timerSeconds": 900,
+    "jobReload": false,
+    "kickstart": false
+  },
+  "natural": {
+    "passed": true,
+    "run": 43,
+    "round": "round-IpVZG9",
+    "inventory": 6,
+    "eligibleVerified": 2,
+    "protectedExcluded": 4,
+    "providerWrites": 0,
+    "requests": [
+      {
+        "id": "221099763",
+        "action": "draft-read",
+        "chromeCalls": 15,
+        "passed": true
+      },
+      {
+        "id": "221099415",
+        "action": "draft-read",
+        "chromeCalls": 16,
+        "passed": true
+      }
+    ],
+    "sourceCommit": "6ea5c0b47f0551feb8a2381edc841573aa077f58",
+    "original": {
+      "id": "221099415",
+      "slug": "ithome-2026-template-hardening",
+      "digest": "sha256:e0bf0977ae22ffe1d050ad9a51ebcada48dbf526ef332c596e617d5c21b16721"
+    },
+    "checkedAt": "2026-10-20T07:45:39.953Z",
+    "locks": 0,
+    "checkpoints": 0,
+    "intents": 0,
+    "sourceRemoved": true
+  },
+  "frontend": {
+    "realChrome": true,
+    "apis": [
+      {
+        "method": "GET",
+        "status": 200,
+        "cacheControl": "no-store",
+        "route": "/api/v1/substack/drafts"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "cacheControl": "no-store",
+        "route": "/api/v1/substack/drafts/:slug"
+      }
+    ],
+    "independentStates": [
+      "verified",
+      "draft_prepared",
+      "not_armed"
+    ],
+    "subscriberReceipt": "unknown",
+    "mobileWidth": 390,
+    "mobileScrollWidth": 390,
+    "viewportReset": true
+  },
+  "cleanup": {
+    "ownedTabsClosed": 6,
+    "mergedWorktreeArchived": true,
+    "mixedDirtyWorktreePreserved": true,
+    "preservedFileHashes": 724
+  },
+  "scheduleAcceptance": {
+    "task": "schedule-substack-drafts-ahead 5.3",
+    "complete": false,
+    "confirmedTime": "2026-10-21T23:00:00.000Z",
+    "readOnlyFollowup": "substack",
+    "notBefore": "2026-10-21T23:30:00Z"
+  },
+  "limits": [
+    "No content or media write occurred in this unchanged-content qualification; existing media receipts remain historical.",
+    "No new Worker deployment: existing deployed Worker code and frontend assets equal current main.",
+    "No subscriber receipt evidence; no scheduling, publication or delivery operations."
+  ],
+  "archive": {
+    "id": "2026-10-20-automate-substack-draft-content-sync",
+    "tasksComplete": 54,
+    "tasksTotal": 54,
+    "addedRequirements": 19,
+    "modifiedRequirements": 2,
+    "snapshotCreated": true,
+    "cleanupWarnings": [],
+    "committed": false
+  }
+}
