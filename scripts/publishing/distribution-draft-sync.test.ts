@@ -321,18 +321,24 @@ test('rename holds rotate fairly to the missing original without allowing replac
  }finally{f.db.close();await fs.rm(root,{recursive:true,force:true});}
 });
 
-for(const handlerPauseMs of [0,1300])test('executor ignoring SIGTERM is bounded and its owned process group is stopped; handler pause '+handlerPauseMs+'ms',async()=>{
+for(const stalledHandler of [false,true])test('executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler '+stalledHandler,async(t)=>{
  const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-executor-timeout-'));let pid:number|undefined;let execution:Promise<unknown>|undefined;
  try{
-  // Publish an already complete marker atomically: SIGKILL may interrupt a handler after truncate but before write.
-  // The delayed case must still prove SIGTERM delivery and forced group cleanup without requiring handler completion.
-  await fs.writeFile(root+'/term-ready','yes');await assert.rejects(fs.access(root+'/term-seen'),{code:'ENOENT'});
-  const executable=root+'/ignore-term.cjs';await fs.writeFile(executable,'#!'+process.execPath+'\n'+`const fs=require('node:fs');process.on('SIGTERM',()=>{fs.renameSync(${JSON.stringify(root+'/term-ready')},${JSON.stringify(root+'/term-seen')});Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,${handlerPauseMs});});fs.writeFileSync(${JSON.stringify(root+'/pid')},String(process.pid));setInterval(()=>{},100);`,{mode:0o700});
+  // Exercise process-group signals without making interpreter startup part of the fixture.
+  // Keep both a returning handler and one that never finishes inside the grace period.
+  // All operations are shell builtins; TERM is recorded but deliberately does not exit.
+  const executable=root+'/ignore-term.sh';await fs.writeFile(executable,[
+   '#!/bin/sh','fixture_dir=${0%/*}',`trap 'printf yes > "$fixture_dir/term-seen"; ${stalledHandler?"while :; do :; done":":"}' TERM`,
+   `printf '%s' "$$" > "$fixture_dir/pid"`,'while :; do :; done','',
+  ].join('\n'),{mode:0o700});
   const {executeComputerUse}=await import('./substack-draft-qualification');
   execution=executeComputerUse('fixture only',{executor:executable,directory:root,timeoutMs:1500}).then(()=> 'resolved',e=>e.message);
   const result=await Promise.race([execution,new Promise<string>(r=>setTimeout(()=>r('still-running'),4500))]);
   pid=Number(await fs.readFile(root+'/pid','utf8'));assert.equal(await fs.readFile(root+'/term-seen','utf8'),'yes');
   assert.equal(result,'SUBSTACK_EXECUTOR_TIMEOUT');const reapDeadline=Date.now()+1000;while(Date.now()<reapDeadline){try{process.kill(pid!,0);}catch(e){if((e as NodeJS.ErrnoException).code==='ESRCH')break;throw e;}await new Promise(r=>setTimeout(r,10));}assert.throws(()=>process.kill(pid!,0),{code:'ESRCH'});
+ }catch(error){
+  for(const name of ['executor-events.jsonl','executor-stderr.log'])try{t.diagnostic(name+': '+await fs.readFile(root+'/'+name,'utf8'));}catch{}
+  throw error;
  }finally{
   if(!pid)try{pid=Number(await fs.readFile(root+'/pid','utf8'));}catch{}
   if(pid)try{process.kill(-pid,'SIGKILL');}catch{}await execution;await fs.rm(root,{recursive:true,force:true});
