@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+not ok 1 - Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+  ---
+  duration_ms: 19.799917
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:1:19025'
+  failureType: 'testCodeFailure'
+  error: '{"seriesTitle":"new series label"}'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '732861ba10c0ac9a76da4ffb4972ecd7e553958c4406cabc092252ccdfc2c5d9'
+  actual: '732861ba10c0ac9a76da4ffb4972ecd7e553958c4406cabc092252ccdfc2c5d9'
+  operator: 'notStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:223:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 460.729791

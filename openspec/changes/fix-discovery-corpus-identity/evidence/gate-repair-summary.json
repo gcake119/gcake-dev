@@ -1,0 +1,131 @@
+{
+  "baseline": "13f71b8584b8307e0f4bfd3bf84f3bde500dd11e",
+  "status": "all five original local gates passed in original workspace",
+  "gateResults": [
+    {
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 178.943,
+      "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-test.log"
+    },
+    {
+      "command": [
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 9.08,
+      "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-check.log"
+    },
+    {
+      "command": [
+        "pnpm",
+        "build:all"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 7.427,
+      "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-build-all.log"
+    },
+    {
+      "command": [
+        "pnpm",
+        "release:dry-run"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.55,
+      "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-release-dry-run.log"
+    },
+    {
+      "command": [
+        "pnpm",
+        "editorial:rehearse"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.526,
+      "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-editorial-rehearse.log"
+    }
+  ],
+  "tests": {
+    "node": 806,
+    "hermes": 290,
+    "total": 1096
+  },
+  "check": {
+    "files": 294,
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "environment": {
+    "node": "22.23.4",
+    "python": "3.15",
+    "pnpm": "10.17.1",
+    "platform": "macOS"
+  },
+  "candidateSha256": {
+    "apps/search-worker/src/service.ts": "cc7b51c51fa4750341934eae7e304ee9a7452970d8a316061e1255ff751fb6f9",
+    "apps/search-worker/src/sync.ts": "113b8d3a7e36b4d374c83fc200a9cb34c6c26d9fa674fd1e17b833e4e97c92c5",
+    "docs/article-discovery-runbook.md": "654e7c0207724e835de5e1cb189ab3d1d58f2540231ef7fb37af99259ef3f77a",
+    "docs/decisions/ADR-001-cloudflare-semantic-search.md": "fd9dc8604f5eaf092504a0186e3e106b4420d73a2047a8cd16b7ca8635999349",
+    "docs/decisions/index.md": "2531cc9bf2141d2fa31e170399efc587a45b86740dbaf87aec12b423753e3734",
+    "scripts/hermes/test_acl_inventory.py": "1e169bacd06dee2a3b7a9d8886ed7ed8789afdb3a41715e160b231aa31e28a81",
+    "scripts/hermes/test_update_entry.py": "4e61ca754cbf32e0371e23ff795022891dbdd78379249d857ba2141723a3c645",
+    "scripts/hermes/update_entry.py": "4f25f9c5ee70d048c7c1fdde0a6857738981c77c5670b292e69544d7d1c24579",
+    "src/lib/discovery/build.ts": "8c3c29fc465e9d0de0d82c70a0362363fe55864d64b2f9ba3d989472ae274879",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "a48935de81285e8b1d6b970f0335919980b56a964c4cd38acaedce99d512d64f",
+    "test/discovery/cloud-sync.acceptance.test.ts": "515c4be3fd2062fcc0ea222c90149e92a671227f86b831934bb55fd1b891c290",
+    "test/discovery/corpus.acceptance.test.ts": "a93c4dcdf09430b8ba8013fb3dcab2b97f038ff8979e11e3bcf03d95c8d6d4e0",
+    "output/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts": "1e9af1940253f0c4adea19c8607df9644b4b4381a1bc195de732e00ab2c7ea4d",
+    "output/discovery/source-download-fix-20261022/local-source-smoke.ts": "11f1d4fdbc3895c9606d429c56d8843930c8755d3aaa7461bd140660c4c4b39a"
+  },
+  "priorTypeScriptChangesPreserved": {
+    "apps/search-worker/src/service.ts": true,
+    "apps/search-worker/src/sync.ts": true,
+    "src/lib/discovery/build.ts": true,
+    "test/discovery/cloud-runtime.acceptance.test.ts": true,
+    "test/discovery/cloud-sync.acceptance.test.ts": true,
+    "test/discovery/corpus.acceptance.test.ts": true
+  },
+  "outputOriginalsPreserved": {
+    "output/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts": {
+      "beforeSha256": "62916d63c43f372091118f59e80d120ebe7ce4b928c93cfcaa4e5abc75798814",
+      "preservedOriginal": "openspec/changes/fix-discovery-corpus-identity/evidence/cloud-evaluate.before-gate-repair.txt",
+      "afterSha256": "1e9af1940253f0c4adea19c8607df9644b4b4381a1bc195de732e00ab2c7ea4d"
+    },
+    "output/discovery/source-download-fix-20261022/local-source-smoke.ts": {
+      "beforeSha256": "2f58b190dca640df19ab883446ab96d8267aefb3cd64ebc4e5dfb1f573d374ee",
+      "preservedOriginal": "openspec/changes/fix-discovery-corpus-identity/evidence/local-source-smoke.before-gate-repair.txt",
+      "afterSha256": "11f1d4fdbc3895c9606d429c56d8843930c8755d3aaa7461bd140660c4c4b39a"
+    }
+  },
+  "profile": {
+    "scope": "one controlled local phase per implementation; no provider or billing measurement",
+    "before": {
+      "aclChildren": 83,
+      "seconds": 4.807323625020217
+    },
+    "after": {
+      "aclChildren": 12,
+      "seconds": 0.716024124994874
+    }
+  },
+  "historicalEvidence": "Original failed gate logs, Python3.13 pass and old local-gate-summary.json remain unchanged; this summary supersedes only current local verification status.",
+  "tasks": "11/14 complete; only future-authorized production 4.1/4.2/4.3 remain incomplete",
+  "cleanup": {
+    "ownedDebugRoot": "/private/tmp/gcake-full-gate-debug-20261024",
+    "removed": true,
+    "dockerOrBrowserResourcesCreated": false
+  },
+  "externalEffects": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "productionModel": false,
+    "productionDataOrSettings": false,
+    "productionACLOrService": false,
+    "deployment": false
+  }
+}

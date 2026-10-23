@@ -1,0 +1,15 @@
+
+> gcake-dev@0.1.0 check /private/tmp/gcake-discovery-identity-validation/check-workspace
+> astro check
+
+00:41:01 [vite] Re-optimizing dependencies because vite config has changed
+00:41:02 [content] Syncing content
+00:41:02 [content] Astro config changed
+00:41:02 [content] Clearing content store
+00:41:02 [content] Synced content
+00:41:02 [types] Generated 430ms
+00:41:02 [check] Getting diagnostics for Astro files in /private/tmp/gcake-discovery-identity-validation/check-workspace...
+Result (278 files):
+- 0 errors
+- 0 warnings
+- 0 hints

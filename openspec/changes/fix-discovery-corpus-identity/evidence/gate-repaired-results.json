@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 178.943,
+    "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-test.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "check"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 9.08,
+    "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-check.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "build:all"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 7.427,
+    "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-build-all.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "release:dry-run"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 13.55,
+    "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-release-dry-run.log"
+  },
+  {
+    "command": [
+      "pnpm",
+      "editorial:rehearse"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 13.526,
+    "log": "openspec/changes/fix-discovery-corpus-identity/evidence/gate-repaired-editorial-rehearse.log"
+  }
+]

@@ -1,0 +1,30 @@
+TAP version 13
+# (node:52475) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Unchanged minute checks retain a sustainable daily admission budget
+not ok 1 - Unchanged minute checks retain a sustainable daily admission budget
+  ---
+  duration_ms: 24.546334
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:1:19716'
+  failureType: 'testCodeFailure'
+  error: 'unchanged scheduled checks alone must not exhaust the daily budget'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:124:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 328.273833

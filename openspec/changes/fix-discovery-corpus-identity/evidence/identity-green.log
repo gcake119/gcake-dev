@@ -1,0 +1,180 @@
+TAP version 13
+# Subtest: Local and imported articles share a slug
+ok 1 - Local and imported articles share a slug
+  ---
+  duration_ms: 15.894625
+  type: 'test'
+  ...
+# Subtest: Draft and future article exclusion
+ok 2 - Draft and future article exclusion
+  ---
+  duration_ms: 1.345458
+  type: 'test'
+  ...
+# Subtest: Identical source rebuild and matching passage anchors
+ok 3 - Identical source rebuild and matching passage anchors
+  ---
+  duration_ms: 2.25075
+  type: 'test'
+  ...
+# Subtest: Interactive MDX is excluded without execution or hidden text
+ok 4 - Interactive MDX is excluded without execution or hidden text
+  ---
+  duration_ms: 1.418583
+  type: 'test'
+  ...
+# Subtest: Article becomes public, edits, renames, withdrawals and deletions refresh the release
+ok 5 - Article becomes public, edits, renames, withdrawals and deletions refresh the release
+  ---
+  duration_ms: 3.707333
+  type: 'test'
+  ...
+# Subtest: Explicit acronym definition and ambiguous token
+ok 6 - Explicit acronym definition and ambiguous token
+  ---
+  duration_ms: 1.045625
+  type: 'test'
+  ...
+# Subtest: No usable terms remains searchable and technical punctuation stays distinct
+ok 7 - No usable terms remains searchable and technical punctuation stays distinct
+  ---
+  duration_ms: 0.965417
+  type: 'test'
+  ...
+# Subtest: Citation creates backlink; recommendations never create citations
+ok 8 - Citation creates backlink; recommendations never create citations
+  ---
+  duration_ms: 1.07375
+  type: 'test'
+  ...
+# Subtest: Complementary next reading, sparse candidates and current deterministic fallback
+ok 9 - Complementary next reading, sparse candidates and current deterministic fallback
+  ---
+  duration_ms: 1.503625
+  type: 'test'
+  ...
+# Subtest: Title outranks incidental body mention, Chinese input, safe excerpt
+ok 10 - Title outranks incidental body mention, Chinese input, safe excerpt
+  ---
+  duration_ms: 1.174709
+  type: 'test'
+  ...
+# Subtest: Share filtered search, pagination, partial labels and bounded input
+ok 11 - Share filtered search, pagination, partial labels and bounded input
+  ---
+  duration_ms: 7.0735
+  type: 'test'
+  ...
+# Subtest: Supported topic terms outrank incidental narrative words in recommendation reasons
+ok 12 - Supported topic terms outrank incidental narrative words in recommendation reasons
+  ---
+  duration_ms: 0.881667
+  type: 'test'
+  ...
+# Subtest: Field term frequencies reflect repeated evidence rather than vocabulary sets
+ok 13 - Field term frequencies reflect repeated evidence rather than vocabulary sets
+  ---
+  duration_ms: 0.305875
+  type: 'test'
+  ...
+# Subtest: Bilingual explicit aliases retain source evidence
+ok 14 - Bilingual explicit aliases retain source evidence
+  ---
+  duration_ms: 0.497833
+  type: 'test'
+  ...
+# Subtest: Invalid public metadata fails candidate instead of silently escaping the site
+ok 15 - Invalid public metadata fails candidate instead of silently escaping the site
+  ---
+  duration_ms: 0.137084
+  type: 'test'
+  ...
+# Subtest: Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+ok 16 - Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+  ---
+  duration_ms: 0.766709
+  type: 'test'
+  ...
+# Subtest: Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+ok 17 - Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+  ---
+  duration_ms: 1.827167
+  type: 'test'
+  ...
+# Subtest: No-match suggestions offer evidenced vocabulary without replacing the query
+ok 18 - No-match suggestions offer evidenced vocabulary without replacing the query
+  ---
+  duration_ms: 0.427458
+  type: 'test'
+  ...
+# Subtest: Every displayed recommendation term has its own supporting passage
+ok 19 - Every displayed recommendation term has its own supporting passage
+  ---
+  duration_ms: 0.611292
+  type: 'test'
+  ...
+# Subtest: Reviewed bilingual definition is tied to its exact public revision and quotation
+ok 20 - Reviewed bilingual definition is tied to its exact public revision and quotation
+  ---
+  duration_ms: 2.266708
+  type: 'test'
+  ...
+# Subtest: Acronyms expand as technical words rather than substrings inside unrelated words
+ok 21 - Acronyms expand as technical words rather than substrings inside unrelated words
+  ---
+  duration_ms: 0.670208
+  type: 'test'
+  ...
+# Subtest: Narrative fillers cannot become recommendation explanations even in a heading
+ok 22 - Narrative fillers cannot become recommendation explanations even in a heading
+  ---
+  duration_ms: 0.586416
+  type: 'test'
+  ...
+# Subtest: Shared narrative without a supported explanation does not create an empty recommendation
+ok 23 - Shared narrative without a supported explanation does not create an empty recommendation
+  ---
+  duration_ms: 0.500834
+  type: 'test'
+  ...
+# Subtest: Distinct identities cannot share a normalized primary reading URL
+ok 24 - Distinct identities cannot share a normalized primary reading URL
+  ---
+  duration_ms: 0.757917
+  type: 'test'
+  ...
+# Subtest: Stable identity excludes restoration/build provenance but invalidates effective metadata
+ok 25 - Stable identity excludes restoration/build provenance but invalidates effective metadata
+  ---
+  duration_ms: 5.530084
+  type: 'test'
+  ...
+# (node:64403) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Equivalent completed snapshot restores retain search identity through actual site assembly
+ok 26 - Equivalent completed snapshot restores retain search identity through actual site assembly
+  ---
+  duration_ms: 1743.5385
+  type: 'test'
+  ...
+# Subtest: Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+ok 27 - Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+  ---
+  duration_ms: 1.309792
+  type: 'test'
+  ...
+# Subtest: Configuration object key order cannot change otherwise identical search content
+ok 28 - Configuration object key order cannot change otherwise identical search content
+  ---
+  duration_ms: 0.68825
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2053.929042

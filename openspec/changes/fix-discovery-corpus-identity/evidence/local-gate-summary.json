@@ -1,0 +1,107 @@
+{
+  "baseline": "13f71b8584b8307e0f4bfd3bf84f3bde500dd11e",
+  "scope": "local implementation and verification only; no commit, push, PR, production model/data/config/schedule/deployment operations",
+  "product_candidate_sha256": {
+    "apps/search-worker/src/service.ts": "cc7b51c51fa4750341934eae7e304ee9a7452970d8a316061e1255ff751fb6f9",
+    "apps/search-worker/src/sync.ts": "113b8d3a7e36b4d374c83fc200a9cb34c6c26d9fa674fd1e17b833e4e97c92c5",
+    "docs/article-discovery-runbook.md": "654e7c0207724e835de5e1cb189ab3d1d58f2540231ef7fb37af99259ef3f77a",
+    "docs/decisions/ADR-001-cloudflare-semantic-search.md": "fd9dc8604f5eaf092504a0186e3e106b4420d73a2047a8cd16b7ca8635999349",
+    "docs/decisions/index.md": "fc269036a619667c4f10dfd2f0f679833bc6a799cfb884f5d8cbf243d380856a",
+    "src/lib/discovery/build.ts": "8c3c29fc465e9d0de0d82c70a0362363fe55864d64b2f9ba3d989472ae274879",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "a48935de81285e8b1d6b970f0335919980b56a964c4cd38acaedce99d512d64f",
+    "test/discovery/cloud-sync.acceptance.test.ts": "515c4be3fd2062fcc0ea222c90149e92a671227f86b831934bb55fd1b891c290",
+    "test/discovery/corpus.acceptance.test.ts": "a93c4dcdf09430b8ba8013fb3dcab2b97f038ff8979e11e3bcf03d95c8d6d4e0"
+  },
+  "gates": {
+    "pnpm test": {
+      "status": "failed",
+      "log": "full-test-unsandboxed.log",
+      "details": "286 Hermes tests: one existing crash-recovery method has 2 TimeoutExpired subtest errors and 1 exit-code subtest failure; root cause not established. Scripts under scripts/hermes are unchanged."
+    },
+    "pnpm test remaining stages": {
+      "status": "passed separately after aggregate stopped",
+      "logs": [
+        "public-test.log",
+        "workspaces-test.log",
+        "workspace-foundation.log",
+        "distribution-test.log",
+        "observability-test.log"
+      ],
+      "nodeTests": 782
+    },
+    "pnpm test:editorial": {
+      "status": "passed within aggregate",
+      "tests": 24,
+      "log": "full-test-unsandboxed.log"
+    },
+    "pnpm check original workspace": {
+      "status": "failed",
+      "log": "check.log",
+      "details": "2 implicit-any errors in unchanged ignored historical output/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts; retained untouched"
+    },
+    "pnpm check isolated exact tracked candidate": {
+      "status": "passed",
+      "files": 278,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0,
+      "log": "check-isolated.log",
+      "details": "baseline tracked files plus candidate diff; same installed dependencies; original ignored output not copied; source hashes checked before cleanup"
+    },
+    "pnpm build:all": {
+      "status": "passed",
+      "log": "build-all.log"
+    },
+    "pnpm release:dry-run": {
+      "status": "passed",
+      "log": "release-dry-run-unsandboxed.log"
+    },
+    "pnpm editorial:rehearse": {
+      "status": "passed",
+      "log": "editorial-rehearse.log"
+    },
+    "spectra validate": {
+      "status": "passed",
+      "log": "spectra-validate.log"
+    },
+    "spectra analyze": {
+      "status": "passed",
+      "findings": 0,
+      "log": "spectra-analyze.json"
+    }
+  },
+  "task_3_2": "incomplete: original complete local gate is not green; no required checks changed or failures suppressed",
+  "external_acceptance": "not performed; tasks 4.1-4.3 and original change tasks 1.1/12.2 remain incomplete",
+  "environment": {
+    "node": "22.23.4",
+    "pnpm": "10.17.1",
+    "python": "3.15",
+    "os": "macOS",
+    "ci_environment_not_tested": "Node24/Linux"
+  },
+  "cleanup": {
+    "owned_validation_root": "/private/tmp/gcake-discovery-identity-validation",
+    "status": "removed precisely; source/dependency symlinks were not followed; no Docker or browser resources created",
+    "remaining": false
+  },
+  "isolated_typecheck_source_match": {
+    "apps/search-worker/src/service.ts": true,
+    "apps/search-worker/src/sync.ts": true,
+    "src/lib/discovery/build.ts": true,
+    "test/discovery/cloud-runtime.acceptance.test.ts": true,
+    "test/discovery/cloud-sync.acceptance.test.ts": true,
+    "test/discovery/corpus.acceptance.test.ts": true
+  },
+  "hermes_single_reproduction": {
+    "status": "passed",
+    "python": "3.13",
+    "tests": 1,
+    "durationSeconds": 109.861,
+    "log": "hermes-crash-reproduction.log",
+    "limits": "different interpreter and isolated run; does not repair or relabel the failed Python3.15 aggregate; root cause remains unestablished"
+  },
+  "unchanged_hermes_source": {
+    "scripts/hermes/test_update_entry.py": "a83d255aeea7cbd138079be731f3d8820b11061b578789a7c4abbaa36943eb42",
+    "scripts/hermes/update_entry.py": "3fa2cf95c6f818236388431cea3ebf1d0dff7454d656bf750a35de445e20169c"
+  }
+}

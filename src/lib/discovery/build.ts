@@ -3,6 +3,12 @@ import { parseHTML } from 'linkedom';
 import { normalize, tokenize, tokenOccurrences } from './search';
 import type { Article, Corpus, Passage, PublicSource, ReleaseConfig, Recommendation } from './types';
 export const digest = (value: unknown) => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
+/** Stable object keys; arrays retain retrieval order unless explicitly normalized as sets. */
+function canonical(value: unknown): unknown {
+    if (Array.isArray(value)) return value.map(canonical);
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonical(item)]));
+    return value;
+}
 const narrativeTerms = new Set('幾乎 都會 足以 一串 原來 之後 做得 不動 出來 先看 平常 一句 後面 都要 找到 沒說 所有 交給 都能 就要 看見 做什麼 為什麼 到底 不算 一支 部分 看懂 主要 對了 我要 哪些 代表 必須 感受到 沿著 形成 變化 寫完 系統的 說的 一種 不要 方法 方式 只能 變成 還要 繼續 逐漸 實際 已有 這種 這份 大概 一次 另一個 第一個 第二個 更少 支持 接觸 月底 很喜歡 補完 看到 就好 應該 不用 一天 常常 有些 本來 很有 相信 什麼時候 就在 完整 一起 不同 每次 完全 不太 遇到 這時 前後 當下 進來 拿來 放在 從來 整個 這些 其他 另外 這一點 最後 接下來 再次 原先 我們 於是 而是 而且 甚至 好像 似乎 許多 通常 往往 先前 這份'.split(' '));
 export const configuration = { schema: 1, termStopList: [...narrativeTerms].sort(), serialization: 'compact-field-lengths-1', connectionEvidence:'per-label-3-nonempty', extraction: 'html-evidence-terms3', normalization: 'nfkc-segmenter-han2-stop2', aliases: 'explicit-word-boundaries-2', ranking: 'bm25-tf-1.2-.75-fields-5-3-2-2-1-.5-connections-.7-.3-.15-1', segmenter: process.versions.icu };
 const clean = (s: string) => (s ?? '').replace(/\s+/g, ' ').trim();
@@ -48,7 +54,7 @@ export function buildPublicDiscovery(sources: PublicSource[], config: ReleaseCon
     for (const source of sources)
         if (source.status === 'published' && source.publishedAt && !Number.isFinite(Date.parse(source.publishedAt)))
             throw new Error('INVALID_PUBLIC_SOURCE');
-    const configurationDigest = digest({ ...configuration, reviewedAliases: config.reviewedAliases ?? [] }), eligible = sources.filter(s => s.status === 'published' && (!s.publishedAt || Date.parse(s.publishedAt) <= Date.parse(config.now))).sort((a, b) => `${a.source}:${a.id}`.localeCompare(`${b.source}:${b.id}`));
+    const configurationDigest = digest(canonical({ ...configuration, reviewedAliases: config.reviewedAliases ?? [] })), eligible = sources.filter(s => s.status === 'published' && (!s.publishedAt || Date.parse(s.publishedAt) <= Date.parse(config.now))).map(s => ({...s, topics: [...new Set(s.topics)].sort(), aliases: [...new Set(s.aliases ?? [])].sort()})).sort((a, b) => `${a.source}:${a.id}`.localeCompare(`${b.source}:${b.id}`));
     const c: Corpus = { schemaVersion: 1, corpusId: '', configurationDigest, articles: [], passages: [], aliases: [], postings: {}, connections: {}, diagnostics: [] };
     const links = new Map<string, {
         title: string;
@@ -201,6 +207,12 @@ export function buildPublicDiscovery(sources: PublicSource[], config: ReleaseCon
             return {articleId:x.b.articleId,reason:'共同主題：'+terms.map(t=>t.term).join('、'),evidence:[...new Set(terms.flatMap(t=>t.evidence.slice(0,1)))],score:x.relevance};
         });
     }
-    c.corpusId = digest({ schema: 1, configurationDigest, snapshotDigest: config.snapshotDigest, revisions: c.articles.map(a => [a.articleId, a.sourceRevision]) });
+    // Complete effective search data, with provenance kept in the release manifest.
+    // Do not hash config.now/sourceTree/snapshotDigest: eligibility is already reflected here.
+    c.corpusId = digest(canonical({ domain: 'discovery-content-v2', configurationDigest,
+        articles: c.articles, passages: c.passages, aliases: c.aliases, postings: c.postings,
+        connections: c.connections, diagnostics: c.diagnostics,
+        sourceAliases: eligible.map(s => [s.source, s.id, s.aliases]),
+    }));
     return c;
 }

@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: Phase 0 exposes independent workspace build and test entry points
+ok 1 - Phase 0 exposes independent workspace build and test entry points
+  ---
+  duration_ms: 3.792083
+  type: 'test'
+  ...
+# Subtest: Astro checks exclude generated workspace build output
+ok 2 - Astro checks exclude generated workspace build output
+  ---
+  duration_ms: 0.811542
+  type: 'test'
+  ...
+# Subtest: preview Worker serves the built Admin as a same-origin SPA while runtime routes reach the Worker
+ok 3 - preview Worker serves the built Admin as a same-origin SPA while runtime routes reach the Worker
+  ---
+  duration_ms: 0.234875
+  type: 'test'
+  ...
+# Subtest: production Admin deployment migrates before deploy and verifies health
+ok 4 - production Admin deployment migrates before deploy and verifies health
+  ---
+  duration_ms: 0.126417
+  type: 'test'
+  ...
+# Subtest: main pull requests receive full local gates without deployment authority
+ok 5 - main pull requests receive full local gates without deployment authority
+  ---
+  duration_ms: 14.056084
+  type: 'test'
+  ...
+# Subtest: deploy-admin-worker.yml preserves its approved triggers and deploys only on main
+ok 6 - deploy-admin-worker.yml preserves its approved triggers and deploys only on main
+  ---
+  duration_ms: 1.6585
+  type: 'test'
+  ...
+# Subtest: deploy-pages.yml preserves its approved triggers and deploys only on main
+ok 7 - deploy-pages.yml preserves its approved triggers and deploys only on main
+  ---
+  duration_ms: 2.935875
+  type: 'test'
+  ...
+# Subtest: production and preview deployment retain verified OAuth client and owner configuration
+ok 8 - production and preview deployment retain verified OAuth client and owner configuration
+  ---
+  duration_ms: 0.174667
+  type: 'test'
+  ...
+# Subtest: editorial release deploys only newly committed revisions with isolated Pages permissions
+ok 9 - editorial release deploys only newly committed revisions with isolated Pages permissions
+  ---
+  duration_ms: 2.148667
+  type: 'test'
+  ...
+# Subtest: main PR validation selects each shared gate once and retains editorial rehearsal
+ok 10 - main PR validation selects each shared gate once and retains editorial rehearsal
+  ---
+  duration_ms: 6.632958
+  type: 'test'
+  ...
+# Subtest: complete tests select the release queue once without removing its coverage
+ok 11 - complete tests select the release queue once without removing its coverage
+  ---
+  duration_ms: 0.277625
+  type: 'test'
+  ...
+# Subtest: editorial validation retains main and manual entrypoints without feature push or PR duplication
+ok 12 - editorial validation retains main and manual entrypoints without feature push or PR duplication
+  ---
+  duration_ms: 1.118542
+  type: 'test'
+  ...
+# Subtest: every direct local-post surface uses the shared publication-time predicate
+ok 13 - every direct local-post surface uses the shared publication-time predicate
+  ---
+  duration_ms: 5.895958
+  type: 'test'
+  ...
+# Subtest: catalog-derived RSS, search, navigation, and series outputs cannot bypass visibility filtering
+ok 14 - catalog-derived RSS, search, navigation, and series outputs cannot bypass visibility filtering
+  ---
+  duration_ms: 4.059917
+  type: 'test'
+  ...
+# Subtest: public post pages derive series membership from manifests
+ok 15 - public post pages derive series membership from manifests
+  ---
+  duration_ms: 1.066125
+  type: 'test'
+  ...
+# Subtest: public article pages emit shared structured data
+ok 16 - public article pages emit shared structured data
+  ---
+  duration_ms: 2.846042
+  type: 'test'
+  ...
+# Subtest: article topics use the approved mist-blue pill treatment
+ok 17 - article topics use the approved mist-blue pill treatment
+  ---
+  duration_ms: 0.944416
+  type: 'test'
+  ...
+# Subtest: public Astro and Cloudflare Worker runtimes do not depend on Ollama
+ok 18 - public Astro and Cloudflare Worker runtimes do not depend on Ollama
+  ---
+  duration_ms: 0.79
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 177.5165

@@ -1,0 +1,117 @@
+{
+  "purpose": "Keep original tool output bytes while making text evidence pass unchanged Git whitespace checks. Only trailing horizontal whitespace and blank EOF lines were normalized; no result/status/assertion changed.",
+  "archive": "evidence/raw-log-bytes.tar.gz",
+  "archiveSha256": "bcd3dbb51bb79dc322e33ed7316513d256f3deac32d1facc21c6914de2f919da",
+  "rawLogCount": 42,
+  "allRawLogSha256": {
+    "evidence/acl-batch-green.log": "47e9f01a100bada35bf5401f7fb6aec4dbfe34c3ec2f982cb3daf8a10be1bc9e",
+    "evidence/build-all.log": "2434df8692df9d0bd6f7b5f2a6d5ae59631d22eb29e5236c438b28acc98ddf73",
+    "evidence/capacity-red.log": "3453e6e9604cbcfbd4dcf58f2f64a354e69e5f091338083d51c3333351921d60",
+    "evidence/check-isolated.log": "03fc78b5592a22819e4ac1ff9fa2e15ddc7e2d711ea2fc147e221841bc444b96",
+    "evidence/check-original-repaired.log": "0e379a44aa2f8b866c013d51e8538c7d1c217acc74e9308347430d763af56b3a",
+    "evidence/check.log": "42e18d5b8b440d653303d60d78d1e9823174e59c338ab6bee05b83d6778d7522",
+    "evidence/comparison.log": "167897cd8e03660dc05c030e9a7d95f81bce0652e6dda3e5c52d29cad9521c1c",
+    "evidence/configuration-order-red.log": "731925c88c49ec52db9c80719fe101004f25caa934bdaad6b0a816c98bdc693d",
+    "evidence/continuation-green.log": "74355903edc0080d2a9c36db2c0f21be0c725f7bd870ece0a601647a3fa59b69",
+    "evidence/continuation-intermediate-failures.log": "0c8aa5909635cc34c582faf6609e4d5d77a58f9ce67389a72c790ca672cdc070",
+    "evidence/continuation-red.log": "b48b754ec6c2143736878c1b5218088e742ad063e19a23f7f4b9e13ecc96cf0f",
+    "evidence/distribution-test.log": "571b62d0bec07595e9025ef1928fca0086d2a0d2e34581795ee1a179b6d6fd57",
+    "evidence/editorial-rehearse.log": "29b595dd09e06a74500efbd6cd358523ec8be3286debf27a817affadc6164311",
+    "evidence/effective-metadata-red.log": "2227b434a6b28548727d27720d26e11bb046955c7036e560a4266cd080c915a0",
+    "evidence/full-test-unsandboxed.log": "4004948b1af5f4b3fc0e61b569cecac0ca0871d685042719a1a2b0eea9d99ac2",
+    "evidence/full-test.log": "d86f25cdb09202264eb6564d1e8d9d2d5bc3ff151743c48a80d0f2c04768f3bf",
+    "evidence/gate-repaired-build-all.log": "556ccb57354316d4a173bb3098b143ebe7ba2613a7499e785fb53ebbe036c178",
+    "evidence/gate-repaired-check.log": "9d4f938e119038c92a24af97a354d62dcd981df401f724efe8dae6015d802934",
+    "evidence/gate-repaired-editorial-rehearse.log": "ef8df5584eb940a093e828c2dd0d2a9cbf3531c27b9de7e3c0bef25d3bbc430f",
+    "evidence/gate-repaired-release-dry-run.log": "d484ef59de741f5683208c21d5b87fc3fa32df82477ce8800473a2bd9548174e",
+    "evidence/gate-repaired-test.log": "5c75470de562d2381986239eb44029f2cded54f2383aca240a990c957eb9457c",
+    "evidence/hermes-crash-reproduction.log": "22666a9059e7adb84a94c4938f9316a0196df819d68c3e72c583e5c77617961f",
+    "evidence/hermes-entry-reproduction.log": "fd9e5ea2a5a75391f2482adf88c876c0a1021fe7d49e70f1885a19d9c49f022c",
+    "evidence/hermes-install-python313.log": "817b821eba070c3286f12cfb61f6e1301965eb4305784cd78716e75af551df62",
+    "evidence/hermes-install-unrestricted.log": "0b16acc0f3102f5b1b66fbd23d42e6353c3cb410030b78b3a392e816a36d6a84",
+    "evidence/hermes-sandbox-reproduction.log": "f6573f4d701f9748dce59c593bfb5c7b3e9c76e2cc4778528fce397b0979069b",
+    "evidence/identity-green.log": "1c9edcc3727938ee8841ae48d8c4b284e953b0280aecec82106d1fc644f0a61b",
+    "evidence/identity-red.log": "bdc77642688e0dba5df29504f3b26a79a0df8d55933e55203c6b2736667daa40",
+    "evidence/no-change-budget-red.log": "ece1d7c20ead9886a961b69a68b5e7ad9664b5b62fcf2ffb70c7b1e31427b3ae",
+    "evidence/observability-test.log": "bfeb875738691d7b925ef840adeb182708b48d16e7ea466c8f95433861e02114",
+    "evidence/public-test.log": "fd30e15b9ae29caaf4e4e857f5fa9410042dd90ca82ad81d761f4858e94d7601",
+    "evidence/recovery-profile-after.log": "8dfdbf3b845f3e840b03940478f879ff1537f858aedc69a5c16d9d0f5487819a",
+    "evidence/recovery-profile-before.log": "7173ee0bfc4c85b51c1da7512f637dc1063f9ed8dbb76377769ebeb188f159c1",
+    "evidence/recovery-startup-green.log": "3976e694330172b7301942396c5a42e9002ea660a44abb35f9376ff1beaf611b",
+    "evidence/recovery-startup-red.log": "579f30b8e645f459d9369caf88b923e5f44efd87be1d5eda2b1869912f3b0575",
+    "evidence/release-dry-run-unsandboxed.log": "aa0ca852eb889061b239d8af8ca3d775e3a5e45cadabb0ebbbf39f77458f11d8",
+    "evidence/release-dry-run.log": "7b04c8e4c39be794c5a585081910f14fd8ab9c5307027b92a4374cbd792e215c",
+    "evidence/runtime-green.log": "77ee299df7428e725492c5fe814de3c7185878cbfba7e546315711b8309bb0d2",
+    "evidence/spectra-validate-gate-repair.log": "869f80bdade1159fe33e5a3a9df00b119da56ae9eb37ec49e93ce6c5e0271511",
+    "evidence/spectra-validate.log": "869f80bdade1159fe33e5a3a9df00b119da56ae9eb37ec49e93ce6c5e0271511",
+    "evidence/workspace-foundation.log": "596ac1184d40494f753e35aea8afd6f10153e3917d014cbefea5f2317a448b2e",
+    "evidence/workspaces-test.log": "b63639f7dbc0795ac0490f851c83fa76fc5e554c6ab8fc77991ae3172fbf85ce"
+  },
+  "normalizedLogs": [
+    {
+      "path": "evidence/build-all.log",
+      "rawSha256": "2434df8692df9d0bd6f7b5f2a6d5ae59631d22eb29e5236c438b28acc98ddf73",
+      "textSha256": "40374eeccb8c5ab7791d30347f09cb024cf6d4d4343a58b42c3f20bd0d57e08a"
+    },
+    {
+      "path": "evidence/capacity-red.log",
+      "rawSha256": "3453e6e9604cbcfbd4dcf58f2f64a354e69e5f091338083d51c3333351921d60",
+      "textSha256": "3faa03a63e27f545b3bf4938f4ff580d6c0f387ba37723f0acaa59ce937c22a4"
+    },
+    {
+      "path": "evidence/check-isolated.log",
+      "rawSha256": "03fc78b5592a22819e4ac1ff9fa2e15ddc7e2d711ea2fc147e221841bc444b96",
+      "textSha256": "b2a1328f316169a1e71f29fc310f6889659dcaf74cc6a5a7cd9031f233598cc9"
+    },
+    {
+      "path": "evidence/check-original-repaired.log",
+      "rawSha256": "0e379a44aa2f8b866c013d51e8538c7d1c217acc74e9308347430d763af56b3a",
+      "textSha256": "6710d342b522648ca425c6a727e150a7667cd0ab5cf3ec9dd3b58a55f8496544"
+    },
+    {
+      "path": "evidence/check.log",
+      "rawSha256": "42e18d5b8b440d653303d60d78d1e9823174e59c338ab6bee05b83d6778d7522",
+      "textSha256": "f33cb94889a6db5e5c9bd07fddbb82a7041bb7002ffda0bf01732d206648ef13"
+    },
+    {
+      "path": "evidence/configuration-order-red.log",
+      "rawSha256": "731925c88c49ec52db9c80719fe101004f25caa934bdaad6b0a816c98bdc693d",
+      "textSha256": "4e0431d3a1a7811ca7021f1f1425a3c326d843a56a87970b44cdac8fe3060a1d"
+    },
+    {
+      "path": "evidence/continuation-intermediate-failures.log",
+      "rawSha256": "0c8aa5909635cc34c582faf6609e4d5d77a58f9ce67389a72c790ca672cdc070",
+      "textSha256": "f2afc476ea08fd25666dfb1e0cedc17030205f64f8f489c33c999c75e129db9a"
+    },
+    {
+      "path": "evidence/continuation-red.log",
+      "rawSha256": "b48b754ec6c2143736878c1b5218088e742ad063e19a23f7f4b9e13ecc96cf0f",
+      "textSha256": "78e0ac621c15f3521a16eede8349be80235b98c13be7c144a5226d05e8b37b87"
+    },
+    {
+      "path": "evidence/gate-repaired-build-all.log",
+      "rawSha256": "556ccb57354316d4a173bb3098b143ebe7ba2613a7499e785fb53ebbe036c178",
+      "textSha256": "c6e7ac1b7cbefee92af31255040f2bab71eba4897cb75fd758ecf858cbac68be"
+    },
+    {
+      "path": "evidence/gate-repaired-check.log",
+      "rawSha256": "9d4f938e119038c92a24af97a354d62dcd981df401f724efe8dae6015d802934",
+      "textSha256": "7a6fbe480ea8f394ada18b082d3e51cab6e83b3c85f2b3622f9cdf6c82917401"
+    },
+    {
+      "path": "evidence/identity-red.log",
+      "rawSha256": "bdc77642688e0dba5df29504f3b26a79a0df8d55933e55203c6b2736667daa40",
+      "textSha256": "d7a1c8f4b5560238e3f50ed1abe28d3c6636278dd0976aa982b2e43b9905182b"
+    },
+    {
+      "path": "evidence/recovery-profile-after.log",
+      "rawSha256": "8dfdbf3b845f3e840b03940478f879ff1537f858aedc69a5c16d9d0f5487819a",
+      "textSha256": "860dd06833e4253cdc98f5e984a59a136d7cecd4d3753bb146d7e9276b8d3b7a"
+    },
+    {
+      "path": "evidence/recovery-profile-before.log",
+      "rawSha256": "7173ee0bfc4c85b51c1da7512f637dc1063f9ed8dbb76377769ebeb188f159c1",
+      "textSha256": "e11edc673797ed324b1f40e51e6a09d0b64d29d16b1dc8e6bbe63b3bf794068e"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+
+> gcake-dev@0.1.0 test:observability /Users/caiyijun/project/gcake-dev
+> node --import tsx --test test/website-observability.test.ts
+
+TAP version 13
+# Subtest: production HTML measures every reading page once and excludes development/preview
+ok 1 - production HTML measures every reading page once and excludes development/preview
+  ---
+  duration_ms: 11535.234167
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11752.860417

@@ -1,0 +1,59 @@
+test_candidate_failure_restores_exact_first_slots_without_history_rollback (test_production_install.FirstInstallAcceptance.test_candidate_failure_restores_exact_first_slots_without_history_rollback) ... /Users/caiyijun/project/gcake-dev/scripts/hermes/production_install.py:158: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  return dict(status='blocked',reason=str(error))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+FAIL
+test_drift_blocks_before_stop_or_write (test_production_install.FirstInstallAcceptance.test_drift_blocks_before_stop_or_write) ... ok
+test_failed_original_verification_keeps_sender_stopped (test_production_install.FirstInstallAcceptance.test_failed_original_verification_keeps_sender_stopped) ... FAIL
+test_interrupted_wrapper_switch_recovers_in_fresh_controller (test_production_install.FirstInstallAcceptance.test_interrupted_wrapper_switch_recovers_in_fresh_controller) ... FAIL
+test_permission_drift_blocks_before_stop (test_production_install.FirstInstallAcceptance.test_permission_drift_blocks_before_stop) ... ok
+test_success_keeps_durable_originals (test_production_install.FirstInstallAcceptance.test_success_keeps_durable_originals) ... FAIL
+
+======================================================================
+FAIL: test_candidate_failure_restores_exact_first_slots_without_history_rollback (test_production_install.FirstInstallAcceptance.test_candidate_failure_restores_exact_first_slots_without_history_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 52, in test_candidate_failure_restores_exact_first_slots_without_history_rollback
+    self.assertEqual(result['status'],'rolled_back')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'rolled_back'
+- blocked
++ rolled_back
+
+
+======================================================================
+FAIL: test_failed_original_verification_keeps_sender_stopped (test_production_install.FirstInstallAcceptance.test_failed_original_verification_keeps_sender_stopped)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 90, in test_failed_original_verification_keeps_sender_stopped
+    self.assertEqual(installer.install(self.plan,self.identities)['status'],'recovery_failed')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'recovery_failed'
+- blocked
++ recovery_failed
+
+
+======================================================================
+FAIL: test_interrupted_wrapper_switch_recovers_in_fresh_controller (test_production_install.FirstInstallAcceptance.test_interrupted_wrapper_switch_recovers_in_fresh_controller)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 79, in test_interrupted_wrapper_switch_recovers_in_fresh_controller
+    with self.assertRaises(Crash):installer.install(self.plan,self.identities,failpoint=crash)
+         ~~~~~~~~~~~~~~~~~^^^^^^^
+AssertionError: Crash not raised
+
+======================================================================
+FAIL: test_success_keeps_durable_originals (test_production_install.FirstInstallAcceptance.test_success_keeps_durable_originals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 63, in test_success_keeps_durable_originals
+    self.assertEqual(result['status'],'installed-dry-run')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'installed-dry-run'
+- blocked
++ installed-dry-run
+
+
+----------------------------------------------------------------------
+Ran 6 tests in 19.779s
+
+FAILED (failures=4)

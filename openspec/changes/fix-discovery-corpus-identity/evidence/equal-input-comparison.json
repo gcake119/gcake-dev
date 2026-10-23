@@ -1,0 +1,86 @@
+{
+  "baseline": "13f71b8584b8307e0f4bfd3bf84f3bde500dd11e",
+  "scope": "offline controlled-clock, one deterministic sample per delay and variant; no provider or billing measurement",
+  "results": [
+    {
+      "variant": "original",
+      "passages": 33,
+      "batchSize": 16,
+      "visibilityDelayMinutes": 1,
+      "rounds": 7,
+      "modeledElapsedMs": 360000,
+      "embeddings": 3,
+      "uploads": 3,
+      "reads": 6,
+      "describes": 3,
+      "d1Statements": 229,
+      "reservations": {
+        "tokens": 1386,
+        "units": 1.48995,
+        "worker": 7,
+        "admission": 292,
+        "storage": 33792
+      }
+    },
+    {
+      "variant": "candidate",
+      "passages": 33,
+      "batchSize": 16,
+      "visibilityDelayMinutes": 1,
+      "rounds": 4,
+      "modeledElapsedMs": 180000,
+      "embeddings": 3,
+      "uploads": 3,
+      "reads": 6,
+      "describes": 3,
+      "d1Statements": 235,
+      "reservations": {
+        "tokens": 1386,
+        "units": 1.48995,
+        "worker": 4,
+        "admission": 438,
+        "storage": 33792
+      }
+    },
+    {
+      "variant": "original",
+      "passages": 33,
+      "batchSize": 16,
+      "visibilityDelayMinutes": 2,
+      "rounds": 10,
+      "modeledElapsedMs": 540000,
+      "embeddings": 3,
+      "uploads": 3,
+      "reads": 9,
+      "describes": 3,
+      "d1Statements": 265,
+      "reservations": {
+        "tokens": 1386,
+        "units": 1.48995,
+        "worker": 10,
+        "admission": 412,
+        "storage": 33792
+      }
+    },
+    {
+      "variant": "candidate",
+      "passages": 33,
+      "batchSize": 16,
+      "visibilityDelayMinutes": 2,
+      "rounds": 7,
+      "modeledElapsedMs": 360000,
+      "embeddings": 3,
+      "uploads": 3,
+      "reads": 9,
+      "describes": 3,
+      "d1Statements": 280,
+      "reservations": {
+        "tokens": 1386,
+        "units": 1.48995,
+        "worker": 7,
+        "admission": 567,
+        "storage": 33792
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "change_id": "fix-discovery-corpus-identity",
+  "dimensions": [
+    {
+      "dimension": "Coverage",
+      "status": "Clean",
+      "finding_count": 0
+    },
+    {
+      "dimension": "Consistency",
+      "status": "Clean",
+      "finding_count": 0
+    },
+    {
+      "dimension": "Ambiguity",
+      "status": "Clean",
+      "finding_count": 0
+    },
+    {
+      "dimension": "Gaps",
+      "status": "Clean",
+      "finding_count": 0
+    },
+    {
+      "dimension": "Localization",
+      "status": "Skipped (insufficient artifacts)",
+      "finding_count": 0
+    }
+  ],
+  "findings": [],
+  "artifacts_analyzed": [
+    "proposal",
+    "specs",
+    "design",
+    "tasks"
+  ],
+  "artifacts_missing": []
+}

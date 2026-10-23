@@ -1,0 +1,29 @@
+import sys,os,subprocess,time,json
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'scripts/hermes'))
+from test_update_entry import EntryAcceptance
+case=EntryAcceptance();case.setUp()
+try:
+ phase='replaced:updater'
+ pid=os.fork()
+ if pid==0:
+  case.update(failpoint=lambda point:os._exit(79) if point==phase else None);os._exit(1)
+ code=os.waitpid(pid,0)[1]>>8
+ print('crash phase:',phase,'exit:',code,flush=True)
+ script="""import faulthandler,cProfile,pstats,time,json
+from pathlib import Path
+from update_entry import EntryStore,UpdateEntry
+from test_update_entry import PersistentSupervisor
+faulthandler.dump_traceback_later(2,repeat=True)
+p=cProfile.Profile();p.enable();start=time.monotonic()
+result=UpdateEntry(EntryStore(Path(ROOT)),PersistentSupervisor(Path(BASE))).recover()
+p.disable();faulthandler.cancel_dump_traceback_later()
+print(json.dumps({'result':result,'elapsed':time.monotonic()-start}))
+pstats.Stats(p).sort_stats('cumtime').print_stats(25)
+""".replace('ROOT',repr(str(case.root))).replace('BASE',repr(str(case.base)))
+ try:
+  r=subprocess.run([sys.executable,'-B','-c',script],cwd='scripts/hermes',capture_output=True,text=True,timeout=10)
+  print('recovery exit:',r.returncode);print(r.stdout);print(r.stderr)
+ except subprocess.TimeoutExpired as e:
+  print('TIMEOUT 10');print((e.stdout or b'').decode());print((e.stderr or b'').decode())
+finally:case.doCleanups()

@@ -1,0 +1,12 @@
+test_gateway_environment_retains_home_without_python_path_injection (test_production_entry.ProductionMapping.test_gateway_environment_retains_home_without_python_path_injection) ... ok
+test_isolated_store_still_rejects_production_root (test_production_entry.ProductionMapping.test_isolated_store_still_rejects_production_root) ... ok
+test_nonroot_cannot_initialize_production_authority (test_production_entry.ProductionMapping.test_nonroot_cannot_initialize_production_authority) ... ok
+test_preserves_original_context_and_uses_fixed_launcher (test_production_entry.ProductionMapping.test_preserves_original_context_and_uses_fixed_launcher) ... ok
+test_production_namespace_has_no_arbitrary_path_override (test_production_entry.ProductionMapping.test_production_namespace_has_no_arbitrary_path_override) ... ok
+test_root_cannot_execute_runner_private_monitor_environment (test_production_entry.ProductionMapping.test_root_cannot_execute_runner_private_monitor_environment) ... ok
+test_unexpected_original_mapping_is_rejected (test_production_entry.ProductionMapping.test_unexpected_original_mapping_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.074s
+
+OK

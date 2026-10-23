@@ -29,3 +29,7 @@
 ２０２６－１０－２３ 使用者確認實際閱讀優先新版，重新授權完整提交前驗證、提交與建立 PR，取代上一輪僅本機的執行限制；仍不合併或部署。[提交前驗證](../../openspec/changes/archive/2026-10-23-add-article-sharing/pre-pr-verification.md)保存完整 gate、舊版面斷言修正及人工驗收界線。不改 ADR-001、canonical／OG、正文、provider 或正式排程權限。
 
 ２０２６－１０－２３ 後續已依明確授權合併 PR ＃６７，main `30ac964` 的 CI 及 Pages 部署 `39960141344` 通過；再依另一筆正式 D1／Vectorize 寫入授權，重用２，６８８筆、補齊２６７段、完整讀回２，９５５筆後由自然 cron 提升，正式語意搜尋恢復。詳見[部署與正式驗收](../../openspec/changes/archive/2026-10-23-add-article-sharing/production-acceptance-20261023.md)。本次完成 `add-article-sharing` 封存及兩份正式規格同步，只提交並建立封存 PR，不合併或再次部署；ADR-001、Worker／排程、零付費超額及原證據期限不變，無新 ADR。另一變更的歷史 RED 與首次自然新增文章全程同步仍待驗收。
+
+２０２６－１０－２４ `fix-discovery-corpus-identity` 本機候選：分離穩定搜尋內容身分與產製追溯，完整讀回後可在既有期限／共享原子預留內同輪續作一批；每分鐘cron、１６段批次、未知結果不重播及零付費超額保留。容量證據不足停止新上傳，舊身分轉換仍須全量核實，不預設雙整庫免費。詳見[設計與本機驗收](../../openspec/changes/fix-discovery-corpus-identity/design.md)及ADR-001新增節；沒有正式設定／資料寫入、模型查詢或部署，既有歷史RED與自然新增文章全程驗收保持未完成。
+
+２０２６－１０－２４ 使用者追加授權修復完整本機gate：舊output保留並補型別，不改檢查排除；Hermes同次authority驗證的ACL檢查合併至一個有界native子程序，每節點仍核對ACL／owner／mode，不跨次快取，保留30秒ACL期限與10秒崩潰復原驗收。詳見[本機修正紀錄](../../openspec/changes/fix-discovery-corpus-identity/local-verification.md)。這是本機候選，未安裝正式控制程式或更動正式ACL／服務／通知；不宣稱舊正式PermissionError根因已修復，ADR-001免費搜尋政策不變。

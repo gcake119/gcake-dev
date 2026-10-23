@@ -1,0 +1,174 @@
+TAP version 13
+# (node:47664) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Cloud-hosted synchronization reserves shared quota, verifies provider values, then promotes the public release
+not ok 1 - Cloud-hosted synchronization reserves shared quota, verifies provider values, then promotes the public release
+  ---
+  duration_ms: 28.953375
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:1:3907'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'promoted'
+    - 'verified'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'verified'
+  actual: 'promoted'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:19:334)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: Unknown inference retains its reservation and is never automatically repeated
+ok 2 - Unknown inference retains its reservation and is never automatically repeated
+  ---
+  duration_ms: 5.095792
+  type: 'test'
+  ...
+# Subtest: Saved output waits for full readback and resumes without another inference
+ok 3 - Saved output waits for full readback and resumes without another inference
+  ---
+  duration_ms: 6.210625
+  type: 'test'
+  ...
+# Subtest: Disabled, expired and concurrent rounds cannot infer or promote
+ok 4 - Disabled, expired and concurrent rounds cannot infer or promote
+  ---
+  duration_ms: 2.881208
+  type: 'test'
+  ...
+# Subtest: Changed public release and operator policy edits prevent stale promotion
+ok 5 - Changed public release and operator policy edits prevent stale promotion
+  ---
+  duration_ms: 4.71225
+  type: 'test'
+  ...
+# Subtest: Shared daily quota exhaustion prevents inference and is not replenished by the next run
+ok 6 - Shared daily quota exhaustion prevents inference and is not replenished by the next run
+  ---
+  duration_ms: 3.208833
+  type: 'test'
+  ...
+# Subtest: An operator change between upload and promotion cannot be overwritten
+ok 7 - An operator change between upload and promotion cannot be overwritten
+  ---
+  duration_ms: 2.992458
+  type: 'test'
+  ...
+# Subtest: Tampered provider values are never promoted
+ok 8 - Tampered provider values are never promoted
+  ---
+  duration_ms: 3.095375
+  type: 'test'
+  ...
+# Subtest: Only owned obsolete vectors may be deleted; an unknown identity is preserved
+ok 9 - Only owned obsolete vectors may be deleted; an unknown identity is preserved
+  ---
+  duration_ms: 3.611792
+  type: 'test'
+  ...
+# Subtest: Only the encrypted operator token may trigger fixed-source indexing; public requests cannot
+ok 10 - Only the encrypted operator token may trigger fixed-source indexing; public requests cannot
+  ---
+  duration_ms: 22.828542
+  type: 'test'
+  ...
+# Subtest: An upload acknowledgement lost after saving output can be retried without another model call
+not ok 11 - An upload acknowledgement lost after saving output can be retried without another model call
+  ---
+  duration_ms: 3.983834
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:1:9326'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'no_change'
+    - 'promoted'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'promoted'
+  actual: 'no_change'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:29:475)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Maintenance receipts expire after thirty days while current evidence remains
+ok 12 - Maintenance receipts expire after thirty days while current evidence remains
+  ---
+  duration_ms: 1.801709
+  type: 'test'
+  ...
+# Subtest: A ledger-proven compatible passage reuses its vector under the new public namespace with zero inference
+not ok 13 - A ledger-proven compatible passage reuses its vector under the new public namespace with zero inference
+  ---
+  duration_ms: 3.418791
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:1:10377'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'no_change'
+    - 'promoted'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'promoted'
+  actual: 'no_change'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/cloud-sync.acceptance.test.ts:31:645)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Verified continuation uploads only the next batch and promotes the final partial batch
+ok 14 - Verified continuation uploads only the next batch and promotes the final partial batch
+  ---
+  duration_ms: 22.641209
+  type: 'test'
+  ...
+# Subtest: Readback preserves progress when time or continuation admission is insufficient
+ok 15 - Readback preserves progress when time or continuation admission is insufficient
+  ---
+  duration_ms: 19.397292
+  type: 'test'
+  ...
+# Subtest: Equivalent public rebuild preserves pending and confirmed progress without inference replay
+ok 16 - Equivalent public rebuild preserves pending and confirmed progress without inference replay
+  ---
+  duration_ms: 14.065666
+  type: 'test'
+  ...
+# Subtest: Lease lost during readback never commits progress or promotes
+ok 17 - Lease lost during readback never commits progress or promotes
+  ---
+  duration_ms: 2.544625
+  type: 'test'
+  ...
+# Subtest: Final source change and policy expiry during readback prevent promotion
+ok 18 - Final source change and policy expiry during readback prevent promotion
+  ---
+  duration_ms: 4.32
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 15
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 457.410791

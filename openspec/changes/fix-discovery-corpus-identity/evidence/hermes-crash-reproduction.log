@@ -1,0 +1,6 @@
+test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 109.861s
+
+OK

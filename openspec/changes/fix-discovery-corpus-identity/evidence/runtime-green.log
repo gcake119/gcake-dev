@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: Authorized cloud binding is incomplete: zero remote calls and keyword fallback
+ok 1 - Authorized cloud binding is incomplete: zero remote calls and keyword fallback
+  ---
+  duration_ms: 32.86
+  type: 'test'
+  ...
+# Subtest: Verified cloud release uses actual bindings, current source links and BGE only
+ok 2 - Verified cloud release uses actual bindings, current source links and BGE only
+  ---
+  duration_ms: 6.28225
+  type: 'test'
+  ...
+# Subtest: Cloudflare source downloads use supported redirect handling and reject redirected sources
+ok 3 - Cloudflare source downloads use supported redirect handling and reject redirected sources
+  ---
+  duration_ms: 2.984292
+  type: 'test'
+  ...
+# (node:49456) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Foreground index preparation can use a longer bounded static download than reader requests
+ok 4 - Foreground index preparation can use a longer bounded static download than reader requests
+  ---
+  duration_ms: 2103.404416
+  type: 'test'
+  ...
+# Subtest: Verified Workers Free renewal creates each UTC allocation once and never replenishes spent credit
+ok 5 - Verified Workers Free renewal creates each UTC allocation once and never replenishes spent credit
+  ---
+  duration_ms: 3.072458
+  type: 'test'
+  ...
+# Subtest: Runtime configuration and policy failures identify stage without credentials or reader data
+ok 6 - Runtime configuration and policy failures identify stage without credentials or reader data
+  ---
+  duration_ms: 1.667791
+  type: 'test'
+  ...
+# Subtest: Source download deadline is identified before any embedding or vector call
+ok 7 - Source download deadline is identified before any embedding or vector call
+  ---
+  duration_ms: 2002.753625
+  type: 'test'
+  ...
+# Subtest: Independent public assets start together and final source check does not redownload them
+ok 8 - Independent public assets start together and final source check does not redownload them
+  ---
+  duration_ms: 4.098167
+  type: 'test'
+  ...
+# Subtest: Production final verification rejects changed asset identity even when corpus ID was reused
+ok 9 - Production final verification rejects changed asset identity even when corpus ID was reused
+  ---
+  duration_ms: 1.748208
+  type: 'test'
+  ...
+# Subtest: Failed asset aborts its pending sibling and never reaches inference
+ok 10 - Failed asset aborts its pending sibling and never reaches inference
+  ---
+  duration_ms: 1.071458
+  type: 'test'
+  ...
+# Subtest: Both asset descriptors are validated before any full asset request
+ok 11 - Both asset descriptors are validated before any full asset request
+  ---
+  duration_ms: 0.779791
+  type: 'test'
+  ...
+# Subtest: Manifest-only final check preserves changed rejection and never retries inference
+ok 12 - Manifest-only final check preserves changed rejection and never retries inference
+  ---
+  duration_ms: 1.148583
+  type: 'test'
+  ...
+# Subtest: Manifest-only final check preserves redirect rejection and never retries inference
+ok 13 - Manifest-only final check preserves redirect rejection and never retries inference
+  ---
+  duration_ms: 0.993375
+  type: 'test'
+  ...
+# Subtest: Manifest-only final check preserves timeout rejection and never retries inference
+ok 14 - Manifest-only final check preserves timeout rejection and never retries inference
+  ---
+  duration_ms: 2003.592208
+  type: 'test'
+  ...
+# Subtest: Ten-second public bodies complete without the old shared source or request timeout
+ok 15 - Ten-second public bodies complete without the old shared source or request timeout
+  ---
+  duration_ms: 10006.635791
+  type: 'test'
+  ...
+# Subtest: Incomplete public article bodies stop at the full-source budget before inference
+ok 16 - Incomplete public article bodies stop at the full-source budget before inference
+  ---
+  duration_ms: 15002.973042
+  type: 'test'
+  ...
+# Subtest: Equal content identity does not bypass changed provenance asset descriptors at final read
+ok 17 - Equal content identity does not bypass changed provenance asset descriptors at final read
+  ---
+  duration_ms: 2.022458
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 31477.465917

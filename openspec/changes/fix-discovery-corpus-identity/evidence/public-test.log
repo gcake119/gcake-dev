@@ -1,0 +1,662 @@
+
+> gcake-dev@0.1.0 test:public /Users/caiyijun/project/gcake-dev
+> node --import tsx --test src/lib/content/series-membership.test.ts src/data/external/ithome-2026-topics.test.ts src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/seo/structured-data.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/release-orchestrate.test.ts scripts/external/ithome-sync.test.ts src/lib/publishing/release-eligibility.test.ts scripts/publishing/prepare-distribution.test.ts test/pages-scheduled-deployment.test.ts scripts/external/completed-restoration.test.ts test/discovery/corpus.acceptance.test.ts test/discovery/assets.acceptance.test.ts test/discovery/local-preview.acceptance.test.ts test/discovery/recovery.acceptance.test.ts test/article-sharing.acceptance.test.ts test/article-ending.acceptance.test.ts
+
+TAP version 13
+# Subtest: the restoration command uses the saved completed snapshot and atomically replaces old 19-post content
+ok 1 - the restoration command uses the saved completed snapshot and atomically replaces old 19-post content
+  ---
+  duration_ms: 250.475292
+  type: 'test'
+  ...
+# Subtest: unavailable, active, incomplete, changed revision and body/hash tampering retain the previous file without source fallback
+ok 2 - unavailable, active, incomplete, changed revision and body/hash tampering retain the previous file without source fallback
+  ---
+  duration_ms: 25.806625
+  type: 'test'
+  ...
+# Subtest: the actual restoration CLI exits nonzero on bad snapshot before a following build can run
+ok 3 - the actual restoration CLI exits nonzero on bad snapshot before a following build can run
+  ---
+  duration_ms: 330.478792
+  type: 'test'
+  ...
+# Subtest: follows deployed public set and pins the revision even across midnight
+ok 4 - follows deployed public set and pins the revision even across midnight
+  ---
+  duration_ms: 9.922542
+  type: 'test'
+  ...
+# Subtest: rejects incomplete fetch, corrupted body and inconsistent manifests
+ok 5 - rejects incomplete fetch, corrupted body and inconsistent manifests
+  ---
+  duration_ms: 1.312792
+  type: 'test'
+  ...
+# Subtest: draft content cannot enter the public snapshot
+ok 6 - draft content cannot enter the public snapshot
+  ---
+  duration_ms: 0.530083
+  type: 'test'
+  ...
+# Subtest: completion freezes 30 verified posts without any source requests; corruption fails closed
+ok 7 - completion freezes 30 verified posts without any source requests; corruption fails closed
+  ---
+  duration_ms: 5.645625
+  type: 'test'
+  ...
+# Subtest: ongoing series still synchronizes the deployed source
+ok 8 - ongoing series still synchronizes the deployed source
+  ---
+  duration_ms: 0.571833
+  type: 'test'
+  ...
+# Subtest: prepares Substack with canonical source and writes disabled
+ok 9 - prepares Substack with canonical source and writes disabled
+  ---
+  duration_ms: 56.639584
+  type: 'test'
+  ...
+# Subtest: invalid slugs and missing content fail closed
+ok 10 - invalid slugs and missing content fail closed
+  ---
+  duration_ms: 2.311416
+  type: 'test'
+  ...
+# Subtest: ready posts are not prepared for distribution
+ok 11 - ready posts are not prepared for distribution
+  ---
+  duration_ms: 4.441792
+  type: 'test'
+  ...
+# Subtest: future posts are never prepared for distribution
+ok 12 - future posts are never prepared for distribution
+  ---
+  duration_ms: 7.84675
+  type: 'test'
+  ...
+# Subtest: committed publication exports its exact revision for Pages delivery
+ok 13 - committed publication exports its exact revision for Pages delivery
+  ---
+  duration_ms: 259.9595
+  type: 'test'
+  ...
+# Subtest: empty hourly verification never arms Pages delivery
+ok 14 - empty hourly verification never arms Pages delivery
+  ---
+  duration_ms: 189.6695
+  type: 'test'
+  ...
+# Subtest: known pre-write conflict and unknown Git result never arm deployment
+ok 15 - known pre-write conflict and unknown Git result never arm deployment
+  ---
+  duration_ms: 331.555709
+  type: 'test'
+  ...
+# Subtest: malformed and injectable publication identities fail closed
+ok 16 - malformed and injectable publication identities fail closed
+  ---
+  duration_ms: 690.79675
+  type: 'test'
+  ...
+# Subtest: disabled Worker gate never arms deployment
+ok 17 - disabled Worker gate never arms deployment
+  ---
+  duration_ms: 151.470083
+  type: 'test'
+  ...
+# Subtest: all 30 fixed Ironman articles have 1-3 curated topics from the shared taxonomy
+ok 18 - all 30 fixed Ironman articles have 1-3 curated topics from the shared taxonomy
+  ---
+  duration_ms: 46.054458
+  type: 'test'
+  ...
+# Subtest: all local finalized manuscripts use existing topic taxonomy without rewriting prose
+ok 19 - all local finalized manuscripts use existing topic taxonomy without rewriting prose
+  ---
+  duration_ms: 89.716583
+  type: 'test'
+  ...
+# Subtest: local post slug ignores parent folders
+ok 20 - local post slug ignores parent folders
+  ---
+  duration_ms: 10.048084
+  type: 'test'
+  ...
+# Subtest: local post discovery is recursive
+ok 21 - local post discovery is recursive
+  ---
+  duration_ms: 61.883292
+  type: 'test'
+  ...
+# Subtest: duplicate basenames are rejected when resolving a slug
+ok 22 - duplicate basenames are rejected when resolving a slug
+  ---
+  duration_ms: 8.728292
+  type: 'test'
+  ...
+# Subtest: publication rolls over at Taipei midnight, rather than UTC midnight
+ok 23 - publication rolls over at Taipei midnight, rather than UTC midnight
+  ---
+  duration_ms: 15.399708
+  type: 'test'
+  ...
+# Subtest: legacy date begins at Taipei midnight while offset date-time uses its exact instant
+ok 24 - legacy date begins at Taipei midnight while offset date-time uses its exact instant
+  ---
+  duration_ms: 0.2585
+  type: 'test'
+  ...
+# Subtest: invalid publication input fails closed and undated published posts stay compatible
+ok 25 - invalid publication input fails closed and undated published posts stay compatible
+  ---
+  duration_ms: 0.181166
+  type: 'test'
+  ...
+# Subtest: offset-aware visibility is timezone-environment independent
+ok 26 - offset-aware visibility is timezone-environment independent
+  ---
+  duration_ms: 0.14875
+  type: 'test'
+  ...
+# Subtest: completed manuscripts and archived sources do not end an ongoing public schedule
+ok 27 - completed manuscripts and archived sources do not end an ongoing public schedule
+  ---
+  duration_ms: 0.196708
+  type: 'test'
+  ...
+# Subtest: inactivity never completes an open series and paused series remain paused
+ok 28 - inactivity never completes an open series and paused series remain paused
+  ---
+  duration_ms: 0.047791
+  type: 'test'
+  ...
+# Subtest: rename exposes only the new series slug while preserving post membership order
+ok 29 - rename exposes only the new series slug while preserving post membership order
+  ---
+  duration_ms: 1.289792
+  type: 'test'
+  ...
+# Subtest: deleting a manifest makes its former posts standalone
+ok 30 - deleting a manifest makes its former posts standalone
+  ---
+  duration_ms: 0.071417
+  type: 'test'
+  ...
+# Subtest: Substack dry run stays provider-payload independent and cannot publish
+ok 31 - Substack dry run stays provider-payload independent and cannot publish
+  ---
+  duration_ms: 1.542959
+  type: 'test'
+  ...
+# Subtest: full mode preserves portable Markdown and records assets
+ok 32 - full mode preserves portable Markdown and records assets
+  ---
+  duration_ms: 27.232625
+  type: 'test'
+  ...
+# Subtest: interactive-summary uses only the authored fallback and canonical link
+ok 33 - interactive-summary uses only the authored fallback and canonical link
+  ---
+  duration_ms: 7.190875
+  type: 'test'
+  ...
+# Subtest: interactive-summary rejects source without an authored fallback
+ok 34 - interactive-summary rejects source without an authored fallback
+  ---
+  duration_ms: 12.736
+  type: 'test'
+  ...
+# Subtest: full mode rejects MDX constructs instead of delegating improvisation to adapters
+ok 35 - full mode rejects MDX constructs instead of delegating improvisation to adapters
+  ---
+  duration_ms: 0.982667
+  type: 'test'
+  ...
+# Subtest: complete series follows manifest order, independent of file order
+ok 36 - complete series follows manifest order, independent of file order
+  ---
+  duration_ms: 1.378041
+  type: 'test'
+  ...
+# Subtest: partially written series fails closed
+ok 37 - partially written series fails closed
+  ---
+  duration_ms: 0.089875
+  type: 'test'
+  ...
+# Subtest: status mismatch and missing durable timestamp block series
+ok 38 - status mismatch and missing durable timestamp block series
+  ---
+  duration_ms: 0.065875
+  type: 'test'
+  ...
+# Subtest: published parts do not re-enter the queue
+ok 39 - published parts do not re-enter the queue
+  ---
+  duration_ms: 0.189334
+  type: 'test'
+  ...
+# Subtest: standalone ready post enters as standalone
+ok 40 - standalone ready post enters as standalone
+  ---
+  duration_ms: 0.057666
+  type: 'test'
+  ...
+# Subtest: duplicate cross-series reference fails closed
+ok 41 - duplicate cross-series reference fails closed
+  ---
+  duration_ms: 0.063334
+  type: 'test'
+  ...
+# Subtest: article structured data uses canonical page and shared author identity
+ok 42 - article structured data uses canonical page and shared author identity
+  ---
+  duration_ms: 3.205791
+  type: 'test'
+  ...
+# Subtest: profile structured data exposes one stable author entity
+ok 43 - profile structured data exposes one stable author entity
+  ---
+  duration_ms: 0.13125
+  type: 'test'
+  ...
+# Subtest: breadcrumb structured data preserves reading order
+ok 44 - breadcrumb structured data preserves reading order
+  ---
+  duration_ms: 0.161208
+  type: 'test'
+  ...
+# Subtest: series structured data exposes an ordered article collection
+ok 45 - series structured data exposes an ordered article collection
+  ---
+  duration_ms: 0.217208
+  type: 'test'
+  ...
+# Subtest: public stable recommendations exclude self, both neighbors, duplicates and unresolved targets
+ok 46 - public stable recommendations exclude self, both neighbors, duplicates and unresolved targets
+  ---
+  duration_ms: 1.317459
+  type: 'test'
+  ...
+# Subtest: without a next article, up to three distinct destinations retain original candidate order
+ok 47 - without a next article, up to three distinct destinations retain original candidate order
+  ---
+  duration_ms: 0.090583
+  type: 'test'
+  ...
+# Subtest: missing or insufficient recommendations never pad or expose unavailable metadata
+ok 48 - missing or insufficient recommendations never pad or expose unavailable metadata
+  ---
+  duration_ms: 0.119542
+  type: 'test'
+  ...
+# Subtest: unsupported sharing exposes selectable full URL without clipboard operations
+ok 49 - unsupported sharing exposes selectable full URL without clipboard operations
+  ---
+  duration_ms: 11.188167
+  type: 'test'
+  ...
+# Subtest: native share payload and resolved outcome with only one action
+ok 50 - native share payload and resolved outcome with only one action
+  ---
+  duration_ms: 5.313458
+  type: 'test'
+  ...
+# Subtest: native share payload and cancelled outcome with only one action
+ok 51 - native share payload and cancelled outcome with only one action
+  ---
+  duration_ms: 2.650667
+  type: 'test'
+  ...
+# Subtest: native share payload and failed outcome with only one action
+ok 52 - native share payload and failed outcome with only one action
+  ---
+  duration_ms: 1.958334
+  type: 'test'
+  ...
+# Subtest: new attempt clears stale failure, prevents overlap and restores the control
+ok 53 - new attempt clears stale failure, prevents overlap and restores the control
+  ---
+  duration_ms: 1.259416
+  type: 'test'
+  ...
+# Subtest: Fixed deployed manifest rejects malicious asset URLs before fetching external content
+ok 54 - Fixed deployed manifest rejects malicious asset URLs before fetching external content
+  ---
+  duration_ms: 33.875583
+  type: 'test'
+  ...
+# (node:81857) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Manifest digest mismatch is rejected
+ok 55 - Manifest digest mismatch is rejected
+  ---
+  duration_ms: 10.47625
+  type: 'test'
+  ...
+# Subtest: Admission SQL enforces durable verified-window caps atomically
+ok 56 - Admission SQL enforces durable verified-window caps atomically
+  ---
+  duration_ms: 4.538
+  type: 'test'
+  ...
+# Subtest: Evaluation follows empty, sparse, growing and withdrawn public evidence without quotas
+ok 57 - Evaluation follows empty, sparse, growing and withdrawn public evidence without quotas
+  ---
+  duration_ms: 1039.668334
+  type: 'test'
+  ...
+# Subtest: Durable admission respects configured ceilings, atomic final slot, expiry and hashed-key cleanup
+ok 58 - Durable admission respects configured ceilings, atomic final slot, expiry and hashed-key cleanup
+  ---
+  duration_ms: 3.098
+  type: 'test'
+  ...
+# Subtest: Actual article connection component omits empty groups and renders accessible escaped links
+ok 59 - Actual article connection component omits empty groups and renders accessible escaped links
+  ---
+  duration_ms: 223.940375
+  type: 'test'
+  ...
+# Subtest: Ollama evaluation permits only pinned installed models on loopback and uses embedding requests without truncation
+ok 60 - Ollama evaluation permits only pinned installed models on loopback and uses embedding requests without truncation
+  ---
+  duration_ms: 2.09225
+  type: 'test'
+  ...
+# Subtest: Ollama invalid output fails once and a vector cannot cross corpus or model spaces
+ok 61 - Ollama invalid output fails once and a vector cannot cross corpus or model spaces
+  ---
+  duration_ms: 1.123208
+  type: 'test'
+  ...
+# Subtest: Local and imported articles share a slug
+ok 62 - Local and imported articles share a slug
+  ---
+  duration_ms: 22.380708
+  type: 'test'
+  ...
+# Subtest: Draft and future article exclusion
+ok 63 - Draft and future article exclusion
+  ---
+  duration_ms: 1.974958
+  type: 'test'
+  ...
+# Subtest: Identical source rebuild and matching passage anchors
+ok 64 - Identical source rebuild and matching passage anchors
+  ---
+  duration_ms: 2.664292
+  type: 'test'
+  ...
+# Subtest: Interactive MDX is excluded without execution or hidden text
+ok 65 - Interactive MDX is excluded without execution or hidden text
+  ---
+  duration_ms: 1.477333
+  type: 'test'
+  ...
+# Subtest: Article becomes public, edits, renames, withdrawals and deletions refresh the release
+ok 66 - Article becomes public, edits, renames, withdrawals and deletions refresh the release
+  ---
+  duration_ms: 4.790875
+  type: 'test'
+  ...
+# Subtest: Explicit acronym definition and ambiguous token
+ok 67 - Explicit acronym definition and ambiguous token
+  ---
+  duration_ms: 1.444167
+  type: 'test'
+  ...
+# Subtest: No usable terms remains searchable and technical punctuation stays distinct
+ok 68 - No usable terms remains searchable and technical punctuation stays distinct
+  ---
+  duration_ms: 1.334709
+  type: 'test'
+  ...
+# Subtest: Citation creates backlink; recommendations never create citations
+ok 69 - Citation creates backlink; recommendations never create citations
+  ---
+  duration_ms: 1.552833
+  type: 'test'
+  ...
+# Subtest: Complementary next reading, sparse candidates and current deterministic fallback
+ok 70 - Complementary next reading, sparse candidates and current deterministic fallback
+  ---
+  duration_ms: 2.144458
+  type: 'test'
+  ...
+# Subtest: Title outranks incidental body mention, Chinese input, safe excerpt
+ok 71 - Title outranks incidental body mention, Chinese input, safe excerpt
+  ---
+  duration_ms: 1.765125
+  type: 'test'
+  ...
+# Subtest: Share filtered search, pagination, partial labels and bounded input
+ok 72 - Share filtered search, pagination, partial labels and bounded input
+  ---
+  duration_ms: 11.997584
+  type: 'test'
+  ...
+# Subtest: Supported topic terms outrank incidental narrative words in recommendation reasons
+ok 73 - Supported topic terms outrank incidental narrative words in recommendation reasons
+  ---
+  duration_ms: 1.498833
+  type: 'test'
+  ...
+# Subtest: Field term frequencies reflect repeated evidence rather than vocabulary sets
+ok 74 - Field term frequencies reflect repeated evidence rather than vocabulary sets
+  ---
+  duration_ms: 0.635334
+  type: 'test'
+  ...
+# Subtest: Bilingual explicit aliases retain source evidence
+ok 75 - Bilingual explicit aliases retain source evidence
+  ---
+  duration_ms: 0.7905
+  type: 'test'
+  ...
+# Subtest: Invalid public metadata fails candidate instead of silently escaping the site
+ok 76 - Invalid public metadata fails candidate instead of silently escaping the site
+  ---
+  duration_ms: 0.239375
+  type: 'test'
+  ...
+# Subtest: Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+ok 77 - Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+  ---
+  duration_ms: 1.367583
+  type: 'test'
+  ...
+# Subtest: Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+ok 78 - Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+  ---
+  duration_ms: 3.475167
+  type: 'test'
+  ...
+# Subtest: No-match suggestions offer evidenced vocabulary without replacing the query
+ok 79 - No-match suggestions offer evidenced vocabulary without replacing the query
+  ---
+  duration_ms: 1.713583
+  type: 'test'
+  ...
+# Subtest: Every displayed recommendation term has its own supporting passage
+ok 80 - Every displayed recommendation term has its own supporting passage
+  ---
+  duration_ms: 1.035541
+  type: 'test'
+  ...
+# Subtest: Reviewed bilingual definition is tied to its exact public revision and quotation
+ok 81 - Reviewed bilingual definition is tied to its exact public revision and quotation
+  ---
+  duration_ms: 3.058541
+  type: 'test'
+  ...
+# Subtest: Acronyms expand as technical words rather than substrings inside unrelated words
+ok 82 - Acronyms expand as technical words rather than substrings inside unrelated words
+  ---
+  duration_ms: 0.825708
+  type: 'test'
+  ...
+# Subtest: Narrative fillers cannot become recommendation explanations even in a heading
+ok 83 - Narrative fillers cannot become recommendation explanations even in a heading
+  ---
+  duration_ms: 0.777875
+  type: 'test'
+  ...
+# Subtest: Shared narrative without a supported explanation does not create an empty recommendation
+ok 84 - Shared narrative without a supported explanation does not create an empty recommendation
+  ---
+  duration_ms: 0.725125
+  type: 'test'
+  ...
+# Subtest: Distinct identities cannot share a normalized primary reading URL
+ok 85 - Distinct identities cannot share a normalized primary reading URL
+  ---
+  duration_ms: 1.101875
+  type: 'test'
+  ...
+# Subtest: Stable identity excludes restoration/build provenance but invalidates effective metadata
+ok 86 - Stable identity excludes restoration/build provenance but invalidates effective metadata
+  ---
+  duration_ms: 10.126375
+  type: 'test'
+  ...
+# (node:81860) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Equivalent completed snapshot restores retain search identity through actual site assembly
+ok 87 - Equivalent completed snapshot restores retain search identity through actual site assembly
+  ---
+  duration_ms: 2044.715958
+  type: 'test'
+  ...
+# Subtest: Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+ok 88 - Effective aliases, series labels and extraction eligibility invalidate a pinned body revision
+  ---
+  duration_ms: 1.566833
+  type: 'test'
+  ...
+# Subtest: Configuration object key order cannot change otherwise identical search content
+ok 89 - Configuration object key order cannot change otherwise identical search content
+  ---
+  duration_ms: 0.614791
+  type: 'test'
+  ...
+# Subtest: Local preview returns real contract with filtered pagination and source passages
+ok 90 - Local preview returns real contract with filtered pagination and source passages
+  ---
+  duration_ms: 39.939042
+  type: 'test'
+  ...
+# Subtest: Bad local requests, stale corpus and paused service perform zero inference
+ok 91 - Bad local requests, stale corpus and paused service perform zero inference
+  ---
+  duration_ms: 3.832916
+  type: 'test'
+  ...
+# Subtest: Cancellation, overload and retry recover without changing article identity
+ok 92 - Cancellation, overload and retry recover without changing article identity
+  ---
+  duration_ms: 22.698542
+  type: 'test'
+  ...
+# Subtest: Preview rewrites only its served copy and rejects corrupt cached vectors
+ok 93 - Preview rewrites only its served copy and rejects corrupt cached vectors
+  ---
+  duration_ms: 1.40175
+  type: 'test'
+  ...
+# Subtest: Repeated foreground previews retain independent start, status and finish receipts
+ok 94 - Repeated foreground previews retain independent start, status and finish receipts
+  ---
+  duration_ms: 13.573791
+  type: 'test'
+  ...
+# Subtest: Withdrawn results are replaced by current lexical fallback after 409
+ok 95 - Withdrawn results are replaced by current lexical fallback after 409
+  ---
+  duration_ms: 46.481875
+  type: 'test'
+  ...
+# Subtest: Withdrawn results are replaced by current lexical fallback after manifest
+ok 96 - Withdrawn results are replaced by current lexical fallback after manifest
+  ---
+  duration_ms: 5.870792
+  type: 'test'
+  ...
+# Subtest: Unavailable current assets after conflict clear old rows and preserve retry/query
+ok 97 - Unavailable current assets after conflict clear old rows and preserve retry/query
+  ---
+  duration_ms: 6.15775
+  type: 'test'
+  ...
+# Subtest: Superseded release recovery cannot overwrite a newer query
+ok 98 - Superseded release recovery cannot overwrite a newer query
+  ---
+  duration_ms: 18.968208
+  type: 'test'
+  ...
+# Subtest: Authorized public endpoint searches directly without a mode selector or preview flag
+ok 99 - Authorized public endpoint searches directly without a mode selector or preview flag
+  ---
+  duration_ms: 3.486834
+  type: 'test'
+  ...
+# (node:81862) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Diagnostic 503 retains current keyword articles and explicit retry recovers without exposing diagnostic details
+ok 100 - Diagnostic 503 retains current keyword articles and explicit retry recovers without exposing diagnostic details
+  ---
+  duration_ms: 8.561333
+  type: 'test'
+  ...
+# Subtest: Keyword count stays usable past five seconds and browser timeout preserves retry
+ok 101 - Keyword count stays usable past five seconds and browser timeout preserves retry
+  ---
+  duration_ms: 6.7685
+  type: 'test'
+  ...
+# Subtest: legacy automatic Pages triggers are withdrawn without losing manual controls
+ok 102 - legacy automatic Pages triggers are withdrawn without losing manual controls
+  ---
+  duration_ms: 1.728083
+  type: 'test'
+  ...
+# Subtest: manual deployment guards reject unexpected automatic events and isolate Secret acceptance
+ok 103 - manual deployment guards reject unexpected automatic events and isolate Secret acceptance
+  ---
+  duration_ms: 14.215333
+  type: 'test'
+  ...
+# Subtest: failed builds and stale main cannot publish and Pages does not distribute or mail
+ok 104 - failed builds and stale main cannot publish and Pages does not distribute or mail
+  ---
+  duration_ms: 0.309667
+  type: 'test'
+  ...
+# Subtest: publication remains private before the Taipei instant and eligible at the instant
+ok 105 - publication remains private before the Taipei instant and eligible at the instant
+  ---
+  duration_ms: 0.2455
+  type: 'test'
+  ...
+# Subtest: the saved 30 completed articles validate offline and corruption never falls back
+ok 106 - the saved 30 completed articles validate offline and corruption never falls back
+  ---
+  duration_ms: 21.476667
+  type: 'test'
+  ...
+# Subtest: existing editorial cron and no-op delivery guards remain intact; both builds restore completed content first
+ok 107 - existing editorial cron and no-op delivery guards remain intact; both builds restore completed content first
+  ---
+  duration_ms: 0.192917
+  type: 'test'
+  ...
+1..107
+# tests 107
+# suites 0
+# pass 107
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2676.4035

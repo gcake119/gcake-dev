@@ -1,0 +1,119 @@
+
+> gcake-dev@0.1.0 build:all /Users/caiyijun/project/gcake-dev
+> pnpm build:astro && pnpm build:workspaces
+
+
+> gcake-dev@0.1.0 build:astro /Users/caiyijun/project/gcake-dev
+> pnpm content:validate && astro build
+
+
+> gcake-dev@0.1.0 content:validate /Users/caiyijun/project/gcake-dev
+> node --import tsx scripts/content/validate-series.ts
+
+Series validation finished: 0 error(s), 0 warning(s).
+01:01:19 [content] Syncing content
+01:01:19 [content] Synced content
+01:01:19 [types] Generated 272ms
+01:01:19 [build] output: "static"
+01:01:19 [build] mode: "static"
+01:01:19 [build] directory: /Users/caiyijun/project/gcake-dev/dist/
+01:01:19 [build] Collecting build info...
+01:01:19 [build] ✓ Completed in 310ms.
+01:01:19 [build] Building static entrypoints...
+01:01:19 [vite] ✓ built in 124ms
+01:01:19 [vite] ✓ built in 42ms
+01:01:19 [build] Rearranging server assets...
+
+ generating static routes
+01:01:20   ├─ /about/index.html (+6ms)
+01:01:20   ├─ /discovery/8018d165aa8470d54cd14d7549d533045dcaee7f7d3519bb2899328bf8f603ff/index.json (+10ms)
+01:01:20   ├─ /discovery/8018d165aa8470d54cd14d7549d533045dcaee7f7d3519bb2899328bf8f603ff/passages.json (+6ms)
+01:01:20   ├─ /discovery/8018d165aa8470d54cd14d7549d533045dcaee7f7d3519bb2899328bf8f603ff/connections.json (+1ms)
+01:01:20   ├─ /discovery-manifest.json (+14ms)
+01:01:20   ├─ /ithome-snapshot.json (+2ms)
+01:01:20   ├─ /posts/index.html (+3ms)
+01:01:20   ├─ /posts/ai-agent-development-workflow/index.html (+17ms)
+01:01:20   ├─ /posts/ai-ui-five-stage-workflow/index.html (+15ms)
+01:01:20   ├─ /posts/ithome-2026-astro-choice/index.html (+15ms)
+01:01:20   ├─ /posts/ithome-2026-chatgpt-writing-workflow/index.html (+14ms)
+01:01:20   ├─ /posts/ithome-2026-publishing-in-production/index.html (+13ms)
+01:01:20   ├─ /posts/ithome-2026-publishing-toolchain/index.html (+13ms)
+01:01:20   ├─ /robots.txt (+1ms)
+01:01:20   ├─ /rss.xml (+25ms)
+01:01:20   ├─ /search/index.html (+2ms)
+01:01:20   ├─ /search-index.json (+19ms)
+01:01:20   ├─ /series/ithome-2026/day-01/index.html (+14ms)
+01:01:20   ├─ /series/ithome-2026/day-02/index.html (+13ms)
+01:01:20   ├─ /series/ithome-2026/day-03/index.html (+13ms)
+01:01:20   ├─ /series/ithome-2026/day-04/index.html (+13ms)
+01:01:20   ├─ /series/ithome-2026/day-05/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-06/index.html (+13ms)
+01:01:21   ├─ /series/ithome-2026/day-07/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-08/index.html (+13ms)
+01:01:21   ├─ /series/ithome-2026/day-09/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-10/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-11/index.html (+13ms)
+01:01:21   ├─ /series/ithome-2026/day-12/index.html (+25ms)
+01:01:21   ├─ /series/ithome-2026/day-13/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-14/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-15/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-16/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-17/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-18/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-19/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-20/index.html (+13ms)
+01:01:21   ├─ /series/ithome-2026/day-21/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-22/index.html (+11ms)
+01:01:21   ├─ /series/ithome-2026/day-23/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-24/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-25/index.html (+11ms)
+01:01:21   ├─ /series/ithome-2026/day-26/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-27/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-28/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-29/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026/day-30/index.html (+12ms)
+01:01:21   ├─ /series/ithome-2026-extensions/index.html (+1ms)
+01:01:21   ├─ /series/ithome-2026/index.html (+2ms)
+01:01:21   ├─ /series/index.html (+12ms)
+01:01:21   ├─ /sitemap.xml (+13ms)
+01:01:21   ├─ /topics/ai-assisted-development/index.html (+7ms)
+01:01:21   ├─ /topics/product-development/index.html (+5ms)
+01:01:21   ├─ /topics/system-design/index.html (+6ms)
+01:01:21   ├─ /topics/testing-verification/index.html (+6ms)
+01:01:21   ├─ /topics/development-automation/index.html (+5ms)
+01:01:21   ├─ /topics/debugging-operations/index.html (+6ms)
+01:01:21   ├─ /topics/developer-learning/index.html (+6ms)
+01:01:21   ├─ /topics/technical-writing/index.html (+5ms)
+01:01:21   ├─ /topics/index.html (+6ms)
+01:01:21   ├─ /index.html (+12ms)
+01:01:21 ✓ Completed in 1.76s.
+
+01:01:21 [build] ✓ Completed in 1.94s.
+01:01:21 [build] 52 page(s) built in 2.27s
+01:01:21 [build] Complete!
+
+> gcake-dev@0.1.0 build:workspaces /Users/caiyijun/project/gcake-dev
+> pnpm --filter "./apps/**" --filter "./packages/**" build
+
+Scope: 6 of 7 workspace projects
+apps/search-worker build$ tsc --noEmit -p tsconfig.json
+apps/slug-generator build$ tsc -p tsconfig.json
+packages/admin-contract build$ tsc -p tsconfig.json
+packages/publishing-contract build$ tsc -p tsconfig.json
+apps/search-worker build: Done
+packages/admin-contract build: Done
+packages/publishing-contract build: Done
+apps/slug-generator build: Done
+apps/admin build$ vite build
+apps/admin-worker build$ tsc -p tsconfig.json
+apps/admin build: vite v8.3.0 building client environment for production...
+apps/admin build: transforming...
+apps/admin build: ✓ 104 modules transformed.
+apps/admin build: rendering chunks...
+apps/admin build: computing gzip size...
+apps/admin build: dist/index.html                   0.74 kB │ gzip:  0.45 kB
+apps/admin build: dist/assets/index-EBQCjx1N.css   32.92 kB │ gzip:  6.07 kB
+apps/admin build: dist/assets/index-in5OMth8.js   257.65 kB │ gzip: 86.90 kB
+apps/admin build: ✓ built in 141ms
+apps/admin build: Done
+apps/admin-worker build: Done

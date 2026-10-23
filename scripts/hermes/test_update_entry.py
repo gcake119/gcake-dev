@@ -210,3 +210,29 @@ class EntryAcceptance(unittest.TestCase):
         with self.assertRaises(RuntimeError):supervisor.query()
 
 if __name__=='__main__':unittest.main()
+
+
+class BoundedRecoveryStartup(unittest.TestCase):
+    def test_recovery_retains_ten_second_deadline_with_acl_startup_overhead(self):
+        case=EntryAcceptance();case.setUp();self.addCleanup(case.doCleanups)
+        pid=os.fork()
+        if pid==0:
+            case.update(failpoint=lambda point:os._exit(79) if point=='replaced:updater' else None)
+            os._exit(1)
+        self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+        script='''import json,sys,time,subprocess
+from pathlib import Path
+from update_entry import EntryStore,UpdateEntry
+from test_update_entry import PersistentSupervisor
+actual=subprocess.run
+def startup(command,**options):
+    if command[:4]==[sys.executable,'-I','-B','-c']:time.sleep(.15)
+    return actual(command,**options)
+subprocess.run=startup
+print(json.dumps(UpdateEntry(EntryStore(Path(ROOT)),PersistentSupervisor(Path(BASE))).recover()))
+'''.replace('ROOT',repr(str(case.root))).replace('BASE',repr(str(case.base)))
+        result=subprocess.run([sys.executable,'-B','-c',script],cwd=Path(__file__).parent,
+                              capture_output=True,text=True,timeout=10)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(json.loads(result.stdout)['status'],'rolled_back')
+        case.assert_old()

@@ -1,0 +1,1842 @@
+
+> gcake-dev@0.1.0 test:distribution /Users/caiyijun/project/gcake-dev
+> node --import tsx --test scripts/publishing/distribution*.test.ts scripts/publishing/substack-browser.test.ts
+
+TAP version 13
+# (node:85560) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: advance same-ID prepare/arm is independent of Pages, idempotent, and delivery remains evidence not receipt
+ok 1 - advance same-ID prepare/arm is independent of Pages, idempotent, and delivery remains evidence not receipt
+  ---
+  duration_ms: 80.645
+  type: 'test'
+  ...
+# Subtest: schedule rejects legacy before provider writes
+ok 2 - schedule rejects legacy before provider writes
+  ---
+  duration_ms: 16.9435
+  type: 'test'
+  ...
+# Subtest: schedule rejects unconfirmed before provider writes
+ok 3 - schedule rejects unconfirmed before provider writes
+  ---
+  duration_ms: 5.025834
+  type: 'test'
+  ...
+# Subtest: schedule rejects past before provider writes
+ok 4 - schedule rejects past before provider writes
+  ---
+  duration_ms: 8.840583
+  type: 'test'
+  ...
+# Subtest: schedule rejects horizon before provider writes
+ok 5 - schedule rejects horizon before provider writes
+  ---
+  duration_ms: 11.722208
+  type: 'test'
+  ...
+# Subtest: schedule rejects timezone before provider writes
+ok 6 - schedule rejects timezone before provider writes
+  ---
+  duration_ms: 17.161791
+  type: 'test'
+  ...
+# Subtest: content sync actually edits drafts and public articles; no-op preserves schedules and delivered version
+ok 7 - content sync actually edits drafts and public articles; no-op preserves schedules and delivered version
+  ---
+  duration_ms: 20.668834
+  type: 'test'
+  ...
+# Subtest: armed revision and postponement disarm first, then edit/arm once; cancellation retains draft
+ok 8 - armed revision and postponement disarm first, then edit/arm once; cancellation retains draft
+  ---
+  duration_ms: 24.459125
+  type: 'test'
+  ...
+# Subtest: unknown create survives restart and refuses replay
+ok 9 - unknown create survives restart and refuses replay
+  ---
+  duration_ms: 9.840042
+  type: 'test'
+  ...
+# Subtest: unknown arm survives restart and refuses replay
+ok 10 - unknown arm survives restart and refuses replay
+  ---
+  duration_ms: 12.826209
+  type: 'test'
+  ...
+# Subtest: unknown remove survives restart and refuses replay
+ok 11 - unknown remove survives restart and refuses replay
+  ---
+  duration_ms: 6.271459
+  type: 'test'
+  ...
+# Subtest: unknown update survives restart and refuses replay
+ok 12 - unknown update survives restart and refuses replay
+  ---
+  duration_ms: 7.660458
+  type: 'test'
+  ...
+# Subtest: reconcile lost create finds original and never creates a replacement
+ok 13 - reconcile lost create finds original and never creates a replacement
+  ---
+  duration_ms: 6.571333
+  type: 'test'
+  ...
+# Subtest: slug mismatch blocks arming; public adoption cannot backfill delivery
+ok 14 - slug mismatch blocks arming; public adoption cannot backfill delivery
+  ---
+  duration_ms: 20.953875
+  type: 'test'
+  ...
+# Subtest: published cancellation is too late and source/remote races never claim current synchronization
+ok 15 - published cancellation is too late and source/remote races never claim current synchronization
+  ---
+  duration_ms: 8.16375
+  type: 'test'
+  ...
+# Subtest: background drift never accesses authenticated provider and preserves last armed time
+ok 16 - background drift never accesses authenticated provider and preserves last armed time
+  ---
+  duration_ms: 13.646917
+  type: 'test'
+  ...
+# Subtest: semantic content comparison retains headings, links, code whitespace and image alt
+ok 17 - semantic content comparison retains headings, links, code whitespace and image alt
+  ---
+  duration_ms: 0.658208
+  type: 'test'
+  ...
+# Subtest: occupied discovery is never adopted or overwritten
+ok 18 - occupied discovery is never adopted or overwritten
+  ---
+  duration_ms: 7.739917
+  type: 'test'
+  ...
+# Subtest: lost arm reconciles the original commitment and delivery revision without replay
+ok 19 - lost arm reconciles the original commitment and delivery revision without replay
+  ---
+  duration_ms: 8.280334
+  type: 'test'
+  ...
+# Subtest: sending content cannot be edited or mistaken for a completed public correction
+ok 20 - sending content cannot be edited or mistaken for a completed public correction
+  ---
+  duration_ms: 9.372375
+  type: 'test'
+  ...
+# Subtest: independent writers and stale generations cannot replace an existing intent
+ok 21 - independent writers and stale generations cannot replace an existing intent
+  ---
+  duration_ms: 6.350125
+  type: 'test'
+  ...
+# Subtest: source slug rename maps the original ID and never creates a replacement
+ok 22 - source slug rename maps the original ID and never creates a replacement
+  ---
+  duration_ms: 7.76575
+  type: 'test'
+  ...
+# Subtest: image readback must demonstrate every image loaded before any arm
+ok 23 - image readback must demonstrate every image loaded before any arm
+  ---
+  duration_ms: 5.17675
+  type: 'test'
+  ...
+# Subtest: legacy coordinator cannot adopt a new-policy schedule or its former slug
+ok 24 - legacy coordinator cannot adopt a new-policy schedule or its former slug
+  ---
+  duration_ms: 18.868834
+  type: 'test'
+  ...
+# Subtest: confirmed queue adapter uses confirmed overrides, never estimates or paused commitments
+ok 25 - confirmed queue adapter uses confirmed overrides, never estimates or paused commitments
+  ---
+  duration_ms: 13.069542
+  type: 'test'
+  ...
+# Subtest: foreground handoff refuses stale generation, intent, version and wrong delivery evidence
+ok 26 - foreground handoff refuses stale generation, intent, version and wrong delivery evidence
+  ---
+  duration_ms: 258.429375
+  type: 'test'
+  ...
+# {"operation":"prepare-draft","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/substack-cli-JRBjLU/review.json","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","externalWriteEnabled":false}
+# {"operation":"prepare-draft","policyVersion":"scheduled-source-first-delivery-v1","state":{"remoteId":"123","policyVersion":"scheduled-source-first-delivery-v1","scheduleId":"substack:trial","slug":"trial","sourcePath":"src/content/posts/trial.md","sourceCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":8,"observedState":"draft_prepared","delivery":"not_armed","updatedAt":"2026-10-23T16:47:24.052Z","editUrl":"https://gcakedev.substack.com/publish/post/123","expectedPublicUrl":"https://gcakedev.substack.com/p/trial","remoteUrl":"https://gcakedev.substack.com/publish/post/123","desiredRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","lastComparison":{"sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","observedDigest":"sha256:39badddbe8a92c67846f198352b7af94d0515d9c46e353834abf9e38e3414ea0","expectedDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","mode":"draft","differences":["title","description","body-structure-links-images","slug"],"result":"verified-edit"},"contentDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","observedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","contentVerifiedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"stillArmedUntilConfirmed":false,"originalSite":{"status":"not_checked"},"subscriberReceipt":"unknown"}
+# Subtest: real CLI review executes through durable attended intents and rejects a legacy approval
+ok 27 - real CLI review executes through durable attended intents and rejects a legacy approval
+  ---
+  duration_ms: 130.137125
+  type: 'test'
+  ...
+# Subtest: public provider-only divergence is corrected despite unchanged source; equal content does not write
+ok 28 - public provider-only divergence is corrected despite unchanged source; equal content does not write
+  ---
+  duration_ms: 31.996459
+  type: 'test'
+  ...
+# Subtest: foreground verification records actual time without replacing the armed commitment
+ok 29 - foreground verification records actual time without replacing the armed commitment
+  ---
+  duration_ms: 27.576833
+  type: 'test'
+  ...
+# Subtest: remote changes between comparison and edit abort before overwrite
+ok 30 - remote changes between comparison and edit abort before overwrite
+  ---
+  duration_ms: 26.202541
+  type: 'test'
+  ...
+# Subtest: all three previously public identities migrate locally with no delivery backfill
+ok 31 - all three previously public identities migrate locally with no delivery backfill
+  ---
+  duration_ms: 53.125917
+  type: 'test'
+  ...
+# Subtest: partial saved body keeps an uncertain update and prevents subsequent rearming
+ok 32 - partial saved body keeps an uncertain update and prevents subsequent rearming
+  ---
+  duration_ms: 12.441875
+  type: 'test'
+  ...
+# Subtest: source C arriving during save B cannot be reported synchronized or rearmed
+ok 33 - source C arriving during save B cannot be reported synchronized or rearmed
+  ---
+  duration_ms: 14.07075
+  type: 'test'
+  ...
+# Subtest: calendar month horizon clamps the local month-end instead of using ninety days
+ok 34 - calendar month horizon clamps the local month-end instead of using ninety days
+  ---
+  duration_ms: 0.305334
+  type: 'test'
+  ...
+# Subtest: due observation accepts source publication metadata changes without another foreground delivery
+ok 35 - due observation accepts source publication metadata changes without another foreground delivery
+  ---
+  duration_ms: 8.40525
+  type: 'test'
+  ...
+# Subtest: lost intent survives closing SQLite and a new controller never replays it
+ok 36 - lost intent survives closing SQLite and a new controller never replays it
+  ---
+  duration_ms: 35.434833
+  type: 'test'
+  ...
+# Subtest: incomplete discovery cannot create and renamed aliases cannot acquire a second identity
+ok 37 - incomplete discovery cannot create and renamed aliases cannot acquire a second identity
+  ---
+  duration_ms: 29.849333
+  type: 'test'
+  ...
+# Subtest: Pages outage and later Pages date remain independent of Substack public verification
+ok 38 - Pages outage and later Pages date remain independent of Substack public verification
+  ---
+  duration_ms: 7.621208
+  type: 'test'
+  ...
+# Subtest: a formerly public identity can never become a fresh delivery candidate after unpublishing
+ok 39 - a formerly public identity can never become a fresh delivery candidate after unpublishing
+  ---
+  duration_ms: 13.608875
+  type: 'test'
+  ...
+# Subtest: lost arm can be reconciled after provider publication without replay or another delivery
+ok 40 - lost arm can be reconciled after provider publication without replay or another delivery
+  ---
+  duration_ms: 22.811792
+  type: 'test'
+  ...
+# Subtest: public slug correction edits the original identity and durable URL without republishing
+ok 41 - public slug correction edits the original identity and durable URL without republishing
+  ---
+  duration_ms: 18.070583
+  type: 'test'
+  ...
+# Subtest: wrong anonymous canonical is not public verification and expected pre-due absence is not a failure
+ok 42 - wrong anonymous canonical is not public verification and expected pre-due absence is not a failure
+  ---
+  duration_ms: 9.764583
+  type: 'test'
+  ...
+# Subtest: source or remote drift after unscheduling blocks both replacement and rearm
+ok 43 - source or remote drift after unscheduling blocks both replacement and rearm
+  ---
+  duration_ms: 39.963875
+  type: 'test'
+  ...
+# {"operation":"cancel-schedule","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/substack-cancel-Tn6ueK/review.json","externalWriteEnabled":false}
+# {"operation":"cancel-schedule","policyVersion":"scheduled-source-first-delivery-v1","state":{"remoteId":"123","policyVersion":"scheduled-source-first-delivery-v1","scheduleId":"schedule-trial","slug":"trial","sourcePath":"src/content/posts/trial.md","sourceCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":14,"observedState":"cancelled_draft","delivery":"not_armed","updatedAt":"2026-10-23T16:47:24.527Z","editUrl":"https://gcakedev.substack.com/publish/post/123","expectedPublicUrl":"https://gcakedev.substack.com/p/trial","remoteUrl":"https://gcakedev.substack.com/publish/post/123","desiredRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","lastComparison":{"sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","observedDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","expectedDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","mode":"draft","differences":[],"result":"verified-no-change"},"contentDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","observedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","contentVerifiedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","slot":{"reservationId":"fixed:trial:2026-10-21T23:00:00.000Z","queueVersion":1,"slug":"trial","scheduledAt":"2026-10-21T23:00:00.000Z","confirmed":true},"desiredState":"cancelled","observedTime":"2026-10-21T23:00:00.000Z","desiredTime":"2026-10-21T23:00:00.000Z","armedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","timeZone":"Asia/Taipei","audience":"everyone","emailEnabled":false,"appInboxEnabled":false},"stillArmedUntilConfirmed":false,"originalSite":{"status":"not_checked"},"subscriberReceipt":"unknown"}
+# Subtest: cancellation CLI remains available when source content or media cannot be read
+ok 44 - cancellation CLI remains available when source content or media cannot be read
+  ---
+  duration_ms: 113.822916
+  type: 'test'
+  ...
+# Subtest: audit regression: adopt an existing schedule and persist its commitment without another arm
+ok 45 - audit regression: adopt an existing schedule and persist its commitment without another arm
+  ---
+  duration_ms: 6.383041
+  type: 'test'
+  ...
+# Subtest: audit regression: a same-content revision to a new time confirms removal before arming
+ok 46 - audit regression: a same-content revision to a new time confirms removal before arming
+  ---
+  duration_ms: 18.377083
+  type: 'test'
+  ...
+# Subtest: audit regression: confirmed cancellation remains quiet after the original due time
+ok 47 - audit regression: confirmed cancellation remains quiet after the original due time
+  ---
+  duration_ms: 5.011958
+  type: 'test'
+  ...
+# Subtest: audit regression: meaningful inline spaces are repaired rather than accepted as no-change
+ok 48 - audit regression: meaningful inline spaces are repaired rather than accepted as no-change
+  ---
+  duration_ms: 20.9185
+  type: 'test'
+  ...
+# Subtest: audit regression: a waiting arm handoff rejects a postponed, cancelled or expired queue commitment
+ok 49 - audit regression: a waiting arm handoff rejects a postponed, cancelled or expired queue commitment
+  ---
+  duration_ms: 6.979958
+  type: 'test'
+  ...
+# {"requestFile":"/private/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/audit-handoff-zB3kUE/request.json","envelope":{"version":2,"requestId":"waiting","slug":"trial","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","operation":"arm-schedule","action":"schedule-arm","remoteId":"123","expiresAt":1792623660000,"scopeDigest":"a4d32f5771adf970778f4ed93c5ab4b13be13e3affa60f59f908cc44958b4a1d","request":{"exchangeVersion":2,"policyVersion":"scheduled-source-first-delivery-v1","scheduleId":"schedule-trial","sourceCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","article":{"slug":"trial","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","title":"Title a","description":"Description a","canonicalUrl":"https://gcake119.github.io/gcake-dev/posts/trial/","body":"\#\# Heading\\n\\nBody a.\\n\\n[原文與最新版本](https://gcake119.github.io/gcake-dev/posts/trial/)","assets":[]},"operation":"arm-schedule","action":"schedule-arm","remote":{"id":"123","url":"https://gcakedev.substack.com/publish/post/123"},"delivery":{"email":true,"appInbox":true},"audience":"everyone","timeZone":"Asia/Taipei","intentId":"waiting","recordVersion":9,"scheduledAt":"2026-10-21T23:00:00.000Z","slot":{"reservationId":"fixed:trial:2026-10-21T23:00:00.000Z","queueVersion":1,"slug":"trial","scheduledAt":"2026-10-21T23:00:00.000Z","confirmed":true}}},"observed":{"remoteId":"123","policyVersion":"scheduled-source-first-delivery-v1","scheduleId":"schedule-trial","slug":"trial","sourcePath":"src/content/posts/trial.md","sourceCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":9,"observedState":"draft_prepared","delivery":"not_armed","updatedAt":"2026-10-19T01:00:00.000Z","editUrl":"https://gcakedev.substack.com/publish/post/123","expectedPublicUrl":"https://gcakedev.substack.com/p/trial","remoteUrl":"https://gcakedev.substack.com/publish/post/123","desiredRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","lastComparison":{"sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","observedDigest":"sha256:39badddbe8a92c67846f198352b7af94d0515d9c46e353834abf9e38e3414ea0","expectedDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","mode":"draft","differences":["title","description","body-structure-links-images","slug"],"result":"verified-edit"},"contentDigest":"sha256:1c8e3cd616aa702ee22345bfb5bd840da0d1d03aaf6d8042aca865420787753c","observedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","contentVerifiedRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","intent":{"id":"waiting","action":"arm","scheduledAt":"2026-10-21T23:00:00.000Z","slot":{"reservationId":"fixed:trial:2026-10-21T23:00:00.000Z","queueVersion":1,"slug":"trial","scheduledAt":"2026-10-21T23:00:00.000Z","confirmed":true},"sourceRevision":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","createdAt":"2026-10-19T01:00:00.000Z"}},"originalSite":"not_checked","nativeTransport":"unqualified"}
+# Subtest: audit regression: the foreground proof command freshly reads queue changes while a request waits
+ok 50 - audit regression: the foreground proof command freshly reads queue changes while a request waits
+  ---
+  duration_ms: 23.634333
+  type: 'test'
+  ...
+# Subtest: audit regression: a lost cancellation acknowledgement is reconciled to a quiet cancelled draft
+ok 51 - audit regression: a lost cancellation acknowledgement is reconciled to a quiet cancelled draft
+  ---
+  duration_ms: 7.750083
+  type: 'test'
+  ...
+# Subtest: audit regression: failed removal blocks a same-content revision from issuing a replacement arm
+ok 52 - audit regression: failed removal blocks a same-content revision from issuing a replacement arm
+  ---
+  duration_ms: 9.885291
+  type: 'test'
+  ...
+# Subtest: cancel recovery: repeated read-only reconciliation preserves a confirmed cancellation after the former due time
+ok 53 - cancel recovery: repeated read-only reconciliation preserves a confirmed cancellation after the former due time
+  ---
+  duration_ms: 6.148583
+  type: 'test'
+  ...
+# Subtest: cancel recovery: final save not-saved is reconciled on restart without replaying removal
+ok 54 - cancel recovery: final save not-saved is reconciled on restart without replaying removal
+  ---
+  duration_ms: 10.580792
+  type: 'test'
+  ...
+# Subtest: cancel recovery: final save saved-reply-lost is reconciled on restart without replaying removal
+ok 55 - cancel recovery: final save saved-reply-lost is reconciled on restart without replaying removal
+  ---
+  duration_ms: 9.547959
+  type: 'test'
+  ...
+# Subtest: cancel recovery: an older interrupted draft record retains its cancellation disposition after provider readback
+ok 56 - cancel recovery: an older interrupted draft record retains its cancellation disposition after provider readback
+  ---
+  duration_ms: 7.287833
+  type: 'test'
+  ...
+# Subtest: cancel recovery: desired cancellation does not hide still-scheduled
+ok 57 - cancel recovery: desired cancellation does not hide still-scheduled
+  ---
+  duration_ms: 5.6335
+  type: 'test'
+  ...
+# Subtest: cancel recovery: desired cancellation does not hide incomplete-draft-readback
+ok 58 - cancel recovery: desired cancellation does not hide incomplete-draft-readback
+  ---
+  duration_ms: 6.787
+  type: 'test'
+  ...
+# Subtest: cancel recovery: cancellation reconciliation resolves only cancellation, retaining outstanding content drift
+ok 59 - cancel recovery: cancellation reconciliation resolves only cancellation, retaining outstanding content drift
+  ---
+  duration_ms: 12.992125
+  type: 'test'
+  ...
+# Subtest: cancel recovery: a later explicitly authorized rearm is not mistaken for the old cancellation
+ok 60 - cancel recovery: a later explicitly authorized rearm is not mistaken for the old cancellation
+  ---
+  duration_ms: 22.849833
+  type: 'test'
+  ...
+# Subtest: content attention ignores unchanged-source description without claiming strict verification
+ok 61 - content attention ignores unchanged-source description without claiming strict verification
+  ---
+  duration_ms: 18.527583
+  type: 'test'
+  ...
+# Subtest: content attention ignores unchanged-source editor-break without claiming strict verification
+ok 62 - content attention ignores unchanged-source editor-break without claiming strict verification
+  ---
+  duration_ms: 7.499541
+  type: 'test'
+  ...
+# Subtest: content attention ignores unchanged-source terminal-editor-space without claiming strict verification
+ok 63 - content attention ignores unchanged-source terminal-editor-space without claiming strict verification
+  ---
+  duration_ms: 9.365459
+  type: 'test'
+  ...
+# Subtest: failed or incomplete public verification is inconclusive, never an inferred content change
+ok 64 - failed or incomplete public verification is inconclusive, never an inferred content change
+  ---
+  duration_ms: 27.977833
+  type: 'test'
+  ...
+# Subtest: an inconclusive read preserves a legacy unresolved hold rather than falsely clearing it
+ok 65 - an inconclusive read preserves a legacy unresolved hold rather than falsely clearing it
+  ---
+  duration_ms: 2.959958
+  type: 'test'
+  ...
+# Subtest: confirmed provider title drift remains actionable with unchanged Git
+ok 66 - confirmed provider title drift remains actionable with unchanged Git
+  ---
+  duration_ms: 4.74375
+  type: 'test'
+  ...
+# Subtest: confirmed provider paragraph drift remains actionable with unchanged Git
+ok 67 - confirmed provider paragraph drift remains actionable with unchanged Git
+  ---
+  duration_ms: 2.670209
+  type: 'test'
+  ...
+# Subtest: confirmed provider heading drift remains actionable with unchanged Git
+ok 68 - confirmed provider heading drift remains actionable with unchanged Git
+  ---
+  duration_ms: 2.277584
+  type: 'test'
+  ...
+# Subtest: confirmed provider code-inner-space drift remains actionable with unchanged Git
+ok 69 - confirmed provider code-inner-space drift remains actionable with unchanged Git
+  ---
+  duration_ms: 3.446292
+  type: 'test'
+  ...
+# Subtest: confirmed provider link drift remains actionable with unchanged Git
+ok 70 - confirmed provider link drift remains actionable with unchanged Git
+  ---
+  duration_ms: 8.969542
+  type: 'test'
+  ...
+# Subtest: confirmed provider image-alt drift remains actionable with unchanged Git
+ok 71 - confirmed provider image-alt drift remains actionable with unchanged Git
+  ---
+  duration_ms: 4.750333
+  type: 'test'
+  ...
+# Subtest: description changes in a new Git source remain actionable and foreground verification stays strict
+ok 72 - description changes in a new Git source remain actionable and foreground verification stays strict
+  ---
+  duration_ms: 8.483708
+  type: 'test'
+  ...
+# Subtest: queue version 162 to 165 at the same instant stays quiet
+ok 73 - queue version 162 to 165 at the same instant stays quiet
+  ---
+  duration_ms: 9.232083
+  type: 'test'
+  ...
+# Subtest: queue version 162 to 165 at the same instant stays quiet and clears its false postpone hold
+ok 74 - queue version 162 to 165 at the same instant stays quiet and clears its false postpone hold
+  ---
+  duration_ms: 6.863875
+  type: 'test'
+  ...
+# Subtest: queue attention retains real-time as foreground work
+ok 75 - queue attention retains real-time as foreground work
+  ---
+  duration_ms: 12.169084
+  type: 'test'
+  ...
+# Subtest: queue attention retains missing-slot as foreground work
+ok 76 - queue attention retains missing-slot as foreground work
+  ---
+  duration_ms: 16.340791
+  type: 'test'
+  ...
+# Subtest: queue attention retains wrong-article as foreground work
+ok 77 - queue attention retains wrong-article as foreground work
+  ---
+  duration_ms: 13.842125
+  type: 'test'
+  ...
+# Subtest: queue attention retains unconfirmed as foreground work
+ok 78 - queue attention retains unconfirmed as foreground work
+  ---
+  duration_ms: 16.08175
+  type: 'test'
+  ...
+# Subtest: queue equivalence cannot clear unknown mutation or an independent content error
+ok 79 - queue equivalence cannot clear unknown mutation or an independent content error
+  ---
+  duration_ms: 40.613042
+  type: 'test'
+  ...
+# Subtest: late public false identity hold recovers read-only while real identity and content failures remain held
+ok 80 - late public false identity hold recovers read-only while real identity and content failures remain held
+  ---
+  duration_ms: 62.649583
+  type: 'test'
+  ...
+# Subtest: actual publication time is pinned independently and later date changes are not identity errors
+ok 81 - actual publication time is pinned independently and later date changes are not identity errors
+  ---
+  duration_ms: 20.214458
+  type: 'test'
+  ...
+# Subtest: lost original arm reconciles a delayed public release without another dispatch
+ok 82 - lost original arm reconciles a delayed public release without another dispatch
+  ---
+  duration_ms: 11.244125
+  type: 'test'
+  ...
+# Subtest: legacy verified publication minute remains an actual-date constraint without new timing evidence
+ok 83 - legacy verified publication minute remains an actual-date constraint without new timing evidence
+  ---
+  duration_ms: 9.609916
+  type: 'test'
+  ...
+# (node:85562) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: file handoff → real Chrome saved editor → SQLite state → anonymous public read, without newsletter or duplicate publish
+ok 84 - file handoff → real Chrome saved editor → SQLite state → anonymous public read, without newsletter or duplicate publish
+  ---
+  duration_ms: 9185.19475
+  type: 'test'
+  ...
+# Subtest: attended draft uses coordinator intent before writes and records exact saved evidence
+ok 85 - attended draft uses coordinator intent before writes and records exact saved evidence
+  ---
+  duration_ms: 43.604917
+  type: 'test'
+  ...
+# Subtest: attended stale draft reply retains remote identity and cannot replay a write on retry
+ok 86 - attended stale draft reply retains remote identity and cannot replay a write on retry
+  ---
+  duration_ms: 2.49125
+  type: 'test'
+  ...
+# Subtest: publish transport cannot create a draft and anonymous mismatch prevents verified
+ok 87 - publish transport cannot create a draft and anonymous mismatch prevents verified
+  ---
+  duration_ms: 3.37375
+  type: 'test'
+  ...
+# Subtest: file handoff rejects stale request replies and timeout never reissues a write request
+ok 88 - file handoff rejects stale request replies and timeout never reissues a write request
+  ---
+  duration_ms: 249.683625
+  type: 'test'
+  ...
+# Subtest: a browser write without durable intent is rejected before emitting a request
+ok 89 - a browser write without durable intent is rejected before emitting a request
+  ---
+  duration_ms: 0.575542
+  type: 'test'
+  ...
+# Subtest: anonymous readback bypasses stale edge HTML while retaining article canonical identity
+ok 90 - anonymous readback bypasses stale edge HTML while retaining article canonical identity
+  ---
+  duration_ms: 3.771834
+  type: 'test'
+  ...
+# Subtest: schedule exchange binds the complete request digest and refuses a modified delivery reply scope
+ok 91 - schedule exchange binds the complete request digest and refuses a modified delivery reply scope
+  ---
+  duration_ms: 58.022125
+  type: 'test'
+  ...
+# Subtest: private handoff cannot be placed in another Git worktree when source-root differs
+ok 92 - private handoff cannot be placed in another Git worktree when source-root differs
+  ---
+  duration_ms: 75.936875
+  type: 'test'
+  ...
+# Subtest: real saved Substack draft preserves Markdown list and code semantics after reload
+ok 93 - real saved Substack draft preserves Markdown list and code semantics after reload
+  ---
+  duration_ms: 31.109875
+  type: 'test'
+  ...
+# Subtest: real schedule UI preview reads the coupled channels and Taipei instant without asserting an armed schedule
+ok 94 - real schedule UI preview reads the coupled channels and Taipei instant without asserting an armed schedule
+  ---
+  duration_ms: 61.414916
+  type: 'test'
+  ...
+# Subtest: observed list/code wrapper normalization cannot hide changed structure or code whitespace
+ok 95 - observed list/code wrapper normalization cannot hide changed structure or code whitespace
+  ---
+  duration_ms: 9.288375
+  type: 'test'
+  ...
+# Subtest: attention snapshot exposes existing holds despite quiet markers and retains issues on source failure
+ok 96 - attention snapshot exposes existing holds despite quiet markers and retains issues on source failure
+  ---
+  duration_ms: 137.696167
+  type: 'test'
+  ...
+# Subtest: notification payload rejects nonpublic slug input and contains only bounded Substack issue fields
+ok 97 - notification payload rejects nonpublic slug input and contains only bounded Substack issue fields
+  ---
+  duration_ms: 4.104834
+  type: 'test'
+  ...
+# Subtest: a newly failed verification becomes the same manual issue as its following held plan
+ok 98 - a newly failed verification becomes the same manual issue as its following held plan
+  ---
+  duration_ms: 21.233834
+  type: 'test'
+  ...
+# Subtest: omitted source does not clear a durable hold and clear requires a complete durable read
+ok 99 - omitted source does not clear a durable hold and clear requires a complete durable read
+  ---
+  duration_ms: 20.841542
+  type: 'test'
+  ...
+# Subtest: series preparation and content holds preserve specific reasons through the Hermes consumer and restart
+ok 100 - series preparation and content holds preserve specific reasons through the Hermes consumer and restart
+  ---
+  duration_ms: 312.501125
+  type: 'test'
+  ...
+# Subtest: specific durable schedule reasons survive omitted inventory and unknown reasons cannot replace the feed
+ok 101 - specific durable schedule reasons survive omitted inventory and unknown reasons cannot replace the feed
+  ---
+  duration_ms: 13.838833
+  type: 'test'
+  ...
+# Subtest: unrelated incomplete drafts cannot block a verified publication or clear their own prior issue
+ok 102 - unrelated incomplete drafts cannot block a verified publication or clear their own prior issue
+  ---
+  duration_ms: 21.497167
+  type: 'test'
+  ...
+# Subtest: a failed entire draft phase retains old holds but cannot mask an independently verified public article
+ok 103 - a failed entire draft phase retains old holds but cannot mask an independently verified public article
+  ---
+  duration_ms: 8.109416
+  type: 'test'
+  ...
+# Subtest: reader permission failure preserves the previous notification snapshot before visibility
+ok 104 - reader permission failure preserves the previous notification snapshot before visibility
+  ---
+  duration_ms: 28.0835
+  type: 'test'
+  ...
+# (node:85565) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: scoped write qualification persists intent, performs actual save and verifies once
+ok 105 - scoped write qualification persists intent, performs actual save and verifies once
+  ---
+  duration_ms: 602.155292
+  type: 'test'
+  ...
+# Subtest: scoped write process preserves unknown original intent without replay
+ok 106 - scoped write process preserves unknown original intent without replay
+  ---
+  duration_ms: 210.389625
+  type: 'test'
+  ...
+# Subtest: scoped write missing-save preserves unknown original intent without replay
+ok 107 - scoped write missing-save preserves unknown original intent without replay
+  ---
+  duration_ms: 260.883125
+  type: 'test'
+  ...
+# Subtest: scoped write before-conflict preserves unknown original intent without replay
+ok 108 - scoped write before-conflict preserves unknown original intent without replay
+  ---
+  duration_ms: 132.384208
+  type: 'test'
+  ...
+# Subtest: scoped write rejects baseline before dispatch
+ok 109 - scoped write rejects baseline before dispatch
+  ---
+  duration_ms: 46.752792
+  type: 'test'
+  ...
+# Subtest: scoped write rejects scheduled before dispatch
+ok 110 - scoped write rejects scheduled before dispatch
+  ---
+  duration_ms: 59.106125
+  type: 'test'
+  ...
+# Subtest: one scoped natural qualification consumes once, verifies full read and preserves delivery
+ok 111 - one scoped natural qualification consumes once, verifies full read and preserves delivery
+  ---
+  duration_ms: 112.983917
+  type: 'test'
+  ...
+# Subtest: qualification refuses numeric browser identities before executor access
+ok 112 - qualification refuses numeric browser identities before executor access
+  ---
+  duration_ms: 15.208959
+  type: 'test'
+  ...
+# Subtest: qualification refuses actual Brave execution despite a Chrome selection
+ok 113 - qualification refuses actual Brave execution despite a Chrome selection
+  ---
+  duration_ms: 148.570667
+  type: 'test'
+  ...
+# Subtest: qualification rejects protected identity and invalid grants before executor access
+ok 114 - qualification rejects protected identity and invalid grants before executor access
+  ---
+  duration_ms: 74.838167
+  type: 'test'
+  ...
+# Subtest: production occurrence routes explicit qualification to its read-only scope validator
+ok 115 - production occurrence routes explicit qualification to its read-only scope validator
+  ---
+  duration_ms: 5.745917
+  type: 'test'
+  ...
+# Subtest: qualification process failure retains evidence and never retries
+ok 116 - qualification process failure retains evidence and never retries
+  ---
+  duration_ms: 93.85675
+  type: 'test'
+  ...
+# Subtest: qualification content failure retains evidence and never retries
+ok 117 - qualification content failure retains evidence and never retries
+  ---
+  duration_ms: 64.224167
+  type: 'test'
+  ...
+# Subtest: draft core creates full unpublished source and edits same ID; equal rounds read but never write
+ok 118 - draft core creates full unpublished source and edits same ID; equal rounds read but never write
+  ---
+  duration_ms: 6.202084
+  type: 'test'
+  ...
+# Subtest: disabled or unqualified worker never accesses provider
+ok 119 - disabled or unqualified worker never accesses provider
+  ---
+  duration_ms: 2.368875
+  type: 'test'
+  ...
+# Subtest: human-only edit is preserved as conflict; incomplete read does not claim drift
+ok 120 - human-only edit is preserved as conflict; incomplete read does not claim drift
+  ---
+  duration_ms: 4.709959
+  type: 'test'
+  ...
+# Subtest: lost create acknowledgement retains intent and restart does not replay
+ok 121 - lost create acknowledgement retains intent and restart does not replay
+  ---
+  duration_ms: 3.338792
+  type: 'test'
+  ...
+# Subtest: lost update acknowledgement retains intent and restart does not replay
+ok 122 - lost update acknowledgement retains intent and restart does not replay
+  ---
+  duration_ms: 4.599583
+  type: 'test'
+  ...
+# Subtest: scheduled provider state cannot be edited or cancelled
+ok 123 - scheduled provider state cannot be edited or cancelled
+  ---
+  duration_ms: 3.626333
+  type: 'test'
+  ...
+# Subtest: published provider state cannot be edited or cancelled
+ok 124 - published provider state cannot be edited or cancelled
+  ---
+  duration_ms: 2.438292
+  type: 'test'
+  ...
+# Subtest: sending provider state cannot be edited or cancelled
+ok 125 - sending provider state cannot be edited or cancelled
+  ---
+  duration_ms: 2.750417
+  type: 'test'
+  ...
+# Subtest: local schedule commitment is preserved without even authenticated reads
+ok 126 - local schedule commitment is preserved without even authenticated reads
+  ---
+  duration_ms: 2.270292
+  type: 'test'
+  ...
+# Subtest: source removal, rename and another writer cannot create replacements
+ok 127 - source removal, rename and another writer cannot create replacements
+  ---
+  duration_ms: 2.465875
+  type: 'test'
+  ...
+# Subtest: source B to C invalidates stale edit; post-save incomplete read retains uncertain intent
+ok 128 - source B to C invalidates stale edit; post-save incomplete read retains uncertain intent
+  ---
+  duration_ms: 4.158583
+  type: 'test'
+  ...
+# Subtest: wrong occupied slug and partial discovery stop creation
+ok 129 - wrong occupied slug and partial discovery stop creation
+  ---
+  duration_ms: 2.089083
+  type: 'test'
+  ...
+# Subtest: Computer Use port sends only draft actions and requires full reloaded evidence
+ok 130 - Computer Use port sends only draft actions and requires full reloaded evidence
+  ---
+  duration_ms: 3.7645
+  type: 'test'
+  ...
+# Subtest: ordinary sync occurrence invokes optional draft phase before anonymous observer without a second timer
+ok 131 - ordinary sync occurrence invokes optional draft phase before anonymous observer without a second timer
+  ---
+  duration_ms: 29.817167
+  type: 'test'
+  ...
+# Subtest: independent identity holds block edits and successful foreground correction becomes the baseline
+ok 132 - independent identity holds block edits and successful foreground correction becomes the baseline
+  ---
+  duration_ms: 3.767042
+  type: 'test'
+  ...
+# Subtest: draft activation requires actual scoped receipts, not nonempty reference strings
+ok 133 - draft activation requires actual scoped receipts, not nonempty reference strings
+  ---
+  duration_ms: 2.294
+  type: 'test'
+  ...
+# Subtest: partial discovery, rewritten slug, missing media proof and revoked grant never verify or repeat writes
+ok 134 - partial discovery, rewritten slug, missing media proof and revoked grant never verify or repeat writes
+  ---
+  duration_ms: 7.116167
+  type: 'test'
+  ...
+# Subtest: Computer Use envelope rejects stale generation, missing update precondition and forged schedule action
+ok 135 - Computer Use envelope rejects stale generation, missing update precondition and forged schedule action
+  ---
+  duration_ms: 2.760375
+  type: 'test'
+  ...
+# Subtest: invalid new sources do not starve later eligible originals under the same bounded timer
+ok 136 - invalid new sources do not starve later eligible originals under the same bounded timer
+  ---
+  duration_ms: 20.481209
+  type: 'test'
+  ...
+# {"requestId":"0a2f5368-a8eb-4c5a-96b9-2c927d1f1da7","replied":true}
+# {"requestId":"7d545388-08bf-4589-835d-ea6fe7660346","replied":true}
+# {"requestId":"6fe58169-fcc1-47e4-b58c-d48aa2619e3a","replied":true}
+# {"requestId":"482bba79-0818-4655-949c-c47969ba4cdc","replied":true}
+# {"requestId":"3fd60d14-bc53-4cc0-89d7-1bd36bbce35c","replied":true}
+# {"requestId":"cdc1bcad-c317-43c2-a528-f14d642d700a","replied":true}
+# {"requestId":"05ac87fe-10f5-470d-892f-25f86c7c6536","replied":true}
+# Subtest: real private FileAttendedExchange carries create/read/update/reload through draft reply validation
+ok 137 - real private FileAttendedExchange carries create/read/update/reload through draft reply validation
+  ---
+  duration_ms: 173.38225
+  type: 'test'
+  ...
+# Subtest: ordinary draft worker rechecks live main after a saved UI result before claiming current synchronization
+ok 138 - ordinary draft worker rechecks live main after a saved UI result before claiming current synchronization
+  ---
+  duration_ms: 5.1105
+  type: 'test'
+  ...
+# Subtest: ordinary unattended executor updates original and equal round is read-only
+ok 139 - ordinary unattended executor updates original and equal round is read-only
+  ---
+  duration_ms: 631.409042
+  type: 'test'
+  ...
+# Subtest: ordinary unattended executor retains failed write intent
+ok 140 - ordinary unattended executor retains failed write intent
+  ---
+  duration_ms: 254.775416
+  type: 'test'
+  ...
+# Subtest: creation disabled holds missing identity without provider access or intent but updates existing original
+ok 141 - creation disabled holds missing identity without provider access or intent but updates existing original
+  ---
+  duration_ms: 3.87175
+  type: 'test'
+  ...
+# Subtest: unchanged scheduled is excluded quietly but source drift requires foreground
+ok 142 - unchanged scheduled is excluded quietly but source drift requires foreground
+  ---
+  duration_ms: 1.951375
+  type: 'test'
+  ...
+# Subtest: unchanged verified is excluded quietly but source drift requires foreground
+ok 143 - unchanged verified is excluded quietly but source drift requires foreground
+  ---
+  duration_ms: 1.665791
+  type: 'test'
+  ...
+# Subtest: draft media verifies original bytes while preserving alt, order, code and source links
+ok 144 - draft media verifies original bytes while preserving alt, order, code and source links
+  ---
+  duration_ms: 18.5015
+  type: 'test'
+  ...
+# Subtest: ordinary controller rejects claimed write without parent before verdict
+ok 145 - ordinary controller rejects claimed write without parent before verdict
+  ---
+  duration_ms: 104.099875
+  type: 'test'
+  ...
+# Subtest: parent source revocation rejects before verdict and permits no fixture edit
+ok 146 - parent source revocation rejects before verdict and permits no fixture edit
+  ---
+  duration_ms: 150.833459
+  type: 'test'
+  ...
+# Subtest: media capability activation cannot reuse a text-only receipt
+ok 147 - media capability activation cannot reuse a text-only receipt
+  ---
+  duration_ms: 1.258208
+  type: 'test'
+  ...
+# Subtest: ordinary dispatch rejects a valid replacement policy instead of launching the old executor
+ok 148 - ordinary dispatch rejects a valid replacement policy instead of launching the old executor
+  ---
+  duration_ms: 5.017
+  type: 'test'
+  ...
+# Subtest: rename holds rotate fairly to the missing original without allowing replacement creation
+ok 149 - rename holds rotate fairly to the missing original without allowing replacement creation
+  ---
+  duration_ms: 6.613625
+  type: 'test'
+  ...
+# Subtest: executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler false
+ok 150 - executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler false
+  ---
+  duration_ms: 2505.102125
+  type: 'test'
+  ...
+# Subtest: executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler true
+ok 151 - executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler true
+  ---
+  duration_ms: 2511.340709
+  type: 'test'
+  ...
+# Subtest: round deadline bounds slow source checks before any provider dispatch
+ok 152 - round deadline bounds slow source checks before any provider dispatch
+  ---
+  duration_ms: 132.232667
+  type: 'test'
+  ...
+# Subtest: round deadline bounds slow main checks before any provider dispatch
+ok 153 - round deadline bounds slow main checks before any provider dispatch
+  ---
+  duration_ms: 127.48025
+  type: 'test'
+  ...
+# Subtest: round deadline bounds slow media checks before any provider dispatch
+ok 154 - round deadline bounds slow media checks before any provider dispatch
+  ---
+  duration_ms: 127.142875
+  type: 'test'
+  ...
+# Subtest: round deadline cancels post-executor media verification and retains the unknown update
+ok 155 - round deadline cancels post-executor media verification and retains the unknown update
+  ---
+  duration_ms: 3012.822417
+  type: 'test'
+  ...
+# Subtest: complete UI list verifier counts both actual published-detail and draft-editor links without fixed inventory totals
+ok 156 - complete UI list verifier counts both actual published-detail and draft-editor links without fixed inventory totals
+  ---
+  duration_ms: 0.909875
+  type: 'test'
+  ...
+# Subtest: parent independently rejects incomplete read lists despite claimed child success
+ok 157 - parent independently rejects incomplete read lists despite claimed child success
+  ---
+  duration_ms: 107.081208
+  type: 'test'
+  ...
+# Subtest: parent independently rejects incomplete update lists despite claimed child success
+ok 158 - parent independently rejects incomplete update lists despite claimed child success
+  ---
+  duration_ms: 625.612875
+  type: 'test'
+  ...
+# Subtest: ordinary existing-ID executor rejects draft-find with allowCreate=false
+ok 159 - ordinary existing-ID executor rejects draft-find with allowCreate=false
+  ---
+  duration_ms: 100.757833
+  type: 'test'
+  ...
+# Subtest: ordinary existing-ID executor rejects draft-find with allowCreate=true
+ok 160 - ordinary existing-ID executor rejects draft-find with allowCreate=true
+  ---
+  duration_ms: 131.521625
+  type: 'test'
+  ...
+# Subtest: ordinary existing-ID executor rejects draft-create with allowCreate=false
+ok 161 - ordinary existing-ID executor rejects draft-create with allowCreate=false
+  ---
+  duration_ms: 158.466625
+  type: 'test'
+  ...
+# Subtest: ordinary existing-ID executor rejects draft-create with allowCreate=true
+ok 162 - ordinary existing-ID executor rejects draft-create with allowCreate=true
+  ---
+  duration_ms: 65.003
+  type: 'test'
+  ...
+# Subtest: direct executor rejects unqualified draft-find before any process
+ok 163 - direct executor rejects unqualified draft-find before any process
+  ---
+  duration_ms: 1.965958
+  type: 'test'
+  ...
+# Subtest: direct executor rejects unqualified draft-create before any process
+ok 164 - direct executor rejects unqualified draft-create before any process
+  ---
+  duration_ms: 1.655875
+  type: 'test'
+  ...
+# Subtest: handoff binds complete current source, durable intent, remote ID and expiry
+ok 165 - handoff binds complete current source, durable intent, remote ID and expiry
+  ---
+  duration_ms: 1.931375
+  type: 'test'
+  ...
+# Subtest: reply requires actual complete body and saved assets, never reconstructs expected text
+ok 166 - reply requires actual complete body and saved assets, never reconstructs expected text
+  ---
+  duration_ms: 17.642083
+  type: 'test'
+  ...
+# Subtest: publication evidence must explicitly disable email and App delivery and scheduling
+ok 167 - publication evidence must explicitly disable email and App delivery and scheduling
+  ---
+  duration_ms: 0.240459
+  type: 'test'
+  ...
+# Subtest: reply preserves exact envelope, is exclusive and private
+ok 168 - reply preserves exact envelope, is exclusive and private
+  ---
+  duration_ms: 47.007417
+  type: 'test'
+  ...
+# Subtest: a create handoff cannot be replayed after a remote identity has already been saved
+ok 169 - a create handoff cannot be replayed after a remote identity has already been saved
+  ---
+  duration_ms: 0.171
+  type: 'test'
+  ...
+# Subtest: all articles include first public backfill, nested posts and every excluded source without provider writes
+ok 170 - all articles include first public backfill, nested posts and every excluded source without provider writes
+  ---
+  duration_ms: 202.085292
+  type: 'test'
+  ...
+# Subtest: duplicate slug and invalid sources are fully reported; empty source has no operations
+ok 171 - duplicate slug and invalid sources are fully reported; empty source has no operations
+  ---
+  duration_ms: 31.515125
+  type: 'test'
+  ...
+# Subtest: target plans preserve independent versions, original intent and same-ID updates
+ok 172 - target plans preserve independent versions, original intent and same-ID updates
+  ---
+  duration_ms: 0.337375
+  type: 'test'
+  ...
+# Subtest: general policy is explicitly bounded to repository branch publications and zero delivery
+ok 173 - general policy is explicitly bounded to repository branch publications and zero delivery
+  ---
+  duration_ms: 2.52925
+  type: 'test'
+  ...
+# Subtest: malformed and nonportable formal bodies are explicit source blockers before Pages or provider calls
+ok 174 - malformed and nonportable formal bodies are explicit source blockers before Pages or provider calls
+  ---
+  duration_ms: 21.430125
+  type: 'test'
+  ...
+# Subtest: manual-required target stays held across source changes and retained checkpoints until attended resolution
+ok 175 - manual-required target stays held across source changes and retained checkpoints until attended resolution
+  ---
+  duration_ms: 0.443708
+  type: 'test'
+  ...
+# Subtest: background plans only unchanged public verification and defers all browser work
+ok 176 - background plans only unchanged public verification and defers all browser work
+  ---
+  duration_ms: 0.408584
+  type: 'test'
+  ...
+# Subtest: system scheduler uses absolute paths, 15-minute cadence and existing private env file without Codex
+ok 177 - system scheduler uses absolute paths, 15-minute cadence and existing private env file without Codex
+  ---
+  duration_ms: 147.232416
+  type: 'test'
+  ...
+# Subtest: relative paths and incomplete independent acceptance cannot activate
+ok 178 - relative paths and incomplete independent acceptance cannot activate
+  ---
+  duration_ms: 0.383958
+  type: 'test'
+  ...
+# Subtest: cutover can preserve the original shared lock instead of introducing a competing writer namespace
+ok 179 - cutover can preserve the original shared lock instead of introducing a competing writer namespace
+  ---
+  duration_ms: 0.111292
+  type: 'test'
+  ...
+# Subtest: native scheduled source verification uses the qualified IPv4 path without weakening TLS or retrying requests
+ok 180 - native scheduled source verification uses the qualified IPv4 path without weakening TLS or retrying requests
+  ---
+  duration_ms: 0.075708
+  type: 'test'
+  ...
+# Subtest: browser-free acceptance permits held targets without pretending they are verified or needing native permissions
+ok 181 - browser-free acceptance permits held targets without pretending they are verified or needing native permissions
+  ---
+  duration_ms: 0.287917
+  type: 'test'
+  ...
+# Subtest: scheduler install refuses legacy profile and native receipts without anonymous evidence
+ok 182 - scheduler install refuses legacy profile and native receipts without anonymous evidence
+  ---
+  duration_ms: 0.078416
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML datetime date spelling
+ok 183 - anonymous same-ID public verification accepts HTML datetime date spelling
+  ---
+  duration_ms: 47.962083
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML dateTime date spelling
+ok 184 - anonymous same-ID public verification accepts HTML dateTime date spelling
+  ---
+  duration_ms: 4.696375
+  type: 'test'
+  ...
+# Subtest: anonymous same-ID public verification accepts HTML DATETIME date spelling
+ok 185 - anonymous same-ID public verification accepts HTML DATETIME date spelling
+  ---
+  duration_ms: 1.214833
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="2026-10-14T23:01:00Z">October 15</time>
+ok 186 - anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="2026-10-14T23:01:00Z">October 15</time>
+  ---
+  duration_ms: 1.025333
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="invalid">October 15</time>
+ok 187 - anonymous verification rejects missing conflicting or wrong-minute dates: <time dateTime="invalid">October 15</time>
+  ---
+  duration_ms: 1.300625
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time>October 15</time>
+ok 188 - anonymous verification rejects missing conflicting or wrong-minute dates: <time>October 15</time>
+  ---
+  duration_ms: 0.43125
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z"></time><time dateTime="2026-10-14T23:00:00Z"></time>
+ok 189 - anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z"></time><time dateTime="2026-10-14T23:00:00Z"></time>
+  ---
+  duration_ms: 0.559916
+  type: 'test'
+  ...
+# Subtest: anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z" dateTime="2026-10-14T23:01:00Z"></time>
+ok 190 - anonymous verification rejects missing conflicting or wrong-minute dates: <time datetime="2026-10-14T23:00:00Z" dateTime="2026-10-14T23:01:00Z"></time>
+  ---
+  duration_ms: 0.407875
+  type: 'test'
+  ...
+# Subtest: native discovery waits for the selected list before trusting its totals and scans all three scopes
+ok 191 - native discovery waits for the selected list before trusting its totals and scans all three scopes
+  ---
+  duration_ms: 9418.454667
+  type: 'test'
+  ...
+# Subtest: native website-only confirmation waits for the dialog and publishes once with every delivery control off
+ok 192 - native website-only confirmation waits for the dialog and publishes once with every delivery control off
+  ---
+  duration_ms: 1740.586667
+  type: 'test'
+  ...
+# Subtest: published discovery preserves the anonymous public identity before adopting an existing mirror
+ok 193 - published discovery preserves the anonymous public identity before adopting an existing mirror
+  ---
+  duration_ms: 1849.677167
+  type: 'test'
+  ...
+# Subtest: native preflight tolerates a bounded eleven-second browser navigation without replay
+ok 194 - native preflight tolerates a bounded eleven-second browser navigation without replay
+  ---
+  duration_ms: 11037.555917
+  type: 'test'
+  ...
+# Subtest: wrong origin or replaced tab stops before executing page code
+ok 195 - wrong origin or replaced tab stops before executing page code
+  ---
+  duration_ms: 1.217833
+  type: 'test'
+  ...
+# Subtest: changed Pages source blocks page mutations
+ok 196 - changed Pages source blocks page mutations
+  ---
+  duration_ms: 0.385708
+  type: 'test'
+  ...
+# Subtest: an asynchronous page mutation is dispatched once and observed without replay
+ok 197 - an asynchronous page mutation is dispatched once and observed without replay
+  ---
+  duration_ms: 72.048625
+  type: 'test'
+  ...
+# Subtest: transport authorizations are distinct
+ok 198 - transport authorizations are distinct
+  ---
+  duration_ms: 1286.023209
+  type: 'test'
+  ...
+# Subtest: native permission failures stop without a page write or any permission activation
+ok 199 - native permission failures stop without a page write or any permission activation
+  ---
+  duration_ms: 3.596667
+  type: 'test'
+  ...
+# Subtest: native permissions do not substitute for anonymous scheduler acceptance
+ok 200 - native permissions do not substitute for anonymous scheduler acceptance
+  ---
+  duration_ms: 47.151375
+  type: 'test'
+  ...
+# Subtest: multiple or missing Chrome candidates require explicit selection
+ok 201 - multiple or missing Chrome candidates require explicit selection
+  ---
+  duration_ms: 1.071459
+  type: 'test'
+  ...
+# Subtest: native same-version verification uses independent public evidence without Chrome or file handoffs
+ok 202 - native same-version verification uses independent public evidence without Chrome or file handoffs
+  ---
+  duration_ms: 22.037
+  type: 'test'
+  ...
+# Subtest: native readiness requires actual authorized dashboard evidence
+ok 203 - native readiness requires actual authorized dashboard evidence
+  ---
+  duration_ms: 1.052125
+  type: 'test'
+  ...
+# Subtest: same-publication navigation to another article during source proof stops before the write
+ok 204 - same-publication navigation to another article during source proof stops before the write
+  ---
+  duration_ms: 0.644625
+  type: 'test'
+  ...
+# Subtest: another Chrome process cannot reuse the bound window and tab identity
+ok 205 - another Chrome process cannot reuse the bound window and tab identity
+  ---
+  duration_ms: 0.132417
+  type: 'test'
+  ...
+# Subtest: CLI reports a withdrawn original as ineligible, not as a platform outage
+ok 206 - CLI reports a withdrawn original as ineligible, not as a platform outage
+  ---
+  duration_ms: 0.755792
+  type: 'test'
+  ...
+# Subtest: public origin must match full Markdown, canonical, title, date, links and loaded images
+ok 207 - public origin must match full Markdown, canonical, title, date, links and loaded images
+  ---
+  duration_ms: 92.478125
+  type: 'test'
+  ...
+# Subtest: withdrawn current Markdown prevents historical dry run and no platform or D1 is opened
+ok 208 - withdrawn current Markdown prevents historical dry run and no platform or D1 is opened
+  ---
+  duration_ms: 70.38025
+  type: 'test'
+  ...
+# Subtest: profile discovery includes later pages and every publication state without creating articles
+ok 209 - profile discovery includes later pages and every publication state without creating articles
+  ---
+  duration_ms: 9381.533042
+  type: 'test'
+  ...
+# Subtest: native Apple Events DOM: profile discovery includes later pages and every publication state without creating articles
+ok 210 - native Apple Events DOM: profile discovery includes later pages and every publication state without creating articles
+  ---
+  duration_ms: 1773.805417
+  type: 'test'
+  ...
+# Subtest: a visible page whose article count disagrees with publication total is not a complete scan
+ok 211 - a visible page whose article count disagrees with publication total is not a complete scan
+  ---
+  duration_ms: 1658.966583
+  type: 'test'
+  ...
+# Subtest: published update commits the same ID once with email, App and scheduling off
+ok 212 - published update commits the same ID once with email, App and scheduling off
+  ---
+  duration_ms: 9331.215584
+  type: 'test'
+  ...
+# Subtest: native Apple Events DOM: published update commits the same ID once with email, App and scheduling off
+ok 213 - native Apple Events DOM: published update commits the same ID once with email, App and scheduling off
+  ---
+  duration_ms: 1858.027708
+  type: 'test'
+  ...
+# Subtest: native delivery controls reject non-checkbox elements instead of treating missing state as disabled
+ok 214 - native delivery controls reject non-checkbox elements instead of treating missing state as disabled
+  ---
+  duration_ms: 1598.281125
+  type: 'test'
+  ...
+# Subtest: an absent public identity control blocks a published update before draft content changes
+ok 215 - an absent public identity control blocks a published update before draft content changes
+  ---
+  duration_ms: 1260.916709
+  type: 'test'
+  ...
+# Subtest: published native update without an editor href uses independently verified original public ID
+ok 216 - published native update without an editor href uses independently verified original public ID
+  ---
+  duration_ms: 1242.6095
+  type: 'test'
+  ...
+# Subtest: native draft readback waits for the editor instead of accepting navigation completion as UI readiness
+ok 217 - native draft readback waits for the editor instead of accepting navigation completion as UI readiness
+  ---
+  duration_ms: 1189.740417
+  type: 'test'
+  ...
+# Subtest: native metadata verification waits for asynchronously rendered settings fields
+ok 218 - native metadata verification waits for asynchronously rendered settings fields
+  ---
+  duration_ms: 1258.26625
+  type: 'test'
+  ...
+# Subtest: profile authorization is distinct from side-browser receipts
+ok 219 - profile authorization is distinct from side-browser receipts
+  ---
+  duration_ms: 0.916708
+  type: 'test'
+  ...
+# Subtest: same-version profile verification is independent of Codex, login and file handoffs
+ok 220 - same-version profile verification is independent of Codex, login and file handoffs
+  ---
+  duration_ms: 12.106084
+  type: 'test'
+  ...
+# Subtest: profile writes require reviewed controls without lifting general capability flags
+ok 221 - profile writes require reviewed controls without lifting general capability flags
+  ---
+  duration_ms: 0.441958
+  type: 'test'
+  ...
+# Subtest: background preparation refuses before opening even a reviewed browser
+ok 222 - background preparation refuses before opening even a reviewed browser
+  ---
+  duration_ms: 0.302542
+  type: 'test'
+  ...
+# Subtest: background verification rechecks manual holds, changed versions and unsettled intents before public reads
+ok 223 - background verification rechecks manual holds, changed versions and unsettled intents before public reads
+  ---
+  duration_ms: 0.296291
+  type: 'test'
+  ...
+# Subtest: background same-version native verification uses anonymous evidence without native identity or permissions
+ok 224 - background same-version native verification uses anonymous evidence without native identity or permissions
+  ---
+  duration_ms: 4.746417
+  type: 'test'
+  ...
+# Subtest: background CLI rejects writing commands before loading source or provider state
+ok 225 - background CLI rejects writing commands before loading source or provider state
+  ---
+  duration_ms: 55.336667
+  type: 'test'
+  ...
+# Subtest: background coordinator preserves a hold acquired after transport selection without any public read
+ok 226 - background coordinator preserves a hold acquired after transport selection without any public read
+  ---
+  duration_ms: 4.398167
+  type: 'test'
+  ...
+# Subtest: locked background rejection retains changed revisions and new checkpoints while explicit foreground verify remains available
+ok 227 - locked background rejection retains changed revisions and new checkpoints while explicit foreground verify remains available
+  ---
+  duration_ms: 2.26375
+  type: 'test'
+  ...
+# Subtest: public HTML identity binds original ID, publication and exact canonical without executing scripts
+ok 228 - public HTML identity binds original ID, publication and exact canonical without executing scripts
+  ---
+  duration_ms: 385.087208
+  type: 'test'
+  ...
+# Subtest: archive identity resolves only one matching original ID and never substitutes another article
+ok 229 - archive identity resolves only one matching original ID and never substitutes another article
+  ---
+  duration_ms: 3.443333
+  type: 'test'
+  ...
+# Subtest: native public identity policy is bound into Substack approvals
+ok 230 - native public identity policy is bound into Substack approvals
+  ---
+  duration_ms: 925.558292
+  type: 'test'
+  ...
+# Subtest: revoked current target rejects a previously matching controlled trial scope
+ok 231 - revoked current target rejects a previously matching controlled trial scope
+  ---
+  duration_ms: 0.305459
+  type: 'test'
+  ...
+# Subtest: current designated JSON identifies both original posts and archive without script execution
+ok 232 - current designated JSON identifies both original posts and archive without script execution
+  ---
+  duration_ms: 1.380792
+  type: 'test'
+  ...
+# Subtest: designated JSON rejects duplicate mixed malformed and mismatched identity evidence
+ok 233 - designated JSON rejects duplicate mixed malformed and mismatched identity evidence
+  ---
+  duration_ms: 1.611333
+  type: 'test'
+  ...
+# Subtest: retired target is rejected before CLI source reads or provider access
+ok 234 - retired target is rejected before CLI source reads or provider access
+  ---
+  duration_ms: 65.131041
+  type: 'test'
+  ...
+# Subtest: coordinator rejects a retired target without reading or writing state
+ok 235 - coordinator rejects a retired target without reading or writing state
+  ---
+  duration_ms: 0.276333
+  type: 'test'
+  ...
+# Subtest: publishing center hides retired state while repository preserves identity
+ok 236 - publishing center hides retired state while repository preserves identity
+  ---
+  duration_ms: 1.010792
+  type: 'test'
+  ...
+# Subtest: preparation produces only a Substack target and retains its remote identity
+ok 237 - preparation produces only a Substack target and retains its remote identity
+  ---
+  duration_ms: 109.45675
+  type: 'test'
+  ...
+# Subtest: review digest binds content, title, canonical, date, source revision and named platform
+ok 238 - review digest binds content, title, canonical, date, source revision and named platform
+  ---
+  duration_ms: 0.813084
+  type: 'test'
+  ...
+# Subtest: HTML scripts and event handlers never enter browser clipboard
+ok 239 - HTML scripts and event handlers never enter browser clipboard
+  ---
+  duration_ms: 12.839917
+  type: 'test'
+  ...
+# Subtest: Substack mirror review invalidates earlier canonical-strict receipts
+ok 240 - Substack mirror review invalidates earlier canonical-strict receipts
+  ---
+  duration_ms: 1.453916
+  type: 'test'
+  ...
+# (node:85692) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: D1 locks and checkpoints survive restart, serialize one target, and retain another
+ok 241 - D1 locks and checkpoints survive restart, serialize one target, and retain another
+  ---
+  duration_ms: 20.635791
+  type: 'test'
+  ...
+# Subtest: D1 HTTP failure never retries SQL and does not expose credentials/provider body
+ok 242 - D1 HTTP failure never retries SQL and does not expose credentials/provider body
+  ---
+  duration_ms: 51.334375
+  type: 'test'
+  ...
+# Subtest: metadata recovery retains original attempt identity across restart and settles it once
+ok 243 - metadata recovery retains original attempt identity across restart and settles it once
+  ---
+  duration_ms: 23.900166
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:2b7746f89a25fc565796bec4bf0419587567d260312c217995ed3ed0a8e1e0ce","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-scheduled-out-7g0PeH/run-MMkYJK/substack-review.json","externalWriteEnabled":false}
+# Subtest: scheduled policy derives exact operation approvals only after current anonymous Pages proof
+ok 244 - scheduled policy derives exact operation approvals only after current anonymous Pages proof
+  ---
+  duration_ms: 165.243083
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"first","target":"substack","digest":"sha256:0b4cc80050a6ead5e6c0d6e5ec8a6320f6e988e02344fd0cf53e6bd5f4f260b0","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-IYSBLX/run-A7nc4A/substack-review.json","externalWriteEnabled":false}
+# {"operation":"dry-run","slug":"second","target":"substack","digest":"sha256:15f3ead9849df33319ceb0f63dbff786a3aea3a0b8b92b7b2986632039297938","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-IYSBLX/run-0RNLfA/substack-review.json","externalWriteEnabled":false}
+# Subtest: all-article policy derives separate exact scopes from a clean fixed source without promoting gates
+ok 245 - all-article policy derives separate exact scopes from a clean fixed source without promoting gates
+  ---
+  duration_ms: 359.368291
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"first","target":"substack","digest":"sha256:0b4cc80050a6ead5e6c0d6e5ec8a6320f6e988e02344fd0cf53e6bd5f4f260b0","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/distribution-scopes-jWxnkL/run-hSp4nl/substack-review.json","externalWriteEnabled":false}
+# Subtest: all plans isolate platform failure and unknown intent without issuing unused write approvals
+ok 246 - all plans isolate platform failure and unknown intent without issuing unused write approvals
+  ---
+  duration_ms: 661.217625
+  type: 'test'
+  ...
+# {"operation":"prepare-draft","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/advance-review-UFkzVW/review.json","sourceRevision":"sha256:97f6ca0fbcf28482b20e72b7179b9e6d668804db75e777fb50ff56163817699e","externalWriteEnabled":false}
+# Subtest: advance review prepares a finalized future article before Pages exists without provider writes
+ok 247 - advance review prepares a finalized future article before Pages exists without provider writes
+  ---
+  duration_ms: 351.310875
+  type: 'test'
+  ...
+# Subtest: advance source blocks draft before preparing any draft
+ok 248 - advance source blocks draft before preparing any draft
+  ---
+  duration_ms: 188.692917
+  type: 'test'
+  ...
+# Subtest: advance source blocks mdx before preparing any draft
+ok 249 - advance source blocks mdx before preparing any draft
+  ---
+  duration_ms: 189.454584
+  type: 'test'
+  ...
+# Subtest: advance source blocks duplicate before preparing any draft
+ok 250 - advance source blocks duplicate before preparing any draft
+  ---
+  duration_ms: 184.591
+  type: 'test'
+  ...
+# Subtest: advance source blocks incomplete before preparing any draft
+ok 251 - advance source blocks incomplete before preparing any draft
+  ---
+  duration_ms: 217.278375
+  type: 'test'
+  ...
+# (node:85708) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: advance source blocks media before preparing any draft
+ok 252 - advance source blocks media before preparing any draft
+  ---
+  duration_ms: 208.486417
+  type: 'test'
+  ...
+# Subtest: background observer includes vanished sources and source-read failure retains prior evidence
+ok 253 - background observer includes vanished sources and source-read failure retains prior evidence
+  ---
+  duration_ms: 456.796042
+  type: 'test'
+  ...
+# Subtest: audit regression: paused series blocks preparation and requests cancellation of its armed article
+ok 254 - audit regression: paused series blocks preparation and requests cancellation of its armed article
+  ---
+  duration_ms: 503.128291
+  type: 'test'
+  ...
+# Subtest: audit regression: publication-paused series blocks preparation and requests cancellation of its armed article
+ok 255 - audit regression: publication-paused series blocks preparation and requests cancellation of its armed article
+  ---
+  duration_ms: 469.211666
+  type: 'test'
+  ...
+# Subtest: audit regression: external series blocks preparation and requests cancellation of its armed article
+ok 256 - audit regression: external series blocks preparation and requests cancellation of its armed article
+  ---
+  duration_ms: 522.339084
+  type: 'test'
+  ...
+# Subtest: attention reasons distinguish new series drafts, content drift, cancellation, postponement and uncertain arm
+ok 257 - attention reasons distinguish new series drafts, content drift, cancellation, postponement and uncertain arm
+  ---
+  duration_ms: 4509.569667
+  type: 'test'
+  ...
+# Subtest: three legacy public originals clear false content attention while failed reads retain the snapshot
+ok 258 - three legacy public originals clear false content attention while failed reads retain the snapshot
+  ---
+  duration_ms: 2731.517083
+  type: 'test'
+  ...
+# Subtest: same-time queue revision clears a false postpone attention without changing the armed provider commitment
+ok 259 - same-time queue revision clears a false postpone attention without changing the armed provider commitment
+  ---
+  duration_ms: 622.133459
+  type: 'test'
+  ...
+# 請在專用瀏覽器登入，完成後關閉瀏覽器。
+# Subtest: login opens only the configured dashboard without article source or D1 credentials
+ok 260 - login opens only the configured dashboard without article source or D1 credentials
+  ---
+  duration_ms: 133.305833
+  type: 'test'
+  ...
+# Subtest: unchanged round verifies Substack, retains evidence and removes only its owned snapshot
+ok 261 - unchanged round verifies Substack, retains evidence and removes only its owned snapshot
+  ---
+  duration_ms: 99.477833
+  type: 'test'
+  ...
+# Subtest: rate-limit failure is recorded once and stops without replay
+ok 262 - rate-limit failure is recorded once and stops without replay
+  ---
+  duration_ms: 29.070292
+  type: 'test'
+  ...
+# Subtest: uncertain preparation never falls through into publication
+ok 263 - uncertain preparation never falls through into publication
+  ---
+  duration_ms: 13.911875
+  type: 'test'
+  ...
+# Subtest: changed pin or concurrent owner stops before snapshot and never steals lock
+ok 264 - changed pin or concurrent owner stops before snapshot and never steals lock
+  ---
+  duration_ms: 8.940417
+  type: 'test'
+  ...
+# Subtest: planning dispatches no operations and retains only the plan and evidence
+ok 265 - planning dispatches no operations and retains only the plan and evidence
+  ---
+  duration_ms: 10.669791
+  type: 'test'
+  ...
+# Subtest: unanswered side request preserves source and is never replayed
+ok 266 - unanswered side request preserves source and is never replayed
+  ---
+  duration_ms: 8.726458
+  type: 'test'
+  ...
+# Subtest: a merely pending prepare is not permission to publish
+ok 267 - a merely pending prepare is not permission to publish
+  ---
+  duration_ms: 9.790208
+  type: 'test'
+  ...
+# Subtest: unsettled final intent requires attention even if transport returned
+ok 268 - unsettled final intent requires attention even if transport returned
+  ---
+  duration_ms: 8.637875
+  type: 'test'
+  ...
+# Subtest: identical failure stays quiet and recovery becomes one meaningful change
+ok 269 - identical failure stays quiet and recovery becomes one meaningful change
+  ---
+  duration_ms: 24.922208
+  type: 'test'
+  ...
+# Subtest: different source revisions of the same updated article each produce a meaningful completion
+ok 270 - different source revisions of the same updated article each produce a meaningful completion
+  ---
+  duration_ms: 14.896042
+  type: 'test'
+  ...
+# Subtest: manual-held article remains skipped across restarted rounds and repeated result stays quiet
+ok 271 - manual-held article remains skipped across restarted rounds and repeated result stays quiet
+  ---
+  duration_ms: 21.635875
+  type: 'test'
+  ...
+# Subtest: Hermes receives held results even when repeated round fingerprint is quiet
+ok 272 - Hermes receives held results even when repeated round fingerprint is quiet
+  ---
+  duration_ms: 12.729083
+  type: 'test'
+  ...
+# Subtest: notification queue failure is visible without leaving the sync lock or source snapshot
+ok 273 - notification queue failure is visible without leaving the sync lock or source snapshot
+  ---
+  duration_ms: 7.313625
+  type: 'test'
+  ...
+# (node:85730) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: production scheduler validation rejects old receipts before any network access
+ok 274 - production scheduler validation rejects old receipts before any network access
+  ---
+  duration_ms: 5.113167
+  type: 'test'
+  ...
+# Subtest: production notification includes inventory-omitted D1 holds and failed reads cannot clear the feed
+ok 275 - production notification includes inventory-omitted D1 holds and failed reads cannot clear the feed
+  ---
+  duration_ms: 9.785125
+  type: 'test'
+  ...
+# Subtest: scheduled observation reuses the existing round and attention without any command dispatch
+ok 276 - scheduled observation reuses the existing round and attention without any command dispatch
+  ---
+  duration_ms: 12.229167
+  type: 'test'
+  ...
+# Subtest: production scheduled durable holds retain content and recovery reasons instead of a legacy generic fallback
+ok 277 - production scheduled durable holds retain content and recovery reasons instead of a legacy generic fallback
+  ---
+  duration_ms: 14.865667
+  type: 'test'
+  ...
+# Subtest: draft worker and anonymous observer are distinct phases; draft failure cannot suppress observation
+ok 278 - draft worker and anonymous observer are distinct phases; draft failure cannot suppress observation
+  ---
+  duration_ms: 10.645291
+  type: 'test'
+  ...
+# Subtest: repeated draft reconciliation without a new handoff cleans its new snapshot; unresolved current payload stays
+ok 279 - repeated draft reconciliation without a new handoff cleans its new snapshot; unresolved current payload stays
+  ---
+  duration_ms: 10.759833
+  type: 'test'
+  ...
+# Subtest: production success delivery moves to the original-site monitor while foreground attention remains
+ok 280 - production success delivery moves to the original-site monitor while foreground attention remains
+  ---
+  duration_ms: 4.189875
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:8b0bd3c81ba7d50008b7b2d9101aa992754e8bd32a36be5d85128ef177288f45","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-trial-review-XBm9SO/review.json","externalWriteEnabled":false}
+# Subtest: controlled trial dry run binds its execution mode without enabling any write
+ok 281 - controlled trial dry run binds its execution mode without enabling any write
+  ---
+  duration_ms: 98.123833
+  type: 'test'
+  ...
+# {"operation":"dry-run","slug":"trial","target":"substack","digest":"sha256:8b0bd3c81ba7d50008b7b2d9101aa992754e8bd32a36be5d85128ef177288f45","reviewFile":"/var/folders/93/84jn38xx69xfdnzsrq4xhxgw0000gn/T/gcake-trial-disabled-Y2kHHM/review.json","externalWriteEnabled":false}
+# Subtest: trial write disablement stops before browser or D1 access despite a matching approval
+ok 282 - trial write disablement stops before browser or D1 access despite a matching approval
+  ---
+  duration_ms: 20.056083
+  type: 'test'
+  ...
+# (node:85753) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Markdown → Substack → D1 → public readback with browser draft updates, images and failure recovery
+ok 283 - Markdown → Substack → D1 → public readback with browser draft updates, images and failure recovery
+  ---
+  duration_ms: 13137.956042
+  type: 'test'
+  ...
+# Subtest: shared workflow denies missing/stale approval before calling either provider
+ok 284 - shared workflow denies missing/stale approval before calling either provider
+  ---
+  duration_ms: 1.582875
+  type: 'test'
+  ...
+# Subtest: shared workflow preserves uncertain publish and retry only verifies with platform isolation
+ok 285 - shared workflow preserves uncertain publish and retry only verifies with platform isolation
+  ---
+  duration_ms: 1.838584
+  type: 'test'
+  ...
+# Subtest: full-mirror requires explicit policy approval before remote writes
+ok 286 - full-mirror requires explicit policy approval before remote writes
+  ---
+  duration_ms: 0.149333
+  type: 'test'
+  ...
+# Subtest: full-mirror date failure survives read-only retry and requires approved same-ID finalize
+ok 287 - full-mirror date failure survives read-only retry and requires approved same-ID finalize
+  ---
+  duration_ms: 0.940417
+  type: 'test'
+  ...
+# Subtest: finalize never creates a missing article or changes an uncertain source revision
+ok 288 - finalize never creates a missing article or changes an uncertain source revision
+  ---
+  duration_ms: 0.3155
+  type: 'test'
+  ...
+# Subtest: publishing the reviewed prepared revision rereads the saved draft without another content update
+ok 289 - publishing the reviewed prepared revision rereads the saved draft without another content update
+  ---
+  duration_ms: 0.615375
+  type: 'test'
+  ...
+# Subtest: published Substack revision updates same ID and verifies without another publish
+ok 290 - published Substack revision updates same ID and verifies without another publish
+  ---
+  duration_ms: 0.399167
+  type: 'test'
+  ...
+# Subtest: unknown published update retries anonymous same-ID verification only
+ok 291 - unknown published update retries anonymous same-ID verification only
+  ---
+  duration_ms: 0.878125
+  type: 'test'
+  ...
+# Subtest: historical published Substack match is publicly verified and adopted without writes
+ok 292 - historical published Substack match is publicly verified and adopted without writes
+  ---
+  duration_ms: 0.615709
+  type: 'test'
+  ...
+# Subtest: historical public conflict remains read-only on repeated prepare rather than overwriting an unadopted article
+ok 293 - historical public conflict remains read-only on repeated prepare rather than overwriting an unadopted article
+  ---
+  duration_ms: 0.624875
+  type: 'test'
+  ...
+# Subtest: public readback requires content, image, link, canonical, title and date independently
+ok 294 - public readback requires content, image, link, canonical, title and date independently
+  ---
+  duration_ms: 20.203958
+  type: 'test'
+  ...
+# Subtest: dedicated profile cannot be inside repo or ordinary Chrome profile
+ok 295 - dedicated profile cannot be inside repo or ordinary Chrome profile
+  ---
+  duration_ms: 0.311209
+  type: 'test'
+  ...
+# Subtest: full-mirror verifies exact platform canonical and original link without waiving date
+ok 296 - full-mirror verifies exact platform canonical and original link without waiving date
+  ---
+  duration_ms: 6.804416
+  type: 'test'
+  ...
+# Subtest: displayed original date uses reviewed timezone and refuses unsupported precision
+ok 297 - displayed original date uses reviewed timezone and refuses unsupported precision
+  ---
+  duration_ms: 1.090042
+  type: 'test'
+  ...
+# Subtest: pre-date readback still requires a real public date and leaves final date verification strict
+ok 298 - pre-date readback still requires a real public date and leaves final date verification strict
+  ---
+  duration_ms: 1.041583
+  type: 'test'
+  ...
+# Subtest: approved minute precision is Substack-only and binds approvals while preserving source seconds
+ok 299 - approved minute precision is Substack-only and binds approvals while preserving source seconds
+  ---
+  duration_ms: 3.66375
+  type: 'test'
+  ...
+1..299
+# tests 299
+# suites 0
+# pass 299
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25663.043917
