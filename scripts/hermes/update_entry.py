@@ -4,6 +4,8 @@ Never installs production files or accepts manifest-supplied privileged commands
 The same-UID release manager remains unchanged; this is a separate adapter.
 """
 from contextlib import contextmanager
+import ctypes as C
+import errno
 import fcntl
 import hashlib
 import os
@@ -41,17 +43,154 @@ def runner_profile(root, unix_ipc=False):
             '(deny file-read* (subpath "/Users") (subpath "/usr/local/libexec"))')
 
 
+# Same rights as update_entry's existing text check; directory aliases share bits.
+_WRITE_MASK = (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 8) | (1 << 10) | (1 << 12) | (1 << 13)
+_ROOT_COMPAT = bytes.fromhex('ffffeeeeddddccccbbbbaaaa00000000')
+_ACL_TIMEOUT_SECONDS = 30
+
+
+def _acl_identity(info):
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
+            info.st_ctime_ns, getattr(info, 'st_flags', 0))
+
+
+class _NativeACLInventory:
+    def __init__(self):
+        self.deadline = time.monotonic() + 30
+        self.lib = C.CDLL('/usr/lib/libSystem.B.dylib', use_errno=True)
+        for name, args, result in (
+            ('acl_get_link_np', [C.c_char_p, C.c_int], C.c_void_p),
+            ('acl_valid', [C.c_void_p], C.c_int),
+            ('acl_get_entry', [C.c_void_p, C.c_int, C.POINTER(C.c_void_p)], C.c_int),
+            ('acl_get_tag_type', [C.c_void_p, C.POINTER(C.c_int)], C.c_int),
+            ('acl_get_permset_mask_np', [C.c_void_p, C.POINTER(C.c_uint64)], C.c_int),
+            ('acl_get_qualifier', [C.c_void_p], C.c_void_p),
+            ('acl_free', [C.c_void_p], C.c_int),
+            ('mbr_uid_to_uuid', [C.c_uint32, C.c_void_p], C.c_int),
+        ):
+            function = getattr(self.lib, name)
+            function.argtypes, function.restype = args, result
+        self.root_uuid = None
+
+    def budget(self):
+        if time.monotonic() >= self.deadline:
+            raise ValueError('acl-inventory-failed')
+
+    def require(self, result):
+        self.budget()
+        if result != 0:
+            raise ValueError('acl-inventory-failed')
+
+    def root_user(self, qualifier):
+        if qualifier == _ROOT_COMPAT:
+            return True
+        if self.root_uuid is None:
+            value = C.create_string_buffer(16)
+            self.require(self.lib.mbr_uid_to_uuid(0, value))
+            self.root_uuid = value.raw
+        return qualifier == self.root_uuid
+
+    def inspect(self, path):
+        self.budget()
+        before = os.lstat(path)
+        C.set_errno(0)
+        acl = self.lib.acl_get_link_np(os.fsencode(path), 0x100)
+        try:
+            self.budget()
+            if not acl:
+                # Darwin uses ENOENT for no extended ACL. Require the same node
+                # still present below; a vanished path is never an empty ACL.
+                if C.get_errno() != errno.ENOENT:
+                    raise ValueError('acl-inventory-failed')
+            else:
+                self.require(self.lib.acl_valid(acl))
+                selector = 0  # ACL_FIRST_ENTRY; Darwin returns 0 on success.
+                while True:
+                    self.budget()
+                    entry = C.c_void_p()
+                    C.set_errno(0)
+                    result = self.lib.acl_get_entry(acl, selector, C.byref(entry))
+                    if result == -1 and C.get_errno() == errno.EINVAL:
+                        break  # End of a validated, kernel-owned snapshot.
+                    self.require(result)
+                    selector = -1  # ACL_NEXT_ENTRY, not POSIX's numeric index.
+                    tag, mask = C.c_int(), C.c_uint64()
+                    self.require(self.lib.acl_get_tag_type(entry, C.byref(tag)))
+                    self.require(self.lib.acl_get_permset_mask_np(entry, C.byref(mask)))
+                    if tag.value not in (1, 2):
+                        raise ValueError('acl-inventory-failed')
+                    if tag.value == 1 and mask.value & _WRITE_MASK:
+                        qualifier = self.lib.acl_get_qualifier(entry)
+                        if not qualifier:
+                            raise ValueError('acl-inventory-failed')
+                        try:
+                            if not self.root_user(C.string_at(qualifier, 16)):
+                                raise ValueError('runner-writable-acl')
+                        finally:
+                            self.lib.acl_free(qualifier)
+        finally:
+            if acl:
+                self.lib.acl_free(acl)
+        if _acl_identity(os.lstat(path)) != _acl_identity(before):
+            raise ValueError('acl-inventory-failed')
+        self.budget()
+        return before
+
+    def visit(self, path, recursive):
+        before = self.inspect(path)
+        if not recursive or not stat.S_ISDIR(before.st_mode):
+            return
+        descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            if _acl_identity(os.fstat(descriptor)) != _acl_identity(before):
+                raise ValueError('acl-inventory-failed')
+            # scandir includes hidden children and does not dereference symlinks.
+            with os.scandir(descriptor) as children:
+                for child in children:
+                    self.visit(os.path.join(path, child.name), True)
+            if (_acl_identity(os.fstat(descriptor)) != _acl_identity(before)
+                    or _acl_identity(os.lstat(path)) != _acl_identity(before)):
+                raise ValueError('acl-inventory-failed')
+        finally:
+            os.close(descriptor)
+        self.budget()
+
+
+
+def _native_acl_worker(path, recursive):
+    """Read metadata only; stdout is a fixed non-content result protocol."""
+    try:
+        _NativeACLInventory().visit(os.fspath(path), recursive)
+    except (OSError, ValueError, RecursionError) as error:
+        code = 'runner-writable-acl' if str(error) == 'runner-writable-acl' else 'acl-inventory-failed'
+        print(code, end='')
+        return 2
+    return 0
+
+
 def reject_write_acl(path, recursive=False):
-    if sys.platform!='darwin':return
-    result=subprocess.run(['/bin/ls','-leR' if recursive else '-lde',str(path)],
-                          capture_output=True,text=True,timeout=30)
-    if result.returncode:raise ValueError('acl-inventory-failed')
-    for line in result.stdout.splitlines():
-        if re.match(r'\s*\d+:',line) and ' allow ' in line and not re.search(r'user:root\b',line):
-            rights=line.split(' allow ',1)[1].split(',')
-            if any(right.strip() in ('write','append','add_file','add_subdirectory','delete','delete_child',
-                                     'writeattr','writeextattr','writesecurity','chown') for right in rights):
-                raise ValueError('runner-writable-acl')
+    if sys.platform != 'darwin':
+        return
+    started = time.monotonic()
+    try:
+        control = Path(__file__).resolve()
+        # -I ignores caller Python settings. Only this fixed control and its
+        # protected sibling imports load; the inspected path is an argv value.
+        worker = ("import runpy,sys;sys.path.insert(0,sys.argv[1]);"
+                  "scope=runpy.run_path(sys.argv[2]);"
+                  "sys.exit(scope['_native_acl_worker'](sys.argv[3],sys.argv[4]=='1'))")
+        result = subprocess.run(
+            [sys.executable, '-I', '-B', '-c', worker, str(control.parent),
+             str(control), os.fspath(path), '1' if recursive else '0'],
+            stdin=subprocess.DEVNULL, capture_output=True, text=True,
+            timeout=_ACL_TIMEOUT_SECONDS)
+        if result.returncode == 2 and result.stdout == 'runner-writable-acl' and not result.stderr:
+            raise ValueError('runner-writable-acl')
+        if (result.returncode != 0 or result.stdout or result.stderr
+                or time.monotonic() - started >= _ACL_TIMEOUT_SECONDS):
+            raise ValueError('acl-inventory-failed')
+    except (OSError, subprocess.SubprocessError):
+        raise ValueError('acl-inventory-failed') from None
 
 
 def isolated(path):

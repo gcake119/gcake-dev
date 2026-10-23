@@ -203,3 +203,44 @@ The new production monitor SHALL remain dry-run until its authenticated read-onl
 - **WHEN** the existing update schedule runs
 - **THEN** the current gateway remains running and the unknown candidate is retained once for review
 - **AND** no update from a moving branch is executed
+
+
+### Requirement: Complete bounded native ACL inventory
+Authority eligibility checks SHALL read a complete native extended ACL snapshot instead of depending on human-readable account-name formatting. Every allow entry granting non-root mutation rights SHALL be refused, including write, append, delete, child creation/removal, attribute or extended-attribute writes, security changes and ownership changes. Only the exact root user identity retains the existing mutation exception; root-named groups and unrelated identities SHALL NOT inherit it. Read-only grants and deny entries retain their existing meaning. Recursive inventory SHALL include hidden descendants and inspect symbolic links without traversing their external targets.
+
+A missing, inaccessible, malformed or changed node, incomplete native read, failed identity resolution, unexpected helper result, or inspection deadline SHALL refuse eligibility with bounded non-content diagnostics. The existing 30-second limit SHALL cover interpreter startup, native calls and tree traversal; stalled inspection SHALL be terminated and reaped without retries, even if a native call does not return. Temporary tests SHALL leave installed controls, schedules, identity, notification history and transport untouched.
+
+#### Scenario: Safe ACL avoids account-name formatting
+- **GIVEN** a complete stable tree with only read grants, deny entries or exact root-user write grants
+- **WHEN** eligibility is inspected while the account-name display command is unavailable
+- **THEN** the tree remains eligible without running that display command or changing its ACL
+
+#### Scenario: Any non-root mutation is unsafe
+- **GIVEN** an allow entry for any non-root file or directory mutation, including a root-named group or an entry after an allowed root user
+- **WHEN** eligibility is inspected
+- **THEN** it is refused before selecting a release or starting a service
+
+#### Scenario: Hidden descendants cannot escape inventory
+- **GIVEN** a writable allow entry beneath a hidden nested directory
+- **WHEN** recursive eligibility is inspected
+- **THEN** the tree is refused rather than treated as safe from a partial listing
+
+#### Scenario: External symbolic-link targets are not inspected
+- **GIVEN** a tree containing a symbolic link to an unrelated external tree
+- **WHEN** recursive eligibility is inspected
+- **THEN** the external target is not traversed or modified and the link itself receives the local metadata check
+
+#### Scenario: Missing unreadable or changing evidence is refused
+- **GIVEN** a missing or inaccessible node, invalid native evidence, failed identity resolution, or a node changed during inspection
+- **WHEN** eligibility is inspected
+- **THEN** the check refuses with an inventory failure and does not substitute an empty safe ACL
+
+#### Scenario: Stalled native inspection is bounded
+- **GIVEN** an inspection that stalls inside a native call or during traversal
+- **WHEN** the existing 30-second deadline expires
+- **THEN** the check refuses, the owned inspection process is terminated and reaped, and no retry or service operation occurs
+
+#### Scenario: Local qualification preserves formal operation
+- **GIVEN** installed controls, schedules and sent or unknown notification history
+- **WHEN** the ACL repair is tested with owned synthetic files
+- **THEN** formal operation and history remain unchanged and no subscriber or private-message notification is sent

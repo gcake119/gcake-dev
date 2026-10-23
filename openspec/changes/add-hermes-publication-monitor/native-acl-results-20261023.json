@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "baseMain": "62a9d295c5ca1a36e85aafa2b59588f34b0069ab",
+  "scope": "Complete bounded native ACL inventory under existing authority/runner separation",
+  "sourceSha256": {
+    "scripts/hermes/update_entry.py": "3fa2cf95c6f818236388431cea3ebf1d0dff7454d656bf750a35de445e20169c",
+    "scripts/hermes/test_acl_inventory.py": "625710aa76777081bc8cd47849bd2099dd7665cdd49ce6eba56c833fc6c0f5ae"
+  },
+  "platform": "Darwin",
+  "python": "3.14.8",
+  "acceptance": {
+    "originalAgainstPendingTests": {
+      "tests": 13,
+      "failures": 4,
+      "errors": 2
+    },
+    "pendingNativeBeforeHardBound": {
+      "passed": 13
+    },
+    "hardBoundRed": {
+      "tests": 15,
+      "failingAssertionsOrSubcases": 5
+    },
+    "parentTargetMetadataRed": {
+      "tests": 16,
+      "failures": 1
+    },
+    "rootResolutionMutationRejected": true,
+    "finalDarwinAcceptance": {
+      "passed": 18
+    },
+    "completeHermes": {
+      "passed": 286
+    }
+  },
+  "gates": [
+    {
+      "stage": "test",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "seconds": 557.71
+    },
+    {
+      "stage": "check",
+      "command": [
+        "pnpm",
+        "check"
+      ],
+      "exitCode": 0,
+      "seconds": 8.67
+    },
+    {
+      "stage": "build-all",
+      "command": [
+        "pnpm",
+        "build:all"
+      ],
+      "exitCode": 0,
+      "seconds": 8.816
+    },
+    {
+      "stage": "release-dry-run",
+      "command": [
+        "pnpm",
+        "release:dry-run"
+      ],
+      "exitCode": 0,
+      "seconds": 13.17
+    },
+    {
+      "stage": "rehearsal",
+      "command": [
+        "pnpm",
+        "editorial:rehearse"
+      ],
+      "exitCode": 0,
+      "seconds": 15.116
+    }
+  ],
+  "specValidation": [
+    {
+      "change": "add-hermes-publication-monitor",
+      "errors": [],
+      "valid": true,
+      "warnings": []
+    }
+  ],
+  "artifactAnalysis": {
+    "change_id": "add-hermes-publication-monitor",
+    "dimensions": [
+      {
+        "dimension": "Coverage",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Consistency",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Ambiguity",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Gaps",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Localization",
+        "status": "Skipped (insufficient artifacts)",
+        "finding_count": 0
+      }
+    ],
+    "findings": [],
+    "artifacts_analyzed": [
+      "proposal",
+      "specs",
+      "design",
+      "tasks"
+    ],
+    "artifacts_missing": []
+  },
+  "limits": {
+    "nativeLinuxAcceptance": "Darwin-specific tests skipped on Linux; general regression still required",
+    "installedRuntimeQualified": false,
+    "productionRootHermesDrill": false,
+    "legacyPermissionErrorRootCauseEstablished": false,
+    "productionWrites": false,
+    "scheduleChanges": false,
+    "notificationReplay": false
+  },
+  "preservation": {
+    "originalDirtyFiles": 3,
+    "allOriginalDirtyHashesUnchanged": true,
+    "operationalFileHashesUnchanged": 5,
+    "newCreationRemainsDisabled": true
+  },
+  "environmentFailuresRetained": {
+    "restrictedHermesRun": {
+      "tests": 284,
+      "failures": 23,
+      "errors": 16,
+      "cause": "localhost and Unix socket binding denied by tool sandbox"
+    },
+    "packageManagerBootstrap": "First non-escalated pnpm invocation could not write its package-manager bootstrap lock; frozen installation succeeded in isolated checkout."
+  },
+  "coverage": {
+    "safeACLWithoutDisplay": [
+      "test_readable_acl_does_not_depend_on_stalled_presentation_command",
+      "test_readonly_grant_and_deny_keep_prior_meaning"
+    ],
+    "allMutationRights": [
+      "test_all_existing_nonroot_mutation_rights_are_refused",
+      "test_directory_add_rights_are_refused"
+    ],
+    "exactRootIdentity": [
+      "test_root_user_write_exception_is_preserved",
+      "test_root_group_is_not_the_root_user_exception",
+      "test_resolved_root_uuid_retains_user_exception",
+      "test_failed_root_identity_resolution_is_refused",
+      "test_later_write_entry_cannot_hide_behind_root_allow"
+    ],
+    "completeTraversal": [
+      "test_nested_hidden_write_grant_is_not_skipped",
+      "test_link_does_not_follow_outside_tree"
+    ],
+    "failedEvidence": [
+      "test_missing_root_is_not_silently_empty",
+      "test_unreadable_acl_evidence_is_refused",
+      "test_changed_node_during_acl_read_is_refused",
+      "test_unexpected_native_child_result_is_never_safe"
+    ],
+    "boundedExecution": [
+      "test_existing_thirty_second_budget_is_not_extended",
+      "test_target_metadata_is_read_only_inside_bounded_child",
+      "test_stalled_native_child_is_refused_and_reaped"
+    ]
+  }
+}

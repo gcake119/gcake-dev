@@ -130,3 +130,10 @@ Notification repair closeout: owner-reported single continuation exited 0 with T
 - [x] 17.1 Define Preserved production control protections scenarios and implementation contract before tasks, snapshot installed source provenance, and record acceptance RED for missing package approval and current-boot readiness guards.
 - [x] 17.2 Save back exact installed approval, owner, package/health and offline proof controls, verify acceptance GREEN and negative guard sensitivity without production operations.
 - [x] 17.3 Pass complete local gates and Spectra validation/analysis, record exact source parity and unchanged production selection/control hashes, and document remaining installation boundaries without commit/push or backup deletion.
+
+
+## 16. Complete bounded native ACL inventory
+
+- [x] 16.1 Preserve Authority and runner permission separation with Complete bounded native ACL inventory scenarios; review current pending source and Apple SDK definitions, capture old-source RED for hidden descendants/root identity/failed evidence, and preserve unrelated dirty files.
+- [x] 16.2 Deliver complete native eligibility with all mutation rights, exact root identity, hidden descendants, no external symlink traversal and fail-closed reads; enforce the existing 30-second deadline even on blocked native execution with owned child cleanup, and verify existing plus missing acceptance cases RED/GREEN.
+- [x] 16.3 Complete focused Darwin acceptance, the existing repository gates and Spectra validation/analysis, record platform limits/source/scope and preserved production settings, then commit only reviewed ACL/spec artifacts and create the authorized PR; do not install, merge, alter timers/ACLs or send notifications.
