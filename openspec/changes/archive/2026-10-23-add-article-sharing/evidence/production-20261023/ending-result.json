@@ -1,0 +1,299 @@
+{
+  "passed": true,
+  "browser": "155.0.8059.86",
+  "results": [
+    {
+      "case": "day-08",
+      "width": 1280,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-08",
+      "width": 1280,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-08",
+      "width": 390,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-08",
+      "width": 390,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-30",
+      "width": 1280,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-30",
+      "width": 1280,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-30",
+      "width": 390,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "day-30",
+      "width": 390,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "standalone",
+      "width": 1280,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "standalone",
+      "width": 1280,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "standalone",
+      "width": 390,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "standalone",
+      "width": 390,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "local-latest",
+      "width": 1280,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "local-latest",
+      "width": 1280,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "local-latest",
+      "width": 390,
+      "theme": "light",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    },
+    {
+      "case": "local-latest",
+      "width": 390,
+      "theme": "dark",
+      "metrics": {
+        "root": "17px",
+        "heading": "20.06px",
+        "title": "17px",
+        "description": "13.94px",
+        "share": "17px",
+        "subscription": "17px",
+        "afterBody": true,
+        "beforeShare": true,
+        "shareBeforeSubscription": true,
+        "overflow": false
+      },
+      "keyboardNavigation": true
+    }
+  ],
+  "externalRequests": 82,
+  "referencesKeyboard": true,
+  "shareErrorAndCancellation": "capability doubles",
+  "unsupportedAndNoJS": true,
+  "nativeChooser": "prior user-confirmed locally; production errors/cancel use capability doubles; no destination send"
+}

@@ -1,0 +1,117 @@
+{
+  "ownedTemporaryFiles": [
+    {
+      "name": "reuse-0000.ndjson",
+      "bytes": 6557314,
+      "sha256": "39835339141b5609ebb37aa7a8eb46bd3bd0be96d76d2260975654cf49e4862e"
+    },
+    {
+      "name": "reuse-0500.ndjson",
+      "bytes": 6569615,
+      "sha256": "79284d2f4118c216a89aca30c793325575b71302ebebf8f54faee24d2467526f"
+    },
+    {
+      "name": "reuse-1000.ndjson",
+      "bytes": 6549393,
+      "sha256": "4549333fde7230f7b250bdbc1fbeb8e481f0df1ced18c9d2d2de64967875e6be"
+    },
+    {
+      "name": "reuse-1500.ndjson",
+      "bytes": 6556502,
+      "sha256": "293cc0ab27ccd8a6f283584841cce4ead680f00ff726dec95de03967bd58b402"
+    },
+    {
+      "name": "reuse-2000.ndjson",
+      "bytes": 6551746,
+      "sha256": "b71959cb70f9923207d87a95ee0fcc158d15bd8fc308ab485c5cf4683852be6a"
+    },
+    {
+      "name": "reuse-2500.ndjson",
+      "bytes": 2464851,
+      "sha256": "ae03a746339231b6cbdcb23956bd05d689f7fd5fca19760b6dd745e9ec2fd20f"
+    },
+    {
+      "name": "fill-vectors.ndjson",
+      "bytes": 4128462,
+      "sha256": "b66094cd140ca392da67c21c6ec05325401cf744206d67cf09d07522d3bda6de"
+    },
+    {
+      "name": "fill-ai-0000.json",
+      "bytes": 328885,
+      "sha256": "e1c5162b9ed7865dd03db9308e168eb5d6fb64d5633aaf3fa3819ebb8a6fd26d"
+    },
+    {
+      "name": "fill-ai-0016.json",
+      "bytes": 329661,
+      "sha256": "a0723fce915eacd67a0392582896c9cbb21ac7581bc92bebb164852db2aa447e"
+    },
+    {
+      "name": "fill-ai-0032.json",
+      "bytes": 329085,
+      "sha256": "8ea30a02fadee0aaa246c56b037bd4fceb6b92a2c8df4c3b0a6c6c72eeefac8c"
+    },
+    {
+      "name": "fill-ai-0048.json",
+      "bytes": 328879,
+      "sha256": "dd8798f7a4b8d8fa173a43ff3c1c8669ec777ce7b93ff425e89be6ecbd4f1534"
+    },
+    {
+      "name": "fill-ai-0064.json",
+      "bytes": 328701,
+      "sha256": "47ea778a7e43eec7502011a3276a55ad54277602a6658580c2f7782b4fe3ad2f"
+    },
+    {
+      "name": "fill-ai-0080.json",
+      "bytes": 329241,
+      "sha256": "6d72d432b3838dd4e96938fc2c58c56fb08d31b5984e0fcb9cc3650bbb29e248"
+    },
+    {
+      "name": "fill-ai-0096.json",
+      "bytes": 328854,
+      "sha256": "3c3e7b91eb8a2ce8b6fb322c32c23489ad418df92201c6ba1e70a1d5089f6395"
+    },
+    {
+      "name": "fill-ai-0112.json",
+      "bytes": 328752,
+      "sha256": "2a9833af2764e05a9c55137de19a4858cc6e79a6be4cf9bdd72b84e6bb9c1d72"
+    },
+    {
+      "name": "fill-ai-0128.json",
+      "bytes": 329204,
+      "sha256": "3ab982f5201359fb6be9b37a870823d2d4471ee6f50ed1fb0eef0f283bbfce56"
+    },
+    {
+      "name": "fill-ai-0144.json",
+      "bytes": 328663,
+      "sha256": "4e1b9f4c31f89f107eb78d4f38657cbe83b71811f42eb03da09599cbbc676abe"
+    },
+    {
+      "name": "fill-ai-0160.json",
+      "bytes": 226387,
+      "sha256": "ec73060e5a83a0c17c6fa834c99720ea2a50561065274c1904bec9456e976553"
+    },
+    {
+      "name": "foreground-ai-batch-0001.json",
+      "bytes": 312387,
+      "sha256": "28a5859989a21ef22297025146dba3a56a16eecb6b10a09e9d8b4f9135bfd787"
+    },
+    {
+      "name": "foreground-ai-batch-0002.json",
+      "bytes": 312144,
+      "sha256": "d20f98719b83de80cc438aac197bc640313fe17063ee9fa9047f056bdb61aad3"
+    },
+    {
+      "name": "foreground-ai-batch-0003.json",
+      "bytes": 312033,
+      "sha256": "4217942487b8979828b21b70dd3ca6aee114a5c5f94011aa60daf3ba8d148bdf"
+    },
+    {
+      "name": "foreground-ai-batch-0004.json",
+      "bytes": 311859,
+      "sha256": "157bc26a41272205e467c1b017ef7ac2990577ac1587c0213178614380e3ee03"
+    }
+  ],
+  "removedBytes": 44142618,
+  "removedFiles": 22,
+  "reason": "Full provider readback and real search recovery confirmed; preserve digests, logs and screenshots."
+}

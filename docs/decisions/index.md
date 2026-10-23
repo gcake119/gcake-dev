@@ -8,7 +8,7 @@
 
 既有視覺決策仍見 `DESIGN.md`、`docs/design-system.md` 與 `docs/blog-redesign-approved.md`，不因新增索引而重新設計。
 
-２０２６－１０－２２目前已驗收 main `d92a05b`，Worker `1ddf7f63-75bb-4f04-8d04-2d118503a77e` 與 Pages 部署 `39664907333`；[本次正式驗收](../../openspec/changes/build-article-discovery-knowledge/main58-production-acceptance-20261022.md)保存索引對齊及自然 cron 恢復證據。[前次 ecfebeb 紀錄](../../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)保留為歷史。BGE-M3、免費硬上限、啟用開關與期限未改；首次自然新增文章完整同步仍待驗收。
+２０２６－１０－２２當時已驗收 main `d92a05b`，Worker `1ddf7f63-75bb-4f04-8d04-2d118503a77e` 與 Pages 部署 `39664907333`；[本次正式驗收](../../openspec/changes/build-article-discovery-knowledge/main58-production-acceptance-20261022.md)保存索引對齊及自然 cron 恢復證據。[前次 ecfebeb 紀錄](../../openspec/changes/build-article-discovery-knowledge/source-timeout-production-acceptance-20261022.md)保留為歷史。BGE-M3、免費硬上限、啟用開關與期限未改；首次自然新增文章完整同步仍待驗收。
 
 ２０２６－１０－２２ Substack 發布驗證與 Hermes 通知修復：使用者授權將原定與實際時間差分開呈現、隔離其他草稿失敗並增加一次性成功通知。[規格與實作契約](../../openspec/changes/archive/2026-10-22-repair-substack-publication-notifications/design.md)保留原 ID／slug、新建及排程寫入停用、不重新發布或重寄訂閱者；不更動 ADR-001 的搜尋／模型／額度／cron。正式權限修復及通知 ACK 仍須另有驗收證據。
 
@@ -18,12 +18,14 @@
 
 ２０２６－１０－２３ Hermes 發布監控 `add-hermes-publication-monitor` 已完成 74／74 項並封存；[結案紀錄](../../openspec/changes/archive/2026-10-23-add-hermes-publication-monitor/closeout-20261023.md)保留 PR #64／#65 的已完成遠端審查、合併與各自 main CI 成功證據。這是來源與規格結案，原生 ACL 新版未正式安裝或新增正式資格驗收；舊 PermissionError 根因仍未知。新建及排程寫入維持停用，不改 timer、不重送通知；訂閱者監控依使用者決定停止，排程試行 5.3 保持未完成。ADR-001 與既有權限政策不變。
 
-２０２６－１０－２３ [add-article-sharing](../../openspec/changes/add-article-sharing/design.md)：文章正文後、延伸閱讀前提供複製及裝置支援時的原生分享。分享使用新部落格正式閱讀網址，與內容權威 canonical 分開；鐵人賽 canonical、Open Graph URL、原始版本連結保持舊站政策，接受平台可能依舊站 metadata 顯示預覽。沿用既有雙主題、鍵盤焦點與４４px 控制，不加平台 SDK、追蹤、登入或後端。複製成功、系統分享完成、實際發文／送達與人工驗收各自需要證據。[本機驗證紀錄](../../openspec/changes/add-article-sharing/local-verification.md)不構成部署或平台送達驗收；ADR-001 不受影響，無須新增 ADR。
+２０２６－１０－２３ [add-article-sharing](../../openspec/changes/archive/2026-10-23-add-article-sharing/design.md)：文章正文後、延伸閱讀前提供複製及裝置支援時的原生分享。分享使用新部落格正式閱讀網址，與內容權威 canonical 分開；鐵人賽 canonical、Open Graph URL、原始版本連結保持舊站政策，接受平台可能依舊站 metadata 顯示預覽。沿用既有雙主題、鍵盤焦點與４４px 控制，不加平台 SDK、追蹤、登入或後端。複製成功、系統分享完成、實際發文／送達與人工驗收各自需要證據。[本機驗證紀錄](../../openspec/changes/archive/2026-10-23-add-article-sharing/local-verification.md)不構成部署或平台送達驗收；ADR-001 不受影響，無須新增 ADR。
 
-２０２６－１０－２３ 使用者修訂同一變更：僅保留「分享文章」，使用 SVG 圖示加可見文字；移除獨立複製按鈕及剪貼簿操作。不支援或分享失敗時顯示完整網址供手動複製，取消保持中性。本修訂取代上一段的雙按鈕政策，網址、canonical／OG 所有權及外部操作邊界維持；驗證見 [單一分享按鈕紀錄](../../openspec/changes/add-article-sharing/single-share-verification.md)。
+２０２６－１０－２３ 使用者修訂同一變更：僅保留「分享文章」，使用 SVG 圖示加可見文字；移除獨立複製按鈕及剪貼簿操作。不支援或分享失敗時顯示完整網址供手動複製，取消保持中性。本修訂取代上一段的雙按鈕政策，網址、canonical／OG 所有權及外部操作邊界維持；驗證見 [單一分享按鈕紀錄](../../openspec/changes/archive/2026-10-23-add-article-sharing/single-share-verification.md)。
 
 ２０２６－１０－２３ 最終文案採「分享這篇文章」＋SVG。使用者已確認介面可接受、真實選單開啟及取消正常；僅授權完成驗證、提交與建立 PR，不合併或部署。人工回報與自動 payload／復原測試分別保存於本變更的 PR 驗證紀錄，不推定平台送達。
 
-２０２６－１０－２３ 使用者核准完整篇尾版面及公開站字級，後續僅授權更新 Spectra、實作、驗證與本機預覽，取代上一輪提交／PR 的執行範圍。新順序為接著讀（系列下一篇優先、前篇／系列集中、既有推薦合併去重）→分享→訂閱→收合參考與引用。推薦上限有下一篇為２、否則３；沒有公開下一篇不等於完結。不改排名、正文、canonical／OG 或首頁訂閱；[規格](../../openspec/changes/add-article-sharing/specs/article-ending/spec.md)與[本機紀錄](../../openspec/changes/add-article-sharing/reading-ending-verification.md)分別保存。沒有 commit、push、PR 或部署。
+２０２６－１０－２３ 使用者核准完整篇尾版面及公開站字級，後續僅授權更新 Spectra、實作、驗證與本機預覽，取代上一輪提交／PR 的執行範圍。新順序為接著讀（系列下一篇優先、前篇／系列集中、既有推薦合併去重）→分享→訂閱→收合參考與引用。推薦上限有下一篇為２、否則３；沒有公開下一篇不等於完結。不改排名、正文、canonical／OG 或首頁訂閱；[規格](../../openspec/changes/archive/2026-10-23-add-article-sharing/specs/article-ending/spec.md)與[本機紀錄](../../openspec/changes/archive/2026-10-23-add-article-sharing/reading-ending-verification.md)分別保存。沒有 commit、push、PR 或部署。
 
-２０２６－１０－２３ 使用者確認實際閱讀優先新版，重新授權完整提交前驗證、提交與建立 PR，取代上一輪僅本機的執行限制；仍不合併或部署。[提交前驗證](../../openspec/changes/add-article-sharing/pre-pr-verification.md)保存完整 gate、舊版面斷言修正及人工驗收界線。不改 ADR-001、canonical／OG、正文、provider 或正式排程權限。
+２０２６－１０－２３ 使用者確認實際閱讀優先新版，重新授權完整提交前驗證、提交與建立 PR，取代上一輪僅本機的執行限制；仍不合併或部署。[提交前驗證](../../openspec/changes/archive/2026-10-23-add-article-sharing/pre-pr-verification.md)保存完整 gate、舊版面斷言修正及人工驗收界線。不改 ADR-001、canonical／OG、正文、provider 或正式排程權限。
+
+２０２６－１０－２３ 後續已依明確授權合併 PR ＃６７，main `30ac964` 的 CI 及 Pages 部署 `39960141344` 通過；再依另一筆正式 D1／Vectorize 寫入授權，重用２，６８８筆、補齊２６７段、完整讀回２，９５５筆後由自然 cron 提升，正式語意搜尋恢復。詳見[部署與正式驗收](../../openspec/changes/archive/2026-10-23-add-article-sharing/production-acceptance-20261023.md)。本次完成 `add-article-sharing` 封存及兩份正式規格同步，只提交並建立封存 PR，不合併或再次部署；ADR-001、Worker／排程、零付費超額及原證據期限不變，無新 ADR。另一變更的歷史 RED 與首次自然新增文章全程同步仍待驗收。

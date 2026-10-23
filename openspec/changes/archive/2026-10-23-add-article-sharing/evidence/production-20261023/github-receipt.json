@@ -1,0 +1,44 @@
+{
+  "pr": 67,
+  "url": "https://github.com/gcake119/gcake-dev/pull/67",
+  "head": "430affbe7980726313c5405c3ef02242acbd0b51",
+  "merge": "30ac9643baab718a7690bbea5af22658832cb616",
+  "mergedAt": "2026-10-23T13:14:45Z",
+  "review": {
+    "url": "https://github.com/gcake119/gcake-dev/pull/67#issuecomment-6365640314",
+    "updatedAt": "2026-10-23T13:11:02Z",
+    "code_review": {
+      "commit_sha": "430affbe7980726313c5405c3ef02242acbd0b51",
+      "has_any_findings": false,
+      "has_unresolved_findings": false,
+      "status": "completed"
+    },
+    "security_review": {
+      "commit_sha": null,
+      "has_any_findings": null,
+      "has_unresolved_findings": null,
+      "status": null
+    }
+  },
+  "runs": [
+    {
+      "id": 39958933774,
+      "head": "430affbe7980726313c5405c3ef02242acbd0b51",
+      "purpose": "PR CI",
+      "conclusion": "success"
+    },
+    {
+      "id": 39959610473,
+      "head": "30ac9643baab718a7690bbea5af22658832cb616",
+      "purpose": "main CI",
+      "conclusion": "success"
+    },
+    {
+      "id": 39960141344,
+      "head": "30ac9643baab718a7690bbea5af22658832cb616",
+      "purpose": "Pages deployment",
+      "conclusion": "success"
+    }
+  ],
+  "verification": "Read-only GitHub PR, review-summary and workflow metadata rechecked during documentation closeout; no workflow rerun."
+}

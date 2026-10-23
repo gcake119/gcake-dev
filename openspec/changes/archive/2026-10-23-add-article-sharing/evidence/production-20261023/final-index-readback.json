@@ -1,0 +1,187 @@
+{
+  "at": "2026-10-23T14:04:51.780738+00:00",
+  "sourceCommit": "30ac9643baab718a7690bbea5af22658832cb616",
+  "currentCorpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "workerDeploymentUnchanged": true,
+  "settingsUnchanged": true,
+  "schedulesUnchanged": true,
+  "policyOnlyActiveCorpusChanged": true,
+  "model": "@cf/baai/bge-m3",
+  "modelConfig": "cloudflare:@cf/baai/bge-m3:plain:1024:cosine:bytes4096:v1",
+  "limits": {
+    "requests": 500,
+    "tokens": 2000000,
+    "units": 8000,
+    "vectorQueries": 500,
+    "storage": 4000000,
+    "worker": 10000,
+    "admission": 80000
+  },
+  "paidOverage": 0,
+  "evidenceValidUntil": "2026-11-20T00:00:00Z",
+  "index": {
+    "dimensions": 1024,
+    "vectorCount": 2955,
+    "processedUpToDatetime": "2026-10-23T13:56:34.229Z",
+    "processedUpToMutation": "b66745e6-10d6-45fa-8d96-be38a8b0cbe5"
+  },
+  "syncState": {
+    "id": 1,
+    "owner": null,
+    "leaseUntil": 0,
+    "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+    "previousCorpusId": "2574ea8ee01e6eb02dea51672d437b83e5922ba2b9b159bc4c4b132f267f64fa",
+    "cursor": 2955,
+    "status": "no_change",
+    "detail": "",
+    "updated": 1792764270884
+  },
+  "pending": 0,
+  "embeddingReservations": {
+    "batches": 17,
+    "passages": 267,
+    "tokensReserved": 48459,
+    "unitsReserved": 52.093424999999996,
+    "storageReserved": 273408
+  },
+  "dailyWindows": [
+    {
+      "window": "2026-10-21",
+      "verifiedUntil": 1792627200000,
+      "requests": 280,
+      "tokens": 1702100,
+      "units": 7678.757496999997,
+      "vectorQueries": 467,
+      "worker": 9467,
+      "admission": 35860,
+      "storage": 1285376
+    },
+    {
+      "window": "2026-10-22",
+      "verifiedUntil": 1792713600000,
+      "requests": 439,
+      "tokens": 1992657,
+      "units": 7992.106275,
+      "vectorQueries": 494,
+      "worker": 8562,
+      "admission": 6340,
+      "storage": 3943680
+    },
+    {
+      "window": "2026-10-23",
+      "verifiedUntil": 1792800000000,
+      "requests": 230,
+      "tokens": 1951495,
+      "units": 7947.8571249999995,
+      "vectorQueries": 497,
+      "worker": 9132,
+      "admission": 24956,
+      "storage": 3726592
+    }
+  ],
+  "dailyCreditNeverReplenished": true,
+  "receipts": [
+    {
+      "id": 2780,
+      "created": 1792764270884,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2779,
+      "created": 1792764210554,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2778,
+      "created": 1792764152462,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2777,
+      "created": 1792764091000,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2776,
+      "created": 1792764031926,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2775,
+      "created": 1792764001052,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2774,
+      "created": 1792763971323,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "promoted",
+      "detail": "Complete provider readback; current public release"
+    },
+    {
+      "id": 2773,
+      "created": 1792763853415,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "verified",
+      "detail": "16 complete vectors"
+    },
+    {
+      "id": 2772,
+      "created": 1792763794572,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "uploaded",
+      "detail": "0 embeddings; 16 reused"
+    },
+    {
+      "id": 2771,
+      "created": 1792763562889,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "awaiting_readback",
+      "detail": ""
+    }
+  ],
+  "independentNoChangeReceipts": [
+    {
+      "id": 2780,
+      "created": 1792764270884,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2779,
+      "created": 1792764210554,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2778,
+      "created": 1792764152462,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    },
+    {
+      "id": 2777,
+      "created": 1792764091000,
+      "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+      "status": "no_change",
+      "detail": ""
+    }
+  ],
+  "gitStatus": "M AGENTS.md\n?? output/",
+  "billingInvoiceRead": "unavailable: connector lacks Billing Read; no invoice amount inferred"
+}

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/output/article-sharing/production-20261023/final-index-readback.py", line 10, in <module>
+    state=sql('SELECT * FROM discovery_sync')[0]['results'][0];pending=sql('SELECT count(*) n FROM discovery_sync_pending')[0]['results'][0]['n'];assert not state['owner'] and state['leaseUntil']==0 and pending==0 and state['corpusId']==target
+                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

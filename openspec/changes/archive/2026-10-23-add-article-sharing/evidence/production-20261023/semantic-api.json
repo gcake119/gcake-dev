@@ -1,0 +1,147 @@
+{
+  "at": "2026-10-23T14:00:55.826236+00:00",
+  "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "status": 200,
+  "elapsedSeconds": 3.7724917090381496,
+  "body": {
+    "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+    "mode": "hybrid",
+    "total": 36,
+    "page": 1,
+    "hasMore": true,
+    "candidateLimited": false,
+    "results": [
+      {
+        "articleId": "ithome:day-24",
+        "title": "Day 24｜我不逐行讀程式碼，那我要怎麼知道 AI 做對了？",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-24/#%E6%88%91%E7%8F%BE%E5%9C%A8%E5%BB%BA%E7%AB%8B%E7%9A%84%E6%98%AF%E4%BF%A1%E4%BB%BB%E4%B8%8D%E6%98%AF%E5%AE%8C%E5%85%A8%E7%A2%BA%E5%AE%9A",
+        "excerpt": "我不用讀程式碼，也可以百分之百確定實作正確。 我目前做不到這件事。",
+        "passageId": "5983ac41ef85e34effc9f2c930a214d3",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "ai-assisted-development",
+          "testing-verification"
+        ],
+        "score": 0.03278688524590164
+      },
+      {
+        "articleId": "ithome:day-23",
+        "title": "Day 23｜我已經能沿著系統思考，卻還不能沿著程式碼追問題",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-23/#%E9%80%99%E8%AE%93-day-1-%E7%9A%84%E6%94%B9%E4%B8%8D%E5%8B%95%E5%A4%9A%E4%BA%86%E4%B8%80%E5%B1%A4%E6%96%B0%E7%9A%84%E6%AF%94%E8%BC%83",
+        "excerpt": "如果我還不能自己沿著程式碼確認完整實作，那 Codex 說「做完了」之後： 我到底憑什麼相信它真的做對了？",
+        "passageId": "9d7ab7408cca310de85b09b1c5ba0cfd",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "developer-learning",
+          "system-design"
+        ],
+        "score": 0.03128054740957967
+      },
+      {
+        "articleId": "ithome:day-26",
+        "title": "Day 26｜功能做對了，實作方式也對嗎？",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-26/#%E7%AC%AC%E4%B8%80%E5%80%8B%E8%A6%81%E7%9C%8B%E7%9A%84%E6%98%AF%E6%9C%89%E6%B2%92%E6%9C%89%E7%85%A7%E5%8E%9F%E6%9C%AC%E7%9A%84%E8%A8%AD%E8%A8%88%E5%81%9A",
+        "excerpt": "而是： 程式最後是不是照著前面確認過的方式做。",
+        "passageId": "c1218be635a03cc544fe3c6ce6c6f51d",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "ai-assisted-development",
+          "system-design",
+          "testing-verification"
+        ],
+        "score": 0.03057889822595705
+      },
+      {
+        "articleId": "ithome:day-30",
+        "title": "Day 30｜AI 都會寫程式了，Coding 到底要懂多深？",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-30/#%E5%85%A9%E5%80%8B%E6%A5%B5%E7%AB%AF%E7%9B%AE%E5%89%8D%E7%9A%84%E7%B6%93%E9%A9%97%E9%83%BD%E4%B8%8D%E8%B6%B3%E4%BB%A5%E6%94%AF%E6%8C%81",
+        "excerpt": "需要能獨立判斷某一段實作是否合理嗎？ 還是有些地方需要我自己進到程式碼裡確認，有些則可以繼續依賴 Agent？",
+        "passageId": "1beda3fe6ae16b6ddbe460b1499ed0d9",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "ai-assisted-development",
+          "developer-learning"
+        ],
+        "score": 0.03055037313432836
+      },
+      {
+        "articleId": "ithome:day-28",
+        "title": "Day 28｜做產品之前，我現在會先看人怎麼工作",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-28/",
+        "excerpt": "前幾篇一直在整理功能做出來之後，我怎麼確認它有沒有做對。",
+        "passageId": "6d3a5d8430c72f12a61a4baf2fcea539",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "developer-learning",
+          "product-development"
+        ],
+        "score": 0.02964254577157803
+      },
+      {
+        "articleId": "ithome:day-21",
+        "title": "Day 21｜我幾乎不讀程式碼，那我是怎麼理解系統的？",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-21/#codex-%E5%AF%AB%E5%AE%8C%E4%B9%8B%E5%BE%8C%E6%88%91%E9%82%84%E6%98%AF%E6%9C%83%E8%BF%BD%E5%95%8F%E7%82%BA%E4%BB%80%E9%BA%BC",
+        "excerpt": "真正開始 Coding 之後，我通常不會跟著逐行看。 如果出了 bug，也大多先讓 Codex 去定位。",
+        "passageId": "8d1c2be657e79a2655d5a10df7707851",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "ai-assisted-development",
+          "developer-learning",
+          "system-design"
+        ],
+        "score": 0.02758751902587519
+      },
+      {
+        "articleId": "ithome:day-25",
+        "title": "Day 25｜用測試約束 AI 改程式",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-25/#%E9%80%99%E5%B0%8D%E5%A4%A7%E9%87%8F%E4%BD%BF%E7%94%A8-agent-%E7%9A%84%E9%96%8B%E7%99%BC%E6%96%B9%E5%BC%8F%E7%89%B9%E5%88%A5%E9%87%8D%E8%A6%81",
+        "excerpt": "我平常很少逐行看 Codex 修改了哪些程式，也不會人工比對每一次 patch。",
+        "passageId": "4fd0af151f4311be9cbbaf10c800ea75",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "ai-assisted-development",
+          "testing-verification"
+        ],
+        "score": 0.027056277056277056
+      },
+      {
+        "articleId": "ithome:day-10",
+        "title": "Day 10｜我以為功能做完，產品就完成了",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-10/#%E6%88%91%E7%95%B6%E6%99%82%E6%80%8E%E9%BA%BC%E5%88%A4%E6%96%B7%E5%81%9A%E5%AE%8C%E4%BA%86",
+        "excerpt": "那時候我檢查一個功能，通常會看幾件事情： 流程能不能跑完？",
+        "passageId": "61e34a44cb0179b7c44f72aa4214fd67",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "product-development",
+          "testing-verification"
+        ],
+        "score": 0.02564935064935065
+      },
+      {
+        "articleId": "ithome:day-07",
+        "title": "Day 7｜一句「平常都這樣做」，後面藏了多少事情？",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-07/#%E4%B8%80%E5%8F%A5%E5%89%8D%E4%B8%80%E5%A4%A9%E6%8F%90%E9%86%92%E5%85%B6%E5%AF%A6%E5%B7%B2%E7%B6%93%E8%97%8F%E4%BA%86%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85",
+        "excerpt": "對熟悉工作的人來說，這些都不用特別說。 但程式不會自己補完。",
+        "passageId": "5469e56d5c83a5f50755d0d208b5000f",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "product-development"
+        ],
+        "score": 0.02548701298701299
+      },
+      {
+        "articleId": "ithome:day-09",
+        "title": "Day 9｜系統知道怎麼做，不代表使用者就該這樣做",
+        "readingHref": "/gcake-dev/series/ithome-2026/day-09/#%E6%88%91%E9%96%8B%E5%A7%8B%E5%A4%9A%E5%95%8F%E4%B8%80%E5%80%8B%E5%95%8F%E9%A1%8C",
+        "excerpt": "流程有沒有跑完？ 條件有沒有判斷正確？",
+        "passageId": "c4378568b4db66502ef6f172c5e83bbd",
+        "series": "AI 都會寫程式了，我還要學什麼？——從「做得出來」到學會開發的 30 天",
+        "topics": [
+          "product-development",
+          "system-design"
+        ],
+        "score": 0.025383141762452106
+      }
+    ]
+  }
+}

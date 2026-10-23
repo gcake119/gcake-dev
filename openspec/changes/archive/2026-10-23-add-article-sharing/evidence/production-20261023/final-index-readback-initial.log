@@ -1,0 +1,2 @@
+{"activeCorpus": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5", "vectors": 2955, "pending": 0, "embedding": {"batches": 17, "passages": 267, "tokensReserved": 48459, "unitsReserved": 52.093424999999996, "storageReserved": 273408}, "independentCron": 0, "workerAndScheduleUnchanged": true}
+Waiting for an independent natural no_change receipt; verification snapshot saved.

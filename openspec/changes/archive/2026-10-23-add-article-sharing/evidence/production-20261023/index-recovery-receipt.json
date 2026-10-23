@@ -1,0 +1,48 @@
+{
+  "completedAt": "2026-10-23T14:06:49.076831+00:00",
+  "authorization": "User explicitly authorized production D1/Vectorize reuse, missing-passage enrichment, full readback, index switch and real semantic recovery; zero paid overage, no Worker/schedule changes.",
+  "sourceCommit": "30ac9643baab718a7690bbea5af22658832cb616",
+  "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+  "reusedVectors": 2688,
+  "newPassages": 267,
+  "embeddingBatches": 17,
+  "totalVerifiedVectors": 2955,
+  "dimensions": 1024,
+  "policyOnlyActiveCorpusChanged": true,
+  "workerDeploymentAndSettingsUnchanged": true,
+  "schedulesUnchanged": true,
+  "dailyCreditsNeverReplenished": true,
+  "paidOverageLimit": 0,
+  "pending": 0,
+  "independentNaturalReceipts": [
+    2780,
+    2779,
+    2778,
+    2777
+  ],
+  "apiStatus": 200,
+  "apiMode": "hybrid",
+  "browserVerified": true,
+  "cleanup": {
+    "removedFiles": 22,
+    "removedBytes": 44142618
+  },
+  "evidenceSha256": {
+    "index-alignment.json": "b19620023838b8d073857b3e47c53ed85583ccc8b143a4e773766985720b204b",
+    "foreground-fill.json": "ef8a11ba981e321bd3296a9ae556e91d7c51c94eefcf0e343de8ddefc12f6462",
+    "complete-readback.json": "fc661f805ecb136f14cac28ead97ffc331cee973a917473e8990aa0063a070bb",
+    "final-index-readback.json": "06fbe3b1da7fb34c0305c7fa51ba9e1a850ab72bfe8013bcebef1dc362f59cb9",
+    "semantic-api.json": "252e20fbd0689f938adcb1ebd68d4034d245f9ea270d3a8b39048b593f7552ac",
+    "semantic-restored.json": "5a0af85d7bf102fdec68d418936a395eb1873864190319e10104fb2aeb3ddbea",
+    "temporary-vector-cleanup.json": "254f1624f859e28ddcb171897f29f7f296ec52908914927508dbf64df9231ba5"
+  },
+  "billingInvoice": "Not read: OAuth lacks Billing Read. No invoice amount is inferred from policy or reservation counters.",
+  "promotionReceipt": {
+    "id": 2774,
+    "created": 1792763971323,
+    "corpusId": "aefe3aff5eb302a1e8bba18b7b224ed15bdaa15f4d646cc2f81855228cc840a5",
+    "status": "promoted",
+    "detail": "Complete provider readback; current public release"
+  },
+  "fullReadbackBeforePromotion": true
+}
