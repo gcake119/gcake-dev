@@ -206,6 +206,11 @@ Chrome 候選介面以正式同源 GET API 讀取六篇列表與原 ID 221099415
 此查詢只有 D1 SELECT，沒有 ingest、重新驗證、發布或 provider 存取。未發布稿仍顯示無紀錄；多個有效身分與讀取失敗維持 503，不當成空清單。Substack 兩個唯讀 API 與同步／發布／寄送三狀態維持原契約，新建仍停用。詳見 [Pages 現行紀錄正式驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/pages-current-20261020.md)。
 
 
+## main 執行者收尾（2026／10／20）
+
+本節保存 2026／10／20 當時的驗收：正式後台 c65baef6 與當時 main 的 API／介面程式及資產相同，該次直接核對實際 Chrome GET／200／no-store、三種狀態與 390px 畫面，沒有重複部署。背景執行者已接上 PR41～43 修正，新 pin 1a07ebc2 的第 43 次自然輪次通過六篇盤點、兩篇完整 Saved 讀回，零內容寫入；原 ID／slug 與既有排程／寄送承諾不變，新建及排程寫入仍停用。原稿 221099415 最新查核為台北 15：45，另一草稿 221099763 為 15：49，真人實收仍未知。詳見 [正式收尾驗收](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/main-closeout-20261020.md)。排程試行 5.3 另待 10／22 既定時點後唯讀驗收，不因本次草稿封存提前完成。
+
+
 ## 草稿同步結案與後續保存狀態（2026／10／20）
 
 草稿同步 change 已歸檔；03：38 正式部署驗收的 221099763「驗證未完成」保留。後續唯讀 API 保存查核時間台北 16：56：48.056 已為 verified，仍是草稿、未安排寄送、真人實收未知。這是不同時間的證據，不回寫舊驗收，也不代表本次重驗 provider。現行安裝與既有資格連結盤點見 [結案紀錄](../openspec/changes/archive/2026-10-20-automate-substack-draft-content-sync/closeout-20261020.md)。新建與排程寫入仍關閉，排程真實公開驗收 5.3 尚未完成。

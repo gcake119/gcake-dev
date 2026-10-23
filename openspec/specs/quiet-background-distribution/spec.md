@@ -67,6 +67,14 @@ Anonymous observer background work SHALL read only fixed Git snapshots, durable 
 - **WHEN** an ordinary round sees a new draft or changed source
 - **THEN** existing foreground preparation and reconciliation attention remains available without authenticated access or a new timer
 
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->
+
 ---
 ### Requirement: Preserve evidence and scheduling
 
@@ -317,3 +325,10 @@ The worker and observer SHALL reuse the existing timer, locks, attention produce
 - **GIVEN** draft content has been verified but an unknown schedule intent or identity hold remains
 - **WHEN** a completed worker result updates attention
 - **THEN** only the resolved draft issue clears and the independent unresolved issue remains visible through existing deduplication
+
+<!-- @trace
+source: automate-substack-draft-content-sync
+updated: 2026-10-20
+code:
+  - docs/substack-draft-sync-api.md
+-->

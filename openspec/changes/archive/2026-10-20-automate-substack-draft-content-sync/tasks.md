@@ -151,3 +151,10 @@ The phase 20 private runtime acceptance predates this clean-main assembly. Its p
 
 - [x] 23.1 Record the authorized clean main rollout version/deployment/time/traffic and real API, status UI, saved Pages evidence and desktop/mobile light/dark acceptance, preserving existing configuration, provider commitments and exact-source local/CI evidence boundaries. Retain 221099763 inconclusive/list-incomplete status, historical prior verified state and unknown recipient receipt without claiming a successful current full-content verification.
 - [x] 23.2 Backfill project API guidance, implementation evidence and acceptance mapping with redacted deployment evidence; validate documentation/spec consistency and isolate a documentation-only commit. No requirement/Gherkin changes, Admin archive, code/config/runtime changes, push, new deployment or schedule/delivery activation. This task records the completed historical rollout; it grants no new production authority.
+
+
+## 24. Authorized main production closeout — 2026-10-20
+
+- [x] 24.1 Verify latest main and existing production deployment, reuse exact-source local/CI evidence, compare actual assets/bindings and complete current Chrome authenticated list/detail/refresh presentation without redundant identical deployment or provider mutation.
+- [x] 24.2 Fully reload original ID 221099415 with the merged executor, back up and upgrade only qualified runtime sources/pin/receipt linkage under the existing lock, preserve configuration/expiry/timer and disabled creation, then pass one natural full inventory round with complete content, immutable commitments and owned-resource cleanup. Keep historical media qualification distinct from this unchanged-content read.
+- [x] 24.3 Record exact production/runtime/natural evidence, validate and preview delta-spec synchronization, prepare this completed draft-only change for archive and archive only the clean merged managed worktree; preserve mixed dirty worktrees and backups. Keep scheduling change task 5.3 incomplete until the future actual provider run; arrange a quiet read-only follow-up without changing its schedule or initiating publication/delivery.
