@@ -1,0 +1,18 @@
+{
+  "src/components/ArticleReading.astro": "27f379b5b84c944a3b502f3c9c211cda8c5b6ac49333e4e8274098980c4764fd",
+  "src/components/ArticleConnections.astro": "163ccc738a910de6b3cbad37f28e236e29093f0c5ccbd3e74fb8575f8215ae5c",
+  "src/components/ArticleShare.astro": "0b11b77b4feeab8dc99f1c10683b1dcc36b61430e389ed7d967842bed54c44ab",
+  "src/components/Subscription.astro": "fea5e5911df12d0d5141ae1be87b3387b8486186601f1fa6ecc2a77f695764e8",
+  "src/components/Icon.astro": "44c7b45b090cfe9307fce1b2125c45c7c7d91b3a1fefb076b5f37b423da4ec37",
+  "src/components/icon-paths.ts": "eda03e260c9a1e357dd9ae779279e629bec0607348ffedbde831b72c1b17e330",
+  "src/lib/discovery/article-ending.ts": "6227c1a82fa04cc94107c98a11b092800bacf1794d38bb82c27ffc06a77f2d9c",
+  "src/lib/sharing/article-share.ts": "7e17c7b02176c10bec0bdd11de841a24bb8f1bf613fdf6c8e85517fe61bed2ca",
+  "src/pages/posts/[...slug].astro": "775ce4fee094f59191283858c13eaac4554f42fb187804a29e2bc8889d6152e9",
+  "src/pages/series/ithome-2026/[post].astro": "363714ff627db3b4d144bf29a774efb7e876bb0f2ca8b6aee177b45f1faffc38",
+  "src/styles/global.css": "87643e5747a4ce988d06f6af138dbe9e9714e92cf63adcca151a4b55a0892e6a",
+  "package.json": "1bb9d35a1561ab9b29f6033fc4a0d47b59db4efcd3a5ad5f3836c62ac4f4ef36",
+  "pnpm-lock.yaml": "40450f86ad225b37cc910e89080af12123007b427dbb9983e545dea3924d509d",
+  "test/article-ending.acceptance.test.ts": "6f449da68a5a67aee1134faefe2cb2cabbccca68c8d90afb7c246750c9094d85",
+  "test/article-sharing.acceptance.test.ts": "25b53bfffd999429624641cd780a0a69534adfa71c110e9658b1ee2072b001ab",
+  "test/article-sharing.rendered.test.ts": "576641692f27f67ca1b0953956da6c80b4d41c77fd31effeb1f43c1527092f84"
+}

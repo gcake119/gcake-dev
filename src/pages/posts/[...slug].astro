@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SeriesNavigation from '@/components/SeriesNavigation.astro';
+import ArticleReading from '@/components/ArticleReading.astro';
+import ArticleShare from '@/components/ArticleShare.astro';
 import ArticleConnections from '@/components/ArticleConnections.astro';
 import Subscription from '@/components/Subscription.astro';
 import { getCollection, render } from 'astro:content';
@@ -78,11 +80,9 @@ const structuredData = [
     </header>
     {toc.length > 0 && <details class="reading-toc"><summary>本篇目錄</summary><ol>{toc.map(h => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></details>}
     <div class="prose"><Content /></div>
-    <ArticleConnections articleId={`local:${post.id}`} placement="further" />
-    <Subscription compact />
-    {(previous || next) && <nav class="article-pagination" aria-label="系列文章導覽">{previous ? <a href={previous.href}><small>上一篇</small><strong>{previous.title}</strong></a> : <span />}{next && <a href={next.href}><small>下一篇</small><strong>{next.title}</strong></a>}</nav>}
-    <ArticleConnections articleId={`local:${post.id}`} placement="related" />
-    <ArticleConnections articleId={`local:${post.id}`} placement="references" />
-    {series && <a class="text-link" href={`${site.basePath}/series/${series.slug}/`}>返回系列總覽 →</a>}
+    <ArticleReading articleId={`local:${post.id}`} series={series} previous={previous} next={next} />
+    <ArticleShare title={post.data.title} url={canonical} />
+    <Subscription compact ending />
+    <ArticleConnections articleId={`local:${post.id}`} placement="references" ending />
   </article>
 </BaseLayout>

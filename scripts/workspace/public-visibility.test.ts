@@ -39,7 +39,9 @@ test('catalog-derived RSS, search, navigation, and series outputs cannot bypass 
   }
 });
 
-test('public post pages derive series membership from manifests and hide sequence UI for standalone posts', async () => {
+// Architecture contract; visible standalone/series navigation is checked in
+// test/article-sharing.rendered.test.ts after the public build.
+test('public post pages derive series membership from manifests', async () => {
   const catalog = await source('src/lib/content/catalog.ts');
   const membership = await source('src/lib/content/series-membership.ts');
   const page = await source('src/pages/posts/[...slug].astro');
@@ -48,8 +50,6 @@ test('public post pages derive series membership from manifests and hide sequenc
   assert.match(catalog, /seriesMembership/);
   assert.match(membership, /membership\.set\(post\.slug, manifest\.slug\)/);
   assert.match(page, /allSeries\.find\(.*articles\.some/);
-  assert.match(page, /\{series && <><p class="article-breadcrumb"/);
-  assert.match(page, /\{\(previous \|\| next\) && <nav class="article-pagination"/);
 });
 
 test('public article pages emit shared structured data', async () => {

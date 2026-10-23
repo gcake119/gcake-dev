@@ -1,0 +1,22 @@
+---
+import Icon from './Icon.astro';
+interface Props { title: string; url: string }
+const { title, url } = Astro.props;
+---
+<section class="article-share" aria-label="分享這篇文章" data-article-share data-title={title} data-url={url}>
+  <div class="article-share__row">
+    <p>這篇文章對你有幫助嗎？</p>
+  <div class="article-share__actions" data-share-actions hidden>
+    <button type="button" class="text-link" data-share hidden><Icon name="share" /><span>分享這篇文章</span></button>
+  </div>
+  </div>
+  <p class="article-share__status" role="status" aria-live="polite" aria-atomic="true" data-share-status></p>
+  <label class="article-share__recovery" data-share-recovery hidden>文章連結
+    <input type="text" aria-label="可手動複製的文章連結" readonly value={url} />
+  </label>
+  <noscript><label class="article-share__recovery">文章連結（請手動複製）<input type="text" aria-label="可手動複製的文章連結" readonly value={url} /></label></noscript>
+</section>
+<script>
+  import { initArticleShare } from '../lib/sharing/article-share';
+  document.querySelectorAll<HTMLElement>('[data-article-share]').forEach(root => initArticleShare(root));
+</script>

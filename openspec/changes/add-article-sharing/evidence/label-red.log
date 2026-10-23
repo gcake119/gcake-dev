@@ -1,0 +1,32 @@
+TAP version 13
+# Subtest: built public articles have one group immediately after prose with reading URL and unchanged ownership
+not ok 1 - built public articles have one group immediately after prose with reading URL and unchanged ownership
+  ---
+  duration_ms: 19.110459
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/article-sharing.rendered.test.ts:1:500'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    '分享文章' !== '分享這篇文章'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '分享這篇文章'
+  actual: '分享文章'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/article-sharing.rendered.test.ts:24:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 457.427875
