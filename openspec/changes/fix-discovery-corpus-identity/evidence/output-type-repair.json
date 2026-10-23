@@ -1,0 +1,12 @@
+{
+  "output/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts": {
+    "beforeSha256": "62916d63c43f372091118f59e80d120ebe7ce4b928c93cfcaa4e5abc75798814",
+    "preservedOriginal": "openspec/changes/fix-discovery-corpus-identity/evidence/cloud-evaluate.before-gate-repair.txt",
+    "afterSha256": "1e9af1940253f0c4adea19c8607df9644b4b4381a1bc195de732e00ab2c7ea4d"
+  },
+  "output/discovery/source-download-fix-20261022/local-source-smoke.ts": {
+    "beforeSha256": "2f58b190dca640df19ab883446ab96d8267aefb3cd64ebc4e5dfb1f573d374ee",
+    "preservedOriginal": "openspec/changes/fix-discovery-corpus-identity/evidence/local-source-smoke.before-gate-repair.txt",
+    "afterSha256": "11f1d4fdbc3895c9606d429c56d8843930c8755d3aaa7461bd140660c4c4b39a"
+  }
+}

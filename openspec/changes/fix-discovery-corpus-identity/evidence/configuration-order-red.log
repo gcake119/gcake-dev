@@ -1,0 +1,36 @@
+TAP version 13
+# Subtest: Configuration object key order cannot change otherwise identical search content
+not ok 1 - Configuration object key order cannot change otherwise identical search content
+  ---
+  duration_ms: 17.456667
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:1:19476'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + '62f02822d909a1238d114a8e222cae7de8dfde2732a9e3d1a62440ffa1294d4a'
+    - '944c18eb1985106efcc2fc417dfb6d7d58a990c027c2f5eaaca8b0ebc37bdd9a'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '944c18eb1985106efcc2fc417dfb6d7d58a990c027c2f5eaaca8b0ebc37bdd9a'
+  actual: '62f02822d909a1238d114a8e222cae7de8dfde2732a9e3d1a62440ffa1294d4a'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:232:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 288.524667

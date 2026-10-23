@@ -1,0 +1,16 @@
+import {writeFile} from 'node:fs/promises';
+import {deployedReader,deployedManifest,manifestUrl} from '/private/tmp/gcake-pr51-cloud-20261021/apps/search-worker/src/deployed.ts';
+import {createSearchService,approvedModel,type SearchPolicy} from '/private/tmp/gcake-pr51-cloud-20261021/apps/search-worker/src/service.ts';
+import {MemoryAdmission} from '/private/tmp/gcake-pr51-cloud-20261021/apps/search-worker/src/admission.ts';
+const start=performance.now(),events:unknown[]=[];
+const fetcher:typeof fetch=async(input,init)=>{const response=await fetch(input,init);events.push({asset:String(input).split('/').pop(),headersMs:performance.now()-start,status:response.status});return response;};
+const current=await deployedManifest(fetcher)(new AbortController().signal);
+const policy:SearchPolicy={enabled:true,activeCorpusId:current.corpusId,model:approvedModel,modelConfig:'offline-smoke',dimensions:1024,format:'plain',inputLimit:4096,billing:{model:approvedModel,id:'offline-only',validUntil:'2099-01-01',rate:1075/1e6,freeVerified:true,noChargeBoundary:true,account:'offline-only',providerResetVerified:true,windowId:new Date().toISOString().slice(0,10),services:['embedding','vector-query','vector-storage','worker','admission']},limits:{requests:10,tokens:10000,units:100,vectorQueries:10,storage:4000000,worker:100,admission:100},paidOverage:0,throttleSecret:'offline-only',qualityVerified:true,providerInputVerified:true};
+let modelFixtures=0,vectorFixtures=0,sourceMs=0,articles=0,passages=0;
+const read=deployedReader(fetcher);
+const service=createSearchService({policy,admission:new MemoryAdmission(),manifest:async signal=>{const t=performance.now();const d=await read(signal);sourceMs=performance.now()-t;articles=d.corpus.articles.length;passages=d.corpus.passages.length;return d;},currentManifest:deployedManifest(fetcher),embed:async()=>{modelFixtures++;return Array(1024).fill(1);},vectors:async()=>{vectorFixtures++;return [];}});
+const response=await service(new Request('https://offline.invalid/v1/search',{method:'POST',body:JSON.stringify({q:'AI',corpusId:current.corpusId})}));
+const body=await response.json();
+const receipt={environment:'local Node, real public source; offline model/vector/admission fixtures',at:new Date().toISOString(),status:response.status,mode:body.mode,total:body.total,diagnostic:body.diagnostic,corpusId:current.corpusId,articles,passages,sourceMs,elapsedMs:performance.now()-start,events,modelFixtures,vectorFixtures,cloudModelCalls:0,cloudWrites:0,deployed:false};
+await writeFile(new URL('./live-source-smoke.json',import.meta.url),JSON.stringify(receipt,null,2)+'\n');
+console.log(JSON.stringify(receipt));if(response.status!==200)process.exitCode=1;

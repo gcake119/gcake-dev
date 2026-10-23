@@ -1,0 +1,26 @@
+test_all_existing_nonroot_mutation_rights_are_refused (test_acl_inventory.ACLInventoryAcceptance.test_all_existing_nonroot_mutation_rights_are_refused) ... ok
+test_changed_node_during_acl_read_is_refused (test_acl_inventory.ACLInventoryAcceptance.test_changed_node_during_acl_read_is_refused) ... ok
+test_directory_add_rights_are_refused (test_acl_inventory.ACLInventoryAcceptance.test_directory_add_rights_are_refused) ... ok
+test_existing_thirty_second_budget_is_not_extended (test_acl_inventory.ACLInventoryAcceptance.test_existing_thirty_second_budget_is_not_extended) ... ok
+test_failed_root_identity_resolution_is_refused (test_acl_inventory.ACLInventoryAcceptance.test_failed_root_identity_resolution_is_refused) ... ok
+test_later_write_entry_cannot_hide_behind_root_allow (test_acl_inventory.ACLInventoryAcceptance.test_later_write_entry_cannot_hide_behind_root_allow) ... ok
+test_link_does_not_follow_outside_tree (test_acl_inventory.ACLInventoryAcceptance.test_link_does_not_follow_outside_tree) ... ok
+test_missing_root_is_not_silently_empty (test_acl_inventory.ACLInventoryAcceptance.test_missing_root_is_not_silently_empty) ... ok
+test_nested_hidden_write_grant_is_not_skipped (test_acl_inventory.ACLInventoryAcceptance.test_nested_hidden_write_grant_is_not_skipped) ... ok
+test_readable_acl_does_not_depend_on_stalled_presentation_command (test_acl_inventory.ACLInventoryAcceptance.test_readable_acl_does_not_depend_on_stalled_presentation_command) ... ok
+test_readonly_grant_and_deny_keep_prior_meaning (test_acl_inventory.ACLInventoryAcceptance.test_readonly_grant_and_deny_keep_prior_meaning) ... ok
+test_resolved_root_uuid_retains_user_exception (test_acl_inventory.ACLInventoryAcceptance.test_resolved_root_uuid_retains_user_exception) ... ok
+test_root_group_is_not_the_root_user_exception (test_acl_inventory.ACLInventoryAcceptance.test_root_group_is_not_the_root_user_exception) ... ok
+test_root_user_write_exception_is_preserved (test_acl_inventory.ACLInventoryAcceptance.test_root_user_write_exception_is_preserved) ... ok
+test_stalled_native_child_is_refused_and_reaped (test_acl_inventory.ACLInventoryAcceptance.test_stalled_native_child_is_refused_and_reaped) ... ok
+test_target_metadata_is_read_only_inside_bounded_child (test_acl_inventory.ACLInventoryAcceptance.test_target_metadata_is_read_only_inside_bounded_child) ... ok
+test_unexpected_native_child_result_is_never_safe (test_acl_inventory.ACLInventoryAcceptance.test_unexpected_native_child_result_is_never_safe) ... ok
+test_unreadable_acl_evidence_is_refused (test_acl_inventory.ACLInventoryAcceptance.test_unreadable_acl_evidence_is_refused) ... ok
+test_authority_inspection_timeout_is_refused_and_child_reaped (test_acl_inventory.AuthorityBatchAcceptance.test_authority_inspection_timeout_is_refused_and_child_reaped) ... ok
+test_later_unsafe_node_is_not_hidden_by_previous_safe_validation (test_acl_inventory.AuthorityBatchAcceptance.test_later_unsafe_node_is_not_hidden_by_previous_safe_validation) ... ok
+test_metadata_changed_before_inspection_is_not_accepted (test_acl_inventory.AuthorityBatchAcceptance.test_metadata_changed_before_inspection_is_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 4.409s
+
+OK

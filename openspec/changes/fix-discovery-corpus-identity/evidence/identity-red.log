@@ -1,0 +1,208 @@
+TAP version 13
+# Subtest: Local and imported articles share a slug
+ok 1 - Local and imported articles share a slug
+  ---
+  duration_ms: 18.332209
+  type: 'test'
+  ...
+# Subtest: Draft and future article exclusion
+ok 2 - Draft and future article exclusion
+  ---
+  duration_ms: 1.222416
+  type: 'test'
+  ...
+# Subtest: Identical source rebuild and matching passage anchors
+ok 3 - Identical source rebuild and matching passage anchors
+  ---
+  duration_ms: 1.565041
+  type: 'test'
+  ...
+# Subtest: Interactive MDX is excluded without execution or hidden text
+ok 4 - Interactive MDX is excluded without execution or hidden text
+  ---
+  duration_ms: 0.889167
+  type: 'test'
+  ...
+# Subtest: Article becomes public, edits, renames, withdrawals and deletions refresh the release
+ok 5 - Article becomes public, edits, renames, withdrawals and deletions refresh the release
+  ---
+  duration_ms: 2.697958
+  type: 'test'
+  ...
+# Subtest: Explicit acronym definition and ambiguous token
+ok 6 - Explicit acronym definition and ambiguous token
+  ---
+  duration_ms: 1.672583
+  type: 'test'
+  ...
+# Subtest: No usable terms remains searchable and technical punctuation stays distinct
+ok 7 - No usable terms remains searchable and technical punctuation stays distinct
+  ---
+  duration_ms: 0.890875
+  type: 'test'
+  ...
+# Subtest: Citation creates backlink; recommendations never create citations
+ok 8 - Citation creates backlink; recommendations never create citations
+  ---
+  duration_ms: 0.904209
+  type: 'test'
+  ...
+# Subtest: Complementary next reading, sparse candidates and current deterministic fallback
+ok 9 - Complementary next reading, sparse candidates and current deterministic fallback
+  ---
+  duration_ms: 1.129917
+  type: 'test'
+  ...
+# Subtest: Title outranks incidental body mention, Chinese input, safe excerpt
+ok 10 - Title outranks incidental body mention, Chinese input, safe excerpt
+  ---
+  duration_ms: 1.375333
+  type: 'test'
+  ...
+# Subtest: Share filtered search, pagination, partial labels and bounded input
+ok 11 - Share filtered search, pagination, partial labels and bounded input
+  ---
+  duration_ms: 5.673375
+  type: 'test'
+  ...
+# Subtest: Supported topic terms outrank incidental narrative words in recommendation reasons
+ok 12 - Supported topic terms outrank incidental narrative words in recommendation reasons
+  ---
+  duration_ms: 0.660375
+  type: 'test'
+  ...
+# Subtest: Field term frequencies reflect repeated evidence rather than vocabulary sets
+ok 13 - Field term frequencies reflect repeated evidence rather than vocabulary sets
+  ---
+  duration_ms: 0.268334
+  type: 'test'
+  ...
+# Subtest: Bilingual explicit aliases retain source evidence
+ok 14 - Bilingual explicit aliases retain source evidence
+  ---
+  duration_ms: 0.875375
+  type: 'test'
+  ...
+# Subtest: Invalid public metadata fails candidate instead of silently escaping the site
+ok 15 - Invalid public metadata fails candidate instead of silently escaping the site
+  ---
+  duration_ms: 0.126917
+  type: 'test'
+  ...
+# Subtest: Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+ok 16 - Content-addressed extraction reuses unchanged HTML and discards incompatible config cache
+  ---
+  duration_ms: 0.636792
+  type: 'test'
+  ...
+# Subtest: Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+ok 17 - Compact keyword asset preserves ranking and excerpts after lazy passage hydration
+  ---
+  duration_ms: 1.9115
+  type: 'test'
+  ...
+# Subtest: No-match suggestions offer evidenced vocabulary without replacing the query
+ok 18 - No-match suggestions offer evidenced vocabulary without replacing the query
+  ---
+  duration_ms: 0.361041
+  type: 'test'
+  ...
+# Subtest: Every displayed recommendation term has its own supporting passage
+ok 19 - Every displayed recommendation term has its own supporting passage
+  ---
+  duration_ms: 0.540791
+  type: 'test'
+  ...
+# Subtest: Reviewed bilingual definition is tied to its exact public revision and quotation
+ok 20 - Reviewed bilingual definition is tied to its exact public revision and quotation
+  ---
+  duration_ms: 2.559375
+  type: 'test'
+  ...
+# Subtest: Acronyms expand as technical words rather than substrings inside unrelated words
+ok 21 - Acronyms expand as technical words rather than substrings inside unrelated words
+  ---
+  duration_ms: 0.701042
+  type: 'test'
+  ...
+# Subtest: Narrative fillers cannot become recommendation explanations even in a heading
+ok 22 - Narrative fillers cannot become recommendation explanations even in a heading
+  ---
+  duration_ms: 0.690042
+  type: 'test'
+  ...
+# Subtest: Shared narrative without a supported explanation does not create an empty recommendation
+ok 23 - Shared narrative without a supported explanation does not create an empty recommendation
+  ---
+  duration_ms: 0.41
+  type: 'test'
+  ...
+# Subtest: Distinct identities cannot share a normalized primary reading URL
+ok 24 - Distinct identities cannot share a normalized primary reading URL
+  ---
+  duration_ms: 0.638167
+  type: 'test'
+  ...
+# Subtest: Stable identity excludes restoration/build provenance but invalidates effective metadata
+not ok 25 - Stable identity excludes restoration/build provenance but invalidates effective metadata
+  ---
+  duration_ms: 2.536292
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:1:13938'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + '9f54b00ebea5e6b33ae905231fd6094fb6cd04e7d087b3a8b8fa546bf34cde96'
+    - 'e9e6d07324d86b061463b3dc5ddbe8a88363478621d80be5c76f8d331606600c'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'e9e6d07324d86b061463b3dc5ddbe8a88363478621d80be5c76f8d331606600c'
+  actual: '9f54b00ebea5e6b33ae905231fd6094fb6cd04e7d087b3a8b8fa546bf34cde96'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:156:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# (node:46122) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Equivalent completed snapshot restores retain search identity through actual site assembly
+not ok 26 - Equivalent completed snapshot restores retain search identity through actual site assembly
+  ---
+  duration_ms: 1650.1705
+  type: 'test'
+  location: '/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:1:15398'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'e256451351342df6c140b653f7d339965effa6767e9ea460f3cdc59cc721be5e'
+    - 'aa34094485fe78f294c9a78410ee860378e37c79c6b3d71f1054a5e9365849dd'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'aa34094485fe78f294c9a78410ee860378e37c79c6b3d71f1054a5e9365849dd'
+  actual: 'e256451351342df6c140b653f7d339965effa6767e9ea460f3cdc59cc721be5e'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/Users/caiyijun/project/gcake-dev/test/discovery/corpus.acceptance.test.ts:214:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 24
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2050.853541

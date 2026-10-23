@@ -1,0 +1,29 @@
+
+> gcake-dev@0.1.0 check /Users/caiyijun/project/gcake-dev
+> astro check
+
+00:37:29 [vite] Re-optimizing dependencies because vite config has changed
+00:37:29 [content] Syncing content
+00:37:29 [content] Synced content
+00:37:29 [types] Generated 384ms
+00:37:29 [check] Getting diagnostics for Astro files in /Users/caiyijun/project/gcake-dev...
+[96moutput/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts[0m:[93m15[0m:[93m42[0m - [91merror[0m[90m ts(7005): [0mVariable 'results' implicitly has an 'any[]' type.
+
+[7m15[0m const avg=(field:string)=>results.length?results.reduce((n,r:any)=>n+r[field],0)/results.length:null;
+[7m  [0m [91m                                         ~~~~~~~[0m
+[96moutput/discovery/merge-deploy-cloud-20261021/cloud-evaluate.ts[0m:[93m8[0m:[93m7[0m - [91merror[0m[90m ts(7034): [0mVariable 'results' implicitly has type 'any[]' in some locations where its type cannot be determined.
+
+[7m8[0m const results=[];
+[7m [0m [91m      ~~~~~~~[0m
+
+[96moutput/discovery/source-download-fix-20261022/local-source-smoke.ts[0m:[93m2[0m:[93m41[0m - [93mwarning[0m[90m ts(6133): [0m'manifestUrl' is declared but its value is never read.
+
+[7m2[0m import {deployedReader,deployedManifest,manifestUrl} from '/private/tmp/gcake-pr51-cloud-20261021/apps/search-worker/src/deployed.ts';
+[7m [0m [93m                                        ~~~~~~~~~~~[0m
+
+Result (294 files):
+- 2 errors
+- 0 warnings
+- 1 hint
+
+ ELIFECYCLE  Command failed with exit code 1.

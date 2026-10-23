@@ -26,6 +26,9 @@ export interface SearchPolicy {
         renewal?: 'verified-workers-free-utc';
         services: string[];
     };
+    /** Operator-verified upper bound for all other account storage, including staged/retained data.
+     * Missing/expired evidence disables index uploads, without affecting keyword search. */
+    syncCapacity?: { validUntil: string; otherDimensions: number };
     limits: Units;
     paidOverage: number;
     throttleSecret: string;

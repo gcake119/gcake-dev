@@ -120,3 +120,15 @@ test('Incomplete public article bodies stop at the full-source budget before inf
  };
  const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');const response=await createProductionWorker(fetcher).fetch(makeRequest(),h.env);assert.equal(response.status,503);const b=await response.json();assert.equal(b.diagnostic.stage,'source_initial');assert.equal(b.diagnostic.reason,'timeout');assert.equal(cancelled,2);assert.deepEqual(h.calls(),[0,0]);
 });
+
+test('Equal content identity does not bypass changed provenance asset descriptors at final read',async()=>{
+ const h=await fixture();h.setPolicy(policy);let manifests=0;
+ const changed:typeof fetch=async(input,init)=>{
+  const response=await h.fetcher(input,init);
+  if(String(input).endsWith('discovery-manifest.json')&&++manifests===2){const m=await response.json();m.assets.index.digest='b'.repeat(64);return Response.json(m);}
+  return response;
+ };
+ const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');
+ const r=await createProductionWorker(changed).fetch(makeRequest(),h.env);
+ assert.equal(r.status,409);assert.equal((await r.json()).fallback,'keyword');assert.equal(manifests,2);
+});

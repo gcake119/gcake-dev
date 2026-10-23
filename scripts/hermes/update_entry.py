@@ -139,7 +139,7 @@ class _NativeACLInventory:
     def visit(self, path, recursive):
         before = self.inspect(path)
         if not recursive or not stat.S_ISDIR(before.st_mode):
-            return
+            return before
         descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
             if _acl_identity(os.fstat(descriptor)) != _acl_identity(before):
@@ -154,6 +154,7 @@ class _NativeACLInventory:
         finally:
             os.close(descriptor)
         self.budget()
+        return before
 
 
 
@@ -168,7 +169,23 @@ def _native_acl_worker(path, recursive):
     return 0
 
 
-def reject_write_acl(path, recursive=False):
+def _native_acl_targets_worker(targets):
+    """One deadline, fresh metadata and complete ACL inspection for every node."""
+    try:
+        inventory = _NativeACLInventory()
+        for path, recursive, authority_uid in json.loads(targets):
+            info = inventory.visit(path, recursive)
+            if authority_uid is not None and (stat.S_ISLNK(info.st_mode)
+                    or info.st_uid != authority_uid or info.st_mode & 0o022):
+                raise ValueError('unsafe-authority-permission')
+    except (OSError, ValueError, RecursionError) as error:
+        code = str(error) if str(error) in ('runner-writable-acl', 'unsafe-authority-permission') else 'acl-inventory-failed'
+        print(code, end='')
+        return 2
+    return 0
+
+
+def _reject_acl_targets(targets):
     if sys.platform != 'darwin':
         return
     started = time.monotonic()
@@ -178,19 +195,23 @@ def reject_write_acl(path, recursive=False):
         # protected sibling imports load; the inspected path is an argv value.
         worker = ("import runpy,sys;sys.path.insert(0,sys.argv[1]);"
                   "scope=runpy.run_path(sys.argv[2]);"
-                  "sys.exit(scope['_native_acl_worker'](sys.argv[3],sys.argv[4]=='1'))")
+                  "sys.exit(scope['_native_acl_targets_worker'](sys.argv[3]))")
         result = subprocess.run(
             [sys.executable, '-I', '-B', '-c', worker, str(control.parent),
-             str(control), os.fspath(path), '1' if recursive else '0'],
+             str(control), json.dumps(targets)],
             stdin=subprocess.DEVNULL, capture_output=True, text=True,
             timeout=_ACL_TIMEOUT_SECONDS)
-        if result.returncode == 2 and result.stdout == 'runner-writable-acl' and not result.stderr:
-            raise ValueError('runner-writable-acl')
+        if result.returncode == 2 and result.stdout in ('runner-writable-acl', 'unsafe-authority-permission') and not result.stderr:
+            raise ValueError(result.stdout)
         if (result.returncode != 0 or result.stdout or result.stderr
                 or time.monotonic() - started >= _ACL_TIMEOUT_SECONDS):
             raise ValueError('acl-inventory-failed')
     except (OSError, subprocess.SubprocessError):
         raise ValueError('acl-inventory-failed') from None
+
+
+def reject_write_acl(path, recursive=False):
+    _reject_acl_targets([(os.fspath(path), recursive, None)])
 
 
 def isolated(path):
@@ -284,22 +305,28 @@ class EntryStore:
         os.close(fd)
         return cls(root)
 
-    def safe(self, path):
+    def _safe_metadata(self, path):
         info = path.lstat()
         if stat.S_ISLNK(info.st_mode) or info.st_uid != self.uid or info.st_mode & 0o022:
             raise ValueError('unsafe-authority-permission')
+
+    def safe(self, path):
+        self._safe_metadata(path)
         reject_write_acl(path)
 
     def validate(self):
-        self.safe(self.root)
-        for name in ('.authority.json','approvals.json','gate.json','maintenance.lock',
-                     'releases','manifests','slots','pending'):
-            self.safe(self.root/name)
-        if (self.root/'active.json').exists(): self.safe(self.root/'active.json')
+        paths = [self.root, *(self.root/name for name in
+                 ('.authority.json','approvals.json','gate.json','maintenance.lock',
+                  'releases','manifests','slots','pending'))]
+        if (self.root/'active.json').exists(): paths.append(self.root/'active.json')
         # A reader cannot inspect the root-private journal; the public gate carries its state.
         if os.geteuid() == self.uid:
-            for name in ('private','receipts'):self.safe(self.root/name)
-            if self.journal.exists():self.safe(self.journal)
+            paths.extend(self.root/name for name in ('private','receipts'))
+            if self.journal.exists():paths.append(self.journal)
+        for path in paths:self._safe_metadata(path)
+        # Do not reuse prior validation: the child rechecks owner/mode as well as
+        # every ACL, including nodes changed after the parent metadata reads.
+        _reject_acl_targets([(os.fspath(path), False, self.uid) for path in paths])
 
     @property
     def journal(self): return self.root/'private/journal.json'

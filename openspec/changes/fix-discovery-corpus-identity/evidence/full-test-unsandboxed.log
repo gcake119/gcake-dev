@@ -1,0 +1,276 @@
+
+> gcake-dev@0.1.0 test /Users/caiyijun/project/gcake-dev
+> pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution && pnpm test:observability
+
+
+> gcake-dev@0.1.0 test:editorial /Users/caiyijun/project/gcake-dev
+> node --import tsx --test src/lib/publishing/release-queue.test.ts scripts/publishing/editorial-release.test.ts scripts/publishing/deployment-rehearsal.test.ts scripts/publishing/unattended-check.test.ts
+
+TAP version 13
+# Subtest: manual Pages has no queue writer, even when legacy flag is true
+ok 1 - manual Pages has no queue writer, even when legacy flag is true
+  ---
+  duration_ms: 12.54675
+  type: 'test'
+  ...
+# Subtest: PR CI validates the candidate without deployment credentials or production writes
+ok 2 - PR CI validates the candidate without deployment credentials or production writes
+  ---
+  duration_ms: 2.923166
+  type: 'test'
+  ...
+# Subtest: manual Secret acceptance isolates environment credentials and excludes every publication job
+ok 3 - manual Secret acceptance isolates environment credentials and excludes every publication job
+  ---
+  duration_ms: 2.80775
+  type: 'test'
+  ...
+# Subtest: Secret acceptance preflight rejects SHA drift and enabled gates before Secret access
+ok 4 - Secret acceptance preflight rejects SHA drift and enabled gates before Secret access
+  ---
+  duration_ms: 24.21025
+  type: 'test'
+  ...
+# Subtest: Secret identity acceptance accepts installation schema and rejects scope drift without printing token
+ok 5 - Secret identity acceptance accepts installation schema and rejects scope drift without printing token
+  ---
+  duration_ms: 976.821
+  type: 'test'
+  ...
+# Subtest: D1 delivery rejects a stale Pages artifact after a concurrent CMS edit without writer credentials
+ok 6 - D1 delivery rejects a stale Pages artifact after a concurrent CMS edit without writer credentials
+  ---
+  duration_ms: 470.461083
+  type: 'test'
+  ...
+# Subtest: PR run scripts stop on shared, dry-run or rehearsal failure without provider access
+ok 7 - PR run scripts stop on shared, dry-run or rehearsal failure without provider access
+  ---
+  duration_ms: 758.509875
+  type: 'test'
+  ...
+# Subtest: retired Git journal CLI cannot write or invoke Git with any legacy command or activation flag
+ok 8 - retired Git journal CLI cannot write or invoke Git with any legacy command or activation flag
+  ---
+  duration_ms: 564.322083
+  type: 'test'
+  ...
+# Subtest: configured unattended policy is reported separately from production acceptance
+ok 9 - configured unattended policy is reported separately from production acceptance
+  ---
+  duration_ms: 0.86125
+  type: 'test'
+  ...
+# Subtest: approved CMS and dedicated release exceptions preserve configuration without activation
+ok 10 - approved CMS and dedicated release exceptions preserve configuration without activation
+  ---
+  duration_ms: 0.118583
+  type: 'test'
+  ...
+# Subtest: CMS compatibility requires both named identities and rejects extra exceptions
+ok 11 - CMS compatibility requires both named identities and rejects extra exceptions
+  ---
+  duration_ms: 0.225041
+  type: 'test'
+  ...
+# Subtest: private App metadata unavailable to owner CLI remains incomplete
+ok 12 - private App metadata unavailable to owner CLI remains incomplete
+  ---
+  duration_ms: 0.117166
+  type: 'test'
+  ...
+# Subtest: missing environment, credentials or main protection cannot be called ready
+ok 13 - missing environment, credentials or main protection cannot be called ready
+  ---
+  duration_ms: 0.082709
+  type: 'test'
+  ...
+# Subtest: reviewer wait, tag-only branch policy and broad App privilege block unattended configuration
+ok 14 - reviewer wait, tag-only branch policy and broad App privilege block unattended configuration
+  ---
+  duration_ms: 0.136583
+  type: 'test'
+  ...
+# Subtest: configuration audit CLI only makes read requests and reports missing setup
+ok 15 - configuration audit CLI only makes read requests and reports missing setup
+  ---
+  duration_ms: 1004.170167
+  type: 'test'
+  ...
+# Subtest: audit reads production flag from later API pages
+ok 16 - audit reads production flag from later API pages
+  ---
+  duration_ms: 946.710167
+  type: 'test'
+  ...
+# Subtest: D1 automation gate drift is reported even when the retired journal flag is disabled
+ok 17 - D1 automation gate drift is reported even when the retired journal flag is disabled
+  ---
+  duration_ms: 0.238333
+  type: 'test'
+  ...
+# Subtest: six ready series posts occupy Monday/Thursday 07:00 slots in order
+ok 18 - six ready series posts occupy Monday/Thursday 07:00 slots in order
+  ---
+  duration_ms: 2.34175
+  type: 'test'
+  ...
+# Subtest: standalone interrupts active series while preserving internal order
+ok 19 - standalone interrupts active series while preserving internal order
+  ---
+  duration_ms: 0.125833
+  type: 'test'
+  ...
+# Subtest: unready series does not schedule until every provided item becomes ready
+ok 20 - unready series does not schedule until every provided item becomes ready
+  ---
+  duration_ms: 0.269917
+  type: 'test'
+  ...
+# Subtest: reserved slot is skipped
+ok 21 - reserved slot is skipped
+  ---
+  duration_ms: 0.079833
+  type: 'test'
+  ...
+# Subtest: rejects reserved timestamps that are not an exact policy slot
+ok 22 - rejects reserved timestamps that are not an exact policy slot
+  ---
+  duration_ms: 0.234625
+  type: 'test'
+  ...
+# Subtest: rejects impossible calendar timestamps instead of normalizing them
+ok 23 - rejects impossible calendar timestamps instead of normalizing them
+  ---
+  duration_ms: 0.067125
+  type: 'test'
+  ...
+# Subtest: resumes previously active series before an older waiting group
+ok 24 - resumes previously active series before an older waiting group
+  ---
+  duration_ms: 0.124541
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2398.321792
+
+> gcake-dev@0.1.0 test:hermes /Users/caiyijun/project/gcake-dev
+> python3 -m unittest discover -s scripts/hermes -p "test_*.py"
+
+................................owner: waiting for natural existing-job dry-run
+.owner: waiting for natural existing-job dry-run
+............................................................................................................................................................................................................../opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63140>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63220>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab62dc0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63bc0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab62b20>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab62c00>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10aa36dc0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63ca0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63d80>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ac7c2e0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63e60>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ab63ae0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ac7c660>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ac7c3c0>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:551: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x10ac7c740>
+  @staticmethod
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.....EEF.........................................
+======================================================================
+ERROR: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replaced:updater')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 109, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    result=subprocess.run([sys.executable,'-B','-c',script],cwd=Path(__file__).parent,capture_output=True,text=True,timeout=10)
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 671, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1395, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 2424, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        skip_check_and_raise=True)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1434, in _check_timeout
+    raise TimeoutExpired(
+    ...<2 lines>...
+            stderr=b''.join(stderr_seq) if stderr_seq else None)
+subprocess.TimeoutExpired: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '-B', '-c', "from pathlib import Path;from update_entry import EntryStore,UpdateEntry;from test_update_entry import PersistentSupervisor;import json;print(json.dumps(UpdateEntry(EntryStore(Path('/private/tmp/gcake-entry-kcmq1f7a/authority')),PersistentSupervisor(Path('/private/tmp/gcake-entry-kcmq1f7a'))).recover()))"]' timed out after 10 seconds
+
+======================================================================
+ERROR: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replace:wrapper')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 109, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    result=subprocess.run([sys.executable,'-B','-c',script],cwd=Path(__file__).parent,capture_output=True,text=True,timeout=10)
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 671, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1395, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 2424, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        skip_check_and_raise=True)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1434, in _check_timeout
+    raise TimeoutExpired(
+    ...<2 lines>...
+            stderr=b''.join(stderr_seq) if stderr_seq else None)
+subprocess.TimeoutExpired: Command '['/opt/homebrew/opt/python@3.15/bin/python3.15', '-B', '-c', "from pathlib import Path;from update_entry import EntryStore,UpdateEntry;from test_update_entry import PersistentSupervisor;import json;print(json.dumps(UpdateEntry(EntryStore(Path('/private/tmp/gcake-entry-kcmq1f7a/authority')),PersistentSupervisor(Path('/private/tmp/gcake-entry-kcmq1f7a'))).recover()))"]' timed out after 10 seconds
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replaced:wrapper')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 79
+
+----------------------------------------------------------------------
+Ran 286 tests in 559.477s
+
+FAILED (failures=1, errors=2)
+{"status": "blocked", "errorType": "HermesSelectionMismatch", "stage": "selection", "humanReceived": false}
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Test failed. See above for more details.

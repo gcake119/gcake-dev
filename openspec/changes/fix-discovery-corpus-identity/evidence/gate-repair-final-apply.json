@@ -1,0 +1,190 @@
+{
+  "dormancy": {
+    "status": "fresh",
+    "reason": "age or idle threshold not reached",
+    "age_days": 0,
+    "idle_days": null
+  },
+  "changeName": "fix-discovery-corpus-identity",
+  "changeDir": "/Users/caiyijun/project/gcake-dev/openspec/changes/fix-discovery-corpus-identity",
+  "schemaName": "spec-driven",
+  "contextFiles": {
+    "specs": "/Users/caiyijun/project/gcake-dev/openspec/changes/fix-discovery-corpus-identity/specs/**/*.md",
+    "proposal": "/Users/caiyijun/project/gcake-dev/openspec/changes/fix-discovery-corpus-identity/proposal.md",
+    "design": "/Users/caiyijun/project/gcake-dev/openspec/changes/fix-discovery-corpus-identity/design.md",
+    "tasks": "/Users/caiyijun/project/gcake-dev/openspec/changes/fix-discovery-corpus-identity/tasks.md"
+  },
+  "progress": {
+    "total": 14,
+    "complete": 11,
+    "remaining": 3
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "number": "1.1",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "1.1 為 Stable search content identity 建立真實 failing acceptance：延伸 test/discovery/corpus.acceptance.test.ts 與 test/discovery/assets.acceptance.test.ts，以同一離線完結快照／釘選manifest，在兩固定時間走還原及discovery組裝路徑，確認搜尋身分相同、追溯可不同、已同步零enrichment、未完成不歸零；保存候選SHA／diff及失敗原因，確保失敗來自行為而非fixture錯誤。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "2",
+      "number": "1.2",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "1.2 為 Effective source changes invalidate identity 建立 acceptance 變動表：正文、標題／描述、URL／canonical、公開日期／資格、topics／series、別名／抽取設定各自變動會失效；未跨資格時鐘與無序鍵順序不失效；涵蓋撤回與空集合。執行既有 corpus／assets acceptance，確認原有通過情境持續保護且新增缺陷有可保存RED。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "3",
+      "number": "1.3",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "1.3 交付「穩定內容身分與獨立追溯」：在 src/lib/discovery/site.ts 與 src/lib/discovery/build.ts 分離有版本白名單內容投影與完整快照／建置追溯，不破壞manifest與資產hash驗證；以1.1／1.2測試GREEN及來源混合下載拒絕證明。只在投影純邏輯有獨立邊界時補unit，不複製整份acceptance。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "4",
+      "number": "2.1",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "2.1 為 Bounded verified continuation 延伸 test/discovery/cloud-sync.acceptance.test.ts，先證明可讀pending後同輪最多再上傳一批、最後部分批次可提升的RED；加入不完整讀回、剩餘時間／額度不足即保存退出、source最終變更不提升的驗收，固定16段批次及可讀時序，保存基線輪次與呼叫／預留計數。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "5",
+      "number": "2.2",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "2.2 為 Durable safe resumption and free-only admission 延伸既有 cloud-sync／cloud-runtime acceptance：驗證同身分重建保留pending、真版本變動有／無pending、單租約競爭、失去owner、中斷未知推論不重播、已存輸出遇暫時上傳錯誤可恢復、讀者與同步爭最後額度、期限／停用；用可觀察狀態、消耗與提升結果驗證，新增不受既有測試保護的行為先保存RED。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "6",
+      "number": "2.3",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "2.3 交付「完整讀回後同輪有界續作」：修改 apps/search-worker/src/sync.ts，在既有45秒期限內最多讀回一批＋準備一批，新上傳等下輪讀回，不改cron／batch16；先列舉最多兩階段最壞D1／Worker／Vectorize／推論成本並共享原子預留，再增加工作。以2.1／2.2 GREEN、超時退出與不足預留零額外provider操作證明；必要D1原子邊界延伸既有integration，不新增測試層。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "7",
+      "number": "2.4",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "2.4 在同來源、16段、相同時鐘／provider可讀序列比較原版與候選，證明已讀回後不強制空等一輪且所有安全斷言保持；報告輪次、總時間、provider操作數、資源預留及等待分布，不把本機時間或371輪理想估算當正式延遲／節費證據。若穩定身分已解決主要問題且續作成本不值，先取得範圍修訂再省略，不默默刪任務。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "8",
+      "number": "3.1",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "3.1 為 Capacity-safe legacy identity transition 及「舊版本相容轉換與容量安全」建立並通過離線acceptance：舊身份一次性轉換必須完整核對，所有已存／準備／pending／保留／其他用量合計，容量不足／未知、向量歸屬未知即停止；實測替身同ID移動／覆寫／複製三種語意，均不得未讀回就提升或假定雙整庫免費，報告僅本機證據。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "9",
+      "number": "3.2",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "3.2 整理每項Gherkin到既有acceptance的對照與RED／GREEN收據，完成當時受影響專案完整Local Preflight；目前基線為pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse，彙總已含單項不重跑。執行spectra validate及analyze並記錄限制；尚未獲准不得commit／push／PR。CI若後續失敗先讀log、本機重現修正再完整gate，不反覆推送試錯。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "10",
+      "number": "3.3",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "3.3 回填原ADR-001、決策索引及既有操作文件的同輪有界續作、舊版本轉換、容量核實與回復界線，不變更模型、免費上限、期限、開關或歷史驗收。內容審查須與本spec一致、保留原change未完成事項，並驗證文件連結與Spectra，形成可審查本機候選。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "11",
+      "number": "3.4",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "3.4 交付 Complete local gate without weakened authority checks：先以原10秒期限及150ms ACL子程序啟動成本取得復原acceptance RED；合併單次authority節點檢查並保留每節點ACL／owner／mode與期限，驗證晚出現寫權、metadata變動及逾時child回收。保留舊output原檔備份並修正明確型別，原目錄完整gate須通過，不改timeout、斷言、排除或正式runtime。",
+      "done": true,
+      "parallel": false
+    },
+    {
+      "id": "12",
+      "number": "4.1",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "4.1 為 Separate local and unattended acceptance evidence 準備具體候選部署／遷移清單，取得當次外部操作授權後才執行：釘選實作／CI／Worker與Pages版本、當期免費證據／全帳戶容量、pending／lease／配額、真實ID／namespace語意及完整provider讀回；不能只改activeCorpusId、補滿額度或複製雙整庫。保存部署與provider證據，失敗維持當期關鍵字；若需migration或破壞相容先補規格及授權。",
+      "done": false,
+      "parallel": false
+    },
+    {
+      "id": "13",
+      "number": "4.2",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "4.2 在另外核准的真實新文章成功公開後，只觀察既有自然cron，串接manifest、首批偵測、全部新／重用段與預留、pending、完整讀回、最終來源檢查、promotion及自然no_change；記錄起訖、延遲分布、樣本數與中斷。前景同步、人工補段或切換即標混合完成、不關閉原12.2；缺證或額度不足即保存原因，另行規劃後續自然機會，不重播未知結果。",
+      "done": false,
+      "parallel": false
+    },
+    {
+      "id": "14",
+      "number": "4.3",
+      "prerequisites": [],
+      "unresolved_prerequisites": [],
+      "cycle_member": false,
+      "mixed_format": false,
+      "description": "4.3 另依當次授權執行真實semantic API與瀏覽器／手機驗收，確認新文章、修訂／撤回排除、關鍵字降級／恢復、閱讀連結，並取得獨立人工相關性回報；查詢計入共享額度，報告本機、CI、部署、provider、自然排程與人工各自結果。只有4.2完整自然鏈與本項證據俱足才評估原12.2可否依原條件結案，歷史1.1不回補為已完成。",
+      "done": false,
+      "parallel": false
+    }
+  ],
+  "state": "ready",
+  "locale": "English",
+  "instruction": "Read context files, work through pending tasks, mark complete as you go.\nPause if you hit blockers or need clarification.\n",
+  "preflight": {
+    "status": "clean",
+    "missingFiles": [],
+    "driftedFiles": [],
+    "staleness": {
+      "daysOld": 0,
+      "isStale": false
+    }
+  }
+}

@@ -1,0 +1,17 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {digest} from '/private/tmp/gcake-pr51-cloud-20261021/src/lib/discovery/build.ts';
+import {search} from '/private/tmp/gcake-pr51-cloud-20261021/src/lib/discovery/search.ts';
+const dir='/Users/caiyijun/project/gcake-dev/output/discovery/merge-deploy-cloud-20261021/cloud-index';
+const plan=JSON.parse(await readFile(dir+'/plan.json','utf8')),c=JSON.parse(await readFile(dir+'/corpus.json','utf8')),sample=JSON.parse(await readFile(dir+'/frozen-judgments.json','utf8')),cache=JSON.parse(await readFile(dir+'/cache.json','utf8'));
+if(plan.corpusId!==c.corpusId||sample.corpusId!==c.corpusId)throw Error('SOURCE_MISMATCH');
+const key=(text:string)=>digest([plan.modelConfig,text]);
+const results=[];
+for(const q of sample.queries){const vector=cache[key(q.q)];if(!vector)throw Error('MISSING_QUERY');const passages=c.passages.map((p:any)=>{const other=cache[key(p.text)];if(!other)throw Error('MISSING_DOCUMENT');let score=0;for(let i=0;i<1024;i++)score+=vector[i]*other[i];return{...p,score};}).sort((a:any,b:any)=>b.score-a.score).slice(0,50);
+const dense=[...new Set(passages.map((p:any)=>p.articleId))] as string[];
+const lexical=Array.from({length:5},(_,i)=>search(c,q.q,{page:i+1,limit:10}).results).flat().map(r=>r.articleId).filter((id,i,a)=>a.indexOf(id)===i);
+const ranks=new Map<string,number>();lexical.forEach((id,i)=>ranks.set(id,1/(61+i)));const seen=new Set();passages.forEach((p:any,i:number)=>{if(seen.has(p.articleId))return;seen.add(p.articleId);ranks.set(p.articleId,(ranks.get(p.articleId)??0)+1/(61+i));});const hybrid=[...ranks].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,5).map(x=>x[0]);
+const expected=q.judgments.filter((j:any)=>j.grade>0).map((j:any)=>j.articleId);const hit=(ids:string[])=>expected.filter((id:string)=>ids.slice(0,5).includes(id)).length/expected.length;
+results.push({id:q.id,category:q.category,q:q.q,expected,lexical:lexical.slice(0,5),dense:dense.slice(0,5),hybrid,lexicalRecall5:hit(lexical),denseRecall5:hit(dense),hybridRecall5:hit(hybrid)});}
+const avg=(field:string)=>results.length?results.reduce((n,r:any)=>n+r[field],0)/results.length:null;
+const report={corpusId:c.corpusId,model:plan.modelConfig,queries:results.length,passages:c.passages.length,errors:0,mode:'Observed cloud BGE embeddings, offline cosine and production RRF; actual Vectorize/Worker still require separate readback',sample:'Revision-verified regression, partial expected targets, not new held-out or human relevance acceptance',lexicalRecall5:avg('lexicalRecall5'),denseRecall5:avg('denseRecall5'),hybridRecall5:avg('hybridRecall5'),results};
+await writeFile(dir+'/quality.json',JSON.stringify(report,null,2));console.log(JSON.stringify({...report,results:results.filter((r:any)=>r.category==='paraphrase'||r.hybridRecall5<r.lexicalRecall5)}));

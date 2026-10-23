@@ -149,3 +149,85 @@ test('Distinct identities cannot share a normalized primary reading URL',()=>{
     const valid=buildPublicDiscovery([source('same'),source('same',{source:'ithome',href:'/gcake-dev/series/ithome-2026/same/'})],config);
     assert.equal(new Set(valid.articles.map(a=>a.href)).size,2);
 });
+
+test('Stable identity excludes restoration/build provenance but invalidates effective metadata', () => {
+    const base = source('identity', {topics:['b','a'], publishedAt:'2026-10-20T00:00:00Z',sourceRevision:'pinned-body'});
+    const c = buildPublicDiscovery([base], config);
+    assert.equal(buildPublicDiscovery([base], {...config,now:'2026-10-21T01:00:00Z',sourceTree:'other',snapshotDigest:'restored-later'}).corpusId,c.corpusId);
+    assert.equal(buildPublicDiscovery([{...base,topics:['a','b']}],config).corpusId,c.corpusId);
+    for (const patch of [
+        {html:'<p>new body</p>',sourceRevision:'new-body'}, {title:'new title'}, {description:'new description'},
+        {href:'/gcake-dev/posts/replacement/'}, {canonicalUrl:'https://example.com/new'},
+        {publishedAt:'2026-10-19T00:00:00Z'}, {topics:['c']}, {series:'new'}, {seriesTitle:'new series title'},
+        {aliases:['https://example.com/alias']}, {interactive:true},
+    ]) assert.notEqual(buildPublicDiscovery([{...base,...patch}],config).corpusId,c.corpusId,JSON.stringify(patch));
+    const future=source('future',{publishedAt:'2026-10-22T00:00:00Z'});
+    assert.equal(buildPublicDiscovery([base,future],config).corpusId,c.corpusId);
+    assert.notEqual(buildPublicDiscovery([base,future],{...config,now:'2026-10-22T00:00:00Z'}).corpusId,c.corpusId);
+    const empty=buildPublicDiscovery([],config);
+    assert.notEqual(empty.corpusId,c.corpusId);
+    assert.equal(search(empty,'workflow').total,0);
+    assert.equal(buildPublicDiscovery([{...base,status:'draft'}],config).corpusId,empty.corpusId);
+});
+
+test('Equivalent completed snapshot restores retain search identity through actual site assembly', async (t) => {
+    const {readFile}=await import('node:fs/promises');
+    const {restoreCompletedSnapshot}=await import('../../scripts/external/ithome-sync');
+    const {digest}=await import('../../src/lib/discovery/build');
+    const {transpileModule,ModuleKind}=await import('typescript');
+    const snapshot=JSON.parse(await readFile('src/data/external/ithome-2026.generated.json','utf8'));
+    const pin=JSON.parse(await readFile('src/data/external/ithome-2026.completed-manifest.json','utf8'));
+    // Execute the real site assembly with only Astro/catalog and IO supplied offline.
+    const siteSource=await readFile('src/lib/discovery/site.ts','utf8');
+    const externalSource=await readFile('src/lib/content/external.ts','utf8');
+    const {ithome2026Topics}=await import('../../src/data/external/ithome-2026-topics');
+    const matter=(await import('gray-matter')).default;
+    const {Marked,Renderer}=await import('marked');
+    const instantiate=(code:string,dependencies:Record<string,unknown>)=>{
+        const js=transpileModule(code,{compilerOptions:{module:ModuleKind.CommonJS}}).outputText;
+        const exports:Record<string,any>={};
+        new Function('require','exports',js)((id:string)=>{assert.ok(id in dependencies,id);return dependencies[id];},exports);
+        return exports;
+    };
+    t.mock.timers.enable({apis:['Date'],now:Date.parse('2026-10-23T00:00:00Z')});
+    try {
+        const releases=[];
+        for(const instant of ['2026-10-23T00:00:00Z','2026-10-23T01:00:00Z']){
+            t.mock.timers.setTime(Date.parse(instant));
+            const restored=await restoreCompletedSnapshot(snapshot,pin);
+            const external=instantiate(externalSource,{'gray-matter':{default:matter},marked:{Marked,Renderer},'@/data/external/ithome-2026.generated.json':{default:restored},'@/data/external/ithome-2026-topics':{ithome2026Topics}});
+            const articles=external.loadIthomeArticles();
+            const site=instantiate(siteSource,{
+                'astro:content':{getCollection:async()=>[],render:()=>{throw Error('no local articles');}},
+                marked:{Marked,Renderer},'node:fs/promises':{readFile:async()=>JSON.stringify(restored)},
+                'node:child_process':{execFileSync:()=>instant},
+                '../content/catalog':{loadReadingCatalog:async()=>({posts:articles.map((a:any)=>({...a,href:`/gcake-dev/series/ithome-2026/${a.slug}/`,date:a.publishedAt})),series:[]})},
+                '../content/external':external,'../content/publication':{publicationInstant:()=>new Date()},
+                '../../data/site':{site:{url:config.baseUrl}},'./build':{buildPublicDiscovery,digest},
+                '../../data/discovery/terminology-reviewed.json':{default:[]},
+            });
+            releases.push(await site.loadDiscovery());
+        }
+        assert.notEqual(releases[0].config.snapshotDigest,releases[1].config.snapshotDigest);
+        assert.notEqual(releases[0].config.sourceTree,releases[1].config.sourceTree);
+        assert.deepEqual(releases[0].corpus.passages,releases[1].corpus.passages);
+        assert.equal(releases[0].corpus.corpusId,releases[1].corpus.corpusId);
+        assert.deepEqual(search(releases[0].corpus,'RAG'),search(releases[1].corpus,'RAG'));
+    } finally {t.mock.timers.reset();}
+});
+
+test('Effective aliases, series labels and extraction eligibility invalidate a pinned body revision',()=>{
+ const base=source('effective',{sourceRevision:'pinned-body'}),c=buildPublicDiscovery([base],config);
+ for(const patch of [{seriesTitle:'new series label'},{aliases:['https://example.com/new-alias']},{interactive:true}]){
+  const next=buildPublicDiscovery([{...base,...patch}],config);
+  assert.notEqual(next.corpusId,c.corpusId,JSON.stringify(patch));
+ }
+});
+
+test('Configuration object key order cannot change otherwise identical search content',()=>{
+ const correction={articleId:'local:a',sourceRevision:'not-current',full:'workflow',short:'wf',quotation:'workflow wf',reviewer:'reviewer'};
+ const reordered=Object.fromEntries(Object.entries(correction).reverse()) as typeof correction;
+ const a=buildPublicDiscovery([source('a')],{...config,reviewedAliases:[correction]});
+ const b=buildPublicDiscovery([source('a')],{...config,reviewedAliases:[reordered]});
+ assert.equal(a.corpusId,b.corpusId);assert.deepEqual(a.passages,b.passages);
+});

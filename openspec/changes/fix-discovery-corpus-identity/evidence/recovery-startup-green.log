@@ -1,0 +1,6 @@
+test_recovery_retains_ten_second_deadline_with_acl_startup_overhead (test_update_entry.BoundedRecoveryStartup.test_recovery_retains_ten_second_deadline_with_acl_startup_overhead) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 4.393s
+
+OK

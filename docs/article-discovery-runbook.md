@@ -281,3 +281,15 @@ BGE-M3、免費硬上限、原每日上限、兩個 true 開關、cron 與２０
 [完整部署與恢復紀錄](../openspec/changes/archive/2026-10-23-add-article-sharing/production-acceptance-20261023.md)保存 PR ＃６７、main CI 與 Pages 部署 `39960141344`。本輪 Worker 部署、settings 與排程不變；Pages ３８份 HTML 與部署產物一致。新版 corpus 先實際回覆４０９並保留關鍵字分頁，另獲明確正式資料維護授權後，重用２，６８８筆、補齊２６７段、完整讀回２，９５５筆後切換，API 及手機瀏覽器恢復 hybrid。
 
 這是含前景維護的完成紀錄，不是新的可重播操作腳本；自然 no_change 不能結束１２．２全程自然新增文章驗收。BGE-M3、原免費硬上限／每日上限、paidOverage＝０及２０２６－１１－２０ UTC ００：００期限不變，沒有補滿額度，未讀取帳單。本次僅文件封存、提交及 PR，不再次部署、查詢模型或修改正式資料。
+
+## 穩定身分與同步續作（２０２６－１０－２４，本機候選）
+
+變更 `fix-discovery-corpus-identity` 尚未部署。同一有效搜尋內容的不同還原時間／建置SHA保持同一corpusId；manifest仍保存sourceTree、eligibilityInstant、snapshotDigest與實際資產digest。真實公開資格／修訂、URL／中繼資料、詞彙與抽取設定變化仍換版本。不要把時間戳不同當成內容改動，也不要因corpus相同跳過每份資產hash與最終descriptor核對。
+
+候選Worker每輪最多讀回一批並準備下一批，保持每批１６段、每分鐘cron與４５秒期限。讀回超過１５秒或續作配額不足就記錄verified並退出；uploaded detail保存本輪已確認段數與新上傳／重用數，新上傳仍留待下一輪完整讀回。awaiting_readback不前進，UNKNOWN_INFERENCE保留扣額且不重播；saved output可安全重傳，pending跨真版本變動須停止處理，不能強制清空。
+
+正式部署前另須授權，且先核實全帳戶容量與供應商ID／namespace語意。候選policy的syncCapacity為可選JSON證據：validUntil及otherDimensions（其他索引、保留、準備及pending儲存的維度上界）。缺少／過期／不明即capacity_exceeded；不可套用fixture的０。總量按其他上界＋本索引describe數量×１０２４＋本批全部段數×１０２４計算，含重用向量，遵守原policy及應用上限。既有reader policy相容，不需D1 migration，但缺容量證據的舊policy不會讓候選繼續上傳，這必須在後續部署清單中明確處理。
+
+首次新身分的轉換只准在證明相容及歸屬後重用數值，完整讀回與最終公開來源／policy檢查後才提升。若容量、pending或provider語意無法確立，維持當期關鍵字，不刪未知向量、不升級、不改activeCorpusId假裝就緒。回復不得部署會復活撤回文章的舊站，也不得補滿已消耗額度。
+
+首次自然新文章驗收必須由既有cron從偵測到全部讀回／提升獨立完成；本機fixture、前景補段、最終自然no_change不能取代這條證據鏈。真實semantic與手機操作占共享額度且須另獲授權，人工相關性回報分開記錄。本輪沒有正式模型呼叫、寫入、排程調整或部署。

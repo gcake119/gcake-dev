@@ -184,3 +184,43 @@ class ACLInventoryAcceptance(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@unittest.skipUnless(sys.platform == 'darwin', 'Darwin authority batch contract')
+class AuthorityBatchAcceptance(unittest.TestCase):
+    def setUp(self):
+        from test_update_entry import EntryAcceptance
+        self.case=EntryAcceptance();self.case.setUp();self.addCleanup(self.case.doCleanups)
+        self.store=self.case.store
+
+    def test_later_unsafe_node_is_not_hidden_by_previous_safe_validation(self):
+        self.store.validate()
+        path=self.store.root/'gate.json'
+        subprocess.run(['/bin/chmod','+a','user:hermes allow write',str(path)],check=True,capture_output=True,timeout=5)
+        with self.assertRaisesRegex(ValueError,'runner-writable-acl'):
+            self.store.validate()
+        subprocess.run(['/bin/chmod','-N',str(path)],check=True,capture_output=True,timeout=5)
+        self.store.validate()
+        path.chmod(0o666)
+        with self.assertRaisesRegex(ValueError,'unsafe-authority-permission'):
+            self.store.validate()
+
+    def test_metadata_changed_before_inspection_is_not_accepted(self):
+        actual=subprocess.run;path=self.store.root/'gate.json';changed=False
+        def mutate(command,**options):
+            nonlocal changed
+            if not changed and command[:4]==[sys.executable,'-I','-B','-c']:
+                path.chmod(0o666);changed=True
+            return actual(command,**options)
+        with patch.object(entry.subprocess,'run',side_effect=mutate):
+            with self.assertRaises(ValueError):self.store.validate()
+        self.assertTrue(changed)
+
+    def test_authority_inspection_timeout_is_refused_and_child_reaped(self):
+        actual=subprocess.run;pidfile=self.case.base/'inspection-pid'
+        def stall(command,**options):
+            return actual([sys.executable,'-c',
+                'import os,time,pathlib,sys;pathlib.Path(sys.argv[1]).write_text(str(os.getpid()));time.sleep(10)',str(pidfile)],**options)
+        with patch.object(entry,'_ACL_TIMEOUT_SECONDS',.5),patch.object(entry.subprocess,'run',side_effect=stall):
+            with self.assertRaisesRegex(ValueError,'acl-inventory-failed'):self.store.validate()
+        with self.assertRaises(ProcessLookupError):os.kill(int(pidfile.read_text()),0)

@@ -1,0 +1,11 @@
+test_candidate_failure_restores_exact_first_slots_without_history_rollback (test_production_install.FirstInstallAcceptance.test_candidate_failure_restores_exact_first_slots_without_history_rollback) ... ok
+test_drift_blocks_before_stop_or_write (test_production_install.FirstInstallAcceptance.test_drift_blocks_before_stop_or_write) ... ok
+test_failed_original_verification_keeps_sender_stopped (test_production_install.FirstInstallAcceptance.test_failed_original_verification_keeps_sender_stopped) ... ok
+test_interrupted_wrapper_switch_recovers_in_fresh_controller (test_production_install.FirstInstallAcceptance.test_interrupted_wrapper_switch_recovers_in_fresh_controller) ... ok
+test_permission_drift_blocks_before_stop (test_production_install.FirstInstallAcceptance.test_permission_drift_blocks_before_stop) ... ok
+test_success_keeps_durable_originals (test_production_install.FirstInstallAcceptance.test_success_keeps_durable_originals) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 24.298s
+
+OK

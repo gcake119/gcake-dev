@@ -1,0 +1,12 @@
+
+> gcake-dev@0.1.0 check /Users/caiyijun/project/gcake-dev
+> astro check
+
+00:53:17 [content] Syncing content
+00:53:17 [content] Synced content
+00:53:17 [types] Generated 300ms
+00:53:17 [check] Getting diagnostics for Astro files in /Users/caiyijun/project/gcake-dev...
+Result (294 files):
+- 0 errors
+- 0 warnings
+- 0 hints

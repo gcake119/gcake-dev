@@ -1,0 +1,81 @@
+crash phase: replaced:updater exit: 79
+recovery exit: 0
+{"result": {"status": "rolled_back", "digest": "5f5684eefbc58f2e20dd72010538b098c1500a1fe87642a7db7ecb180d8d74a1", "mode": "dry-run"}, "elapsed": 4.807323625020217}
+         39675 function calls (39493 primitive calls) in 4.807 seconds
+
+   Ordered by: cumulative time
+   List reduced from 487 to 25 due to restriction <25>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       87    0.005    0.000    4.663    0.054 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py:627(run)
+       83    0.002    0.000    4.651    0.056 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:171(reject_write_acl)
+       87    0.002    0.000    4.513    0.052 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py:1351(communicate)
+       87    0.004    0.000    4.511    0.052 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py:2367(_communicate)
+       87    0.002    0.000    4.500    0.052 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py:253(_communicate_io_posix)
+       80    0.001    0.000    4.477    0.056 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:287(safe)
+        6    0.002    0.000    4.312    0.719 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:293(validate)
+       88    0.000    0.000    4.123    0.047 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/contextlib.py:207(__exit__)
+  176/150    0.000    0.000    4.123    0.027 {built-in method builtins.next}
+        1    0.000    0.000    4.123    4.123 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:553(recover)
+        2    0.000    0.000    4.123    2.061 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:311(maintenance)
+       87    0.003    0.000    4.005    0.046 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/selectors.py:385(select)
+       87    4.002    0.046    4.002    0.046 {method 'poll' of 'select.poll' objects}
+        5    0.000    0.000    3.628    0.726 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:307(writer)
+        1    0.000    0.000    3.418    3.418 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py:1233(join)
+        1    0.000    0.000    3.418    3.418 {method 'join' of '_thread._ThreadHandle' objects}
+        1    0.000    0.000    3.417    3.417 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py:1166(_bootstrap)
+        1    0.000    0.000    3.417    3.417 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py:1201(_bootstrap_inner)
+        1    0.000    0.000    3.302    3.302 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:532(recover_locked)
+        2    0.000    0.000    1.545    0.773 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:424(gate)
+        1    0.000    0.000    0.841    0.841 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:413(select)
+        1    0.000    0.000    0.684    0.684 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:261(__init__)
+        1    0.000    0.000    0.661    0.661 /Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:486(receipt)
+       17    0.000    0.000    0.605    0.036 /opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/socket.py:292(accept)
+       17    0.605    0.036    0.605    0.036 {method '_accept' of '_socket.socket' objects}
+
+
+
+Timeout (0:00:02)!
+Thread 0x00000001710ff000 [Thread-1 (serve)] (most recent call first):
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/socket.py", line 299 in accept
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 330 in serve
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1160 in run
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1218 in _bootstrap_inner
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1180 in _bootstrap
+
+Thread 0x00000001f42561c0 (most recent call first):
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/selectors.py", line 398 in select
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 291 in _communicate_io_posix
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 2412 in _communicate
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1395 in communicate
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 671 in run
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 182 in reject_write_acl
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 291 in safe
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 301 in validate
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 309 in writer
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 425 in gate
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 537 in recover_locked
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 557 in recover
+  File "<string>", line 7 in <module>
+Timeout (0:00:02)!
+Thread 0x00000001710ff000 [Thread-1 (serve)] (most recent call first):
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/socket.py", line 299 in accept
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 330 in serve
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1160 in run
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1218 in _bootstrap_inner
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/threading.py", line 1180 in _bootstrap
+
+Thread 0x00000001f42561c0 (most recent call first):
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/selectors.py", line 398 in select
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 291 in _communicate_io_posix
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 2412 in _communicate
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 1395 in communicate
+  File "/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/subprocess.py", line 671 in run
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 182 in reject_write_acl
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 291 in safe
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 302 in validate
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 309 in writer
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 425 in gate
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 544 in recover_locked
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 557 in recover
+  File "<string>", line 7 in <module>
