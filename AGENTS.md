@@ -46,3 +46,10 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 ### Computer Use 草稿同步的本機實作
 
 - `automate-substack-draft-content-sync` 已由使用者選定沿用既有 Computer Use handoff；本機實作與後台唯讀 API 說明見 `docs/substack-draft-sync-api.md`。正式執行者、工作階段與無人輪次驗收／啟用仍獨立處理，既有正式觀察器及排程不因本機實作改變。
+
+### Chrome 分頁管理
+
+- 本節取代舊操作紀錄中「一般 worker 僅操作自己的新 Chrome 分頁」的限制；僅調整分頁管理規則，不代表正式 runtime 已更新或重新驗收，也不新增草稿寫入、排程、發布或寄送授權。
+- 持續更新 Substack 草稿時，先盤點既有 Chrome 分頁，優先沿用同帳號、同刊物且可安全操作的 Substack 後台分頁；不得每輪無條件新增分頁。
+- 若確有需要新增分頁，記錄本次新增的分頁識別，於任務完成或失敗收尾時關閉本次新增且不需人工接手的分頁，避免累積。沿用使用者原本開啟的分頁時，完成後保留；不得關閉其他工作或來源不明的分頁。
+- 關閉前確認草稿已儲存；若尚有未儲存內容、操作結果未知或需要人工接手，保留必要分頁並明確回報原因。
