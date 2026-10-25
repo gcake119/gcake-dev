@@ -56,6 +56,8 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 
 ## 技術系列文章協作與定稿交接
 
+- ChatGPT Project 對話指令參考副本：`docs/editorial/chatgpt-project-instructions.md`。此文件僅供對照；Repo 的 Agent 執行規則仍由本檔與各項正式發布規格決定。
+
 適用於 `docs/editorial/<series-slug>/` 的技術系列寫作；本節是 Repo 端執行規則，與 ChatGPT Project 的對話／審稿流程互補。遵守上方 Spectra 規則與發布安全限制，不為文件編輯擅自啟動產品功能開發。
 
 ### 文件與權威
