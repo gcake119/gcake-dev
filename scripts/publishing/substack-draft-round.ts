@@ -75,7 +75,9 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
    results.push({slug,sourceRevision:source?.sourceRevision,target:'substack',operation:'sync-draft',status:ok?'observed':state.draftSync?.status==='inconclusive'?'blocked':'manual_required',code:ok?undefined:state.intent?'SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED':state.draftSync?.code??'SUBSTACK_DRAFT_PREPARATION_REQUIRED'});
    if(exchange&&!state.intent)await fs.rm(exchange.directory,{recursive:true});
   }catch(e){
-   const code=e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
+   // A nested media/readback error can win the race against the outer deadline timer.
+  // Preserve the round's exhausted-budget verdict once that deadline has elapsed.
+  const code=Date.now()>=deadline?'SUBSTACK_DRAFT_BUDGET_EXHAUSTED':e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
    const file=files.find(f=>f.slug===slug);
    // Record failed eligibility as metadata only, so one broken new original cannot monopolize every round.
    if(file&&(!missingTracked||code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED')&&!await repo.bySlug(slug))await repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'substack:'+slug,slug,sourcePath:path.relative(root,file.path),version:0,observedState:'draft_prepared',delivery:'not_armed',...(code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?{lastErrorCode:code}:{}),draftSync:{status:code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?'foreground-required':'inconclusive',code,checkedAt:now(),transport:'computer-use'},updatedAt:now()},0);
