@@ -22,8 +22,14 @@ esac
 case $mode in
   prepare)
     [[ ${GITHUB_RUN_ID:-} =~ ^[0-9]+$ && ${GITHUB_RUN_ATTEMPT:-} =~ ^[0-9]+$ && ${GITHUB_JOB:-} =~ ^[A-Za-z0-9_-]+$ && -d ${RUNNER_TEMP:-} ]] || { echo CI_JOB_IDENTITY >&2; exit 1; }
+    if [[ $RUNNER_ENVIRONMENT == self-hosted ]]; then
+      job_tmp="$RUNNER_TEMP/gcake-tmp-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
+      mkdir -m 0700 "$job_tmp"
+      [[ $(stat -c '%d' "$job_tmp") == $(stat -c '%d' "${GITHUB_WORKSPACE:?}") ]] || { echo MINT_CI_TMP_DEVICE >&2; exit 1; }
+    fi
     {
       if [[ $RUNNER_ENVIRONMENT == self-hosted ]]; then
+        echo "TMPDIR=$job_tmp"
         echo "RUNNER_TOOL_CACHE=$cache"
         echo "AGENT_TOOLSDIRECTORY=$cache"
       fi
