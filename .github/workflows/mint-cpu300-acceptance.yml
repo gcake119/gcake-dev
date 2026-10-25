@@ -1,0 +1,42 @@
+name: Mint CPU300 cross-repo acceptance
+on:
+  push:
+    branches: [codex/mint-gcake-infra-acceptance-20261026]
+    paths: [.github/workflows/mint-cpu300-acceptance.yml]
+permissions: {}
+jobs:
+  shared-host-build:
+    if: github.actor == 'gcake119'
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
+    timeout-minutes: 10
+    env:
+      CI_ACCEPTANCE_BATCH: 55ed37b2ae1b4b0d8cbd7b56fae269a6
+      CI_ACCEPTANCE_REPOS: gcake119/gcake-dev,gcake119/tainan-city-document-engine
+    steps:
+      - name: Claim a fresh acceptance batch
+        run: |
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          path=Path('/var/lib/github-runner/cross-repo-acceptance')/os.environ['CI_ACCEPTANCE_BATCH']
+          path.mkdir(parents=True,exist_ok=True,mode=0o700)
+          with open(path/(os.environ['GITHUB_REPOSITORY'].split('/')[1]+'.claimed'),'x') as stream:
+              stream.write(os.environ['GITHUB_RUN_ID']+':'+os.environ['GITHUB_RUN_ATTEMPT'])
+          PYCODE
+      - name: Verify dedicated fixture namespace and Chrome
+        run: |
+          set -euo pipefail
+          test "$(id -un)" = ci-runner
+          test "$(findmnt -nr -o TARGET --target /private)" = /private
+          test "$(findmnt -nr -o FSTYPE --target /private)" = tmpfs
+          python3 -c "import shutil; assert shutil.disk_usage('/private').total==8*1024**3 and shutil.disk_usage('/private').free>4*1024**3"
+          test ! -L /private/tmp
+          if [ ! -e /private/tmp ]; then mkdir -m 0700 /private/tmp; fi
+          test "$(stat -c '%u:%a' /private/tmp)" = "$(id -u):700"
+          /opt/google/chrome/chrome --version
+          profile=$(mktemp -d "$RUNNER_TEMP/gcake-chrome.XXXXXX")
+          trap 'rm -rf -- "$profile"' EXIT
+          # Same no-sandbox mode as Playwright's default fixture launcher.
+          timeout 60 /opt/google/chrome/chrome --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-background-networking --no-first-run --user-data-dir="$profile" --dump-dom 'data:text/html,<h1>gcake-mint-browser-ok</h1>' | grep -F gcake-mint-browser-ok
+      - name: Verify real concurrent jobs share CPU300 and original lock
+        run: python3 /usr/local/libexec/verify-cross-repo-build.py
