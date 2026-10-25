@@ -15,7 +15,10 @@
 - 下一篇：第 02 篇〈30 個獨立的 ChatGPT 對話，怎麼維持同一條寫作主線？〉（候選標題，尚未開始討論）。
 - 正式公開：本次只存稿與交接，沒有提供本系列的公開驗收證據。
 - 本次基底：`60bc5ebe65ffc678a145bc2464dc213610c77430`。
-- 提交分支：`editorial/blog-system-01-final-20261026`；本次正式提交與 PR 以 Git 歷史／該分支對 main 的 PR 為準，合併前不視為 main 已更新。
+- 提交分支：`editorial/blog-system-01-final-20261026`。
+- 正文／manifest 提交：`6c20b55e65c0cba3c4dac4e5e1c525d94970a990`。
+- PR：[#76](https://github.com/gcake119/gcake-dev/pull/76)。合併前不視為 main 已更新；CI 與合併狀態應讀 PR 最新結果，不能用此文件推定。
+- 本次驗證：正式正文與作者確認的本機定稿逐字一致；現有及新增文章的 slug、topic、manifest 關聯與五章 15 篇結構檢查通過。完整 pnpm test/check/build 未在本機執行，由既有 PR CI 核對。
 
 ## 全系列固定事實與邊界
 
