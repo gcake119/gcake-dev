@@ -53,3 +53,34 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - 持續更新 Substack 草稿時，先盤點既有 Chrome 分頁，優先沿用同帳號、同刊物且可安全操作的 Substack 後台分頁；不得每輪無條件新增分頁。
 - 若確有需要新增分頁，記錄本次新增的分頁識別，於任務完成或失敗收尾時關閉本次新增且不需人工接手的分頁，避免累積。沿用使用者原本開啟的分頁時，完成後保留；不得關閉其他工作或來源不明的分頁。
 - 關閉前確認草稿已儲存；若尚有未儲存內容、操作結果未知或需要人工接手，保留必要分頁並明確回報原因。
+
+## 技術系列文章協作與定稿交接
+
+適用於 `docs/editorial/<series-slug>/` 的技術系列寫作；本節是 Repo 端執行規則，與 ChatGPT Project 的對話／審稿流程互補。遵守上方 Spectra 規則與發布安全限制，不為文件編輯擅自啟動產品功能開發。
+
+### 文件與權威
+
+- 通用模板：`docs/editorial/_templates/series-plan.md`、`docs/editorial/_templates/progress-and-handoff.md`；更新通用方法時才修訂模板，不自動覆寫其他系列。
+- 每個系列獨立保存 `docs/editorial/<series-slug>/series-plan.md` 與 `progress-and-handoff.md`。目前部落格系統系列使用 `docs/editorial/blog-system/`。
+- 正式文章 Markdown 是正文權威；`src/content/series/*.yaml`（Series manifest）是章節、閱讀順序及編輯進度權威；交接文件只保存跨篇寫作脈絡。現有文章路徑須先查 Repo，不憑模板猜測。
+- 最新 Git、OpenSpec、正式部署與驗收紀錄優先於舊的實作摘要。不能把規格、測試、PR 或部署成功直接寫成已公開驗收。
+
+### 開始與進行單篇工作
+
+- 「開始討論第 X 篇／下一篇」：先讀該系列企劃、最新交接、上一篇定稿與本篇必要的少數 Git／OpenSpec／驗收資料。先整理核心問題、真實素材、前後篇界線，未經要求不直接寫初稿。
+- 寫作順序：核心問題 → 真實經驗 → 論點 → 標題 → 簡要大綱 → 初稿 → 多輪審稿 → 定稿。依第一性原理與金字塔原理，保留「當時知道／後來理解／目前仍不知道」，不補造作者經驗或能力。
+- 涉及既有已發布文章，先比對重複主題；不因後續理解改寫成當時已知的決策。
+
+### 使用者明確確認「定稿，更新 Repo 和交接紀錄」時
+
+1. 核對最後確認的定稿版本、正式 Markdown 路徑與 frontmatter；只改本次相關文章，不自行重新潤稿或更改其他文章。
+2. 核對並更新必要的 Series manifest，保持正文與章節、篇序及狀態一致；不要自創與 manifest 重複的文章順序欄位。
+3. 更新**該系列** `progress-and-handoff.md`：實際定稿進度、本篇核心與證據、當時／後來／未知的界線、已談／未談、下一篇切入點、文章路徑和 commit／PR（若已知）。不複製完整正文或對話。
+4. 僅在章節／候選篇目確實需要調整時更新該系列 `series-plan.md`；未公開篇目可調整，已公開篇目保留發表事實。
+5. 優先透過分支與 PR 提交並驗證差異；遵守 main 保護及 CI。若未能寫入或檢查未通過，明確回報，不宣稱完成。
+
+### 發布保護
+
+- **寫作定稿 ≠ ready／published ≠ 正式公開**。不要因「定稿」自動設成 `published`、擅自承諾發布時段、觸發 GitHub Pages／Substack／電子報／Hermes 或更動 D1 發布狀態。
+- 任何可能觸發發布的狀態／日期或 manifest 變更，先依現有發布規格確認具體副作用與授權；未授權則維持安全狀態，明確告知所需後續步驟。
+- 此節不覆蓋既有 Substack／Chrome、GitHub 保護、身份權限、正式發布與外部寫入規則。
