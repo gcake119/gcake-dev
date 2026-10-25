@@ -33,3 +33,5 @@
 ２０２６－１０－２４ `fix-discovery-corpus-identity` 本機候選：分離穩定搜尋內容身分與產製追溯，完整讀回後可在既有期限／共享原子預留內同輪續作一批；每分鐘cron、１６段批次、未知結果不重播及零付費超額保留。容量證據不足停止新上傳，舊身分轉換仍須全量核實，不預設雙整庫免費。詳見[設計與本機驗收](../../openspec/changes/fix-discovery-corpus-identity/design.md)及ADR-001新增節；沒有正式設定／資料寫入、模型查詢或部署，既有歷史RED與自然新增文章全程驗收保持未完成。
 
 ２０２６－１０－２４ 使用者追加授權修復完整本機gate：舊output保留並補型別，不改檢查排除；Hermes同次authority驗證的ACL檢查合併至一個有界native子程序，每節點仍核對ACL／owner／mode，不跨次快取，保留30秒ACL期限與10秒崩潰復原驗收。詳見[本機修正紀錄](../../openspec/changes/fix-discovery-corpus-identity/local-verification.md)。這是本機候選，未安裝正式控制程式或更動正式ACL／服務／通知；不宣稱舊正式PermissionError根因已修復，ADR-001免費搜尋政策不變。
+
+２０２６－１０－２６ `migrate-gcake-dev-ci-to-mint`：依使用者要求按最新Actions選定本repo，授權新增第六個Mint個人repo runner與全主機CPUQuota300%，共用MemoryHigh16GiB／MemoryMax20GiB、Tasks4096及原rootless建置鎖。只遷移可信PR／main驗證，fork保留hosted；原測試／Chrome fixtures／Hermes固定路徑與4GiB guard保留，Mint CI無sudo。Chrome由官方簽章來源安裝，僅新service使用/private私有8GiB容量tmpfs；容量不是RAM預留，仍受共用記憶體額度約束。完整本機與真實跨repo並行已成功，PR／main整合驗收另列，不改ADR-001搜尋／模型／免費額度，也不改或觸發正式發文、通知、Pages／Cloudflare部署與排程。原先Editorial release queue失敗屬既有觀測，不以本CI遷移修復或重新執行。見[本次驗收](../../openspec/changes/migrate-gcake-dev-ci-to-mint/verification.md)；不部署或archive。

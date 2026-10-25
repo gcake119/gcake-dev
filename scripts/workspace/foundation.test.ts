@@ -150,7 +150,7 @@ test('main PR validation selects each shared gate once and retains editorial reh
       return (step.run ?? '').split('\n').map((line: string) => line.trim());
     });
   });
-  for (const gate of ['pnpm install --frozen-lockfile', 'pnpm exec playwright install --with-deps chrome',
+  for (const gate of ['pnpm install --frozen-lockfile', 'bash scripts/ci/prepare-validation.sh browser',
     'pnpm test', 'pnpm check', 'pnpm build:all', 'pnpm release:dry-run', 'pnpm editorial:rehearse']) {
     assert.equal(commands.filter((command) => command === gate).length, 1, `${gate} must run once`);
   }

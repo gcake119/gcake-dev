@@ -122,6 +122,10 @@ test('PR run scripts stop on shared, dry-run or rehearsal failure without provid
   'test','check','build:all','release:dry-run','editorial:rehearse'];
  const dir=await fs.mkdtemp(join(tmpdir(),'gcake-pr-shell-'));
  try {
+  await fs.mkdir(join(dir,'scripts','ci'),{recursive:true});
+  await fs.copyFile('scripts/ci/prepare-validation.sh',join(dir,'scripts','ci','prepare-validation.sh'));
+  await fs.symlink('/bin/bash',join(dir,'bash'));
+  const githubEnv=join(dir,'github-env');await fs.writeFile(githubEnv,'');
   await fs.writeFile(join(dir,'pnpm'),`#!/bin/bash
 [[ "$EDITORIAL_RELEASE_ENABLED" == false && "$HERMES_RSS_NOTIFY_ENABLED" == false ]] || exit 92
 printf '%s\\n' "$*" >> "$TRACE"
@@ -135,7 +139,7 @@ printf '%s\\n' "$*" >> "$TRACE"
   for(const failure of ['',...commands]) {
    const trace=join(dir,'trace');await fs.writeFile(trace,'');
    const result=spawnSync('/bin/bash',['--noprofile','--norc','-e','-o','pipefail','-c',script],{
-    cwd:dir,encoding:'utf8',env:{PATH:dir,TRACE:trace,FAIL_COMMAND:failure,...workflow.env},
+    cwd:dir,encoding:'utf8',env:{PATH:dir,TRACE:trace,FAIL_COMMAND:failure,RUNNER_ENVIRONMENT:'github-hosted',GITHUB_RUN_ID:'123',GITHUB_RUN_ATTEMPT:'1',GITHUB_JOB:'validate',GITHUB_ENV:githubEnv,RUNNER_TEMP:dir,...workflow.env},
    });
    assert.equal(result.error,undefined);
    assert.equal(result.status,failure?73:0,`${failure || 'success'}: ${result.stderr}`);
@@ -143,4 +147,30 @@ printf '%s\\n' "$*" >> "$TRACE"
    assert.deepEqual(observed,failure?commands.slice(0,commands.indexOf(failure)+1):commands);
   }
  } finally {await fs.rm(dir,{recursive:true,force:true});}
+});
+
+test('Mint validation admits only the dedicated repo runner and keeps fork fallback',async()=>{
+ for(const name of ['validate-pr','validate-editorial']) {
+  const w=YAML.parse(await fs.readFile(`.github/workflows/${name}.yml`,'utf8'));
+  assert.match(w.jobs.validate['runs-on'],/repo-gcake-dev/);
+  assert.match(w.jobs.validate['runs-on'],/head\.repo\.full_name == github\.repository/);
+  assert.match(w.jobs.validate['runs-on'],/ubuntu-24\.04/);
+  assert.deepEqual(w.permissions,{contents:'read'});
+  assert.equal(w.jobs.validate.environment,undefined);
+  assert.equal(w.env.EDITORIAL_RELEASE_ENABLED,'false');assert.equal(w.env.HERMES_RSS_NOTIFY_ENABLED,'false');
+ }
+});
+
+test('Mint preparation rejects wrong account and socket before environment publication',async()=>{
+ const helper=join(process.cwd(),'scripts/ci/prepare-validation.sh');
+ const root=await fs.mkdtemp(join(tmpdir(),'gcake-mint-prepare-'));
+ try {
+  const bin=join(root,'bin');await fs.mkdir(bin);
+  const out=join(root,'env');await fs.writeFile(out,'');
+  await fs.writeFile(join(bin,'id'),'#!/bin/sh\ncase "$1" in -un) echo "${TEST_USER:-other}";; -u) echo 995;; esac\n',{mode:0o700});
+  const run=(extra:Record<string,string>={})=>spawnSync('/bin/bash',[helper],{encoding:'utf8',env:{PATH:bin+':/usr/bin:/bin',RUNNER_ENVIRONMENT:'self-hosted',GITHUB_REPOSITORY:'gcake119/gcake-dev',RUNNER_NAME:'mint-gcake-dev',GITHUB_ENV:out,RUNNER_TEMP:root,DOCKER_HOST:'unix:///wrong.sock',...extra}});
+  const other=run();assert.notEqual(other.status,0);assert.match(other.stderr,/MINT_CI_ACCOUNT/);
+  const wrong=run({TEST_USER:'ci-runner'});assert.notEqual(wrong.status,0);assert.match(wrong.stderr,/MINT_CI_DOCKER_SOCKET/);
+  assert.equal(await fs.readFile(out,'utf8'),'');
+ }finally{await fs.rm(root,{recursive:true,force:true});}
 });
