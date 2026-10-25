@@ -7,4 +7,4 @@
 
 ## 3. Review and real acceptance
 - [x] 3.1 [after: 2.2] Independently review exact host and repo changes, run two real repo Docker acceptance jobs proving quota3 and nonoverlapping lock intervals; retain failures and cleanup evidence.
-- [ ] 3.2 [after: 3.1] After full local/PR checks and fresh head/base/diff/review/threads/mergeability gates, integrate exact PRs and verify actual main validation; update decision ledger and runner inventory with exact results and boundaries, preserve recovery refs, do not deploy or archive.
+- [x] 3.2 [after: 3.1] After full local/PR checks and fresh head/base/diff/review/threads/mergeability gates, integrate exact PRs and verify actual main validation; update decision ledger and runner inventory with exact results and boundaries, preserve recovery refs, do not deploy or archive.

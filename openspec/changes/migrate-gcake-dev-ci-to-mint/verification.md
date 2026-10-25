@@ -1,6 +1,6 @@
 # Mint validation migration evidence
 
-Work item: migrate-gcake-dev-ci-to-mint, 2026-10-26 Asia/Taipei. Application base d1a7b86341f84fe54d9dce3b3d2d7b76fa78c711; host repository base93b83989d73e4d118d375d78956eced43c354166. Final PR/main integration remains pending until the exact remote results below are completed.
+Work item: migrate-gcake-dev-ci-to-mint, 2026-10-26 Asia/Taipei. Application base d1a7b86341f84fe54d9dce3b3d2d7b76fa78c711; host repository base93b83989d73e4d118d375d78956eced43c354166. Functional PR/main integration completed with the exact remote results below; final evidence commits retain the normal PR/CI gates.
 
 ## Selection and authority
 
@@ -44,11 +44,11 @@ Build intervals: gcake-dev[38112.685580619,38122.730507967], Document Engine[381
 
 | Requirement | Implementation and coverage | Execution |
 | --- | --- | --- |
-| Trusted validation preserves complete gates on Mint | Both workflows, real hosted shell/exit73 test, same-repo/fork route assertions, original test/check/build/dry-run/rehearsal | Local complete pass; real owning PR/main pending |
-| Fixtures retain safe native boundaries | prepare helper, unchanged Hermes guard, actual missing-Chrome/mount negative probes, fixed data-URL Chrome and real original browser fixtures | Local/probe/cross jobs passed; owning PR/main pending |
+| Trusted validation preserves complete gates on Mint | Both workflows, real hosted shell/exit73 test, same-repo/fork route assertions, original test/check/build/dry-run/rehearsal | Local complete pass; actual PR40218973967 and main40219471212 passed |
+| Fixtures retain safe native boundaries | prepare helper, unchanged Hermes guard, actual missing-Chrome/mount negative probes, fixed data-URL Chrome and real original browser fixtures | Local/probe/cross and actual owning PR/main passed |
 | Six runners share three CPU times and the existing build lock | Persistent/runtime CPU update, installed budget checker, fixed allowlist, two real repo build intervals | Actual kernel/shared daemon/lock passed |
 
-Spec validate/analyze passed without findings after adding the concrete missing-Chrome example. Required review/fresh head/base/full diff/local scope/GitHub checks/threads/mergeability will be rechecked before ordinary exact-SHA merge. Classic branch-protection API returns404, but active repository rulesets enforce pull requests, strict required validate checks, deletion and non-fast-forward protection. The required approving review count is0; commits are attributed to gcake119. These rulesets, complete check rollup, reviews/threads and fresh base are explicitly checked before ordinary merge; no integration bypass is used.
+Spec validate/analyze passed without findings after adding the concrete missing-Chrome example. Required review/fresh head/base/full diff/local scope/GitHub checks/threads/mergeability were rechecked before the functional ordinary exact-SHA merge and are rechecked for subsequent evidence PRs. Classic branch-protection API returns404, but active repository rulesets enforce pull requests, strict required validate checks, deletion and non-fast-forward protection. The required approving review count is0; commits are attributed to gcake119. These rulesets, complete check rollup, reviews/threads and fresh base are explicitly checked before ordinary merge; no integration bypass is used.
 
 Not-run/excluded: real external fork execution, production browser/readiness, provider publication/notification, deployment, CPU/OOM saturation and a post-install whole-host reboot. Fork routing has source/unit coverage; synthetic release/rehearsal and Chrome data URL are not provider acceptance. Existing editorial queue failures and unrelated worktrees remain untouched. No archive or recovery-ref cleanup is authorized.
 
@@ -65,3 +65,15 @@ Real ci-runner transient probes of the actual updated helper confirmed: differen
 The same-device fix initially encoded full run/attempt/job identifiers in TMPDIR. The final review-document update a48095a triggered full run40217013549 (the preceding513be16 run40216776992 was superseded by normal workflow concurrency). During abnormally long browser testing, a separate fixed-data-URL probe reproduced Chrome FATAL Socket path too long with a97-character TMPDIR. That known-invalid environment run was cancelled and its log retained; it is not reported as a passing or completed test suite. No timeout/assertion was increased.
 
 Mint TMPDIR now uses a short unique mktemp suffix under the runner-managed job temporary root, enforces a conservative60-character maximum, retains0700 creation and the workspace device check. Run/attempt/job isolation is provided by the job-scoped RUNNER_TEMP lifecycle plus uniqueness rather than encoding long identifiers in the child name. A58-character prefix rendered the same data URL with Chrome exit0;21 focused checks passed. Earlier full local/app results remain scoped prior evidence; a fresh entire owning PR run is still required.
+
+## Final functional integration
+
+[Final PR run40218973967](https://github.com/gcake119/gcake-dev/actions/runs/40218973967) succeeded on mint-gcake-dev: complete original tests, Astro/type checks, all workspace builds, release dry-run, rehearsal and post-actions. Headc924b2acd70e01cfb537c2cff6ee14c2b8fa1800, independently reviewed full12-file diff6efa103e756451e6cf988450ac894a1d0678ad896546df33893783ec5f8fff79. This fresh whole-run result closes the earlier EXDEV/Chrome temporary-prefix failures; no test or timeout was weakened.
+
+Before merge, fresh exact head/base/diff, clean worktree, all checks and unresolved reviews/threads, active strict validate ruleset/application15368, actual Mint job, commit attribution and mergeability passed. PR71 merged normally to25f9890d040dcde4303f674bd64a9b60e793c822; reviewed head is its ancestor and its tree equals the tested/reviewed tree. No bypass/force/admin merge or history rewrite was used.
+
+[Owning main40219471212](https://github.com/gcake119/gcake-dev/actions/runs/40219471212) at that exact merge also succeeded on mint-gcake-dev: all original tests, check, static build, rehearsal and post-actions. This is CI/static-build acceptance, not real editorial publication or deployment. The original provider-facing queue failure remains a separate observation. There is no application Docker/GHCR workflow in this repository.
+
+Host source[PR7](https://github.com/gcake119/home-infrastructure/pull/7) merged4ce5524e7c6655b9d000209fe13af387d6643232 after independent9-file reviewde171542b5bac2a9296f63e05ffded41118d62ac25eee1f36bf35ac4fd532582 and fresh gates. Its exact-main[Docker smoke40218042745](https://github.com/gcake119/home-infrastructure/actions/runs/40218042745) passed under CPU300%. The first automatic permission-review attempt expired before command execution; one permitted retry succeeded, with no execution or safety denial inferred from that timeout. Six services remain active; source/recovery refs and unrelated local edits are preserved.
+
+Verification summary:5/5 tasks delivered;3/3 requirements implemented with current actual owning CI/cross/negative-probe results plus the explicitly scoped prior local pass. The missing-Chrome example has an actual ci-runner negative result; exit73 and routes have executable/unit coverage, while a real external fork remains not-run. Both private-mount capacity and real browser launch were measured; the long-prefix97-character failure and58-character success remain distinct from complete owning CI. Final document-only changes reuse unchanged implementation evidence and still receive their required full PR/main checks. No product API/content/search/provider/notification/schedule/runtime, production data, archive or whole-host reboot was changed.
