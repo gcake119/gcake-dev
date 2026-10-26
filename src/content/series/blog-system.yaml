@@ -5,7 +5,7 @@ status: planned
 featured: false
 editorial:
   currentPost: blog-system-series-manifest
-  nextPost: blog-system-long-term-blog
+  nextPost: blog-system-editor-admin
 source:
   type: local
 canonical:
@@ -25,19 +25,6 @@ sections:
         status: draft
         workingTitle: "讓系列安排跟著實際寫作調整"
   - id: chapter-2
-    title: "從文章網站到長期內容站"
-    status: planned
-    posts:
-      - slug: blog-system-long-term-blog
-        status: planned
-        workingTitle: "有了鐵人賽網站，為什麼還要建立一個新的部落格？"
-      - slug: blog-system-content-ownership
-        status: planned
-        workingTitle: "同一篇文章出現在兩個網站，誰負責保存正式版本？"
-      - slug: blog-system-build-pipeline
-        status: planned
-        workingTitle: "文章放上網站後，還有哪些事情要自動處理？"
-  - id: chapter-3
     title: "為了讓編輯更方便，我做了一個後台"
     status: planned
     posts:
@@ -50,7 +37,7 @@ sections:
       - slug: blog-system-safe-git-editing
         status: planned
         workingTitle: "編輯後台也能直接改 Git，怎麼避免把文章改壞？"
-  - id: chapter-4
+  - id: chapter-3
     title: "當連載發布真正交給系統"
     status: planned
     posts:
@@ -63,7 +50,7 @@ sections:
       - slug: blog-system-publication-evidence
         status: planned
         workingTitle: "發文成功不能只看系統說了什麼"
-  - id: chapter-5
+  - id: chapter-4
     title: "網站開始長出新的能力，我還需要理解什麼？"
     status: planned
     posts:
