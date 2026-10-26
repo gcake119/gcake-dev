@@ -14,11 +14,13 @@ concurrency:
 env:
   EDITORIAL_RELEASE_ENABLED: 'false'
   HERMES_RSS_NOTIFY_ENABLED: 'false'
+  LANG: C.UTF-8
+  LC_ALL: C.UTF-8
 
 jobs:
   validate:
     name: validate
-    runs-on: ubuntu-24.04
+    runs-on: ${{ github.repository == 'gcake119/gcake-dev' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","repo-gcake-dev"]') || 'ubuntu-24.04' }}
     timeout-minutes: 20
     steps:
       - name: Checkout PR merge candidate
@@ -27,10 +29,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Prepare isolated validation tools
+        run: bash scripts/ci/prepare-validation.sh
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
 
       - name: Setup Node
         uses: actions/setup-node@v7
@@ -42,13 +48,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Chrome and Linux dependencies for distribution fixtures
-        run: pnpm exec playwright install --with-deps chrome
+        run: bash scripts/ci/prepare-validation.sh browser
 
       - name: Full tests including Hermes
         # The isolated update harness deliberately accepts only this namespace.
         # Creating it on the disposable Linux runner preserves that restriction.
         run: |
-          sudo install -d -m 1777 /private/tmp
+          bash scripts/ci/prepare-validation.sh fixtures
           pnpm test
 
       - name: Astro and TypeScript checks

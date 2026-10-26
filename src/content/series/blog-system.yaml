@@ -1,0 +1,78 @@
+slug: blog-system
+title: 我的技術部落格，是怎麼慢慢變成一套系統的？
+description: 從系列寫作的需求出發，整理內容、編輯、發布與搜尋系統逐步形成的開發經驗。
+status: planned
+featured: false
+editorial:
+  currentPost: blog-system-series-manifest
+  nextPost: blog-system-long-term-blog
+source:
+  type: local
+canonical:
+  mode: local
+sections:
+  - id: chapter-1
+    title: "從寫作方法開始"
+    status: planned
+    posts:
+      - slug: blog-system-serial-publication
+        status: draft
+        workingTitle: "以「系列連載」為核心的發表形式"
+      - slug: blog-system-conversation-handoff
+        status: draft
+        workingTitle: "把寫作流程變成 Agent 能接手的固定工作"
+      - slug: blog-system-series-manifest
+        status: draft
+        workingTitle: "讓系列安排跟著實際寫作調整"
+  - id: chapter-2
+    title: "從文章網站到長期內容站"
+    status: planned
+    posts:
+      - slug: blog-system-long-term-blog
+        status: planned
+        workingTitle: "有了鐵人賽網站，為什麼還要建立一個新的部落格？"
+      - slug: blog-system-content-ownership
+        status: planned
+        workingTitle: "同一篇文章出現在兩個網站，誰負責保存正式版本？"
+      - slug: blog-system-build-pipeline
+        status: planned
+        workingTitle: "文章放上網站後，還有哪些事情要自動處理？"
+  - id: chapter-3
+    title: "為了讓編輯更方便，我做了一個後台"
+    status: planned
+    posts:
+      - slug: blog-system-editor-admin
+        status: planned
+        workingTitle: "ChatGPT 已經可以幫我改文章，為什麼還需要編輯後台？"
+      - slug: blog-system-storage-responsibilities
+        status: planned
+        workingTitle: "文章、圖片和發布紀錄，為什麼要分開保存？"
+      - slug: blog-system-safe-git-editing
+        status: planned
+        workingTitle: "編輯後台也能直接改 Git，怎麼避免把文章改壞？"
+  - id: chapter-4
+    title: "當連載發布真正交給系統"
+    status: planned
+    posts:
+      - slug: blog-system-release-queue
+        status: planned
+        workingTitle: "我只想固定時間發文，為什麼後來需要發布佇列？"
+      - slug: blog-system-substack-integration
+        status: planned
+        workingTitle: "沒有發文 API，怎麼把文章同步到 Substack？"
+      - slug: blog-system-publication-evidence
+        status: planned
+        workingTitle: "發文成功不能只看系統說了什麼"
+  - id: chapter-5
+    title: "網站開始長出新的能力，我還需要理解什麼？"
+    status: planned
+    posts:
+      - slug: blog-system-article-discovery
+        status: planned
+        workingTitle: "文章多了之後，我開始思考怎麼讓讀者找到內容"
+      - slug: blog-system-ai-development-workflow
+        status: planned
+        workingTitle: "ChatGPT 負責討論架構、Codex 負責實作，這套分工怎麼形成？"
+      - slug: blog-system-understanding-boundaries
+        status: planned
+        workingTitle: "部落格變成一套系統之後，我現在理解了多少？"

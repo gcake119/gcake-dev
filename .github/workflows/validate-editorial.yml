@@ -15,31 +15,36 @@ concurrency:
 env:
   EDITORIAL_RELEASE_ENABLED: 'false'
   HERMES_RSS_NOTIFY_ENABLED: 'false'
+  LANG: C.UTF-8
+  LC_ALL: C.UTF-8
 
 jobs:
   validate:
-    runs-on: ubuntu-24.04
+    runs-on: ${{ github.repository == 'gcake119/gcake-dev' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","repo-gcake-dev"]') || 'ubuntu-24.04' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Prepare isolated validation tools
+        run: bash scripts/ci/prepare-validation.sh
       - uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Install Chrome and Linux dependencies for distribution fixtures
-        run: pnpm exec playwright install --with-deps chrome
+        run: bash scripts/ci/prepare-validation.sh browser
 
       - name: Run all tests including editorial and Hermes
         # Preserve the harness's fixed isolated namespace on Linux.
         run: |
-          sudo install -d -m 1777 /private/tmp
+          bash scripts/ci/prepare-validation.sh fixtures
           pnpm test
       - run: pnpm check
       - run: pnpm build
