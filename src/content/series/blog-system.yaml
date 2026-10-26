@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-conversation-handoff
-  nextPost: blog-system-series-manifest
+  currentPost: blog-system-series-manifest
+  nextPost: blog-system-long-term-blog
 source:
   type: local
 canonical:
@@ -22,8 +22,8 @@ sections:
         status: draft
         workingTitle: "把寫作流程變成 Agent 能接手的固定工作"
       - slug: blog-system-series-manifest
-        status: planned
-        workingTitle: "系列企劃會改變，怎麼讓文章順序和進度保持一致？"
+        status: draft
+        workingTitle: "讓系列安排跟著實際寫作調整"
   - id: chapter-2
     title: "從文章網站到長期內容站"
     status: planned
