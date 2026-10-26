@@ -29,7 +29,7 @@ sections:
         status: published
         workingTitle: 正式開賽後，我怎麼知道自動發文真的完成了？
       - slug: ithome-2026-template-hardening
-        status: ready
+        status: published
         workingTitle: 從「可以 fork」到「真的能接手」，模板還缺哪些東西？
       - slug: ithome-2026-tech-blog-boundary
         status: ready
