@@ -1,0 +1,10 @@
+{
+  "status": "installed-dry-readback-passed",
+  "active": {
+    "digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+    "mode": "dry-run"
+  },
+  "monitor_sha256": "94a43f69cecb074300e8c8a6d88642b251991ecc365c48cee0089659ad8fa42a",
+  "notification_sends": 0,
+  "live_acceptance": false
+}

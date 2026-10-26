@@ -1,0 +1,11 @@
+{
+  "status": "blocked",
+  "phase": "blocked",
+  "base_digest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+  "proposal_digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+  "proposal_path": "/usr/local/share/gcake-hermes-runtime/proposals/fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+  "manifest_path": "/usr/local/share/gcake-hermes-runtime/proposals/fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54/manifest.json",
+  "next_candidate_created": true,
+  "next_candidate_published": true,
+  "receipt_path": "/usr/local/share/gcake-hermes-runtime/private/notification-successor-fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54.json"
+}

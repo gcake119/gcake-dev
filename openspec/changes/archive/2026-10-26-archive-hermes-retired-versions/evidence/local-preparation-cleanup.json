@@ -1,0 +1,9 @@
+{
+  "status": "cleaned",
+  "paths": [
+    "/private/tmp/gcake-original-site-times-20261026",
+    "/private/tmp/gcake-retired-archive-20261026"
+  ],
+  "production_artifacts_retained": true,
+  "permanent_restore_controls_retained": true
+}

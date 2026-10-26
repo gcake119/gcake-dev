@@ -119,10 +119,14 @@ class Transport(unittest.TestCase):
                 return Response(request.full_url,rss.encode(),'application/rss+xml')
             html='<link rel="canonical" href="'+row['canonicalUrl']+'"><script type="application/ld+json">'+json.dumps({'@type':'BlogPosting','datePublished':at})+'</script>'
             return Response(request.full_url,html.encode(),'text/html')
-        observer=PublicationObserver('http://127.0.0.1:1/api/v1/monitoring/publications','fixture-secret',opener=opener,clock=lambda:BASE,allow_loopback=True)
+        ticks=iter([BASE,BASE+1,BASE+10,BASE+110,BASE+111])
+        observer=PublicationObserver('http://127.0.0.1:1/api/v1/monitoring/publications','fixture-secret',opener=opener,clock=lambda:next(ticks),allow_loopback=True)
         with patch('urllib.request.OpenerDirector.open',side_effect=AssertionError('real network forbidden')):
             observation=observer(BASE)
         self.assertEqual(len(seen),3);self.assertEqual(observation['pages'][row['canonicalUrl']]['publishedAt'],at)
+        self.assertEqual(observation['window'],[BASE,BASE+1])
+        self.assertEqual(observation['publicWindow'],[BASE+10,BASE+111])
+        self.assertEqual(observation['pages'][row['canonicalUrl']]['observedAt'],BASE+110)
 
     def test_read_retries_three_attempts_but_no_retry_for_auth_or_malformed_response(self):
         for code,expected in [(503,3),(429,3),(401,1),(403,1),(404,1)]:

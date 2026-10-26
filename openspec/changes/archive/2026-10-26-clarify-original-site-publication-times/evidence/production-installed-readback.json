@@ -1,0 +1,12 @@
+{
+  "status": "installed-readback-passed",
+  "active": {
+    "digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+    "mode": "live"
+  },
+  "monitor_sha256": "94a43f69cecb074300e8c8a6d88642b251991ecc365c48cee0089659ad8fa42a",
+  "scheduled_label": "原定發布時間（台北）",
+  "confirmation_label": "公開確認時間（台北）",
+  "private_state_read": false,
+  "notification_sends": 0
+}

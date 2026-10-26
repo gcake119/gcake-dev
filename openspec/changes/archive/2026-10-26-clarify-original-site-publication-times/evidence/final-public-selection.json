@@ -1,0 +1,11 @@
+{
+  "active": {
+    "digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+    "mode": "live"
+  },
+  "gate": {
+    "digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+    "mode": "live",
+    "status": "ready"
+  }
+}

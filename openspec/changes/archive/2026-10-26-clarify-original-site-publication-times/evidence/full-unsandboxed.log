@@ -1,0 +1,59 @@
+...................................owner: waiting for natural existing-job dry-run
+.owner: waiting for natural existing-job dry-run
+...................................................................................................................................................................................................................../opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106dc0120>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106dc0040>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106dc0f20>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106dc0200>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106dc10e0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6f060>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6edc0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6ec00>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6eea0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6fca0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6f4c0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6f680>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6fae0>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6fe60>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106c20120>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6f760>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/opt/homebrew/Cellar/python@3.15/3.15.0_1/Frameworks/Python.framework/Versions/3.15/lib/python3.15/glob.py:549: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x106b6fa00>
+  return ((entry, entry.name, entry.path) for entry in entries)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+................................................
+----------------------------------------------------------------------
+Ran 297 tests in 103.869s
+
+OK
+{"status": "blocked", "errorType": "HermesSelectionMismatch", "stage": "selection", "humanReceived": false}

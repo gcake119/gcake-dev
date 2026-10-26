@@ -115,6 +115,20 @@ def taipei(value):
     return datetime.fromtimestamp(value, TAIPEI).strftime('%Y-%m-%d %H:%M')
 
 
+def public_confirmation_time(observation, page):
+    """Use only this observer's bounded successful page-verification instant."""
+    try:
+        start, end = observation['publicWindow']
+        at = page['observedAt']
+        if not all(type(value) in (int, float) and math.isfinite(value) for value in (start, end, at)):
+            return '未記錄'
+        if start <= at <= end:
+            return taipei(at)
+    except (KeyError, TypeError, ValueError, OverflowError, OSError):
+        pass
+    return '未記錄'
+
+
 def summary_articles(observation):
     summary = observation.get('summary')
     if not isinstance(summary, dict) or summary.get('schemaVersion') != 1 or summary.get('complete') is not True:
@@ -348,7 +362,9 @@ class PublicationMonitor:
                 if not blocked:
                     late = db.execute("SELECT 1 FROM monitor_events WHERE event_id=? AND status='sent'",('overdue:'+url+':'+str(episode),)).fetchone() if episode is not None else None
                     title = ''.join(c if ord(c)>=32 and ord(c)!=127 else ' ' for c in item['title'])[:500]
-                    message = title+'\n'+url+'\n台北發布時間：'+taipei(instant(item['publishedAt']))
+                    planned = taipei(instant(row['commitment']['scheduledAt'])) if row['scheduleState']=='confirmed' else '未提供'
+                    confirmed = public_confirmation_time(observation,pages.get(url))
+                    message = title+'\n'+url+'\n原定發布時間（台北）：'+planned+'\n公開確認時間（台北）：'+confirmed
                     if late:
                         message += '\n逾期已解除：本輪 RSS 與正式頁面已確認公開。'
                     events.append((publication_id,'article',url,message))
@@ -501,6 +517,7 @@ class PublicationObserver:
             articles=summary_articles(result)
         except (ValueError,TypeError,KeyError):
             articles=[]
+        public_start=self.clock()
         for row in articles:
             url=row['canonicalUrl']
             try:
@@ -508,11 +525,12 @@ class PublicationObserver:
                 verify_page(raw,url,url,mime)
                 parser=PageMetadata();parser.feed(raw.decode('utf-8'))
                 if len(parser.dates)!=1:raise ValueError('Publication metadata missing')
-                result['pages'][url]=dict(status=200,canonicalUrl=url,publishedAt=parser.dates[0])
+                result['pages'][url]=dict(status=200,canonicalUrl=url,publishedAt=parser.dates[0],observedAt=self.clock())
             except urllib.error.HTTPError as error:
                 result['pages'][url]=dict(status=error.code)
             except Exception:
                 result['pages'][url]=dict(status=0)
+        result['publicWindow']=[public_start,self.clock()]
         return result
 
 

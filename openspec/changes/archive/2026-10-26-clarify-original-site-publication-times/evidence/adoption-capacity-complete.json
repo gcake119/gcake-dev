@@ -1,0 +1,11 @@
+{
+  "authority_total_bytes": 4823534781,
+  "candidate_payload_bytes": 373645288,
+  "projected_authority_bytes": 5197180069,
+  "existing_managed_limit_bytes": 4294967296,
+  "first_runtime_backup_bytes": 2216043633,
+  "free_bytes": 135710121984,
+  "active_digest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+  "mode": "live",
+  "notification_sends": 0
+}

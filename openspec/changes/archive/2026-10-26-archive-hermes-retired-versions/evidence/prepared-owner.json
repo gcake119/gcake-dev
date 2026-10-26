@@ -1,0 +1,32 @@
+{
+  "path": "/private/tmp/gcake-retired-archive-20261026",
+  "owner_uid": 501,
+  "purpose": "authorized exact retired-package archive and dependent timestamp adoption",
+  "retention": "until archive, adoption and readback complete; root restore controls are retained separately",
+  "source_hashes": {
+    "archive_retired_packages.py": "1f7230b3fe0d6ee564240e7267d71ef4721efcece21530f563c644e1017dc319",
+    "owner_successor.py": "aeb06e94d37b0fdf4bb8db50b815548f70ad5cd9efa4de0842e3f83e659041c5"
+  },
+  "installed_tool_hashes": {
+    "gateway_bootstrap.py": "d030507e7c3ee8865b823234d9820dd8b091a91cfa44ecaf300b9c050a0e3278",
+    "management_bootstrap.py": "b3fb1c6ea8e6f474464f44e5e5b8b1d7bedb522b5c98e91eaa0178ee207cae73",
+    "monitor_bootstrap.py": "1674a2138a1e3783050aebf5a896fe40fc4e6723939bb1ee36391b82a90e6cca",
+    "monitor_wrapper.py": "2447f9eb1907622520bfc97d8caa62ce632e0060be6b181b19a4a5e74d1266bc",
+    "offline_guard.py": "85b597f89460a3b2603dacea90f8a27babf851d3888581e81858f2e016eb0973",
+    "offline_probe.py": "52c2a6a7d3ecb04f62144984b90ebad860836d156ab150a2a6e0cce09193bf08",
+    "packaging_contract.py": "d9aaea44d25bbbf12cbf906d5436c6b27ddb4d265503ee6a0a803f05b9ba8ac5",
+    "production_entry.py": "c385280a9a34b3553d4067e5b2687d036976dda601b352a8c7040f64d47d0a01",
+    "production_install.py": "6c6002f1a413834aff78366710f15eb441578ee371ee4627d3412948d561a288",
+    "production_monitor_dispatch.py": "1f31201f67b750e3350e7d507c5f93a2989482e6422bf42f2d269c4b56e37f9f",
+    "production_owner.py": "98d04dc2f7a11a467ea8ef9bc97f5bb792c18bf856936a800f08e8edba66a127",
+    "shared_publication_monitor.py": "7c04733dda01b57a52f9f9ff8419fe8a968f55fcc38c94d4c80cb17455781d44",
+    "substack_attention.py": "029046f3e05d612a6f5c02594af5d0c6664d0bb06170457e81a3aacc3eae7824",
+    "telegram_health.py": "a1c146664e624337cf110232e8896c3d526d7a1da5ae63f3c154c0b4da941f18",
+    "update_entry.py": "d7e8e2be47c6f60681b92572865a6e2e216c88477545baeac2fbfdc55d77b664",
+    "updater_guard.py": "9be0a5e7f4229bf171c388eca022c915be156f845a1a949d1729e9784f260ff3"
+  },
+  "loader_sha256": "f511fa36b10cab965baa7a06aab85ae53782efd4031909d8d43f7349f529720c",
+  "archive_command": "bash /private/tmp/gcake-retired-archive-20261026/owner_archive.sh archive",
+  "restore_command": "sudo bash /usr/local/share/gcake-hermes-archives/20261026-retired-versions/controls/owner_restore.sh",
+  "production_writes": false
+}

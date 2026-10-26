@@ -1,0 +1,19 @@
+{
+  "path": "/private/tmp/gcake-original-site-times-20261026",
+  "owner_uid": 501,
+  "purpose": "authorized original-site timestamp repair successor",
+  "retention": "retain until administrator adoption and readback; remove exact directory after closeout",
+  "base_digest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+  "bundle_digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+  "manifest_path": "/private/tmp/gcake-original-site-times-20261026/bundle/manifest.json",
+  "control_sha256": "7e9c126c39dee29691d45679b215f49491cdade1f1b195151f767d2cfbd91616",
+  "owner_command": "bash /private/tmp/gcake-original-site-times-20261026/owner_adopt.sh",
+  "receipt_path": "/usr/local/share/gcake-hermes-runtime/private/notification-successor-fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54.json",
+  "changed_files": [
+    "library/publication_monitor.py"
+  ],
+  "gateway_code_runtime_unchanged": true,
+  "sdk_offline_passed": true,
+  "production_writes": false,
+  "qualification": "pending administrator adoption, natural dry-run and installed readback"
+}
