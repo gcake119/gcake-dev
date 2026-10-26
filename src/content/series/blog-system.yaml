@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-serial-publication
-  nextPost: blog-system-conversation-handoff
+  currentPost: blog-system-conversation-handoff
+  nextPost: blog-system-series-manifest
 source:
   type: local
 canonical:
@@ -19,8 +19,8 @@ sections:
         status: draft
         workingTitle: "以「系列連載」為核心的發表形式"
       - slug: blog-system-conversation-handoff
-        status: planned
-        workingTitle: "30 個獨立的 ChatGPT 對話，怎麼維持同一條寫作主線？"
+        status: draft
+        workingTitle: "把寫作流程變成 Agent 能接手的固定工作"
       - slug: blog-system-series-manifest
         status: planned
         workingTitle: "系列企劃會改變，怎麼讓文章順序和進度保持一致？"
