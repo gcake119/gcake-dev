@@ -2,6 +2,8 @@
 
 規格與驗收以 `openspec/` 為準；本索引保存跨回合需要沿用的決策，不把本機、CI、部署或模型測試互相當成完成證明。
 
+２０２６－１０－２６ Hermes 容量政策：使用者選擇保留原 4 GiB 管理上限，未核准調為 6 GiB；另行規劃精確舊套件封存，保留首次 runtime 備份與現用版本。[封存審閱方案](../hermes-retired-versions-archive-plan-20261026.md)列出三項候選、完整核對前提、容量與還原方式。使用者後續明確授權實作與執行，archive-hermes-retired-versions 已完成 7／7，三項精確舊套件正式封存、永久 root 還原入口已保存；[正式回執](../../openspec/changes/archive/2026-10-26-archive-hermes-retired-versions/verification.md)核對原工作、通知帳本、控制檔與 Gateway PID 不變。原站通知時間修正另以獨立提交記錄。
+
 | 決策 | 狀態 | 適用範圍 |
 | --- | --- | --- |
 | [ADR-001：Cloudflare 免費語意搜尋](ADR-001-cloudflare-semantic-search.md) | 已採納；２０２６－１０－２１[正式驗收通過](../../openspec/changes/build-article-discovery-knowledge/cloud-production-acceptance-20261021.md) | 公開文章搜尋、BGE-M3、帳戶免費硬上限、每日額度、[雲端索引自動同步](../../openspec/changes/build-article-discovery-knowledge/cloud-hosted-sync-20261021.md)、隱私與回復；２０２６－１０－２２ [main 部署驗收](../../openspec/changes/build-article-discovery-knowledge/main-cloudflare-acceptance-20261022.md) |

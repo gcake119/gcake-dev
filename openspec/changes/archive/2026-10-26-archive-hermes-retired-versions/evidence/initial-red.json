@@ -1,0 +1,5 @@
+{
+  "test": "test_archive_retired_packages",
+  "observed": "ModuleNotFoundError: archive_retired_packages",
+  "exit_code": 1
+}
