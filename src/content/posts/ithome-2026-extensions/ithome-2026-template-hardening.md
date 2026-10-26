@@ -1,12 +1,13 @@
 ---
 title: 從「可以 fork」到「真的能接手」，模板還缺哪些東西？
 description: 記錄鐵人賽正式開賽後，如何在修正自動發文、監控與通知問題的同時，持續補齊可重用模板的設定範例、操作邊界與 Agent 交接流程。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - ai-assisted-development
   - development-automation
   - developer-learning
+publishedAt: 2026-10-26T07:00:00+08:00
 ---
 
 **鐵人賽正式開賽後，我一邊修正自動發文遇到的問題，也持續和 Codex 討論：這些修改要怎麼整理，才能讓其他人也能使用？**

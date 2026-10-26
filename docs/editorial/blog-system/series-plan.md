@@ -234,6 +234,25 @@ docs/editorial/
 
 本次新增的是寫作協作的文件治理，不代表部落格產品已新增 CMS 功能或已公開本系列任何文章。這項實際改進可在第 02 篇的跨對話交接，以及第 03 篇的企劃／正式內容責任分工中使用為素材，避免將它寫成鐵人賽備文期已存在的 Repo 制度。
 
+## 12. ChatGPT Project instructions 與 AGENTS.md 的制度化（2026-10-26）
+
+繼前述「通用模板＋各系列獨立交接」的文件架構，本系列又完成了寫作協作**規則層**的交接：
+
+- **ChatGPT Project instructions**：使用者已在「技術部落格」Project 設定短指令（如「開始討論第 X 篇」「開始下一篇」「定稿，更新 Repo 和交接紀錄」）對應的讀取、討論、定稿與交接流程。這是 ChatGPT 對話層的行為指令。
+- **Repo 參考副本**：`docs/editorial/chatgpt-project-instructions.md` 記錄 Project instructions 的參考版本，方便對照與維護；修改此檔**不會**自動變更 ChatGPT Project 設定。
+- **Codex 的 Repo 規則**：根目錄 `AGENTS.md` 已補上讀取企劃／交接、保存正式 Markdown、核對 Series manifest、更新該系列交接紀錄、必要時調整企劃，以及優先以 PR 交付的規則。既有 Spectra／Substack／Chrome 規則保留。
+- **權威與安全邊界**：Git 是正式正文、manifest、系列企劃和交接紀錄來源；Project 保存共用寫作背景。定稿、ready／published 與真正公開分開，單篇定稿不授權觸發 Pages、Substack、電子報、Hermes 或 D1 發布寫入。
+- **執行仍受權限和環境限制**：規則讓已取得檔案／工具權限的 Agent 知道該做什麼，不代表對話之外會自行運作，也不保證無權限時能操作 GitHub。
+
+GitHub 交接證據：PR [#73](https://github.com/gcake119/gcake-dev/pull/73) 建立企劃／交接及通用模板；PR [#74](https://github.com/gcake119/gcake-dev/pull/74) 加入 Agent 規則和 ChatGPT Project instructions 參考副本，於 2026-10-26 合併（merge commit `60bc5ebe`）。
+
+### 對後續篇目的影響
+
+- **第 02 篇（跨對話交接）**：可交代從手動告知下一篇讀什麼，到 Project instructions 接受簡短指令的演變；不可寫成最初鐵人賽備文時即已有這套 Repo 規則。
+- **第 03 篇（系列企劃與正式內容）**：可引用模板與各系列專屬文件的責任分工，區分編輯記憶和 Series manifest。
+- **第 14 篇（ChatGPT／Codex 分工）**：聚焦 Project instructions、AGENTS.md、OpenSpec 與實際工具權限如何相互補充；不把規則寫成自動執行或發布機制。
+- 目前五章 15 篇基線不需要因此新增篇目。若逐篇討論發現重複，依正式完稿結果調整。
+
 ---
 
 **本企劃的最短摘要**：因為發現系列備文、分篇思考、完成後收斂與定期發表適合自己，作者從 ChatGPT 協作寫作逐步建立了 Astro 文章網站、Git-backed Series manifest、方便簡單操作的 Vue／Cloudflare 編輯後台、受控連載發布、Substack Computer Use 整合、Hermes 通知與文章搜尋。整套系列透過這個真實過程討論系統責任、資料所有權、一致性、失敗恢復、驗證和 AI 協作下的能力界線。
