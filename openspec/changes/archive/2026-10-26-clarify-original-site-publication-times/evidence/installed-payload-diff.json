@@ -1,0 +1,9 @@
+{
+  "base_digest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+  "installed_digest": "fcb86727dd27036f25aebd129aeee685631cdf85cc60a5998a32ed8661020d54",
+  "changed_files": [
+    "library/publication_monitor.py"
+  ],
+  "gateway_code_runtime_dependencies_unchanged": true,
+  "telegram_capability_unchanged": true
+}

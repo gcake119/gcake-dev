@@ -1,5 +1,11 @@
 # Substack 同步腳本
 
+## 原站 Hermes 通知時間
+
+原站文章通知分列「原定發布時間（台北）」與「公開確認時間（台北）」，沿用分鐘精度。原定時間只取正式確認的原站排程；沒有確認排程時顯示「未提供」。公開確認時間取 Hermes 成功查驗該篇 canonical 頁面後的觀察時刻，且須位於同一次頁面查核期間；缺失或無效時顯示「未記錄」。這是確認公開的時間，不能推論精確的首次公開瞬間；RSS 日期、工作開始、Telegram 寄出或部署完成時間均不能代替。
+
+格式修正不改文章／RSS 日期、原工作排程、通知識別或歷史帳本，既有 sent／intent／unknown 通知不重送，也不回改舊訊息。正式受控 runtime 必須完成既有 successor 採用流程才會生效；本機通過與安裝證據分開記錄於[本次驗證](../openspec/changes/archive/2026-10-26-clarify-original-site-publication-times/verification.md)。Substack 成功通知仍維持原三行格式。
+
 ## 現行政策與已確認範圍（2026／10／19）
 
 現行政策為 `scheduled-source-first-delivery-v1`，內容來源是 gcake119/gcake-dev main 已儲存、符合資格且釘選 revision 的完整 Git Markdown；Pages 不必先公開。原站預設週一、週四台北時間 07：00，仍須逐篇確認固定時段，佇列估算不能代替排程授權。舊 `pages-first-no-newsletter` 核准仍要求 Pages 完整公開驗證，不能授權新政策首次寄送。

@@ -2,7 +2,9 @@
 
 規格與驗收以 `openspec/` 為準；本索引保存跨回合需要沿用的決策，不把本機、CI、部署或模型測試互相當成完成證明。
 
-２０２６－１０－２６ Hermes 容量政策：使用者選擇保留原 4 GiB 管理上限，未核准調為 6 GiB；另行規劃精確舊套件封存，保留首次 runtime 備份與現用版本。[封存審閱方案](../hermes-retired-versions-archive-plan-20261026.md)列出三項候選、完整核對前提、容量與還原方式。使用者後續明確授權實作與執行，archive-hermes-retired-versions 已完成 7／7，三項精確舊套件正式封存、永久 root 還原入口已保存；[正式回執](../../openspec/changes/archive/2026-10-26-archive-hermes-retired-versions/verification.md)核對原工作、通知帳本、控制檔與 Gateway PID 不變。原站通知時間修正另以獨立提交記錄。
+２０２６－１０－２６ Hermes 容量政策：使用者選擇保留原 4 GiB 管理上限，未核准調為 6 GiB；另行規劃精確舊套件封存，保留首次 runtime 備份與現用版本。[封存審閱方案](../hermes-retired-versions-archive-plan-20261026.md)列出三項候選、完整核對前提、容量與還原方式。使用者後續明確授權實作與執行，archive-hermes-retired-versions 已完成 7／7，三項精確舊套件正式封存、永久 root 還原入口已保存；[正式回執](../../openspec/changes/archive/2026-10-26-archive-hermes-retired-versions/verification.md)核對原工作、通知帳本、控制檔與 Gateway PID 不變。時間修正版本 fcb86727… 已通過原工作 13：32：37 自然 dry-run 資格，13：36 查核 live／ready 與[已安裝程式讀回](../../openspec/changes/archive/2026-10-26-clarify-original-site-publication-times/verification.md)通過；未重送通知。臨時準備目錄已清理，永久 root 還原入口與全部原始備份保留。
+
+２０２６－１０－２６ [原站通知時間](../../openspec/changes/archive/2026-10-26-clarify-original-site-publication-times/design.md)：使用者選定原定發布時間與公開確認時間分列。排程只取正式承諾，確認時間只取 Hermes 完成該頁成功查核且位於同輪頁面觀察期間的時刻；資料不足明示未提供／未記錄，不推論首次公開瞬間。保留原 URL 去重與歷史，不回改或重送既有通知，不改 Substack 三行格式；正式 immutable runtime 透過既有受控 successor 採用，安裝證據獨立列示。沿用既有時間與權限政策，無新 ADR。
 
 | 決策 | 狀態 | 適用範圍 |
 | --- | --- | --- |

@@ -35,9 +35,12 @@ class Acceptance(unittest.TestCase):
         self.bad_feed = False
         self.bad_summary = False
         self.stale = False
+        self.public_window = None
 
     def observe(self, now):
-        return dict(summary=None if self.bad_summary else dict(schemaVersion=1, generatedAt=datetime.fromtimestamp(now-(7200 if self.stale else 0), timezone.utc).isoformat(), gitRevision='rev', queueVersion=1, complete=True, articles=copy.deepcopy(self.articles)), feed=None if self.bad_feed else copy.deepcopy(self.feed), pages=copy.deepcopy(self.pages), window=[now, now])
+        result = dict(summary=None if self.bad_summary else dict(schemaVersion=1, generatedAt=datetime.fromtimestamp(now-(7200 if self.stale else 0), timezone.utc).isoformat(), gitRevision='rev', queueVersion=1, complete=True, articles=copy.deepcopy(self.articles)), feed=None if self.bad_feed else copy.deepcopy(self.feed), pages=copy.deepcopy(self.pages), window=[now, now])
+        if self.public_window is not None:result['publicWindow'] = self.public_window
+        return result
 
     def old_fetch(self, url):
         # Transitional product bridge uses the existing installed RSS seam.
@@ -75,6 +78,45 @@ class Acceptance(unittest.TestCase):
         self.feed[0]['title']='Changed'; self.feed[0]['guid']='changed-guid'
         self.step(1);self.assertEqual(len(self.messages),3)
         self.step(2);self.assertEqual(len(self.messages),3)
+
+    def test_delayed_publication_separates_schedule_from_successful_page_confirmation(self):
+        self.initialize()
+        planned=timestamp('2026-10-26T07:00:00+08:00')
+        confirmed=timestamp('2026-10-26T09:24:50+08:00')
+        started=timestamp('2026-10-26T09:23:00+08:00')
+        self.articles=[article('late',at=planned)];self.publish('late',date=planned)
+        url=self.articles[0]['canonicalUrl'];self.pages[url]['observedAt']=confirmed
+        self.public_window=[started,confirmed+10]
+        self.monitor().run_round(started,started)
+        expected='Title late\n'+url+'\n原定發布時間（台北）：2026-10-26 07:00\n公開確認時間（台北）：2026-10-26 09:24'
+        self.assertEqual(self.messages,[expected])
+        self.pages[url]['observedAt']=confirmed+3600;self.public_window=[started+3600,confirmed+3610]
+        self.monitor().run_round(started+3600,started+3600)
+        self.assertEqual(self.messages,[expected])
+        with sqlite3.connect(self.db) as db:
+            self.assertEqual(db.execute("SELECT message,status FROM monitor_events WHERE event_id=?",('article:'+url,)).fetchone(),(expected,'sent'))
+
+    def test_missing_schedule_and_invalid_confirmation_are_explicitly_unknown(self):
+        self.initialize();self.articles=[article('manual',state='unscheduled')];self.publish('manual')
+        self.step(0)
+        self.assertIn('原定發布時間（台北）：未提供',self.messages[0])
+        self.assertIn('公開確認時間（台北）：未記錄',self.messages[0])
+
+    def test_invalid_confirmation_never_uses_metadata_or_round_time(self):
+        cases=[(True,[BASE,BASE+1]),(float('nan'),[BASE,BASE+1]),
+               (float('inf'),[BASE,BASE+1]),(BASE-1,[BASE,BASE+1]),
+               (BASE+2,[BASE,BASE+1]),(BASE,[BASE+1,BASE]),
+               (BASE,[False,BASE]),(BASE,[BASE,float('inf')]),
+               (BASE,None),(BASE,[BASE]),('2026-10-15T07:00:00+08:00',[BASE,BASE+1])]
+        for index,(observed,window) in enumerate(cases):
+            with self.subTest(index=index):
+                self.db=Path(self.tmp.name)/('invalid-'+str(index)+'.sqlite')
+                self.articles=[];self.feed=[];self.pages={};self.messages=[];self.initialize()
+                self.articles=[article()];self.publish()
+                self.pages[article()['canonicalUrl']]['observedAt']=observed
+                self.public_window=window;self.step(0)
+                self.assertEqual(len(self.messages),1)
+                self.assertTrue(self.messages[0].endswith('公開確認時間（台北）：未記錄'))
 
     def test_initial_history_and_partial_baseline(self):
         self.articles=[article()];self.publish();self.pages[article()['canonicalUrl']]=dict(status=503)

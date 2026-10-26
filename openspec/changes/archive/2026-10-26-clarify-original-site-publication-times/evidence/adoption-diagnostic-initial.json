@@ -1,0 +1,15 @@
+{
+  "phase": "blocked",
+  "managed_update_status": "blocked",
+  "reason": "disk-budget",
+  "active": {
+    "digest": "4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554",
+    "mode": "live"
+  },
+  "free_bytes": 135697047552,
+  "notification_sends": 0,
+  "production_writes": false,
+  "releases_bytes": 1841595717,
+  "proposals_bytes": 747517902,
+  "backups_bytes": 0
+}

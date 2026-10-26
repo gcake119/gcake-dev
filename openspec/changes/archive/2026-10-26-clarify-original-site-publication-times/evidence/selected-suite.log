@@ -1,0 +1,615 @@
+...................................owner: waiting for natural existing-job dry-run
+.owner: waiting for natural existing-job dry-run
+.....................EEEEEEEEEE......................./usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/traceback.py:237: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  tb.tb_frame.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+E.E/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py:622: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  with outcome.testPartExecutor(self):
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+......../Users/caiyijun/project/gcake-dev/scripts/hermes/production_install.py:158: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  return dict(status='blocked',reason=str(error))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+F.FF.F............................................................................................................................................../Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:640: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  return dict(status='blocked',reason=str(error))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+F/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:640: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  return dict(status='blocked',reason=str(error))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..FE/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py:586: ResourceWarning: unclosed <socket.socket fd=4, family=1, type=1, proto=0>
+  return dict(status='blocked',reason=str(error))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+FFFFFFFFFFFF.E.....FFFF.FFEE.........................
+======================================================================
+ERROR: test_baseline_verified_send_restart_and_guid_dedup (test_mock_delivery.MockDeliveryAcceptance.test_baseline_verified_send_restart_and_guid_dedup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_enabled_flag_cannot_promote_test_delivery_to_real_transport (test_mock_delivery.MockDeliveryAcceptance.test_enabled_flag_cannot_promote_test_delivery_to_real_transport)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_lost_reply_stays_uncertain_without_resend (test_mock_delivery.MockDeliveryAcceptance.test_lost_reply_stays_uncertain_without_resend)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_mock_database_cannot_become_live_or_legacy_unbound (test_mock_delivery.MockDeliveryAcceptance.test_mock_database_cannot_become_live_or_legacy_unbound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_page_and_api_redirects_are_not_followed (test_mock_delivery.MockDeliveryAcceptance.test_page_and_api_redirects_are_not_followed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_page_outage_canonical_backoff_then_recovery (test_mock_delivery.MockDeliveryAcceptance.test_page_outage_canonical_backoff_then_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_required_test_parameters_and_production_guards (test_mock_delivery.MockDeliveryAcceptance.test_required_test_parameters_and_production_guards)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_reserved_live_path_is_rejected_before_http_or_state_creation (test_mock_delivery.MockDeliveryAcceptance.test_reserved_live_path_is_rejected_before_http_or_state_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_site_and_mode_state_cannot_be_reused (test_mock_delivery.MockDeliveryAcceptance.test_site_and_mode_state_cannot_be_reused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_test_options_fail_closed (test_mock_delivery.MockDeliveryAcceptance.test_test_options_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 93, in setUp
+    self.site = self.enterContext(server(Site)) + 'review/'
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 454, in enterContext
+    return _enter_context(cm, self.addCleanup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/unittest/case.py", line 115, in _enter_context
+    result = enter(cm)
+             ^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_mock_delivery.py", line 20, in server
+    http = ThreadingHTTPServer(('127.0.0.1', 0), handler)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 456, in __init__
+    self.server_bind()
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/socketserver.py", line 472, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_policy_history_drift_returns_to_dry_and_records_failure (test_owner_successor.OwnerProposal.test_policy_history_drift_returns_to_dry_and_records_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_owner_successor.py", line 88, in test_policy_history_drift_returns_to_dry_and_records_failure
+    with self.assertRaises(ValueError):owner.restore_live_policy(self.store,self.sha,Actor(),{'status':'passed'},owner.job_contract({'id':'test'}),record,lambda r:saved.append(dict(r)))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/owner_successor.py", line 109, in restore_live_policy
+    with store.maintenance():
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_qualified_policy_restore_has_no_service_or_job_commands (test_owner_successor.OwnerProposal.test_qualified_policy_restore_has_no_service_or_job_commands)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_owner_successor.py", line 65, in test_qualified_policy_restore_has_no_service_or_job_commands
+    owner.restore_live_policy(self.store,self.sha,Actor(),{'status':'passed'},normalized,record,lambda r:saved.append(dict(r)))
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/owner_successor.py", line 109, in restore_live_policy
+    with store.maintenance():
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_combined_wrapper_can_verify_dry_during_exclusive_maintenance (test_update_entry.EntryAcceptance.test_combined_wrapper_can_verify_dry_during_exclusive_maintenance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 153, in test_combined_wrapper_can_verify_dry_during_exclusive_maintenance
+    with self.store.maintenance():
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_fixed_launchctl_arrays_and_duplicate_start_refusal (test_update_entry.EntryAcceptance.test_fixed_launchctl_arrays_and_duplicate_start_refusal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 195, in test_fixed_launchctl_arrays_and_duplicate_start_refusal
+    with self.store.maintenance():supervisor.start(self.store.verify_release(self.oldsha),'dry-run')
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_verification_lease_rejects_wrong_selection (test_update_entry.EntryAcceptance.test_verification_lease_rejects_wrong_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 162, in test_verification_lease_rejects_wrong_selection
+    with self.store.maintenance():
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_verification_permit_disappears_after_controller_lock_is_released (test_update_entry.EntryAcceptance.test_verification_permit_disappears_after_controller_lock_is_released)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 147, in test_verification_permit_disappears_after_controller_lock_is_released
+    with self.store.maintenance():
+  File "/usr/local/share/gcake-hermes-runtime/releases/4fe889d8069a96b6d9f11b31d5940ebd00722280d39eabf412ab8ed906dbf554/runtime/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/update_entry.py", line 353, in maintenance
+    server.bind(str(endpoint));endpoint.chmod(0o666);server.listen(4);server.settimeout(.2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+FAIL: test_candidate_failure_restores_exact_first_slots_without_history_rollback (test_production_install.FirstInstallAcceptance.test_candidate_failure_restores_exact_first_slots_without_history_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 52, in test_candidate_failure_restores_exact_first_slots_without_history_rollback
+    self.assertEqual(result['status'],'rolled_back')
+AssertionError: 'blocked' != 'rolled_back'
+- blocked
++ rolled_back
+
+
+======================================================================
+FAIL: test_failed_original_verification_keeps_sender_stopped (test_production_install.FirstInstallAcceptance.test_failed_original_verification_keeps_sender_stopped)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 90, in test_failed_original_verification_keeps_sender_stopped
+    self.assertEqual(installer.install(self.plan,self.identities)['status'],'recovery_failed')
+AssertionError: 'blocked' != 'recovery_failed'
+- blocked
++ recovery_failed
+
+
+======================================================================
+FAIL: test_interrupted_wrapper_switch_recovers_in_fresh_controller (test_production_install.FirstInstallAcceptance.test_interrupted_wrapper_switch_recovers_in_fresh_controller)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 79, in test_interrupted_wrapper_switch_recovers_in_fresh_controller
+    with self.assertRaises(Crash):installer.install(self.plan,self.identities,failpoint=crash)
+AssertionError: Crash not raised
+
+======================================================================
+FAIL: test_success_keeps_durable_originals (test_production_install.FirstInstallAcceptance.test_success_keeps_durable_originals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_production_install.py", line 63, in test_success_keeps_durable_originals
+    self.assertEqual(result['status'],'installed-dry-run')
+AssertionError: 'blocked' != 'installed-dry-run'
+- blocked
++ installed-dry-run
+
+
+======================================================================
+FAIL: test_recovery_retains_ten_second_deadline_with_acl_startup_overhead (test_update_entry.BoundedRecoveryStartup.test_recovery_retains_ten_second_deadline_with_acl_startup_overhead)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 222, in test_recovery_retains_ten_second_deadline_with_acl_startup_overhead
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_candidate_verification_failure_restores_original_slots (test_update_entry.EntryAcceptance.test_candidate_verification_failure_restores_original_slots)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 99, in test_candidate_verification_failure_restores_original_slots
+    self.assertEqual(self.update()['status'],'rolled_back');self.assert_old();self.assertTrue(self.service.state()['running'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'rolled_back'
+- blocked
++ rolled_back
+
+
+======================================================================
+FAIL: test_committed_crash_is_completed_without_rolling_back (test_update_entry.EntryAcceptance.test_committed_crash_is_completed_without_rolling_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 182, in test_committed_crash_is_completed_without_rolling_back
+    self.assertEqual(self.controller.recover()['status'],'updated')
+AssertionError: 'blocked' != 'updated'
+- blocked
++ updated
+
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='prepared')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='stopping')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='stopped')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replace:updater')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replaced:updater')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replace:wrapper')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='replaced:wrapper')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='switching')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='selected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='verifying')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_every_crash_boundary_recovers_in_fresh_controller_process (test_update_entry.EntryAcceptance.test_every_crash_boundary_recovers_in_fresh_controller_process) (phase='verified')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 107, in test_every_crash_boundary_recovers_in_fresh_controller_process
+    self.assertEqual(os.waitpid(pid,0)[1]>>8,79)
+AssertionError: 1 != 79
+
+======================================================================
+FAIL: test_pending_maintenance_survives_lock_recreation (test_update_entry.EntryAcceptance.test_pending_maintenance_survives_lock_recreation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 119, in test_pending_maintenance_survives_lock_recreation
+    os.waitpid(pid,0);self.assertEqual(self.store.launch_status()['status'],'maintenance')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ready' != 'maintenance'
+- ready
++ maintenance
+
+
+======================================================================
+FAIL: test_post_commit_receipt_failure_does_not_rollback (test_update_entry.EntryAcceptance.test_post_commit_receipt_failure_does_not_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 127, in test_post_commit_receipt_failure_does_not_rollback
+    self.assertEqual(result['status'],'updated');self.assertIn('receipt_error',result)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'updated'
+- blocked
++ updated
+
+
+======================================================================
+FAIL: test_recovery_failure_stops_and_blocks_future_restart (test_update_entry.EntryAcceptance.test_recovery_failure_stops_and_blocks_future_restart)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 113, in test_recovery_failure_stops_and_blocks_future_restart
+    self.assertEqual(self.update()['status'],'recovery_failed');self.assertFalse(self.service.state()['running'])
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'recovery_failed'
+- blocked
++ recovery_failed
+
+
+======================================================================
+FAIL: test_second_update_recovers_previous_slots_and_keeps_initial_backup (test_update_entry.EntryAcceptance.test_second_update_recovers_previous_slots_and_keeps_initial_backup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 136, in test_second_update_recovers_previous_slots_and_keeps_initial_backup
+    self.assertEqual(self.update()['status'],'updated')
+AssertionError: 'blocked' != 'updated'
+- blocked
++ updated
+
+
+======================================================================
+FAIL: test_success_pins_read_only_release_and_preserves_latest_history (test_update_entry.EntryAcceptance.test_success_pins_read_only_release_and_preserves_latest_history)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 73, in test_success_pins_read_only_release_and_preserves_latest_history
+    self.assertEqual(self.update()['status'],'updated')
+AssertionError: 'blocked' != 'updated'
+- blocked
++ updated
+
+
+======================================================================
+FAIL: test_unknown_candidate_deduplicates_without_supervisor_operations (test_update_entry.EntryAcceptance.test_unknown_candidate_deduplicates_without_supervisor_operations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/caiyijun/project/gcake-dev/scripts/hermes/test_update_entry.py", line 70, in test_unknown_candidate_deduplicates_without_supervisor_operations
+    for _ in range(2):self.assertEqual(self.controller.update(unknown)['status'],'skipped')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'blocked' != 'skipped'
+- blocked
++ skipped
+
+
+----------------------------------------------------------------------
+Ran 297 tests in 84.144s
+
+FAILED (failures=24, errors=16)
+{"status": "blocked", "errorType": "HermesSelectionMismatch", "stage": "selection", "humanReceived": false}

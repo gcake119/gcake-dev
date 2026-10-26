@@ -1,0 +1,10 @@
+{
+  "test": "Acceptance.test_delayed_publication_separates_schedule_from_successful_page_confirmation",
+  "exit_code": 1,
+  "before": "台北發布時間：2026-10-26 07:00",
+  "expected": [
+    "原定發布時間（台北）：2026-10-26 07:00",
+    "公開確認時間（台北）：2026-10-26 09:24"
+  ],
+  "observed": "AssertionError: old RSS-only label differs from separate schedule and page-confirmation labels"
+}
