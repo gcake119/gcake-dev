@@ -104,7 +104,7 @@ export async function synchronizeIndex(env: SyncBindings, options: {read?: (sign
         const pending = (await db.prepare('SELECT id,corpusId,payload,stage,created FROM discovery_sync_pending ORDER BY id').all<Pending>()).results;
         if (state.corpusId && state.corpusId !== target && pending.length) return await finish('source_changed','Pending output preserved for operator reconciliation');
         if (pending.some(p=>p.stage==='reserved')) return await finish('blocked','UNKNOWN_INFERENCE: reservation retained; no automatic replay');
-        if (target === policy.activeCorpusId && policy.activeVectorNamespace === namespace && !pending.length) return await finish('no_change');
+        if (target === policy.activeCorpusId && state.corpusId === target && (state.status === 'promoted' || state.status === 'no_change') && policy.activeVectorNamespace === namespace && !pending.length) return await finish('no_change');
         const deployed = await read(signal), c = deployed.corpus;
         if (deployed.corpusId !== target || c.corpusId !== target) return await finish('source_changed');
         validateCorpus(c,policy);
@@ -158,7 +158,19 @@ export async function synchronizeIndex(env: SyncBindings, options: {read?: (sign
             const got = await index.getByIds(obsolete.map(v=>v.id));
             if (got.some(v=>{const ledger=obsolete.find(o=>o.id===v.id)!;return v.namespace!==(ledger.namespace || ledger.corpusId) || v.metadata?.articleId!==ledger.articleId || v.metadata?.revision!==ledger.revision;})) return await finish('blocked','FOREIGN_VECTOR');
             await guard();
-            if (got.length) {await index.deleteByIds(got.map(v=>v.id));return await finish('cleaning');}
+            if (got.length) {
+                // Readers must also stop trusting an active release whose physical objects are being removed.
+                const revoked = await db.prepare("UPDATE discovery_policy SET policy=json_remove(policy,'$.activeVectorNamespace') WHERE id='active' AND policy=? AND EXISTS(SELECT 1 FROM discovery_sync WHERE id=1 AND owner=? AND leaseUntil>?) RETURNING policy")
+                    .bind(record.policy,owner,now()).first<{policy:string}>();
+                if (!revoked) throw Error('OPERATOR_OR_LEASE_CHANGED');
+                record.policy = revoked.policy;
+                delete policy.activeVectorNamespace;
+                // Revoke proofs before a destructive mutation; retain identity/namespace for owned cleanup.
+                await db.prepare("UPDATE discovery_sync_vectors SET metadataHash='' WHERE id IN (SELECT value FROM json_each(?)) AND EXISTS(SELECT 1 FROM discovery_sync WHERE id=1 AND owner=? AND leaseUntil>?) AND EXISTS(SELECT 1 FROM discovery_policy WHERE id='active' AND policy=?)")
+                    .bind(JSON.stringify(got.map(v=>v.id)),owner,now(),record.policy).run();
+                await guard();
+                await index.deleteByIds(got.map(v=>v.id));return await finish('cleaning');
+            }
             await db.batch(obsolete.map(v=>db.prepare('DELETE FROM discovery_sync_vectors WHERE id=?').bind(v.id)));
             return await finish('cleaned');
         }

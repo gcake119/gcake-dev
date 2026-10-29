@@ -8,7 +8,7 @@
 
 ## 候選與驗證
 
-三份搜尋程式、一份additive migration及兩份驗收測試的SHA-256與10/26本機架構候選完全一致；釘選值見[evidence摘要](evidence/architecture-repair-20261026/summary.json)。最新main基底為4cad4e45d02dfd4ffc5792a0bb06536d4db9a890，新增CI與發布測試後，完整pnpm test、check、build:all、release:dry-run、editorial:rehearse全部通過；Spectra validate通過、analyze零發現。見[當期gate摘要](evidence/production-resume-20261030/local-gates.json)。
+初始提交的三份搜尋程式、一份additive migration及兩份驗收測試SHA-256與10/26本機架構候選完全一致；釘選值見[evidence摘要](evidence/architecture-repair-20261026/summary.json)。最新main基底為4cad4e45d02dfd4ffc5792a0bb06536d4db9a890，新增CI與發布測試後，完整pnpm test、check、build:all、release:dry-run、editorial:rehearse全部通過；Spectra validate通過、analyze零發現。見[當期gate摘要](evidence/production-resume-20261030/local-gates.json)。
 
 原基底0b60f766的各項本機gate已通過，兩個首次失敗來自隔離快照缺Git根／HEAD，補齊臨時fixture的Git環境後原測試通過，沒有弱化斷言；原失敗保留。這些不是新main的CI證據。Wrangler4.142.0 dry-run產物47.18KiB、SEMANTIC=true／INDEX_SYNC=false。正式部署前還須PR與main CI及最新provider guard。
 
@@ -29,3 +29,12 @@ PR檢查通過後合併並確認main CI，重新釘選Worker來源。維持INDEX
 遇未知推論、來源衝突、陌生向量、scope不明或新連線未知結果，停止依賴、保留證據，不重播、不退款、不清pending。必要時只停同步；若語意版本有疑義再停語意，維持當期公開關鍵字。不把舊Worker恢復到已轉換stable namespace的配置上。
 
 完整同步、獨立全量provider audit、兩筆間隔至少60秒的自然no_change、真實搜尋與人工相關性各自另列證據；本次開關恢復不直接勾選4.2／4.3或原12.2。
+
+
+## PR83審查修正：撤回後恢復的實體證明
+
+PR審查指出：owned向量已刪除、但等待下輪確認不存在時仍保留完整proof；若文章此時恢復公開，可誤以為向量仍存在而promotion或no_change。依既有exact-membership／撤回續作／讀者降級契約，四個acceptance案例先真實RED，涵蓋刪除完成／刪除回應遺失及恢復原集合／恢復時另新增文章。另保存讀者端到達source_initial而未由policy阻擋的RED。
+
+修正於刪除前，在原policy及owner／lease條件下撤銷activeVectorNamespace與該批metadataHash；保留文章、修訂、內容hash及namespace作owned清理／重用依據。只有同一目標已完成的狀態可走no_change捷徑。失聯或重新公開都須完整重驗，promotion後才恢復讀者資格。沒有補滿額度、刪owned清冊或改驗收條件。兩個既有no_change fixture補齊其聲稱的已完成同步狀態，原零推論及每日budget斷言保留。
+
+多出的成本限於owned刪除路徑的兩項條件式D1更新及一次既有guard，仍在原每輪admission40控制預留內；一般新增／no_change不增加provider讀寫、不增加逐分鐘全量掃描。沒有新服務、依賴、測試層或migration。四個修正案例GREEN；受影響專案完整本機gate五項全部通過，見[修正驗證摘要](evidence/production-resume-20261030/review-proof-invalidation.json)。此修正更新sync與acceptance候選hash，初始候選與原RED收據保留，不改稱初次通過。

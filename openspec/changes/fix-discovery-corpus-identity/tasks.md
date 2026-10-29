@@ -46,3 +46,5 @@ The user authorized capacity verification, additive migration, compatible Worker
 - [ ] 6.2 Commit only search implementation and necessary specification/evidence, pass PR CI, merge after checks and verify main CI for the deployment source.
 - [ ] 6.3 With synchronization disabled, recheck account Free/capacity, ownership/pending/lease and source; apply only 0005, verify all original state and reservations unchanged, deploy the compatible Worker and independently read back source/settings.
 - [ ] 6.4 Update only freshly proven capacity evidence under exact policy guards, restore the original Cron switch, and capture natural progress or a concrete stop reason without manual synchronization, promotion or quota refill; distinguish switch restoration from full corpus/human acceptance.
+
+- [x] 6.5 Repair PR83's reproduced withdrawal/restoration proof invalidation defect, including lost deletion acknowledgement and reader keyword fallback; preserve ownership, admission and lease guards, save real RED/GREEN and pass the full local gate before pushing the revised candidate.
