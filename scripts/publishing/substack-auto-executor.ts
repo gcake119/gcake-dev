@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises';
+import {parseHTML} from 'linkedom';
+import {expectedDraftContent,normalizeDraftObservation} from './substack-draft-media';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import type {ScheduleRecord,ConfirmedSlot} from '../../apps/admin-worker/src/substack-schedules';
@@ -11,7 +13,7 @@ import {verifyDraftLists} from './substack-draft-lists';
 import {executeComputerUse} from './substack-draft-qualification';
 import {assertAutoSchedulePolicy,type AutoSchedulePolicy} from './substack-auto-activation';
 export interface AutomaticExecutorOptions {
- policy:AutoSchedulePolicy;source:ScheduledSource;timeoutMs:number;
+ policy:AutoSchedulePolicy;source:ScheduledSource;timeoutMs:number;fetcher?:typeof fetch;
  check():Promise<{record:ScheduleRecord;slot:ConfirmedSlot|undefined}>;
  execute?:(request:string,scope:{directory:string;executor:string;timeoutMs:number},evidence:string)=>Promise<void>;
 }
@@ -27,13 +29,15 @@ export async function replyWithAutomaticExecutor(file:string,o:AutomaticExecutor
  await fs.mkdir(o.policy.evidenceDirectory,{recursive:true,mode:0o700});assertOutsideAnyGit(await fs.realpath(o.policy.evidenceDirectory));assertOutsideAnyGit(await fs.realpath(path.dirname(file)));
  const directory=await fs.mkdtemp(path.join(o.policy.evidenceDirectory,'first-schedule-'));await fs.chmod(directory,0o700);
  const request=path.join(directory,'request.json'),evidence=path.join(directory,'observation.json');await fs.copyFile(file,request,fs.constants.COPYFILE_EXCL);
- const expected=expectedContent(o.source);await fs.writeFile(path.join(directory,'write-payload.json'),JSON.stringify({...expected,html:expected.html.replace(/\n(?=<\/code><\/pre>)/g,''),slug:o.source.slug,scheduledAt:r.scheduledAt,localTime:r.scheduledAt?new Date(Date.parse(r.scheduledAt)+28800000).toISOString().slice(0,16):undefined}),{mode:0o600,flag:'wx'});
+ const expected=expectedDraftContent(o.source),payload=expectedContent(o.source);
+ const normalize=async(value:unknown)=>{const raw=validateScheduleObservation(value),{document}=parseHTML('<html><body>'+raw.content.html+'</body></html>');for(const img of document.querySelectorAll('img')){const a=img.closest('a');if(a?.classList.contains('image-link')&&a.querySelectorAll('img').length===1&&!a.textContent?.trim())a.replaceWith(img);}return (await normalizeDraftObservation({...raw,content:{...raw.content,html:document.body.innerHTML}},o.fetcher,o.source.media?.map(m=>m.src))).observation;};
+ await fs.writeFile(path.join(directory,'write-payload.json'),JSON.stringify({...payload,html:payload.html.replace(/\n(?=<\/code><\/pre>)/g,''),slug:o.source.slug,scheduledAt:r.scheduledAt,localTime:r.scheduledAt?new Date(Date.parse(r.scheduledAt)+28800000).toISOString().slice(0,16):undefined}),{mode:0o600,flag:'wx'});
  const end=Math.min(envelope.expiresAt,Date.now()+o.timeoutMs);
  const gate=`import fs from 'node:fs/promises';import {createHash} from 'node:crypto';const base=${JSON.stringify(directory)},raw=await fs.readFile(base+'/before.json','utf8'),beforeHash=createHash('sha256').update(raw).digest('hex');await fs.writeFile(base+'/before-ready.json',JSON.stringify({beforeHash}),{flag:'wx',mode:0o600});let passed=false;while(Date.now()<${end}){let v;try{v=JSON.parse(await fs.readFile(base+'/before-verdict.json','utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}if(v){if(v.requestId!==${JSON.stringify(envelope.requestId)}||v.scopeDigest!==${JSON.stringify(envelope.scopeDigest)}||v.beforeHash!==beforeHash||v.expiresAt<=Date.now()||v.ok!==true)throw Error(v.code??'SUBSTACK_AUTO_BEFORE_INVALID');passed=true;break;}await new Promise(r=>setTimeout(r,100));}if(!passed)throw Error('SUBSTACK_AUTO_BEFORE_REQUIRED');console.log('SUBSTACK_AUTO_BEFORE_VERIFIED');`;
  await fs.writeFile(path.join(directory,'verify-before.mjs'),gate,{flag:'wx',mode:0o600});
  let done=false,executionError:unknown,gatePassed=false,gateFailure:unknown;
  const execution=(o.execute??executeAutomaticScheduleRequest)(request,{directory,executor:o.policy.executor,timeoutMs:Math.min(o.timeoutMs,Math.max(1,end-Date.now()))},evidence).then(()=>{done=true;},e=>{executionError=e;done=true;});
- while(!done&&Date.now()<end){
+ try{while(!done&&Date.now()<end){
   if(mutation&&!gatePassed&&!gateFailure){
    let marker;try{marker=JSON.parse(await fs.readFile(path.join(directory,'before-ready.json'),'utf8'));}catch(e){if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;}
    if(marker){let beforeHash=marker.beforeHash;try{
@@ -43,7 +47,7 @@ export async function replyWithAutomaticExecutor(file:string,o:AutomaticExecutor
     if(r.action==='schedule-create'){
      if(before.lists.lists.some((l:{rows:{text:string}[]})=>l.rows.some(row=>row.text.replace(/\s+/g,' ').includes(o.source.article.title.replace(/\s+/g,' ')))))throw Error('SUBSTACK_SCHEDULE_IDENTITY_CONFLICT');
     }else{
-     const observed=validateScheduleObservation(before.observation,r.remote?.id);
+     const observed=await normalize(before.observation);if(observed.id!==r.remote?.id)throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
      if(observed.state!=='draft'||observed.slug!==o.source.slug||observed.listEvidence?.draft!==true||observed.listEvidence.scheduled!==false||observed.scheduledAt)throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');
      const digest=contentFingerprint(observed.content);
      if(r.action==='schedule-update'&&digest!==fresh.record.lastComparison?.observedDigest||r.action==='schedule-arm'&&digest!==contentFingerprint(expected))throw Error('SUBSTACK_REMOTE_EDIT_CONFLICT');
@@ -55,7 +59,8 @@ export async function replyWithAutomaticExecutor(file:string,o:AutomaticExecutor
   if(!done)await new Promise(resolve=>setTimeout(resolve,50));
  }
  if(!done)throw Error('SUBSTACK_AUTO_EXECUTOR_TIMEOUT');
- await execution;if(executionError)throw executionError;if(mutation&&!gatePassed)throw gateFailure??Error('SUBSTACK_AUTO_BEFORE_REQUIRED');
+ }finally{await execution;}
+ if(executionError)throw executionError;if(mutation&&!gatePassed)throw gateFailure??Error('SUBSTACK_AUTO_BEFORE_REQUIRED');
  const events=(await fs.readFile(path.join(directory,'executor-events.jsonl'),'utf8')).split('\n').filter(Boolean).map(s=>JSON.parse(s));
  const surfaces=events.filter(e=>e.type==='item.completed'&&e.item?.type==='mcp_tool_call').map(e=>e.item.result?._meta?.['codex/toolSurface']).filter(Boolean);
  if(!surfaces.length||surfaces.some(s=>s.browserFamily!=='chrome'))throw Error('SUBSTACK_EXECUTOR_BROWSER_MISMATCH');
@@ -63,18 +68,18 @@ export async function replyWithAutomaticExecutor(file:string,o:AutomaticExecutor
  if(value.sessionExclusive!==true||value.reloaded!==true)throw Error('SUBSTACK_AUTO_EVIDENCE_INVALID');
  const lists=verifyDraftLists(value.lists);let result=value.result;
  if(r.action==='schedule-find'){
-  validateScheduleReply(r,result);
+  result={...result,items:await Promise.all(result.items.map(normalize))};validateScheduleReply(r,result);
   const matches=value.lists.lists.flatMap((l:{rows:{href:string;text:string}[]})=>l.rows).filter((row:{text:string})=>row.text.replace(/\s+/g,' ').includes(o.source.article.title.replace(/\s+/g,' ')));
   if(matches.length!==result.items.length)throw Error('SUBSTACK_REMOTE_SCAN_INCOMPLETE');
   for(const item of result.items)if(!lists.ids[item.state==='draft'?'draft':item.state==='scheduled'?'scheduled':'published'].includes(item.id))throw Error('SUBSTACK_REMOTE_SCAN_INCOMPLETE');
  }else{
-  const observed=validateScheduleObservation(value.observation,r.action==='schedule-create'?undefined:r.remote?.id);
+  const observed=await normalize(value.observation);if(r.action!=='schedule-create'&&observed.id!==r.remote?.id)throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');
   const scope=observed.state==='draft'?'draft':observed.state==='scheduled'?'scheduled':'published';if(!lists.ids[scope].includes(observed.id))throw Error('SUBSTACK_AUTO_EVIDENCE_INVALID');
   if(observed.state==='draft'&&(observed.listEvidence?.draft!==true||observed.listEvidence.scheduled!==false))throw Error('SUBSTACK_AUTO_EVIDENCE_INVALID');
   if(mutation&&(['savedBeforeReload','navigatedAway','reloaded'].some(k=>value.writeEvidence?.[k]!==true)||r.action!=='schedule-arm'&&value.writeEvidence?.fullBodyPasted!==true))throw Error('SUBSTACK_WRITE_EVIDENCE_INVALID');
   if(mutation&&(observed.slug!==o.source.slug||contentFingerprint(observed.content)!==contentFingerprint(expected)))throw Error('SUBSTACK_CONTENT_EVIDENCE_MISMATCH');
   if(r.action==='schedule-create'){if(observed.state!=='draft')throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');result={id:observed.id};}else result=observed;
-  validateScheduleReply(r,result);
+  validateScheduleReply(r,result,expected);
  }
  await check();
  await fs.writeFile(path.join(path.dirname(file),'reply.json'),JSON.stringify({...envelope,request:undefined,ok:true,result}),{flag:'wx',mode:0o600});

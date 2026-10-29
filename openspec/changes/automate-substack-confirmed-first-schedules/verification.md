@@ -48,3 +48,13 @@ Spectra validate／analyze 與 git diff --check 分開保存；不使用已移�
 ## PR 交付
 
 本 change 與候選程式在隔離 worktree 一併提交。完整本機 gate 的 13 個來源檔雜湊與候選完全一致，基底仍是最新 main b30190e；只新增本節與可攜式精簡證據，沒有為提交重跑未變更的通過檢查。local-verification.json 保存原驗證時間、命令、秒數及候選來源雜湊；reconciliation-receipt.json 保存兩篇同 ID／原日期／欄名與全文／原圖核對及條件 D1 對帳摘要。原始私有操作記錄留在原 output，不上傳全頁、帳號工作階段或設定檔。
+
+## PR ＃81 審查修正
+
+首輪 b01a7f7 的 CI validate（40825175055）成功，但 Codex 審查發現三項問題，因此未合併。已依使用者本次自動首次排程授權，於 AGENTS.md 明列需要獨立平台驗收及另行啟用的例外，其他前景邊界保留。逾時與輪詢解析失敗原本可在 executor 停止前返回；兩項 acceptance RED 均實際失敗，修正為 finally 等待 executor 終止承諾後才返回。既有 executeComputerUse 的程序群組停止與期限維持。
+
+圖片網址誤判的 RED 涵蓋 read／create／update／arm 四種操作及 SQLite 新稿／既有稿 baseline。修正重用 expectedDraftContent／normalizeDraftObservation：原圖 SHA256 URN 作為 coordinator／intent／baseline／arm 的比較表示，raw HTTPS HTML 仍作為實際貼上內容。原始圖片 viewer 包裝正規化，原圖位元組改變或未載入仍拒絕。前景預設比較未改，只有此 worker 注入已驗證媒體表示。
+
+修正後相關測試 83／83 通過；完整 test／check／build:all／release:dry-run／editorial:rehearse 再次全部成功，型別檢查 0 errors／0 warnings／0 hints。原始 review-red.log、review-worker-red.log、review-green-first.log 及最終 review-focused-final.log 均保留，不把首次失敗改稱通過。這些是本機證據，新候選仍須 CI 與審查再次確認。
+
+沒有正式 runtime／設定／資料庫寫入，原兩篇對帳收據不變。正式 future-slot 試行與啟用仍保留未完成。

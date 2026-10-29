@@ -12,7 +12,9 @@
 
 下一篇正式文章與原站 future slot 確認後，沿用前景同 ID prepare／arm／remove／rearm、完整保存／離開／重載、雙通道及一次精確 owner scope 的無人 executor trial。真實報告與新候選 pin 綁定後，另核對完整本機 gate、原 credential 路徑、writer／intent 與 provider schedule inventory，再採新私人 runtime 至原 label／900 秒週期。到期由 Substack 自行公開，後續匿名自然查核另保存；不要求真人實收。未達到上述資格前，兩個 autoSchedule 開關保持 false。
 
-未知結果保留 intent、request、source 與必要分頁，不重播。只清理本次已結清 session；private before／after／media／截圖作為驗收追溯，保留至 scope 對帳完成後精確封存。停用只關閉新的 arming，不宣稱取消既有 provider schedules；保留原 pin、runtime、plist 與全部 delivery 歷史供還原。
+圖片來源與 provider 儲存網址可能不同；此候選沿用原 PNG 位元組 SHA256 表示，prepare／baseline／intent／first-arm 均使用同一內容比較，實際貼上仍用來源 HTTPS URL。原圖、alt 或其他內容改變、缺少完整媒體讀回均停止。
+
+未知結果保留 intent、request、source 與必要分頁，不重播。executor 期限到達或輪詢失敗後，先等待程序群組完成停止再交回 coordinator／釋放寫入鎖，避免下一個草稿 worker 重疊。只清理本次已結清 session；private before／after／media／截圖作為驗收追溯，保留至 scope 對帳完成後精確封存。停用只關閉新的 arming，不宣稱取消既有 provider schedules；保留原 pin、runtime、plist 與全部 delivery 歷史供還原。
 
 ## 兩篇原 ID 的核准呈現
 

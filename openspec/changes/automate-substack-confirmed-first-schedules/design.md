@@ -26,9 +26,9 @@ Non-Goals：不自動修改已公開正文、改期／取消既有排程、補�
 
 ### 受限 Computer Use 與啟用證據分離
 
-首次 worker 只具 find/read/create/update-draft/first-arm，不提供 remove 或 public update。變更前先保存 intent，再以有界私人 request、來源與 generation 綁定 gate 驗證操作；工具只交回實際 UI observation，由父程序驗證並保存 reply。失敗／未知不重播；不編造 observed values。透過原來源與 slot commitment 的釘選資料產生確切 scope，不讓背景直接拿一般前景命令自動批准任意操作。
+首次 worker 只具 find/read/create/update-draft/first-arm，不提供 remove 或 public update。變更前先保存 intent，再以有界私人 request、來源與 generation 綁定 gate 驗證操作；工具只交回實際 UI observation，由父程序驗證並保存 reply。失敗／未知不重播；不編造 observed values。期限到達或輪詢失敗時，必須等待既有 executor 的終止承諾（包含程序群組 SIGTERM／SIGKILL 收尾）完成後才返回 coordinator，避免釋放鎖後與下一個草稿 worker 重疊。圖片沿用 expectedDraftContent／normalizeDraftObservation 的原 PNG SHA256 URN，比較、baseline、intent 及 arm 全程使用相同表示；實際貼上仍使用來源 HTTPS URL，缺圖或圖片位元組改變會阻擋。透過原來源與 slot commitment 的釘選資料產生確切 scope，不讓背景直接拿一般前景命令自動批准任意操作。
 
-啟用要求 owner authorization、scopeDigest、pinDigest、expiry、真實保存／重載／同 ID／slug／雙通道／排程 trial；local 或空隊列結果不合格。現階段只產出關閉範例與試行入口，正式設定不變。
+啟用要求 owner authorization、scopeDigest、pinDigest、expiry、真實保存／重載／同 ID／slug／雙通道／排程 trial；local 或空隊列結果不合格。現階段只產出關閉範例與試行入口，正式設定不變。AGENTS.md 明列本次使用者授權的獨立自動首次排程例外；其餘觀察器、公開稿、改期／取消／補寄仍維持原前景邊界。
 
 ### 重用既有測試層與生命週期
 

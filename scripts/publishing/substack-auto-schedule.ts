@@ -6,7 +6,7 @@ import {listLocalPostFiles} from '../../src/lib/content/local-posts';
 import type {D1DatabaseLike} from '../../apps/admin-worker/src/media';
 import {type ScheduleRecord,SCHEDULE_POLICY} from '../../apps/admin-worker/src/substack-schedules';
 import {scheduledRuntime} from './scheduled-runtime';
-import {buildDraftSource} from './substack-draft-media';
+import {buildDraftSource,expectedDraftContent} from './substack-draft-media';
 import type {ScheduledSource} from './scheduled-source';
 import {ScheduleCoordinator,makeScheduleApproval,validateScheduleTime,validateScheduleCommitment,type ScheduleProvider,type ScheduleRequest} from './substack-schedule';
 import {AttendedScheduleProvider} from './substack-schedule-attended';
@@ -61,7 +61,7 @@ export async function runAutoScheduleRound(root:string,db:D1DatabaseLike,configF
      exchange??=await FileAttendedExchange.create(path.join(path.dirname(root),'auto-schedule-sessions'),root,Math.min(initial.timeoutMs,remaining()),100,async file=>{
       await replyWithAutomaticExecutor(file,{policy:initial,source,timeoutMs:Math.min(initial.timeoutMs,remaining()),check:async()=>{await validate();const record=await repo.get(request.scheduleId);if(!record)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');return {record,slot:await ports.readSlot(slug,source.seriesSlug)};},execute:deps.execute});
      });return exchange.exchange(r);
-    },validate);
+    },validate,expectedDraftContent(source));
     const guarded:ScheduleProvider={
      find:async s=>{await validate();const r=await provider.find(s);if(r.items.some(p=>p.state!=='draft'))throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');return r;},
      read:async id=>{await authority();const p=await provider.read(id);const r=await repo.get(request.scheduleId);if(p.state!=='draft'&&!(p.state==='scheduled'&&r?.intent?.action==='arm'))throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');return p;},
@@ -70,7 +70,7 @@ export async function runAutoScheduleRound(root:string,db:D1DatabaseLike,configF
      arm:async(id,time)=>{await validate();return provider.arm(id,time);},
      remove:async()=>{throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');}
     };
-    return new ScheduleCoordinator(repo,ports.runtime,guarded,{readSource,readSlot:()=>ports.readSlot(slug,source.seriesSlug),readPublic:ports.readPublic,legacyIdentity:()=>ports.legacyIdentity(slug),now}).run(request);
+    return new ScheduleCoordinator(repo,ports.runtime,guarded,{expectedContent:expectedDraftContent,readSource,readSlot:()=>ports.readSlot(slug,source.seriesSlug),readPublic:ports.readPublic,legacyIdentity:()=>ports.legacyIdentity(slug),now}).run(request);
    };
    await perform('prepare-draft');
    const prepared=await repo.bySlug(slug);if(!prepared?.remoteId||prepared.observedState!=='draft_prepared')throw Error('SUBSTACK_AUTO_PROTECTED_ORIGINAL');

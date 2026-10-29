@@ -1,6 +1,6 @@
 # 專案決策索引
 
-２０２６－１０－２９ 自動首次排程候選：使用者授權兩篇原 ID 對帳、同 ID 網站正文修正且不重發／不補寄，與後續依原站已確認時段首次排程及 email／App；後續明確選擇先完成本機實作，等下一篇確認時段才做真實驗收與啟用。採獨立 automatic-substack-first-schedules-v1 worker 共用原輪次及鎖，anonymous observer 仍零 browser／provider write；只取固定合格 main 與 current confirmed future slot，未知意圖不重播，public／armed 不改期或補寄。須另有 exact scope／pin／expiry／真實平台資格，舊 draftOnly 與空隊列不升格；正式 autoSchedule 未啟用。沿用既有權限架構，記本索引與 automate-substack-confirmed-first-schedules 即可，不改 ADR-001 搜尋政策。
+２０２６－１０－２９ 自動首次排程候選：使用者授權兩篇原 ID 對帳、同 ID 網站正文修正且不重發／不補寄，與後續依原站已確認時段首次排程及 email／App；後續明確選擇先完成本機實作，等下一篇確認時段才做真實驗收與啟用。採獨立 automatic-substack-first-schedules-v1 worker 共用原輪次及鎖，anonymous observer 仍零 browser／provider write；只取固定合格 main 與 current confirmed future slot，未知意圖不重播，public／armed 不改期或補寄。須另有 exact scope／pin／expiry／真實平台資格，舊 draftOnly 與空隊列不升格；正式 autoSchedule 未啟用。AGENTS.md 同步明列此獨立 worker 例外，仍須下一篇正式時段的真實驗收與另行啟用；不擴張其他背景寫入權限。沿用既有權限架構，記本索引與 automate-substack-confirmed-first-schedules 即可，不改 ADR-001 搜尋政策。
 
 規格與驗收以 `openspec/` 為準；本索引保存跨回合需要沿用的決策，不把本機、CI、部署或模型測試互相當成完成證明。
 

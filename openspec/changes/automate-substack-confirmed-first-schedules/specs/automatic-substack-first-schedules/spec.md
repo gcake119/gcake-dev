@@ -84,3 +84,13 @@ The worker SHALL share the existing occurrence and writer serialization, with bo
 - **GIVEN** an activated worker in the existing occurrence
 - **WHEN** work completes, fails, times out or is interrupted normally
 - **THEN** only owned settled temporary data is cleaned, uncertain evidence is retained, no duplicate timer or concurrent writer is created, and existing user tabs remain available
+
+#### Scenario: Executor deadline or polling failure
+- **GIVEN** a browser executor is still running for the current writer
+- **WHEN** its deadline expires or coordination evidence cannot be read
+- **THEN** its termination is awaited before writer ownership is released, the next browser worker cannot overlap, and any unknown outcome remains for reconciliation
+
+#### Scenario: Images move to provider media hosting
+- **GIVEN** a fixed Git article with verified original PNG bytes and a saved draft whose image URLs were rewritten by the provider
+- **WHEN** preparation, baseline verification and first arming read the complete saved draft
+- **THEN** unchanged original bytes, alt text and other content are accepted consistently, while altered bytes or incomplete media evidence block the action

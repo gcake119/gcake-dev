@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
+import {prepareDraftSource,expectedDraftContent} from './substack-draft-media';
 import {replyWithAutomaticExecutor} from './substack-auto-executor';
 import {AUTO_SCHEDULE_POLICY,autoScheduleScopeDigest,validateAutoScheduleActivation,type AutoSchedulePolicy} from './substack-auto-activation';
 import {SCHEDULE_POLICY,type ScheduleRecord} from '../../apps/admin-worker/src/substack-schedules';
@@ -59,3 +60,20 @@ for(const failure of ['none','email','time','preview'] as const)test('first arm 
  if(failure==='none'){await work();assert.equal(JSON.parse(await fs.readFile(f.base+'/reply.json','utf8')).result.email,true);}else{await assert.rejects(work(),/SCHEDULE_(EVIDENCE|TIME|PREVIEW)|HANDOFF/);await assert.rejects(fs.access(f.base+'/reply.json'));}
 }finally{await f.cleanup();}});
 test('a non-first operation cannot borrow the first-schedule executor',async()=>{const f=await fixture('schedule-create');try{f.r.operation='reconcile-schedule';f.envelope.operation=f.r.operation;f.envelope.scopeDigest=sha(JSON.stringify(f.r));await fs.writeFile(f.request,JSON.stringify(f.envelope));let calls=0;await assert.rejects(replyWithAutomaticExecutor(f.request,{...f.options,execute:async()=>{calls++;}}),/AUTO_ACTION_FORBIDDEN/);assert.equal(calls,0);}finally{await f.cleanup();}});
+
+for(const failure of ['timeout','poll-error'])test('executor termination precedes ownership release after '+failure,async()=>{const f=await fixture(failure==='timeout'?'schedule-read':'schedule-create');let stopped=false;let execution:Promise<void>|undefined;try{
+ await assert.rejects(replyWithAutomaticExecutor(f.request,{...f.options,timeoutMs:failure==='timeout'?10:3000,execute:async(_r,scope)=>{execution=(async()=>{if(failure==='poll-error')await fs.writeFile(scope.directory+'/before-ready.json','invalid JSON');await new Promise(resolve=>setTimeout(resolve,120));stopped=true;})();await execution;}}));
+ assert.equal(stopped,true,'the next writer must never start while the previous executor is still alive');await assert.rejects(fs.access(f.base+'/reply.json'));
+}finally{await execution;await f.cleanup();}});
+for(const [action,drift] of [['schedule-read','none'],['schedule-create','none'],['schedule-update','none'],['schedule-arm','none'],['schedule-create','bytes'],['schedule-create','unloaded']] as const)test('original PNG verification during '+action+': '+drift,async()=>{const f=await fixture(action);try{
+ const bytes=Buffer.from([137,80,78,71,13,10,26,10,1,2,3]),original='https://gcake119.github.io/gcake-dev/images/trial.png',hosted='https://substack-post-media.s3.amazonaws.com/public/images/trial.png';
+ const fetcher=(async()=>new Response(bytes,{headers:{'content-type':'image/png'}})) as typeof fetch;
+ const imageSource=await prepareDraftSource({...source,article:{...source.article,body:'## Body\n\nComplete.\n\n![Original image]('+original+')'}},fetcher);
+ f.r.article=imageSource.article;f.envelope.sourceRevision=imageSource.sourceRevision;f.envelope.scopeDigest=sha(JSON.stringify(f.r));await fs.writeFile(f.request,JSON.stringify(f.envelope));
+ const expected=expectedDraftContent(imageSource);f.state.lastComparison!.observedDigest=contentFingerprint(expected);
+ const actual={...f.observation,content:{...expectedContent(imageSource),html:expectedContent(imageSource).html.replace('<p><img src="'+original+'" alt="Original image"></p>','<figure><a class="image-link" href="'+hosted+'"><img src="'+hosted+'" alt="Original image"></a></figure>')},images:[{src:hosted,alt:'Original image',loaded:drift!=='unloaded'}]};
+ const local=(time:number)=>new Date(time+28800000).toISOString().slice(0,16),value=local(Date.parse(f.slot.scheduledAt)),min=local(Date.now()),max=local(Date.parse(f.slot.scheduledAt)+86400000);const preview={html:`<div role="dialog">時區：GMT+8 <input name="audience" value="everyone"><span role="checkbox" data-track-input="send_email" aria-checked="true"></span><span role="checkbox" data-testid="scheduled-at" aria-checked="true"></span><input data-testid="date-editor" value="${value}" min="${min}" max="${max}"></div>`,audienceRadios:[{value:'everyone',checked:true}],localTime:value,attributeTime:value,min,max};
+ const work=()=>replyWithAutomaticExecutor(f.request,{...f.options,source:imageSource,fetcher:drift==='bytes'?(async()=>new Response(Buffer.concat([bytes,Buffer.from([99])]),{headers:{'content-type':'image/png'}})) as typeof fetch:fetcher,execute:async(_r,scope,evidence)=>{await trace(scope.directory);if(action!=='schedule-read')await before(scope.directory,{sessionExclusive:true,reloaded:true,lists:lists(action==='schedule-create'?[]:['123']),observation:actual,preview,deviceTimeZone:'Asia/Taipei'});const armed=action==='schedule-arm';await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,lists:lists(armed?[]:['123'],armed?['123']:[]),observation:armed?{...actual,state:'scheduled',listEvidence:{draft:false,scheduled:true},scheduledAt:f.slot.scheduledAt,email:true,appInbox:true,audience:'everyone'}:actual,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}));}});
+ if(drift!=='none'){await assert.rejects(work(),/CONTENT_EVIDENCE/);await assert.rejects(fs.access(f.base+'/reply.json'));return;}await work();
+ const reply=JSON.parse(await fs.readFile(f.base+'/reply.json','utf8'));if(action!=='schedule-create')assert.equal(contentFingerprint(reply.result.content),contentFingerprint(expected));
+}finally{await f.cleanup();}});
