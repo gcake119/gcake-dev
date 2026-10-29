@@ -1,0 +1,24 @@
+{
+  "base": "4cad4e45d02dfd4ffc5792a0bb06536d4db9a890",
+  "candidateFiles": {
+    "apps/search-worker/src/sync.ts": "bdc463839f05a560b6bffd5ef5a8109d8ac08160070262f8e3c41ba1631d481a",
+    "apps/search-worker/src/runtime.ts": "b0d7bec32275e390f42a6845821605da415f4b4a21d5f4e14be5b9e23bfcd655",
+    "apps/search-worker/src/service.ts": "d3f6b5dc8702208c2919ea852b1e947d2b7117145181531592b0f5a1f49f3c95",
+    "apps/search-worker/migrations/0005_vector_proofs.sql": "101af807141d662adaa4f1ed9f15e1db1066268fb55a3649bee3721c17e33f26",
+    "test/discovery/cloud-sync.acceptance.test.ts": "4a691f22c19146dc22a4f5b75586d1e111e1df71cdc45ce3915b3322cd5933bc",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "f4ae8128d193ff8442b923a5c2132fb6f2892db10db03163399b52f5a23f0fe1"
+  },
+  "gates": {
+    "test": 0,
+    "check": 0,
+    "build-all": 0,
+    "release-dry-run": 0,
+    "editorial-rehearse": 0
+  },
+  "spectraValidate": "passed",
+  "spectraAnalyzeFindings": 0,
+  "productionWrites": false,
+  "rawLogs": "Retained in original task output/discovery/index-resume-20261030/current-main-gates/",
+  "firstOriginalBaseHarnessFailures": "Retained separately; current-main complete gate passed naturally without those fixture repairs",
+  "unrelatedDirtyFilesPreserved": true
+}

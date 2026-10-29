@@ -93,3 +93,33 @@ Profile顯示一次fresh recovery呼叫83次reject_write_acl，每次都啟動�
 具體風險是重複spawn令崩潰復原超過既有期限；替代方案調高timeout或跳過ACL均不採用。延伸既有Python unittest，用150ms受控spawn成本重現原期限失敗，再驗證真實native ACL、晚出現寫權、metadata競態、逾時回收及全部崩潰階段。成本是小幅既有模組整理與少量情境，沒有新服務、依賴、workflow或測試層。正式權限、原ACL規則、秘密、timer及通知均不變。
 
 追加影響檔案：scripts/hermes/update_entry.py、scripts/hermes/test_update_entry.py、scripts/hermes/test_acl_inventory.py，以及兩份仍保留於output的歷史腳本。此修正不改已封存Hermes規格或原正式驗收紀錄，另保留本機candidate證據。
+
+
+## First-principles architecture repair (2026-10-26 candidate)
+
+This section supersedes the historical per-corpus physical namespace and full reread-on-every-release decisions for the new local candidate. Production remains paused on the old code. Scope is the existing search Worker/D1 and existing tests; no queues, new services, model or limit changes, publishing changes or production writes.
+
+### Release-independent verified vector objects
+
+A vector is an embedding of a passage under one model configuration. A public release is a set of eligible passage identities and retrieval metadata, not a physical vector partition. Use SHA-256(modelConfig) as the stable namespace. Existing passage IDs remain intact. Add namespace and metadataHash to the verified ledger; hash the complete canonical provider metadata. Reuse only a proof matching article, revision, text hash, model, namespace and metadata hash. The runtime owns vector mutations; external mutation invalidates these proofs and requires reconciliation. A periodic full audit is distinct from ordinary delta synchronization and is still required for this acceptance.
+
+Derive remaining work from desired passages minus matching proofs rather than a positional cursor. The cursor becomes a count of proven current objects for operator visibility. Delete only owned obsolete entries, confirm absence, then require exact membership and current proofs before promotion. A changed public manifest already causes source/active mismatch before reader inference. Preserve that barrier through final source checking; do not compensate for inactive vectors with overfetch or post-filtering alone. This intentionally accepts keyword-only operation while a delta is unfinished.
+
+Legacy rows have empty new proof fields. They are not trusted as stable objects: perform the existing bounded provider ownership/value check, reuse compatible model output, upload to the stable namespace and fully verify it once. This is an explicit additive schema transition, not a permanent dual execution mode. Unknown ownership and inference still stop. Full migration costs and capacity are prerequisites for a later production plan; no operator relabeling or automatic migration of unresolved pending rows.
+
+### Durable provider visibility and quota scheduling
+
+Add mutationId, nextAttemptAt and readbackAttempts to the single durable sync state. Save upload acknowledgement with pending stage in one transaction. Read provider describe status before getByIds; compare the opaque mutation identifier for equality, never order UUIDs or infer completion from elapsed time. Single writer/single pending batch means another last-processed identifier cannot prove this mutation completed. Once reported processed, perform full existing value/namespace/metadata checks. Persist readback delay min(30 minutes, 1 minute * 2^attempts) after incomplete visibility; do not sleep in an execution. Retry state is authoritative across worker restarts. A missing acknowledgement retains embedded output for existing idempotent upload recovery; unknown inference remains non-replayable.
+
+Quota denial stores nextAttemptAt at next UTC midnight. Existing cron returns waiting before that point and resumes only if original evidence remains eligible. Daily limits are never refilled. The 500 embedding-passage/request allocation and conservative 500 vector-operation allocation remain separate existing resources with unchanged shared atomic admission. Avoidable operation amplification is removed before any reconsideration of those limits. Official queried/stored dimensions and account snapshots remain a separate production guard, not inferred from these counters.
+
+## Implementation Contract — architecture candidate
+
+- Add migration 0005_vector_proofs.sql without rewriting historical migrations, receipts, reservations or payloads. New fields default to empty/zero; unresolved legacy payloads cannot silently switch namespace.
+- synchronizeIndex plans a delta by matching durable proofs against the verified public manifest. No provider operations for unchanged proofs. One pending batch, batch <=16, lease and deadlines remain.
+- runtime query uses the stable model namespace only after current public/active identity matches. A namespace migration is a coordinated Worker/D1 transition, never an activeCorpusId edit.
+- Prove nineteen-only work over a 2,955-passage baseline, metadata invalidation, withdrawals, legacy transition, waiting across invocations, quota rollover and existing unknown/lease/source safety with the existing cloud-sync/cloud-runtime/semantic acceptance suites. No new testing layer or dependency.
+- Extend the existing complete local gates once the candidate is complete. Record local, provider, natural and human evidence separately. Tasks 4.2 and 4.3 remain unchecked.
+- Migration/rollback: deploy only after a separate production authorization and fresh full account/pending/free-capacity audit. Preserve current pending rows and reservations; reconcile their original target/namespace before activating the new worker. Old worker cannot serve a migrated stable namespace: rollback means INDEX_SYNC false and keyword fallback, not restoring the old worker over migrated state. Never replay inference or copy a second full corpus without verified capacity.
+
+The added proof/wait fields buy delta-sized work and restart-safe waiting; maintenance cost is one additive migration plus existing state-machine tests. Raising limits, a local chat loop, fixed sleeps and a new queue service were rejected because they do not remove the identity error or supply provider completion evidence. The retained ledger is trusted between controlled mutations; detecting arbitrary out-of-band tampering still requires an explicit audit.

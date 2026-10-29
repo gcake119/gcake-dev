@@ -194,3 +194,45 @@ The local verification gate SHALL check retained historical scripts with valid t
 - **GIVEN** native inspection stalls or returns an incomplete result
 - **WHEN** the original inspection deadline is reached or the result is checked
 - **THEN** authority validation fails closed and the timed-out child is reaped without any controller promotion
+
+
+### Requirement: Release-independent verified vector objects
+The synchronizer SHALL store vectors in a namespace derived from the approved model configuration, independently of public release identity. It SHALL persist complete provider-verification proofs for passage identity, revision, content, model configuration, namespace and retrieval metadata. An unchanged proof SHALL be reusable across releases without another provider read, embedding or write. Changed or legacy proofs SHALL require complete provider readback. Promotion SHALL require exact current membership, no obsolete owned entries or pending work, and final source and policy guards. During a public/active release mismatch, readers SHALL use current keyword results without a semantic provider call. This requirement supersedes the per-release namespace and per-release full reread clauses of Bounded verified continuation and Capacity-safe legacy identity transition for the new architecture candidate; historical evidence remains unchanged. Task 4.2's separately requested full audit remains mandatory.
+
+#### Scenario: Nineteen additions preserve unchanged objects
+- **GIVEN** 2,955 fully verified unchanged passages and nineteen newly public passages
+- **WHEN** only the existing hosted schedule completes synchronization
+- **THEN** exactly nineteen passages are embedded, uploaded and fully verified, the other 2,955 receive no provider reads or writes, and the new public release is promoted without foreground intervention
+
+#### Scenario: Retrieval metadata changes without new passage text
+- **GIVEN** a verified passage whose topics or series changes in the public source
+- **WHEN** synchronization evaluates that release
+- **THEN** its old metadata proof is not reused and the revised metadata is fully read back before promotion
+
+#### Scenario: Withdrawal or interrupted delta
+- **GIVEN** a changed release withdraws an owned passage or an execution stops after a batch was verified
+- **WHEN** the next scheduled execution resumes
+- **THEN** obsolete owned passages are confirmed absent before promotion, unchanged verified objects are retained, and completed inference is not repeated
+
+#### Scenario: Legacy and foreign ownership
+- **GIVEN** old verification records lack release-independent proofs or a provider vector has unproven ownership
+- **WHEN** the additive migration and hosted transition are evaluated
+- **THEN** old records are preserved for bounded complete verification and foreign vectors are neither overwritten nor deleted
+
+### Requirement: Durable provider visibility and quota scheduling
+The hosted synchronizer SHALL persist the provider mutation identifier and next eligible attempt before declaring an upload pending. It SHALL NOT spend vector-read reservations before that mutation is reported processed. A processed mutation still requires full value and metadata readback. Incomplete visibility SHALL retain output and schedule bounded exponential readback intervals from one to thirty minutes; unrelated schedule ticks SHALL perform no vector reads or inference. A quota denial SHALL preserve the job and schedule its next attempt at the next UTC day without replenishing the current window. Evidence expiry, unknown inference, source conflicts and operator switches SHALL continue to block work. The existing hosted schedule SHALL own continuation without chat messages. Limits and zero-paid-overage rules SHALL remain unchanged; application operation counters SHALL NOT be described as official billing dimensions.
+
+#### Scenario: Provider has not processed the upload
+- **GIVEN** a saved upload acknowledgement and an unprocessed provider mutation
+- **WHEN** repeated hosted schedule ticks arrive
+- **THEN** pending output remains durable and no vector read or additional embedding is performed
+
+#### Scenario: Processed but incompletely visible output
+- **GIVEN** the provider reports the saved mutation processed but complete readback fails
+- **WHEN** schedule ticks occur before and after the persisted eligible time
+- **THEN** early ticks do not read vectors and one eligible tick checks the saved output without repeating inference
+
+#### Scenario: Next-day continuation without a conversation
+- **GIVEN** a partially completed job has exhausted a shared daily resource while its evidence remains valid
+- **WHEN** the existing hosted schedule reaches the next UTC day
+- **THEN** the runtime creates the new window once and resumes saved work without a chat command, quota refill or replay of unknown inference

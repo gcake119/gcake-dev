@@ -7,6 +7,8 @@ export const approvedModel = '@cf/baai/bge-m3';
 export interface SearchPolicy {
     enabled: boolean;
     activeCorpusId: string;
+    /** Physical model namespace is activated only by verified synchronization. */
+    activeVectorNamespace?: string;
     model: string;
     modelConfig: string;
     dimensions: number;

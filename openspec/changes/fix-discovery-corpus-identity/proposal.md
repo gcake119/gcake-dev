@@ -46,3 +46,10 @@ Pages 建置先執行快照還原；collectSnapshot 重寫產製時間，site �
 ## Gate 修正追加範圍（２０２６－１０－２４）
 
 使用者授權修復完整本機gate：保留歷史output腳本並補明確型別，批次化同次Hermes authority ACL檢查以減少重複子程序啟動，保留既有期限及安全拒絕。對應同能力新增Complete local gate without weakened authority checks需求；不操作正式runtime或改歷史驗收。
+
+
+## First-principles architecture repair (2026-10-26)
+
+The authorized local repair separates durable vector identity (model configuration), verified passage proofs, and public release identity. A nineteen-passage addition must not move or reread 2,955 unchanged passages. Retain all previous completion and production evidence as historical; sections describing namespace-per-release are superseded for this new candidate only. Do not raise any limits to conceal amplification.
+
+Scope: search Worker, additive D1 proof/wait-state migration, existing discovery acceptance tests, and architecture/runbook documentation. No new services or dependencies. Production migration, deployment, capacity renewal and switch activation require a concrete reviewed candidate and separate authorization. Public corpus identities and manifests remain unchanged. The existing production pause remains in force.

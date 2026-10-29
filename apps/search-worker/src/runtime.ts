@@ -1,7 +1,7 @@
 import { unavailableResponse, failureReason, type FailureStage, type FailureReason } from './diagnostics';
 import { D1Admission, type AdmissionDatabase } from './admission';
 import { createWorker, disabledWorker } from './worker';
-import { deployedReader, deployedManifest } from './deployed';
+import { sha256, deployedReader, deployedManifest } from './deployed';
 import { bgeEmbedding, vectorRetrieval, type EmbeddingBinding, type VectorBinding } from './provider';
 import { eligible, type SearchPolicy } from './service';
 /** Minimal existing dependency contracts keep offline fixtures independent of platform classes. */
@@ -40,11 +40,11 @@ export function createProductionWorker(fetcher: typeof fetch = fetch) {
             const record = await env.DISCOVERY_DB.prepare("SELECT policy FROM discovery_policy WHERE id='active'").first<{policy: string}>();
             if (!record) return unavailable('policy', 'ineligible');
             const policy = await activateFreeWindow(env.DISCOVERY_DB, { ...JSON.parse(record.policy), throttleSecret: env.THROTTLE_SECRET }, Date.now());
-            if (!eligible(policy, Date.now())) return unavailable('policy', 'ineligible');
+            if (!eligible(policy, Date.now()) || policy.activeVectorNamespace !== await sha256(policy.modelConfig)) return unavailable('policy', 'ineligible');
             const ai = env.AI, vectors = env.VECTOR_INDEX;
             return createWorker({policy, admission: new D1Admission(env.DISCOVERY_DB), manifest: deployedReader(fetcher), currentManifest: deployedManifest(fetcher),
                 embed: (text, signal) => bgeEmbedding(ai, text, policy, signal),
-                vectors: (vector, corpusId, filters, signal) => vectorRetrieval(vectors, vector, corpusId, filters, signal)
+                vectors: async (vector, _corpusId, filters, signal) => vectorRetrieval(vectors, vector, await sha256(policy.modelConfig), filters, signal)
             }).fetch(request);
         } catch (error) {
             return unavailable('policy', failureReason(error));

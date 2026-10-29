@@ -1,0 +1,101 @@
+{
+  "scope": "local architecture candidate; no production deployment or provider calls",
+  "publicBaselinePassages": 2955,
+  "newArticleCount": 1,
+  "newPassages": 19,
+  "unchangedProviderReads": 0,
+  "unchangedProviderWrites": 0,
+  "deltaEmbeddings": 19,
+  "deltaGetByIdsCalls": 4,
+  "deltaUpsertBatches": 2,
+  "localNoChangeAfterPromotion": 2,
+  "finalSearchTests": 84,
+  "finalSearchPassed": 84,
+  "productionAcceptance42": false,
+  "productionAcceptance43": false,
+  "requestsLimitUnchanged": 500,
+  "vectorQueriesLimitUnchanged": 500,
+  "paidOverageUnchanged": 0,
+  "newServiceOrDependency": false,
+  "legacyMigrationNeedsSeparateAuthorization": true,
+  "candidateFiles": {
+    "apps/search-worker/src/sync.ts": "bdc463839f05a560b6bffd5ef5a8109d8ac08160070262f8e3c41ba1631d481a",
+    "apps/search-worker/src/runtime.ts": "b0d7bec32275e390f42a6845821605da415f4b4a21d5f4e14be5b9e23bfcd655",
+    "apps/search-worker/src/service.ts": "d3f6b5dc8702208c2919ea852b1e947d2b7117145181531592b0f5a1f49f3c95",
+    "apps/search-worker/migrations/0005_vector_proofs.sql": "101af807141d662adaa4f1ed9f15e1db1066268fb55a3649bee3721c17e33f26",
+    "test/discovery/cloud-sync.acceptance.test.ts": "4a691f22c19146dc22a4f5b75586d1e111e1df71cdc45ce3915b3322cd5933bc",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "f4ae8128d193ff8442b923a5c2132fb6f2892db10db03163399b52f5a23f0fe1"
+  },
+  "rawLogs": {
+    "red.txt": "49ccf4389722b99e757a8863db50dfab447aeea3e6ca324342886618755e95a0",
+    "search-final.txt": "a9437e7c41be1ee7dda6ef78302a0d45836bcd79f31dfc3a484d42cfb2f85c61",
+    "search-build-final.log": "81711dd2d35cb7dd28a3d480f59150ac6f225b361e0294e30106c80b3c998eb4",
+    "test.log": "cad6a741713f04f9e8bf56e469af1ebb0ac7773254a4a2369f1202f4bc14b5b9",
+    "test-unsandboxed.log": "ec6c2bf31f031104f97b1df8cb1fc7a30b84341cfd22c7ead4d9c446696b8519",
+    "check.log": "1a8437ceeb2577f8bf3c99a1d03753666182cd0e35ed0c1e98236d2f8dd07433",
+    "check-2.log": "8accca2f38cf9123ad0abb4612f2cdebd1575423c8bfda715b31c81c9d8684fc",
+    "build-all.log": "1f10a45f2abffea64872a7dbc10e39013e4a3291133225fb69e65c5727c51608",
+    "release-dry-run.log": "ccc98148e61dbc4dfb40e225b741e663208242b54ed3d00c7092659951da290e",
+    "release-dry-run-unsandboxed.log": "43dd16def9ab1ce699c3541a0bf3966ef58007b062dcec601c752367c5c5111f",
+    "editorial-rehearse.log": "3988d5c7c9426235e6110109ef09c65b5698e103795c992efc8248a468418c3a",
+    "editorial-rehearse-unsandboxed.log": "09f315614c8ec909e5e85c3e55fad305d3a97a4c5e955e39a494098643e48f1a",
+    "check-final.log": "5854fc8daf9fefbd5e5574cbde442be45ad05dfd51a08d0f8c422c4f26f7a9bc"
+  },
+  "spectraAnalysis": {
+    "change_id": "fix-discovery-corpus-identity",
+    "dimensions": [
+      {
+        "dimension": "Coverage",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Consistency",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Ambiguity",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Gaps",
+        "status": "Clean",
+        "finding_count": 0
+      },
+      {
+        "dimension": "Localization",
+        "status": "Skipped (insufficient artifacts)",
+        "finding_count": 0
+      }
+    ],
+    "findings": [],
+    "artifacts_analyzed": [
+      "proposal",
+      "specs",
+      "design",
+      "tasks"
+    ],
+    "artifacts_missing": []
+  },
+  "gates": {
+    "pnpm test": "passed outside sandbox after localhost bind was denied; unchanged stages reused",
+    "pnpm check": "passed final current source and tests",
+    "pnpm build:all": "passed; final affected search build also passed",
+    "pnpm release:dry-run": "passed outside sandbox with localhost fixtures",
+    "pnpm editorial:rehearse": "passed outside sandbox with localhost fixtures",
+    "final search acceptance": "84 passed; 0 failed; 0 skipped",
+    "spectra validate": "passed",
+    "spectra analyze": "0 findings",
+    "git diff --check": "passed"
+  },
+  "taskProgress": {
+    "complete": 16,
+    "total": 18,
+    "pending": [
+      "4.2",
+      "4.3"
+    ]
+  }
+}
