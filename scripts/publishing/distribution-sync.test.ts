@@ -132,3 +132,12 @@ test('production success delivery moves to the original-site monitor while foreg
   const body=JSON.parse(await fs.readFile(file,'utf8'));assert.deepEqual(body.publications??[],[]);assert.deepEqual(body.issues,[{slug:'held',code:'SUBSTACK_CONTENT_SYNC_REQUIRED'}]);
  }finally{sql.close();await f.cleanup()}
 });
+
+test('independently scoped first scheduling shares the round before draft synchronization and anonymous observation',async()=>{const f=await fixture();try{
+ const deps={...f.deps,scheduleFirst:async()=>{f.calls.push('first-schedule');return [{slug:'trial',target:'substack',operation:'first-schedule',status:'observed'}];},syncDrafts:async()=>{f.calls.push('drafts');return [];},observeSchedules:async()=>{f.calls.push('anonymous');return [];}};
+ const result=await runSyncRound(f.options,deps);assert.deepEqual(f.calls,['snapshot','first-schedule','drafts','anonymous','substack:verify']);assert.equal(result.results[0]?.operation,'first-schedule');assert.equal(result.status,'completed');
+}finally{await f.cleanup();}});
+test('failed first-schedule worker leaves anonymous observation available and retains owned uncertain session source',async()=>{const f=await fixture();try{
+ const deps={...f.deps,scheduleFirst:async(source:string)=>{f.calls.push('first-schedule');await fs.mkdir(path.join(source,'..','auto-schedule-sessions','unsettled'),{recursive:true});throw Error('SUBSTACK_AUTO_INCONCLUSIVE');},observeSchedules:async()=>{f.calls.push('anonymous');return [];}};
+ const result=await runSyncRound(f.options,deps);assert.ok(f.calls.includes('anonymous'));assert.equal(result.status,'attention');assert.equal(result.cleanup.source,'retained');assert.ok(await fs.stat(path.join(result.directory,'source')));assert.equal(result.results[0]?.code,'SUBSTACK_AUTO_INCONCLUSIVE');
+}finally{await f.cleanup();}});

@@ -1,0 +1,64 @@
+{
+  "recordedAt": "2026-10-29T05:41:26.121167+00:00",
+  "baseHead": "b30190e591c1fa30c579b8b9a6803a06c715eca4",
+  "origin": "https://github.com/gcake119/gcake-dev",
+  "files": {
+    "apps/admin-worker/src/substack-schedules.ts": "45824901e9d8fccd19b59d2a2b512c2e8ac5b1312d0288cbb98643048406316f",
+    "docs/decisions/index.md": "3994378a5db24f7607ed6d55c5ace52cd2f0da2328e898a76e30849d7d54cec8",
+    "docs/distribution-scripted-runbook.md": "cabf0de5cfea9f1e0d7a70e6fb5de21bf592f412f1f9a13e8717f0a52d21a951",
+    "scripts/publishing/distribution-auto-executor.test.ts": "e7b5d9e654500278559f9f7c4e5e82f0c6bed60e22eab82ff7d7f3098c9f0ea1",
+    "scripts/publishing/distribution-auto-schedule.test.ts": "97749d15bcc60c06f486c8d55269ad6f057bba5c3af420473308e4e7d61b0e51",
+    "scripts/publishing/distribution-native-presentation.test.ts": "9d56a0ba384077a9fe216d6e4c276bb289a91c39c614c757df49c89798db53f8",
+    "scripts/publishing/distribution-sync.test.ts": "f5ff1ce1ebcc2ca6656534199393ff1ba2f316810e2f41e36fd18d2a945fd5c3",
+    "scripts/publishing/substack-auto-activation.ts": "2cbe47329be52d8b7b77022aeb468786b54199f5f9530415d8a83b04caebfb41",
+    "scripts/publishing/substack-auto-executor.ts": "12a4eeae4c6f17c7ff4721f4e9f156e0b74677aea719ce9c5dbebba9bedffbdd",
+    "scripts/publishing/substack-auto-schedule.ts": "30b75eb53fbaf5dea3f537068655e1ca18f4db3e0928042ddfb2f931b39595b7",
+    "scripts/publishing/substack-native-presentation.ts": "e720440adf9fc216e45b14be65e53257539e119712a7f3a4b813337314932297",
+    "scripts/publishing/substack-schedule.ts": "8b5ef3a82d2fc830285c9c1c5b1e92c7c853904ef0185803f1da3f2dc0dff5cb",
+    "scripts/publishing/sync-distribution.ts": "73c193cf352112c6f7bbc4913483335fc04b40b5a5cdb63ccba0efae59631b66"
+  },
+  "localGates": {
+    "root": "/Users/caiyijun/.codex/worktrees/substack-auto-first-schedule/gcake-dev",
+    "steps": [
+      {
+        "name": "test",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 171.234
+      },
+      {
+        "name": "check",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 8.693
+      },
+      {
+        "name": "build",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 11.444
+      },
+      {
+        "name": "release",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 31.088
+      },
+      {
+        "name": "rehearse",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 13.82
+      }
+    ],
+    "providerWrites": false,
+    "runtimeActivated": false,
+    "status": "passed"
+  },
+  "focusedTests": {
+    "passed": 73,
+    "failed": 0
+  },
+  "productionAutoScheduleEnabled": false,
+  "realFutureProviderTrial": "pending-owner-confirmed-next-slot"
+}

@@ -194,6 +194,10 @@ export class ScheduleCoordinator {
   if(!date||!Number.isFinite(Date.parse(date))||!e.publishedAt||!Number.isFinite(Date.parse(e.publishedAt)))return inconclusive('SUBSTACK_PUBLICATION_TIME_UNCONFIRMED');
   if(publicationTimeChanged(state,e.publishedAt))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLICATION_TIME_CHANGED',verification:{status:'time_difference',checkedAt:now}};
   const expected=expectedContent(source);
+  if(state.approvedPresentation){
+   try{const {verifyApprovedPresentation}=await import('./substack-native-presentation');if(await verifyApprovedPresentation(state.approvedPresentation,source,e))return {...(legacyVerificationHold?{pendingAction:undefined,lastErrorCode:undefined}:{}),verification:{status:'presentation_only',checkedAt:now}};}
+   catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
+  }
   try{
    if(attentionContentFingerprint(e.content)!==attentionContentFingerprint(expected))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH',verification:{status:'content_difference',checkedAt:now}};
   }catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
@@ -205,7 +209,7 @@ export class ScheduleCoordinator {
  async observe(id:string,source:ScheduledSource|undefined,slot:ConfirmedSlot|undefined,now:string):Promise<ScheduleRecord>{
   let state=await this.repo.get(id);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');const owner=randomUUID();if(!await this.runtime.acquire(state.slug,'substack',owner,now))return state;
   try{state=(await this.repo.get(id))!;
-   const legacyVerificationHold=['SUBSTACK_PUBLIC_EVIDENCE_MISMATCH','SUBSTACK_PUBLIC_IDENTITY_MISMATCH'].includes(state.lastErrorCode??'')&&state.pendingAction==='sync-content';
+   const legacyVerificationHold=(['SUBSTACK_PUBLIC_EVIDENCE_MISMATCH','SUBSTACK_PUBLIC_IDENTITY_MISMATCH'].includes(state.lastErrorCode??'')||state.approvedPresentation?.sourceRevision===source?.sourceRevision&&state.approvedPresentation?.remoteId===state.remoteId&&state.lastErrorCode==='SUBSTACK_CONTENT_EVIDENCE_MISMATCH')&&state.pendingAction==='sync-content';
    if(state.intent||state.lastErrorCode&&!legacyVerificationHold)return state;
    let patch:Partial<ScheduleRecord>={};
    if(state.observedState==='cancelled_draft'&&!source)patch={};

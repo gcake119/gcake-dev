@@ -1,5 +1,25 @@
 # Substack 同步腳本
 
+## 自動首次排程候選（2026／10／29；未啟用）
+
+使用者已授權原 ID 對帳、同 ID 網站正文修正且不重發／不改日期／不補寄，以及後續依原站已確認時段首次排程與 email／App；後續選擇先完成實作，等下一篇確認時段才做真實驗收與啟用。本節是候選契約，正式設定不變。
+
+獨立 autoSchedule worker 共用原輪次、共享鎖及 ScheduleCoordinator，先於普通草稿同步執行。原 anonymous observer 保持零 browser／provider writes。候選只讀 current confirmed future slot，不從預估補造時段，不自動修改 public／armed／cancelled／unknown／genuine hold。
+
+新增私人 scope 為 policyVersion=automatic-substack-first-schedules-v1，enabled=false、writeEnabled=false；原 scheduled.observeEnabled=true／writeEnabled=false 保留。其餘必填欄位為 origin=https://gcakedev.substack.com、repository=gcake119/gcake-dev、branch=main、timeZone=Asia/Taipei、audience=everyone、email=true、appInbox=true、browserName=chrome、既有 executor 絕對路徑、Git 外 evidenceDirectory、qualificationRef、authorizationRef、expiresAt，以及 maxArticles（1～20）、timeoutMs（100～600000）、maxRoundMs（不少於 timeoutMs，最多840000）。這是欄位說明，不可覆蓋完整私人設定；未啟用時不碰 provider。
+
+啟用須 owner approved 的 schema 1 收據，兩份收據都綁定該 policyVersion、scopeDigest（autoScheduleScopeDigest）、pinDigest（完整 runtime manifest 原始文字 SHA256）、相同 expiresAt 與 firstScheduleOnly=true。資格另須 passed、realProvider、sameId、exactSlug、fullReadback、emailAppConfirmed、armRemoveRearmConfirmed、unattendedExecutor 皆 true，及真實 remoteId、sourceRevision、scheduledAt、checkedAt。舊 draftOnly、空隊列、local fixture、單次手動發布均不合格。
+
+下一篇正式文章與原站 future slot 確認後，沿用前景同 ID prepare／arm／remove／rearm、完整保存／離開／重載、雙通道及一次精確 owner scope 的無人 executor trial。真實報告與新候選 pin 綁定後，另核對完整本機 gate、原 credential 路徑、writer／intent 與 provider schedule inventory，再採新私人 runtime 至原 label／900 秒週期。到期由 Substack 自行公開，後續匿名自然查核另保存；不要求真人實收。未達到上述資格前，兩個 autoSchedule 開關保持 false。
+
+未知結果保留 intent、request、source 與必要分頁，不重播。只清理本次已結清 session；private before／after／media／截圖作為驗收追溯，保留至 scope 對帳完成後精確封存。停用只關閉新的 arming，不宣稱取消既有 provider schedules；保留原 pin、runtime、plist 與全部 delivery 歷史供還原。
+
+## 兩篇原 ID 的核准呈現
+
+２０２６－１０－２９ 使用者核准 ai-agent-development-workflow（221750546）及 ai-ui-five-stage-workflow（221751141）的表格轉為條列，保留全部欄名與儲存格內容。approvedPresentation 僅綁定這兩篇的原 ID、固定來源 revision 及原 PNG SHA256；全文仍逐項比較，平台圖片 viewer 包裝可正規化，其他文字、程式碼、連結及圖片漂移仍報錯。結果標為 presentation_only，不當作原始 HTML 相等。原發文日期與 delivery 歷史不變，沒有重發或補寄。
+
+此辨識支援僅完成本機候選，正式舊 observer 尚未採用，仍可能提示格式差異。依使用者決定，待下一篇確認時段後完成真實平台驗收及正式候選採用；不以清除提示為由提前啟用。
+
 ## 原站 Hermes 通知時間
 
 原站文章通知分列「原定發布時間（台北）」與「公開確認時間（台北）」，沿用分鐘精度。原定時間只取正式確認的原站排程；沒有確認排程時顯示「未提供」。公開確認時間取 Hermes 成功查驗該篇 canonical 頁面後的觀察時刻，且須位於同一次頁面查核期間；缺失或無效時顯示「未記錄」。這是確認公開的時間，不能推論精確的首次公開瞬間；RSS 日期、工作開始、Telegram 寄出或部署完成時間均不能代替。

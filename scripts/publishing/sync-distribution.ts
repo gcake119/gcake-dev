@@ -16,6 +16,7 @@ type Run=NonNullable<Plan['articles'][number]['run']>;
 type Command=Run['commands'][number]|Run['recoveries'][number];
 type Audit={locks:unknown[];checkpoints:unknown[];intents:unknown[]};
 export interface SyncDependencies {
+ scheduleFirst?(source:string,config:string):Promise<{slug:string;target:string;operation:string;status:string;code?:string}[]>;
  syncDrafts?(source:string,config:string):Promise<{slug:string;sourceRevision?:string;target:string;operation:string;status:string;code?:string}[]>;
  observeSchedules?(source:string,config:string):Promise<{slug:string;sourceRevision?:string;target:string;operation:string;status:string;code?:string}[]>;
  notify?(round:AttentionRound,configFile:string):Promise<{status:string;code?:string}>;
@@ -62,6 +63,10 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
   directory=await fs.mkdtemp(path.join(options.output,'round-'));await fs.chmod(directory,0o700);await save(path.join(directory,'ownership.json'),{owner,automation:'pages-substack',runtime:options.runtime});
   const preflight=await deps.audit();await save(path.join(directory,'preflight-d1.json'),preflight);if(preflight.locks.length)throw Error('DISTRIBUTION_ACTIVE_WRITER');
   const snapshot=await deps.snapshot(path.join(directory,'source'));source='retained';await save(path.join(directory,'snapshot.json'),snapshot);
+  if(options.execute&&deps.scheduleFirst){
+   try{const scheduled=await deps.scheduleFirst(snapshot.sourceRoot,options.configFile);results.push(...scheduled);if(scheduled.some(r=>r.status!=='observed'))status='attention';}
+   catch(error){status='attention';results.push({slug:'',target:'substack',operation:'first-schedule',status:'blocked',code:boundedDistributionError(error)});}
+  }
   if(options.execute&&deps.syncDrafts){
    try{const drafts=await deps.syncDrafts(snapshot.sourceRoot,options.configFile);results.push(...drafts);if(drafts.some(r=>!['verified','observed'].includes(r.status)))status='attention';}
    catch(error){status='attention';results.push({slug:'',target:'substack',operation:'sync-draft',status:'blocked',code:boundedDistributionError(error)});}
@@ -93,7 +98,7 @@ export async function runSyncRound(options:SyncOptions,deps:SyncDependencies){
  }catch(error){status='attention';results.push({slug:'',target:'all',operation:'round',status:'blocked',code:boundedDistributionError(error)});}
  finally{
   if(directory){
-   if(await unanswered(directory)||(await fs.readdir(path.join(directory,'draft-sessions')).catch((e:NodeJS.ErrnoException)=>{if(e.code==='ENOENT')return [];throw e;})).length>0){source='retained';status='attention';}
+   if(await unanswered(directory)||(await Promise.all(['draft-sessions','auto-schedule-sessions'].map(name=>fs.readdir(path.join(directory,name)).catch((e:NodeJS.ErrnoException)=>{if(e.code==='ENOENT')return [];throw e;})))).some(items=>items.length>0)){source='retained';status='attention';}
    else {try{await fs.rm(path.join(directory,'source'),{recursive:true,force:true});source='removed';}catch{status='attention';source='retained';}}
    const fingerprint=createHash('sha256').update(JSON.stringify({status,results,source})).digest('hex');
    const previousFile=options.lock+'.last-result.json';
@@ -137,6 +142,7 @@ export function productionDependencies(runtime:string,database?:D1DatabaseLike,a
   validate:async(configFile,acceptanceFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1'){if(config.scheduled.observeEnabled!==true||config.scheduled.writeEnabled!==false||config.substack?.ui?.origin!=='https://gcakedev.substack.com')throw Error('SUBSTACK_SCHEDULE_OBSERVER_POLICY_REQUIRED');}else assertGeneralPolicy(config);const accepted=JSON.parse(await fs.readFile(acceptanceFile,'utf8'));assertAnonymousAcceptance(accepted);if(config.scheduled&&accepted.policyVersion!==config.scheduled.policyVersion)throw Error('SUBSTACK_SCHEDULE_OBSERVER_ACCEPTANCE_REQUIRED');},
   audit:async()=>({locks:await query('SELECT post_slug,target,owner,acquired_at FROM publication_locks'),checkpoints:await query('SELECT post_slug,target,source_revision,operation,attempt_id FROM publication_checkpoints'),intents:await query("SELECT id,target,status FROM publication_attempts WHERE status='intent'")}),
   observeSchedules:async(source,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion!=='scheduled-source-first-delivery-v1')return [];const {observeSubstackSchedules}=await import('./observe-substack-schedules');return observeSubstackSchedules(source,db,config.substack.ui);},
+  scheduleFirst:async(source,configFile)=>{const {runAutoScheduleRound}=await import('./substack-auto-schedule');return runAutoScheduleRound(source,db,configFile,{runtimePinFile});},
   syncDrafts:async(source,configFile)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion!=='scheduled-source-first-delivery-v1')return [];if(config.draftQualification?.enabled===true){const {runDraftQualification}=await import('./substack-draft-qualification');return runDraftQualification(source,db,configFile,runtimePinFile);}const {runDraftSyncRound}=await import('./substack-draft-round');return runDraftSyncRound(source,db,configFile,{runtimePinFile});},
   snapshot:destination=>snapshotDistribution(destination,runtime),
   plan:async(source,configFile,out)=>{const config=JSON.parse(await fs.readFile(configFile,'utf8'));if(config.scheduled?.policyVersion==='scheduled-source-first-delivery-v1')return {inventory:{entries:[]},articles:[]} as unknown as Plan;return prepareAllDistribution(source,config as DistributionConfig,out,async(slug,target)=>({state:(await repo.listStates(slug)).find(s=>s.target===target),checkpoint:await repo.runtime.checkpoint(slug,target),locked:!!await db.prepare('SELECT owner FROM publication_locks WHERE post_slug = ? AND target = ?').bind(slug,target).first()}));},
@@ -148,7 +154,7 @@ export async function main(args=process.argv.slice(2)){
  for(let i=0;i<args.length;i++){if(args[i]==='--execute'){if(execute)throw Error('DISTRIBUTION_ARGUMENT_INVALID');execute=true;continue;}if(!['--config','--pin','--acceptance','--out','--lock'].includes(args[i])||values.has(args[i])||!args[i+1]||args[i+1].startsWith('--'))throw Error('DISTRIBUTION_ARGUMENT_INVALID');values.set(args[i],args[++i]);}
  for(const key of ['--config','--pin','--acceptance','--out','--lock'])if(!values.has(key))throw Error('DISTRIBUTION_SYNC_USAGE');
  const runtime=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
- await verifyRuntimePin(runtime,values.get('--pin')!,['scripts/publishing/sync-distribution.ts','scripts/publishing/distribution-handoff.ts','scripts/publishing/distribution-attention.ts']);
+ await verifyRuntimePin(runtime,values.get('--pin')!,['scripts/publishing/sync-distribution.ts','scripts/publishing/distribution-handoff.ts','scripts/publishing/distribution-attention.ts','scripts/publishing/substack-auto-activation.ts','scripts/publishing/substack-auto-schedule.ts','scripts/publishing/substack-auto-executor.ts','scripts/publishing/substack-native-presentation.ts']);
  const result=await runSyncRound({runtime,pin:values.get('--pin')!,configFile:values.get('--config')!,acceptanceFile:values.get('--acceptance')!,output:values.get('--out')!,lock:values.get('--lock')!,execute},productionDependencies(runtime,undefined,HERMES_ATTENTION_FILE,values.get('--pin')));console.log(JSON.stringify(result));if(result.status==='attention')process.exitCode=1;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{console.error(boundedDistributionError(error));process.exitCode=1;});

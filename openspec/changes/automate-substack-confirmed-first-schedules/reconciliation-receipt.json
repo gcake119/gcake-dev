@@ -1,0 +1,75 @@
+{
+  "originals": [
+    {
+      "slug": "ai-agent-development-workflow",
+      "originalId": "221750546",
+      "publicUrl": "https://gcakedev.substack.com/p/ai-agent-development-workflow",
+      "originalPublishedAt": "2026-10-23T08:19:32.755Z",
+      "sourceCommit": "b30190e591c1fa30c579b8b9a6803a06c715eca4",
+      "sourceRevision": "sha256:1f8ae6e1109afdef2b2e9d6b5215b6e489b2daae45e28ef68b60680ab720a3c8",
+      "d1Generation": 18,
+      "verification": {
+        "status": "presentation_only",
+        "checkedAt": "2026-10-29T05:36:26.389Z"
+      },
+      "approvedPresentation": {
+        "version": 1,
+        "profile": "table-rows-labelled-lists-original-png-v1",
+        "remoteId": "221750546",
+        "sourceRevision": "sha256:1f8ae6e1109afdef2b2e9d6b5215b6e489b2daae45e28ef68b60680ab720a3c8",
+        "approvedAt": "2026-10-29T05:38:47.817020+00:00",
+        "imageDigests": [
+          "7f5825dccd9328e41a5cfe4314a000599a5f6dae73d30e04891f554eac9d3cb8"
+        ]
+      },
+      "completeContentReadback": true,
+      "allSourceCellsAndLabelsPreserved": true,
+      "originalImageHashes": [
+        "7f5825dccd9328e41a5cfe4314a000599a5f6dae73d30e04891f554eac9d3cb8"
+      ],
+      "observedImageHashes": [
+        "7f5825dccd9328e41a5cfe4314a000599a5f6dae73d30e04891f554eac9d3cb8"
+      ],
+      "deliveryUnchanged": "not_armed",
+      "intentSettled": true
+    },
+    {
+      "slug": "ai-ui-five-stage-workflow",
+      "originalId": "221751141",
+      "publicUrl": "https://gcakedev.substack.com/p/ai-ui-five-stage-workflow",
+      "originalPublishedAt": "2026-10-23T08:23:18.821Z",
+      "sourceCommit": "b30190e591c1fa30c579b8b9a6803a06c715eca4",
+      "sourceRevision": "sha256:d11967d0eb8c62edb3537a8e2ad538e6860ae7fdaf21426566e3748c0b83d798",
+      "d1Generation": 18,
+      "verification": {
+        "status": "presentation_only",
+        "checkedAt": "2026-10-29T05:37:18.353Z"
+      },
+      "approvedPresentation": {
+        "version": 1,
+        "profile": "table-rows-labelled-lists-original-png-v1",
+        "remoteId": "221751141",
+        "sourceRevision": "sha256:d11967d0eb8c62edb3537a8e2ad538e6860ae7fdaf21426566e3748c0b83d798",
+        "approvedAt": "2026-10-29T05:38:47.817020+00:00",
+        "imageDigests": [
+          "53c725244797ab73613e5e8e47ce47575f5ce13984fe762b4cf9c7324934f87e"
+        ]
+      },
+      "completeContentReadback": true,
+      "allSourceCellsAndLabelsPreserved": true,
+      "originalImageHashes": [
+        "53c725244797ab73613e5e8e47ce47575f5ce13984fe762b4cf9c7324934f87e"
+      ],
+      "observedImageHashes": [
+        "53c725244797ab73613e5e8e47ce47575f5ce13984fe762b4cf9c7324934f87e"
+      ],
+      "deliveryUnchanged": "not_armed",
+      "intentSettled": true
+    }
+  ],
+  "ownedLocksReleased": true,
+  "republished": false,
+  "resent": false,
+  "runtimeActivated": false,
+  "basis": "saved and reloaded same-ID editor, one website update each, anonymous complete content and media byte readback, conditional D1 generation/owner update and final readback"
+}

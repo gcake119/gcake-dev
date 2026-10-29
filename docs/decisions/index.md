@@ -1,5 +1,7 @@
 # 專案決策索引
 
+２０２６－１０－２９ 自動首次排程候選：使用者授權兩篇原 ID 對帳、同 ID 網站正文修正且不重發／不補寄，與後續依原站已確認時段首次排程及 email／App；後續明確選擇先完成本機實作，等下一篇確認時段才做真實驗收與啟用。採獨立 automatic-substack-first-schedules-v1 worker 共用原輪次及鎖，anonymous observer 仍零 browser／provider write；只取固定合格 main 與 current confirmed future slot，未知意圖不重播，public／armed 不改期或補寄。須另有 exact scope／pin／expiry／真實平台資格，舊 draftOnly 與空隊列不升格；正式 autoSchedule 未啟用。沿用既有權限架構，記本索引與 automate-substack-confirmed-first-schedules 即可，不改 ADR-001 搜尋政策。
+
 規格與驗收以 `openspec/` 為準；本索引保存跨回合需要沿用的決策，不把本機、CI、部署或模型測試互相當成完成證明。
 
 ２０２６－１０－２６ Hermes 容量政策：使用者選擇保留原 4 GiB 管理上限，未核准調為 6 GiB；另行規劃精確舊套件封存，保留首次 runtime 備份與現用版本。[封存審閱方案](../hermes-retired-versions-archive-plan-20261026.md)列出三項候選、完整核對前提、容量與還原方式。使用者後續明確授權實作與執行，archive-hermes-retired-versions 已完成 7／7，三項精確舊套件正式封存、永久 root 還原入口已保存；[正式回執](../../openspec/changes/archive/2026-10-26-archive-hermes-retired-versions/verification.md)核對原工作、通知帳本、控制檔與 Gateway PID 不變。時間修正版本 fcb86727… 已通過原工作 13：32：37 自然 dry-run 資格，13：36 查核 live／ready 與[已安裝程式讀回](../../openspec/changes/archive/2026-10-26-clarify-original-site-publication-times/verification.md)通過；未重送通知。臨時準備目錄已清理，永久 root 還原入口與全部原始備份保留。

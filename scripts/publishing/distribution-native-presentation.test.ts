@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {parseHTML} from 'linkedom';
+import {projectTableRows,verifyApprovedPresentation} from './substack-native-presentation';
+import {expectedContent,type ScheduleObservation} from './substack-schedule';
+import type {ScheduledSource} from './scheduled-source';
+const source:ScheduledSource={slug:'trial',sourcePath:'src/content/posts/trial.md',sourceCommit:'a'.repeat(40),sourceRevision:'sha256:'+'b'.repeat(64),article:{slug:'trial',sourceRevision:'sha256:'+'b'.repeat(64),title:'Source',description:'Summary',body:'## Exact source\n\n| Subject | Role | Limit |\n| --- | --- | --- |\n| One | **Original** role | [Link](https://example.com/a) |\n| Two | Second role | No change |\n\n```ts\nconst exact = 1;\n```',canonicalUrl:'https://gcake119.github.io/gcake-dev/posts/trial/',assets:[]}};
+const proof={version:1 as const,profile:'table-rows-labelled-lists-original-png-v1' as const,remoteId:'123',sourceRevision:source.sourceRevision,approvedAt:'2026-10-29T04:00:00Z',imageDigests:[] as string[]};
+const observation=():ScheduleObservation=>({id:'123',slug:'trial',state:'published',saved:true,content:{...expectedContent(source),html:projectTableRows(expectedContent(source).html)},images:[]});
+test('approved table projection keeps every cell with its correct header, code and links',async()=>{const html=projectTableRows(expectedContent(source).html);assert.equal(parseHTML(html).document.querySelectorAll('table').length,0);assert.ok(html.includes('Role：'));assert.ok(html.includes('Limit：'));assert.ok(html.includes('https://example.com/a'));assert.equal(await verifyApprovedPresentation(proof,source,observation()),true);});
+for(const change of ['text','label','link','code','title','description'] as const)test('approved projection still detects actual '+change+' drift',async()=>{const e=observation();if(change==='title')e.content.title='Changed';else if(change==='description')e.content.description='Changed';else e.content.html=e.content.html.replace(change==='text'?'Second role':change==='label'?'Role：':change==='link'?'https://example.com/a':'const exact = 1;',change==='link'?'https://wrong.example/a':'Changed');assert.equal(await verifyApprovedPresentation(proof,source,e),false);});
+test('approval never transfers to a new ID, source version, profile or unapproved record',async()=>{for(const patch of [{remoteId:'999'},{sourceRevision:'changed'},{profile:'unknown'},{approvedAt:'invalid'}])assert.equal(await verifyApprovedPresentation({...proof,...patch} as never,source,observation()),false);});
+test('original PNG bytes are compared, image wrapper is presentation only',async()=>{
+ const bytes=Uint8Array.from([137,80,78,71,13,10,26,10,1]),digest=createHash('sha256').update(bytes).digest('hex'),s={...source,article:{...source.article,body:source.article.body+'\n\n![Diagram](https://example.com/original.png)'}};
+ const e={...observation(),content:{...expectedContent(s),html:projectTableRows(expectedContent(s).html).replace('<img src="https://example.com/original.png" alt="Diagram">','<a class="image-link" href="https://substack-post-media.s3.amazonaws.com/public/images/original.png"><img src="https://substack-post-media.s3.amazonaws.com/public/images/original.png" alt="Diagram"></a>')},images:[{src:'https://substack-post-media.s3.amazonaws.com/public/images/original.png',alt:'Diagram',loaded:true}]};
+ const fetcher=(async()=>new Response(bytes,{headers:{'content-type':'image/png'}})) as typeof fetch;
+ assert.equal(await verifyApprovedPresentation({...proof,imageDigests:[digest]},s,e,fetcher),true);
+ assert.equal(await verifyApprovedPresentation({...proof,imageDigests:['c'.repeat(64)]},s,e,fetcher),false);
+});
+test('observer clears only a freshly disproved approved-format hold and retains delivery/ID/date',async()=>{
+ const {DatabaseSync}=await import('node:sqlite'),fs=await import('node:fs/promises'),{SqliteD1Database}=await import('./sqlite-d1'),{ScheduleRepository,SCHEDULE_POLICY}=await import('../../apps/admin-worker/src/substack-schedules'),{D1DistributionRuntime}=await import('../../apps/admin-worker/src/distribution-runtime'),{ScheduleCoordinator}=await import('./substack-schedule');
+ const sql=new DatabaseSync(':memory:');try{
+ for(const name of ['0003_publication_operations.sql','0006_distribution_checkpoints.sql','0007_substack_schedules.sql'])sql.exec(await fs.readFile(new URL('../../apps/admin-worker/migrations/'+name,import.meta.url),'utf8'));
+ const db=new SqliteD1Database(sql),repo=new ScheduleRepository(db),date='2026-10-23T08:19:32.755Z',now='2026-10-29T07:00:00Z';let e={...observation(),canonical:'https://gcakedev.substack.com/p/trial',publishedAt:date};
+ let r=await repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'substack:trial',slug:'trial',remoteId:'123',version:0,observedState:'verified',delivery:'unknown',sourceRevision:source.sourceRevision,contentVerifiedRevision:source.sourceRevision,publicationMinute:'2026-10-23T08:19:00.000Z',publicationEvidence:{title:'Source',actualAt:date},approvedPresentation:proof,pendingAction:'sync-content',lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH',updatedAt:now},0);
+ const forbidden=async():Promise<never>=>{throw Error('no provider mutations');},core=new ScheduleCoordinator(repo,new D1DistributionRuntime(db),{find:forbidden,read:forbidden,create:forbidden,update:forbidden,arm:forbidden,remove:forbidden},{readSource:async()=>source,readSlot:async()=>undefined,readPublic:async()=>e,now:()=>now});
+ r=await core.observe(r.scheduleId,source,undefined,now);assert.equal(r.pendingAction,undefined);assert.equal(r.lastErrorCode,undefined);assert.equal(r.verification?.status,'presentation_only');assert.equal(r.delivery,'unknown');assert.equal(r.remoteId,'123');assert.equal(r.publicationEvidence?.actualAt,date);
+ e={...e,content:{...e.content,title:'Real edit'}};r=await core.observe(r.scheduleId,source,undefined,now);assert.equal(r.pendingAction,'sync-content');assert.equal(r.verification?.status,'content_difference');
+ r=await repo.save({...r,lastErrorCode:'SUBSTACK_UNKNOWN_OPERATION',intent:{id:'unknown',action:'arm',createdAt:now}},r.version);e={...observation(),canonical:e.canonical,publishedAt:date};r=await core.observe(r.scheduleId,source,undefined,now);assert.equal(r.intent?.id,'unknown');assert.equal(r.lastErrorCode,'SUBSTACK_UNKNOWN_OPERATION');
+ }finally{sql.close();}
+});

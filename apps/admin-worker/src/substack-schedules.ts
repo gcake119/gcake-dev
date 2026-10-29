@@ -5,6 +5,7 @@ export interface ConfirmedSlot {reservationId:string;queueVersion:number;slug:st
 export interface ScheduleIntent {id:string;policyVersion?:typeof SCHEDULE_POLICY;expectedGeneration?:number;audience?:'everyone';email?:boolean;appInbox?:boolean;action:'create'|'update-draft'|'update-public'|'arm'|'remove';sourceRevision?:string;expectedDigest?:string;scheduledAt?:string;slot?:ConfirmedSlot;createdAt:string}
 export interface DraftSyncEvidence {status:'pending'|'syncing'|'verified'|'excluded'|'conflict'|'inconclusive'|'foreground-required'|'reconciliation-required';desiredRevision?:string;savedRevision?:string;baselineDigest?:string;code?:string;checkedAt:string;transport:'computer-use'}
 export interface ScheduleRecord {
+ approvedPresentation?:{version:1;profile:'table-rows-labelled-lists-original-png-v1';remoteId:string;sourceRevision:string;approvedAt:string;imageDigests:string[]};
  draftSync?:DraftSyncEvidence;
  publicationEvidence?:{title:string;confirmedAt?:string;actualAt:string;differenceSeconds?:number};
  policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;slug:string;previousSlugs?:string[];legacyNewsletterSentAt?:string;legacyPublished?:boolean;everPublished?:boolean;sourcePath?:string;sourceCommit?:string;sourceRevision?:string;version:number;remoteId?:string;
