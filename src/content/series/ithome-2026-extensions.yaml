@@ -32,5 +32,5 @@ sections:
         status: published
         workingTitle: 從「可以 fork」到「真的能接手」，模板還缺哪些東西？
       - slug: ithome-2026-tech-blog-boundary
-        status: ready
+        status: published
         workingTitle: 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？

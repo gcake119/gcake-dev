@@ -1,12 +1,13 @@
 ---
 title: 已經有延伸閱讀功能，為什麼我還是選擇另外架一個技術部落格？
 description: 從原本只預計兩三篇延伸閱讀，到正式開賽後發現長期系列寫作需求，說明為什麼另外建立技術部落格，以及如何保留原站模板與閱讀體驗。
-status: ready
+status: published
 series: ithome-2026-extensions
 topics:
   - technical-writing
   - system-design
   - developer-learning
+publishedAt: 2026-10-29T07:00:00+08:00
 ---
 
 我原本的「鐵人30」網站就有延伸閱讀功能，但後來還是決定另外建立「雞蛋糕的開發筆記」。因為原本只預計補充兩三篇文章，正式開賽後卻發現還有很多值得寫的內容，未來也可能發展成不同主題的系列。
