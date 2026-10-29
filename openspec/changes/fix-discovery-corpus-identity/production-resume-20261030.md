@@ -1,5 +1,7 @@
 # 雲端語意索引恢復（２０２６－１０－３０）
 
+目前狀態：已恢復同步開關；舊向量轉換由原Cron自然續作，完整公開corpus與人工搜尋驗收尚未完成。以下保留準備階段、失敗及正式結果的時間界線。
+
 ## 本次授權與範圍
 
 使用者先確認重新核實免費方案與容量、部署已驗證的搜尋架構修補、執行0005必要遷移，再恢復原Cron；其後明確選擇「授權提交、PR、檢查後合併」。只處理本change的搜尋程式／驗收／必要規格，原工作目錄的後台、Substack、Hermes及其他dirty修改保留。
@@ -38,3 +40,20 @@ PR審查指出：owned向量已刪除、但等待下輪確認不存在時仍保�
 修正於刪除前，在原policy及owner／lease條件下撤銷activeVectorNamespace與該批metadataHash；保留文章、修訂、內容hash及namespace作owned清理／重用依據。只有同一目標已完成的狀態可走no_change捷徑。失聯或重新公開都須完整重驗，promotion後才恢復讀者資格。沒有補滿額度、刪owned清冊或改驗收條件。兩個既有no_change fixture補齊其聲稱的已完成同步狀態，原零推論及每日budget斷言保留。
 
 多出的成本限於owned刪除路徑的兩項條件式D1更新及一次既有guard，仍在原每輪admission40控制預留內；一般新增／no_change不增加provider讀寫、不增加逐分鐘全量掃描。沒有新服務、依賴、測試層或migration。四個修正案例GREEN；受影響專案完整本機gate五項全部通過，見[修正驗證摘要](evidence/production-resume-20261030/review-proof-invalidation.json)。此修正更新sync與acceptance候選hash，初始候選與原RED收據保留，不改稱初次通過。
+
+
+## 正式結果（台北１０／３０凌晨）
+
+[PR83](https://github.com/gcake119/gcake-dev/pull/83)已正常合併為main `b3e2d50f71f8b5428ca6fba696974fcc7b376ccd`，其tree與受測head `e352578`完全相同。[PR CI](https://github.com/gcake119/gcake-dev/actions/runs/40917567917)及[exact main CI](https://github.com/gcake119/gcake-dev/actions/runs/40918690173)均在原Mint runner成功。前段runner離線／排隊已保存；runner其後自行恢復，本次沒有更動主機服務、CI路由、保護或強制合併。
+
+只套用0005，獨立讀回證明原2960清冊、4227收據、6496預留、sync舊欄位、policy與windows完全保留；所有新proof仍空白。因正式migration登錄只有0001／0002、但0003／0004 schema已存在，本次使用只含0005的遷移目錄，未重跑或補造歷史登錄。
+
+先以同步停用部署版本350af749-9e6a-4b20-bd02-4e3900a5d71d；從provider重新下載程式，逐位元等於已釘選bundle（SHA-256 `4ccbf39c407744fdc487f047b59cba8f655fe88b5035553bc911b0b1a6405058`），所有bindings／runtime／原Cron相同。容量更新只改syncCapacity，原每日500／paidOverage0／billing與扣額保留，證據有效至UTC2026-10-30T17:21:49.667084Z，即台北10/31 01:21:49。
+
+容量寫入首次checked判為invalid JSON，因固定Wrangler --file import在完整JSON前輸出進度文字。原validated=false結果未改寫，未重送寫入；完整JSON後綴顯示一個查詢／一列寫入，獨立全JSON零寫入讀回證明唯一變更為syncCapacity，之後才恢復。這是已對帳結果，不把首次格式失敗改稱自然成功。
+
+最後以相同bundle恢復同步，正式版本540fe715-0270-4560-b538-f5791e6e417b、100%流量；唯一binding差異是INDEX_SYNC_ENABLED=false→true，SEMANTIC=true／每分鐘Cron／runtime與逐位元程式均保留。
+
+自然收據4228開始首批16段重用／上傳，4229／4230等待provider mutation處理，4231確認首批16段並同輪上傳下一批16段。觀察於UTC17:29:23，cursor16／2995、pending16 uploaded、owner空lease0；當UTC日window由runtime建立一次，requests仍500、vectorQueries剩497，未手工建補額度。從安全checkpoint4217完整續讀無缺號；這些自然輪次尚無新embedding。未觸發internal同步、補段或promotion，未發文／寄送或改其他排程。
+
+[正式摘要](evidence/production-resume-20261030/production-receipt.json)保存讀回、預留、容量與新收據範圍。作用中corpus仍是舊版本，activeVectorNamespace尚未設定，讀者維持當期關鍵字降級；不能宣稱2995段完整同步、兩次新版本no_change、真實語意API／手機／人工相關性或4.2／4.3／原12.2完成。原大檔及失敗保留於本次原工作目錄output，沒有提交secret、query、IP或向量值。

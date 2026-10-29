@@ -45,3 +45,6 @@
 ２０２６－１０－２６本變更正式整合：gcake-dev PR71經獨立review與fresh ruleset／required validate／head-base-diff／threads核對後合併main25f9890d040dcde4303f674bd64a9b60e793c822；完整PR40218973967與main40219471212均在Mint成功。CPU300%／六runner／同建置鎖真實雙repo驗收與主機exact-main smoke40218042745也成功。原tmpfs容量、wrapper結構斷言、跨filesystem EXDEV與Chrome socket長路徑失敗及兩次取消均保留，修工具配置而未放寬guard/timeout。這是CI／靜態build驗收，原Editorial queue失敗不在本案修復；未部署/provider/archive，ADR-001及既有發布授權不變，詳見同案驗收紀錄。
 
 ２０２６－１０－２６ `fix-discovery-corpus-identity` 架構候選：公開集合與物理模型 namespace 分離，完整核實 proof 跨版本重用，只同步差異；provider mutation 狀態、讀回等待及 UTC quota 續作由現有 D1／Cron 持久管理。新增 additive migration，５００與零付費超額不變。正式同步仍停用，部署／遷移須另獲授權；本機證據不關閉４．２／４．３。見 [架構修補](../../openspec/changes/fix-discovery-corpus-identity/architecture-repair-20261026.md)與 ADR-001 新節。
+
+
+２０２６－１０－３０ `fix-discovery-corpus-identity` 正式恢復：PR83／main b3e2d50 CI成功，0005 additive migration核對原資料與扣額不變；正式Worker540fe715、逐位元bundle核對通過，原Cron及兩開關true，每日500與零付費超額保留。自然首批16段完成、下一批已上傳，完整corpus仍未提升，維持當期關鍵字。容量到台北10/31 01:21:49，初始CLI格式失敗與獨立對帳保留，4.2／4.3不結案。見[正式紀錄](../../openspec/changes/fix-discovery-corpus-identity/production-resume-20261030.md)。

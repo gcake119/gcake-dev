@@ -1,0 +1,147 @@
+{
+  "implementationPullRequest": "https://github.com/gcake119/gcake-dev/pull/83",
+  "mainSource": "b3e2d50f71f8b5428ca6fba696974fcc7b376ccd",
+  "reviewedHead": "e352578d8728ea2d4b03e4c87c3c1722c1c3a21c",
+  "prCI": "https://github.com/gcake119/gcake-dev/actions/runs/40917567917",
+  "mainCI": "https://github.com/gcake119/gcake-dev/actions/runs/40918690173",
+  "prAndMainCISuccess": true,
+  "deployment": {
+    "version": "540fe715-0270-4560-b538-f5791e6e417b",
+    "traffic": 100,
+    "bundleSha256": "4ccbf39c407744fdc487f047b59cba8f655fe88b5035553bc911b0b1a6405058",
+    "exactProviderBytesMatch": true,
+    "onlyBindingDifference": "INDEX_SYNC_ENABLED false -> true",
+    "runtimeUnchanged": true,
+    "flags": {
+      "INDEX_SYNC_ENABLED": "true",
+      "SEMANTIC_ENABLED": "true"
+    },
+    "cron": [
+      "* * * * *"
+    ],
+    "scriptEtag": "4593c23de907fa027f2078fd04b0e77f353227c88387163724f12703f260bc31"
+  },
+  "migration": {
+    "onlyMigration": "0005_vector_proofs.sql",
+    "allOriginalSyncFieldsUnchanged": true,
+    "policyUnchanged": true,
+    "windowsUnchanged": true,
+    "legacyLedgerRowsUnchanged": 2960,
+    "receiptsUnchanged": 4227,
+    "reservationsUnchanged": 6496,
+    "newProofsEmpty": 2960,
+    "newWaitFieldsEmpty": true,
+    "otherSchemasUnchanged": true,
+    "zeroWritesOnIndependentReadback": true
+  },
+  "capacity": {
+    "onlySyncCapacityChanged": true,
+    "limitsUnchanged": {
+      "requests": 500,
+      "tokens": 2000000,
+      "units": 8000,
+      "vectorQueries": 500,
+      "storage": 4000000,
+      "worker": 10000,
+      "admission": 80000
+    },
+    "paidOverage": 0,
+    "billingUnchanged": true,
+    "windowsUnchanged": true,
+    "reservationsUnchanged": true,
+    "activeCorpusIdUnchanged": true,
+    "syncAndPendingUnchanged": true,
+    "capacity": {
+      "validUntil": "2026-10-30T17:21:49.667084Z",
+      "otherDimensions": 0
+    },
+    "readbackRowsWritten": 0
+  },
+  "naturalObservation": {
+    "observedAt": "2026-10-29T17:29:23.038794+00:00",
+    "providerUtc": "2026-10-29T17:29:22.310Z",
+    "state": {
+      "id": 1,
+      "owner": null,
+      "leaseUntil": 0,
+      "corpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+      "previousCorpusId": "f7828260ed85c58d25f369836a607f8d7f2f9e2685548090d307b744a292a78f",
+      "cursor": 16,
+      "status": "uploaded",
+      "detail": "16 complete vectors; 0 embeddings; 16 reused; 16 uploaded",
+      "updated": 1793294921472,
+      "mutationId": "2a3efb36-2298-4e31-abfb-17bc9ed4eb22",
+      "nextAttemptAt": 0,
+      "readbackAttempts": 0
+    },
+    "pendingCount": 16,
+    "pendingStages": [
+      "uploaded"
+    ],
+    "activeLease": false,
+    "lastReceipt": 4231,
+    "receiptChainFrom4217Complete": true,
+    "freshReceipts": [
+      {
+        "id": 4228,
+        "created": 1793294744081,
+        "corpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+        "status": "uploaded",
+        "detail": "0 complete vectors; 0 embeddings; 16 reused; 16 uploaded"
+      },
+      {
+        "id": 4229,
+        "created": 1793294791494,
+        "corpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+        "status": "awaiting_provider",
+        "detail": "Saved mutation not yet reported processed"
+      },
+      {
+        "id": 4230,
+        "created": 1793294852500,
+        "corpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+        "status": "awaiting_provider",
+        "detail": "Saved mutation not yet reported processed"
+      },
+      {
+        "id": 4231,
+        "created": 1793294921472,
+        "corpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+        "status": "uploaded",
+        "detail": "16 complete vectors; 0 embeddings; 16 reused; 16 uploaded"
+      }
+    ],
+    "newVerifiedProofs": 16,
+    "publicCorpusId": "8184be4ca84f1955179c859b1431b9437b5b3b912bed4f761f0701c9ab1c249c",
+    "activeCorpusId": "f7828260ed85c58d25f369836a607f8d7f2f9e2685548090d307b744a292a78f",
+    "activeVectorNamespace": null,
+    "window": [
+      {
+        "window": "2026-10-29",
+        "verifiedUntil": 1793318400000,
+        "requests": 500,
+        "tokens": 2000000,
+        "units": 8000,
+        "vectorQueries": 497,
+        "worker": 9996,
+        "admission": 79719,
+        "storage": 3967232
+      }
+    ],
+    "indexReservations": 11,
+    "capacity": {
+      "validUntil": "2026-10-30T17:21:49.667084Z",
+      "otherDimensions": 0
+    },
+    "reasons": [],
+    "manualIndexTriggers": 0,
+    "operatorModelCalls": 0,
+    "publicCorpusComplete": false
+  },
+  "initialCapacityCLIOutcome": "Preserved exit0/invalid whole JSON: --file progress prefix before complete import JSON. Complete suffix proves one query/one written row; independent readback confirms only syncCapacity changed; no write replay.",
+  "evidenceScope": "Switch restored and natural legacy transition resumed; public corpus still incomplete; no semantic API/human relevance or task4.2/4.3 completion.",
+  "operatorModelCalls": 0,
+  "manualIndexTriggers": 0,
+  "paidOverage": 0,
+  "originalDirtyFilesPreserved": 1045
+}
