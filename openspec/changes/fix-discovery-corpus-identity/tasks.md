@@ -43,8 +43,8 @@ Production remains paused. These tasks do not convert the interrupted old-code r
 The user authorized capacity verification, additive migration, compatible Worker deployment and original Cron restoration, then explicitly authorized scoped commits, PR and merge after checks. Preserve the 500 limits, zero paid overage, historical evidence and unrelated dirty files. No Pages/Admin/Hermes deployment or publication is included.
 
 - [x] 6.1 Pin the six architecture candidate files on current main and complete the existing local gate, retaining original environment failures and corrected evidence without weakening tests.
-- [ ] 6.2 Commit only search implementation and necessary specification/evidence, pass PR CI, merge after checks and verify main CI for the deployment source.
-- [ ] 6.3 With synchronization disabled, recheck account Free/capacity, ownership/pending/lease and source; apply only 0005, verify all original state and reservations unchanged, deploy the compatible Worker and independently read back source/settings.
-- [ ] 6.4 Update only freshly proven capacity evidence under exact policy guards, restore the original Cron switch, and capture natural progress or a concrete stop reason without manual synchronization, promotion or quota refill; distinguish switch restoration from full corpus/human acceptance.
+- [x] 6.2 Commit only search implementation and necessary specification/evidence, pass PR CI, merge after checks and verify main CI for the deployment source.
+- [x] 6.3 With synchronization disabled, recheck account Free/capacity, ownership/pending/lease and source; apply only 0005, verify all original state and reservations unchanged, deploy the compatible Worker and independently read back source/settings.
+- [x] 6.4 Update only freshly proven capacity evidence under exact policy guards, restore the original Cron switch, and capture natural progress or a concrete stop reason without manual synchronization, promotion or quota refill; distinguish switch restoration from full corpus/human acceptance.
 
 - [x] 6.5 Repair PR83's reproduced withdrawal/restoration proof invalidation defect, including lost deletion acknowledgement and reader keyword fallback; preserve ownership, admission and lease guards, save real RED/GREEN and pass the full local gate before pushing the revised candidate.

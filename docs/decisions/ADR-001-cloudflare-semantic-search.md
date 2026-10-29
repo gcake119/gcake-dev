@@ -118,3 +118,10 @@ Pages 重建產生新 corpus，但３３篇／２６３３段修訂不變。自�
 新增 0005_vector_proofs.sql 為 additive migration，舊 rows 與 receipts 保留。缺少新 proof 的舊向量必須一次完整轉換；舊 pending 不能直接換 namespace。activeVectorNamespace 只有完整同步 promotion 才設定，新讀者不接受只存在舊 activeCorpusId 的狀態。本機候選尚未部署；原 INDEX_SYNC=false／SEMANTIC=true 維持，正式 migration、對帳與恢復須另獲當次授權。回復須保持同步停用及當期關鍵字，不把舊 Worker 裝回已遷移的實體配置上。
 
 詳見 [架構修補與正式遷移界線](../../openspec/changes/fix-discovery-corpus-identity/architecture-repair-20261026.md)。本節取代舊「每個公開版本搬移全部向量」的未來執行契約，保留所有歷史證據。既有４．２全量 provider audit／自然收據及４．３真人相關性驗收均不由本機 proof 重用代替。
+
+
+## 差異同步候選正式恢復（２０２６－１０－３０）
+
+這是既有決策的部署結果回填。使用者已授權必要遷移、部署與恢復，並明確授權搜尋範圍提交／PR／檢查後合併。PR83及main b3e2d50的CI成功後，只套用0005並獨立核對舊資料／扣額不變，再部署相容Worker與限時容量證據，最後恢復原Cron；正式版本540fe715-0270-4560-b538-f5791e6e417b，兩開關true，逐位元程式與驗證bundle一致。每日500／paidOverage0、BGE-M3及原billing期限不變，沒有Pages／Admin／Hermes部署或發文寄送。
+
+原Cron已自然完成首批16段完整讀回並續傳下一批；這仍是舊向量轉換，尚未提升當期2995段集合，讀者維持關鍵字降級。容量有效至台北10/31 01:21:49，不自動延長。CLI格式失敗及獨立對帳、provider等待、完整與人工驗收的界線見[正式恢復紀錄](../../openspec/changes/fix-discovery-corpus-identity/production-resume-20261030.md)；4.2／4.3與原12.2未結案。
