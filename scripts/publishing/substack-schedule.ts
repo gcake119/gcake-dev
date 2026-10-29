@@ -14,7 +14,7 @@ export interface ScheduleProvider {
  update(id:string,source:ScheduledSource,published:boolean):Promise<void>;arm(id:string,time:string):Promise<void>;remove(id:string):Promise<void>;
 }
 export interface ScheduleRequest {policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;slug:string;operation:ScheduleOperation;source?:ScheduledSource;slot?:ConfirmedSlot;remoteId?:string;previousSlug?:string;timeZone?:string;approval?:{version:1;approved:true;digest:string}}
-export interface ScheduleContext {readSource():Promise<ScheduledSource|undefined>;readSlot():Promise<ConfirmedSlot|undefined>;readPublic(id:string,url:string):Promise<ScheduleObservation>;now():string;readOriginalSite?(source:ScheduledSource):Promise<NonNullable<ScheduleRecord['originalSite']>>;legacyIdentity?():Promise<PublicationTargetState|undefined>}
+export interface ScheduleContext {expectedContent?:(source:ScheduledSource)=>ScheduleContent;readSource():Promise<ScheduledSource|undefined>;readSlot():Promise<ConfirmedSlot|undefined>;readPublic(id:string,url:string):Promise<ScheduleObservation>;now():string;readOriginalSite?(source:ScheduledSource):Promise<NonNullable<ScheduleRecord['originalSite']>>;legacyIdentity?():Promise<PublicationTargetState|undefined>}
 const hash=(x:unknown)=>'sha256:'+createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const norm=(s:string)=>s.replace(/\s+/g,' ').trim();
 export function contentFingerprint(content:ScheduleContent):string{
@@ -81,6 +81,7 @@ export function validateScheduleCommitment(expected:ConfirmedSlot|undefined,curr
 }
 export class ScheduleCoordinator {
  constructor(readonly repo:ScheduleRepository,readonly runtime:DistributionRuntime,readonly provider:ScheduleProvider,readonly context:ScheduleContext){}
+ private expected(source:ScheduledSource){return (this.context.expectedContent??expectedContent)(source);}
  private async latest(r:ScheduleRequest){const s=await this.context.readSource();if(!s||!r.source||s.sourceCommit!==r.source.sourceCommit||s.sourceRevision!==r.source.sourceRevision||s.slug!==r.slug)throw Error('SUBSTACK_SOURCE_CHANGED');return s;}
  private async slot(r:ScheduleRequest){validateScheduleCommitment(r.slot,await this.context.readSlot(),r.slug,this.context.now(),r.timeZone);}
  private readValid(e:ScheduleObservation,id:string,verifyMedia=true){if(!e||e.id!==id||!/^\d+$/.test(e.id)||!['draft','scheduled','published','sending'].includes(e.state)||e.saved!==true)throw Error('SUBSTACK_CONTENT_EVIDENCE_INVALID');contentFingerprint(e.content);if(verifyMedia)assertScheduleMedia(e);return e;}
@@ -100,7 +101,7 @@ export class ScheduleCoordinator {
    if(state?.intent&&r.operation!=='reconcile-schedule')throw Error('SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED');
    const write=async(patch:Partial<ScheduleRecord>)=>{state=await this.repo.save({...state!,...patch,...(Object.hasOwn(patch,'pendingAction')&&patch.pendingAction===undefined?{lastErrorCode:undefined}:{}),updatedAt:this.context.now()},state!.version);return state;};
    if(!state){const legacy=await this.context.legacyIdentity?.();if(legacy?.remoteId&&r.remoteId&&legacy.remoteId!==r.remoteId)throw Error('SUBSTACK_SCHEDULE_IDENTITY_CONFLICT');state={remoteId:legacy?.remoteId??r.remoteId,legacyNewsletterSentAt:legacy?.newsletterSentAt,legacyPublished:legacy&&(['verified','published'].includes(legacy.status)||!!legacy.newsletterSentAt||/^https:\/\/gcakedev\.substack\.com\/p\//.test(legacy.remoteUrl??''))||undefined,policyVersion:SCHEDULE_POLICY,scheduleId:r.scheduleId,slug:r.slug,sourcePath:r.source?.sourcePath,sourceCommit:r.source?.sourceCommit,sourceRevision:r.source?.sourceRevision,version:0,observedState:'draft_prepared',delivery:'not_armed',updatedAt:this.context.now()};await write({});}
-   const intent=async(action:NonNullable<ScheduleRecord['intent']>['action'])=>write({intent:{id:randomUUID(),action,policyVersion:SCHEDULE_POLICY,expectedGeneration:state!.version+1,audience:'everyone',email:action==='arm',appInbox:action==='arm',sourceRevision:r.source?.sourceRevision,expectedDigest:r.source?contentFingerprint(expectedContent(r.source)):state!.contentDigest,scheduledAt:r.slot?.scheduledAt,slot:r.slot,createdAt:this.context.now()}});
+   const intent=async(action:NonNullable<ScheduleRecord['intent']>['action'])=>write({intent:{id:randomUUID(),action,policyVersion:SCHEDULE_POLICY,expectedGeneration:state!.version+1,audience:'everyone',email:action==='arm',appInbox:action==='arm',sourceRevision:r.source?.sourceRevision,expectedDigest:r.source?contentFingerprint(this.expected(r.source)):state!.contentDigest,scheduledAt:r.slot?.scheduledAt,slot:r.slot,createdAt:this.context.now()}});
    const valid=(e:ScheduleObservation,id:string)=>this.readValid(e,id,r.operation!=='cancel-schedule'&&!(r.operation==='reconcile-schedule'&&state?.intent?.action==='remove'));
    let observed:ScheduleObservation;
    if(state.remoteId)observed=valid(await this.provider.read(state.remoteId),state.remoteId);
@@ -131,7 +132,7 @@ export class ScheduleCoordinator {
     if(cp){const matches=cp.action==='remove'?observed.state==='draft'&&observed.listEvidence?.draft===true&&observed.listEvidence.scheduled===false:cp.action==='arm'?scheduledMatches(observed,cp.scheduledAt):cp.action==='create'?!!id:contentFingerprint(observed.content)===cp.expectedDigest;
      if(cp.action==='arm'&&contentFingerprint(observed.content)!==cp.expectedDigest)throw Error('SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED');
      if(!matches)throw Error('SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED');}
-    checkSlug();const wantsCancellation=state.desiredState==='cancelled'&&cp?.action!=='arm';const contentCurrent=!!r.source&&contentFingerprint(observed.content)===contentFingerprint(expectedContent(r.source));
+    checkSlug();const wantsCancellation=state.desiredState==='cancelled'&&cp?.action!=='arm';const contentCurrent=!!r.source&&contentFingerprint(observed.content)===contentFingerprint(this.expected(r.source));
     if(wantsCancellation&&observed.state==='draft'){
      if(observed.listEvidence?.draft!==true||observed.listEvidence.scheduled!==false)throw Error('SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED');
      return await write({...cancelledPatch,contentDigest:contentFingerprint(observed.content),pendingAction:r.source&&!contentCurrent?'sync-content':undefined});
@@ -145,9 +146,9 @@ export class ScheduleCoordinator {
    if(r.operation==='cancel-schedule'){await write({desiredState:'cancelled'});await remove();if(observed.state!=='draft'||observed.listEvidence?.draft!==true||observed.listEvidence.scheduled!==false)throw Error('SUBSTACK_SCHEDULE_RECONCILIATION_REQUIRED');return await write(cancelledPatch);}
    if(observed.state==='sending')await tooLate();
    await this.latest(r);
-   const expected=contentFingerprint(expectedContent(r.source!)),same=contentFingerprint(observed.content)===expected&&observed.slug===r.slug;
+   const expected=contentFingerprint(this.expected(r.source!)),same=contentFingerprint(observed.content)===expected&&observed.slug===r.slug;
    const rearm=observed.state==='scheduled';
-   const comparison={sourceRevision:r.source!.sourceRevision,observedDigest:contentFingerprint(observed.content),expectedDigest:expected,mode:publicState(observed)?'public' as const:rearm?'scheduled' as const:'draft' as const,differences:[...compareScheduleContent(observed.content,expectedContent(r.source!)),...(observed.slug!==r.slug?['slug']:[])],result:same?'verified-no-change' as const:'pending-edit' as const};
+   const comparison={sourceRevision:r.source!.sourceRevision,observedDigest:contentFingerprint(observed.content),expectedDigest:expected,mode:publicState(observed)?'public' as const:rearm?'scheduled' as const:'draft' as const,differences:[...compareScheduleContent(observed.content,this.expected(r.source!)),...(observed.slug!==r.slug?['slug']:[])],result:same?'verified-no-change' as const:'pending-edit' as const};
    await write({desiredRevision:r.source!.sourceRevision,lastComparison:comparison});
    const saveArmed=()=>write({intent:undefined,slot:r.slot,observedState:'scheduled',desiredState:'scheduled',observedTime:new Date(Date.parse(r.slot!.scheduledAt)).toISOString(),sourceCommit:r.source!.sourceCommit,sourcePath:r.source!.sourcePath,desiredTime:r.slot!.scheduledAt,armedRevision:r.source!.sourceRevision,contentDigest:expected,observedRevision:r.source!.sourceRevision,sourceRevision:r.source!.sourceRevision,contentVerifiedRevision:r.source!.sourceRevision,lastComparison:{...comparison,result:same?'verified-no-change':'verified-edit'},delivery:'armed',timeZone:'Asia/Taipei',audience:'everyone',emailEnabled:true,appInboxEnabled:true,pendingAction:undefined});
    if(['arm-schedule','postpone-schedule'].includes(r.operation)){
@@ -177,7 +178,7 @@ export class ScheduleCoordinator {
  }
  private async verifyPublic(state:ScheduleRecord,source:ScheduledSource,date:string,evidence?:ScheduleObservation):Promise<Partial<ScheduleRecord>>{
   const e=evidence??await this.context.readPublic(state.remoteId!,publicUrl(state.slug));this.readValid(e,state.remoteId!);
-  if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!e.publishedAt||!date||!Number.isFinite(Date.parse(date))||!Number.isFinite(Date.parse(e.publishedAt))||publicationTimeChanged(state,e.publishedAt)||contentFingerprint(e.content)!==contentFingerprint(expectedContent(source)))throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
+  if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug)||!e.publishedAt||!date||!Number.isFinite(Date.parse(date))||!Number.isFinite(Date.parse(e.publishedAt))||publicationTimeChanged(state,e.publishedAt)||contentFingerprint(e.content)!==contentFingerprint(this.expected(source)))throw Error('SUBSTACK_PUBLIC_EVIDENCE_MISMATCH');
   let originalSite:NonNullable<ScheduleRecord['originalSite']>={status:'not_checked'};try{originalSite=await this.context.readOriginalSite?.(source)??originalSite;}catch{originalSite={status:'unavailable'};}
   const actualAt=new Date(Date.parse(e.publishedAt!)).toISOString(),confirmedAt=state.observedTime;
   return {publicationEvidence:{title:source.article.title,actualAt,...(confirmedAt?{confirmedAt,differenceSeconds:(Date.parse(actualAt)-Date.parse(confirmedAt))/1000}:{})},...(state.draftSync?.status==='foreground-required'&&!state.intent?{draftSync:{...state.draftSync,status:'excluded',code:undefined,desiredRevision:source.sourceRevision,checkedAt:this.context.now()}}:{}),verification:{status:'verified',checkedAt:this.context.now()},originalSite:{...originalSite,dateDiffersFromSubstack:!!source.article.publishedAt&&minute(source.article.publishedAt)!==minute(actualAt)},observedState:'verified',contentVerifiedRevision:source.sourceRevision,sourceRevision:source.sourceRevision,sourceCommit:source.sourceCommit,contentDigest:contentFingerprint(e.content),publicationMinute:minute(actualAt),deliveredRevision:state.deliveredRevision??state.armedRevision,delivery:state.delivery==='not_armed'?'not_armed':'unknown',verifiedAt:this.context.now()};
@@ -193,7 +194,11 @@ export class ScheduleCoordinator {
   if(e.state!=='published'||e.slug!==state.slug||e.canonical!==publicUrl(state.slug))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLIC_IDENTITY_MISMATCH',verification:{status:'identity_difference',checkedAt:now}};
   if(!date||!Number.isFinite(Date.parse(date))||!e.publishedAt||!Number.isFinite(Date.parse(e.publishedAt)))return inconclusive('SUBSTACK_PUBLICATION_TIME_UNCONFIRMED');
   if(publicationTimeChanged(state,e.publishedAt))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_PUBLICATION_TIME_CHANGED',verification:{status:'time_difference',checkedAt:now}};
-  const expected=expectedContent(source);
+  const expected=this.expected(source);
+  if(state.approvedPresentation){
+   try{const {verifyApprovedPresentation}=await import('./substack-native-presentation');if(await verifyApprovedPresentation(state.approvedPresentation,source,e))return {...(legacyVerificationHold?{pendingAction:undefined,lastErrorCode:undefined}:{}),verification:{status:'presentation_only',checkedAt:now}};}
+   catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
+  }
   try{
    if(attentionContentFingerprint(e.content)!==attentionContentFingerprint(expected))return {pendingAction:'sync-content',lastErrorCode:'SUBSTACK_CONTENT_EVIDENCE_MISMATCH',verification:{status:'content_difference',checkedAt:now}};
   }catch{return inconclusive('SUBSTACK_PUBLIC_READ_INCOMPLETE');}
@@ -205,12 +210,12 @@ export class ScheduleCoordinator {
  async observe(id:string,source:ScheduledSource|undefined,slot:ConfirmedSlot|undefined,now:string):Promise<ScheduleRecord>{
   let state=await this.repo.get(id);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');const owner=randomUUID();if(!await this.runtime.acquire(state.slug,'substack',owner,now))return state;
   try{state=(await this.repo.get(id))!;
-   const legacyVerificationHold=['SUBSTACK_PUBLIC_EVIDENCE_MISMATCH','SUBSTACK_PUBLIC_IDENTITY_MISMATCH'].includes(state.lastErrorCode??'')&&state.pendingAction==='sync-content';
+   const legacyVerificationHold=(['SUBSTACK_PUBLIC_EVIDENCE_MISMATCH','SUBSTACK_PUBLIC_IDENTITY_MISMATCH'].includes(state.lastErrorCode??'')||state.approvedPresentation?.sourceRevision===source?.sourceRevision&&state.approvedPresentation?.remoteId===state.remoteId&&state.lastErrorCode==='SUBSTACK_CONTENT_EVIDENCE_MISMATCH')&&state.pendingAction==='sync-content';
    if(state.intent||state.lastErrorCode&&!legacyVerificationHold)return state;
    let patch:Partial<ScheduleRecord>={};
    if(state.observedState==='cancelled_draft'&&!source)patch={};
    else if(!source)patch={pendingAction:state.observedState==='scheduled'?'cancel-schedule':'sync-content',desiredState:state.observedState==='scheduled'?'cancelled':state.desiredState};
-   else if(source.slug!==state.slug||source.sourceRevision!==(state.contentVerifiedRevision??state.sourceRevision)&&contentFingerprint(expectedContent(source))!==state.contentDigest)patch={pendingAction:'sync-content',desiredRevision:source.sourceRevision,verification:{status:'content_difference',checkedAt:now},lastErrorCode:undefined};
+   else if(source.slug!==state.slug||source.sourceRevision!==(state.contentVerifiedRevision??state.sourceRevision)&&contentFingerprint(this.expected(source))!==state.contentDigest)patch={pendingAction:'sync-content',desiredRevision:source.sourceRevision,verification:{status:'content_difference',checkedAt:now},lastErrorCode:undefined};
    else if(state.observedState==='scheduled'&&(!state.observedTime||Date.parse(now)<Date.parse(state.observedTime))){
     // Queue revisions do not change an already armed provider's article or actual instant.
     // Foreground validateScheduleCommitment deliberately keeps its exact version check.

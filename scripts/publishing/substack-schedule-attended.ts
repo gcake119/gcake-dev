@@ -1,5 +1,5 @@
 import {parseHTML} from 'linkedom';
-import {assertScheduleMedia,contentFingerprint,type ScheduleProvider,type ScheduleObservation,type ScheduleRequest,expectedContent} from './substack-schedule';
+import {assertScheduleMedia,contentFingerprint,type ScheduleContent,type ScheduleProvider,type ScheduleObservation,type ScheduleRequest,expectedContent} from './substack-schedule';
 import type {ScheduledSource} from './scheduled-source';
 import {type ExchangeRequest} from './substack-attended';
 import {ScheduleRepository,SCHEDULE_POLICY,type ConfirmedSlot} from '../../apps/admin-worker/src/substack-schedules';
@@ -13,7 +13,7 @@ export function validateScheduleObservation(value:unknown,id?:string,verifyMedia
  const e=value as ScheduleObservation;if(!e||typeof e!=='object'||!/^\d+$/.test(e.id)||id&&e.id!==id||typeof e.slug!=='string'||!['draft','scheduled','published','sending'].includes(e.state)||e.saved!==true)throw Error('SUBSTACK_CONTENT_EVIDENCE_INVALID');
  contentFingerprint(e.content);if(verifyMedia)assertScheduleMedia(e);if(e.state==='scheduled'&&(!e.scheduledAt||!Number.isFinite(Date.parse(e.scheduledAt))||e.timeZone!=='Asia/Taipei'||typeof e.email!=='boolean'||typeof e.appInbox!=='boolean'||e.audience!=='everyone'))throw Error('SUBSTACK_SCHEDULE_EVIDENCE_INVALID');return e;
 }
-export function validateScheduleReply(request:ScheduleExchangeRequest,value:unknown){
+export function validateScheduleReply(request:ScheduleExchangeRequest,value:unknown,verifiedExpected?:ScheduleContent){
  if(request.action==='schedule-find'){const r=value as {complete:boolean;scanned:string[];items:ScheduleObservation[]};if(r?.complete!==true||!Array.isArray(r.scanned)||!['draft','published','scheduled'].every(s=>r.scanned.includes(s))||!Array.isArray(r.items))throw Error('SUBSTACK_REMOTE_SCAN_INCOMPLETE');r.items.forEach(e=>validateScheduleObservation(e));if(new Set(r.items.map(e=>e.id)).size!==r.items.length)throw Error('SUBSTACK_DUPLICATE_REMOTE');return;}
  if(request.action==='schedule-create'){const r=value as {id:string};if(!r||!/^\d+$/.test(r.id))throw Error('SUBSTACK_REMOTE_IDENTITY_MISMATCH');return;}
  const e=validateScheduleObservation(value,request.remote?.id,request.action!=='schedule-remove'&&!['cancel-schedule','reconcile-schedule'].includes(request.operation));
@@ -22,11 +22,11 @@ export function validateScheduleReply(request:ScheduleExchangeRequest,value:unkn
  if(e.slug!==request.article.slug)throw Error('SUBSTACK_SLUG_CONFLICT');
  if(request.action==='schedule-arm'&&(e.state!=='scheduled'||e.listEvidence?.scheduled!==true||e.listEvidence.draft!==false||Date.parse(e.scheduledAt!)!==Date.parse(request.scheduledAt!)||e.email!==true||e.appInbox!==true))throw Error('SUBSTACK_SCHEDULE_EVIDENCE_INVALID');
  if(request.action==='schedule-update'&&request.publishedUpdate&&e.state!=='published'||request.action==='schedule-update'&&!request.publishedUpdate&&e.state!=='draft')throw Error('SUBSTACK_SCHEDULE_EVIDENCE_INVALID');
- const expected=expectedContent({article:request.article} as ScheduledSource);if(contentFingerprint(e.content)!==contentFingerprint(expected))throw Error('SUBSTACK_CONTENT_EVIDENCE_MISMATCH');
+ const expected=verifiedExpected??expectedContent({article:request.article} as ScheduledSource);if(contentFingerprint(e.content)!==contentFingerprint(expected))throw Error('SUBSTACK_CONTENT_EVIDENCE_MISMATCH');
  if(request.action==='schedule-update'&&request.publishedUpdate&&(request.delivery.email!==false||request.delivery.appInbox!==false))throw Error('SUBSTACK_EMAIL_MUST_BE_DISABLED');
 }
 export class AttendedScheduleProvider implements ScheduleProvider {
- constructor(readonly request:ScheduleRequest,readonly repo:ScheduleRepository,readonly exchange:(r:ScheduleExchangeRequest)=>Promise<unknown>,readonly beforeDispatch?:()=>Promise<void>){}
+ constructor(readonly request:ScheduleRequest,readonly repo:ScheduleRepository,readonly exchange:(r:ScheduleExchangeRequest)=>Promise<unknown>,readonly beforeDispatch?:()=>Promise<void>,readonly verifiedExpected?:ScheduleContent){}
  private async send(action:ScheduleExchangeRequest['action'],id?:string,extra:Partial<ScheduleExchangeRequest>={}){
   const state=await this.repo.get(this.request.scheduleId);if(!state)throw Error('SUBSTACK_SCHEDULE_RECORD_MISSING');
   const mutation=({'schedule-create':'create','schedule-update':extra.publishedUpdate?'update-public':'update-draft','schedule-arm':'arm','schedule-remove':'remove'} as Record<string,string>)[action];
@@ -35,7 +35,7 @@ export class AttendedScheduleProvider implements ScheduleProvider {
   const source=this.request.source;
   const article=source?.article??{slug:this.request.slug,sourceRevision:state.sourceRevision??'',title:'',body:'',canonicalUrl:'https://gcake119.github.io/gcake-dev/posts/'+this.request.slug+'/',assets:[]};
   const r:ScheduleExchangeRequest={exchangeVersion:2,policyVersion:SCHEDULE_POLICY,scheduleId:state.scheduleId,sourceCommit:source?.sourceCommit,action,operation:this.request.operation,article,remote:id?{id,url:'https://gcakedev.substack.com/publish/post/'+id}:undefined,delivery:{email:action==='schedule-arm',appInbox:action==='schedule-arm'},audience:'everyone',timeZone:'Asia/Taipei',intentId:state.intent?.id,recordVersion:state.version,...(action==='schedule-arm'?{slot:this.request.slot}:{}),...extra};
-  const result=await this.exchange(r);validateScheduleReply(r,result);return result;
+  const result=await this.exchange(r);validateScheduleReply(r,result,this.verifiedExpected);return result;
  }
  private sameSource(source:ScheduledSource){if(JSON.stringify(source)!==JSON.stringify(this.request.source))throw Error('SUBSTACK_SOURCE_CHANGED');}
  async find(source:ScheduledSource){this.sameSource(source);return await this.send('schedule-find') as Awaited<ReturnType<ScheduleProvider['find']>>;}

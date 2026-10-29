@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-29T05:56:59.381747+00:00",
+  "baseHead": "b30190e591c1fa30c579b8b9a6803a06c715eca4",
+  "origin": "https://github.com/gcake119/gcake-dev",
+  "files": {
+    "apps/admin-worker/src/substack-schedules.ts": "45824901e9d8fccd19b59d2a2b512c2e8ac5b1312d0288cbb98643048406316f",
+    "docs/decisions/index.md": "57875392612a3785d656d4a6cf6bc6da4db1578ed35a4bf1fc1b88311e117e1f",
+    "docs/distribution-scripted-runbook.md": "4c50af33917473e36ab46e01cb8e333c5651249a5f5b1d080405c702045d9371",
+    "scripts/publishing/distribution-auto-executor.test.ts": "d44ef0ac4daa894e787c977eece853a723390a99b4797a398027b0650bd6537e",
+    "scripts/publishing/distribution-auto-schedule.test.ts": "0b0d01629c61f77883c6e439ab4a8578546c562ecfde13593a81841a73396fbf",
+    "scripts/publishing/distribution-native-presentation.test.ts": "9d56a0ba384077a9fe216d6e4c276bb289a91c39c614c757df49c89798db53f8",
+    "scripts/publishing/distribution-sync.test.ts": "f5ff1ce1ebcc2ca6656534199393ff1ba2f316810e2f41e36fd18d2a945fd5c3",
+    "scripts/publishing/substack-auto-activation.ts": "2cbe47329be52d8b7b77022aeb468786b54199f5f9530415d8a83b04caebfb41",
+    "scripts/publishing/substack-auto-executor.ts": "898922abc230169c32f21e819f788adffea3a08ca782dd0bd39d8d4ea352b8c4",
+    "scripts/publishing/substack-auto-schedule.ts": "ae3f64edd3be529e2f7feed9966b0c6a309ce948330007704843c60bf75dd925",
+    "scripts/publishing/substack-native-presentation.ts": "e720440adf9fc216e45b14be65e53257539e119712a7f3a4b813337314932297",
+    "scripts/publishing/substack-schedule.ts": "b2eccb26a7831c2df2d1ff92cc3feae912cdbbf77a664462a7873887ee754883",
+    "scripts/publishing/sync-distribution.ts": "73c193cf352112c6f7bbc4913483335fc04b40b5a5cdb63ccba0efae59631b66",
+    "AGENTS.md": "600c12fe630e168cc9a7c11ad9165ed36614e125ff3274c30cbc44dc987aee2c",
+    "scripts/publishing/substack-schedule-attended.ts": "5382d63488f6075c1ea8714c30c8eebadb1311f24c02981c7b326e3dbd81b58e"
+  },
+  "localGates": {
+    "root": "/Users/caiyijun/.codex/worktrees/substack-auto-first-schedule/gcake-dev",
+    "steps": [
+      {
+        "name": "test",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 179.772
+      },
+      {
+        "name": "check",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 8.902
+      },
+      {
+        "name": "build",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 7.839
+      },
+      {
+        "name": "release",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 14.246
+      },
+      {
+        "name": "rehearse",
+        "status": "passed",
+        "exitCode": 0,
+        "seconds": 15.348
+      }
+    ],
+    "providerWrites": false,
+    "runtimeActivated": false,
+    "status": "passed"
+  },
+  "focusedTests": {
+    "passed": 83,
+    "failed": 0
+  },
+  "productionAutoScheduleEnabled": false,
+  "realFutureProviderTrial": "pending-owner-confirmed-next-slot",
+  "testedParentCommit": "b01a7f7f030561424ff1939389db03ac50a407bb",
+  "reviewCorrections": [
+    "foreground policy exception requires separate real qualification and activation",
+    "await executor termination on deadline and polling failure",
+    "verified original PNG normalization through prepare/baseline/intent/arm"
+  ]
+}
