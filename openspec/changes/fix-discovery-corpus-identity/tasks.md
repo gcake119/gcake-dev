@@ -23,6 +23,28 @@
 
 ## 4. 另獲明確授權後的正式驗收
 
-- [ ] 4.1 為 Separate local and unattended acceptance evidence 準備具體候選部署／遷移清單，取得當次外部操作授權後才執行：釘選實作／CI／Worker與Pages版本、當期免費證據／全帳戶容量、pending／lease／配額、真實ID／namespace語意及完整provider讀回；不能只改activeCorpusId、補滿額度或複製雙整庫。保存部署與provider證據，失敗維持當期關鍵字；若需migration或破壞相容先補規格及授權。
+- [x] 4.1 為 Separate local and unattended acceptance evidence 準備具體候選部署／遷移清單，取得當次外部操作授權後才執行：釘選實作／CI／Worker與Pages版本、當期免費證據／全帳戶容量、pending／lease／配額、真實ID／namespace語意及完整provider讀回；不能只改activeCorpusId、補滿額度或複製雙整庫。保存部署與provider證據，失敗維持當期關鍵字；若需migration或破壞相容先補規格及授權。
 - [ ] 4.2 在另外核准的真實新文章成功公開後，只觀察既有自然cron，串接manifest、首批偵測、全部新／重用段與預留、pending、完整讀回、最終來源檢查、promotion及自然no_change；記錄起訖、延遲分布、樣本數與中斷。前景同步、人工補段或切換即標混合完成、不關閉原12.2；缺證或額度不足即保存原因，另行規劃後續自然機會，不重播未知結果。
 - [ ] 4.3 另依當次授權執行真實semantic API與瀏覽器／手機驗收，確認新文章、修訂／撤回排除、關鍵字降級／恢復、閱讀連結，並取得獨立人工相關性回報；查詢計入共享額度，報告本機、CI、部署、provider、自然排程與人工各自結果。只有4.2完整自然鏈與本項證據俱足才評估原12.2可否依原條件結案，歷史1.1不回補為已完成。
+
+
+## 5. First-principles architecture repair (2026-10-26 local authorization)
+
+Production remains paused. These tasks do not convert the interrupted old-code run into new-architecture natural acceptance. Preserve every completed historical task and other worktree modification.
+
+- [x] 5.1 Specify Release-independent verified vector objects and Durable provider visibility and quota scheduling; save real failing acceptance for delta-only provider work, durable visibility waiting and autonomous UTC rollover, retaining real metadata-revision invalidation regression in the existing cloud-sync suite.
+- [x] 5.2 Implement Release-independent verified vector objects with additive proof migration, delta planning, stable query namespace, exact-membership promotion and owned withdrawal handling; verify nineteen additions leave 2,955 proven objects untouched, legacy transition and source/lease/unknown safety in existing acceptance suites.
+- [x] 5.3 Implement Durable provider visibility and quota scheduling with persisted mutation acknowledgement, bounded readback scheduling and next-UTC quota continuation; verify early ticks spend no vector reads and a restart resumes without foreground commands or inference replay.
+- [x] 5.4 Complete affected local gates and spectra validate/analyze, document migration costs, rollback and remaining production/human evidence in architecture-repair-20261026.md and ADR-001. Preserve current production pause and 500/zero-paid-overage policies; no commit, push, deployment or production migration.
+
+
+## 6. Authorized production resumption (2026-10-30)
+
+The user authorized capacity verification, additive migration, compatible Worker deployment and original Cron restoration, then explicitly authorized scoped commits, PR and merge after checks. Preserve the 500 limits, zero paid overage, historical evidence and unrelated dirty files. No Pages/Admin/Hermes deployment or publication is included.
+
+- [x] 6.1 Pin the six architecture candidate files on current main and complete the existing local gate, retaining original environment failures and corrected evidence without weakening tests.
+- [ ] 6.2 Commit only search implementation and necessary specification/evidence, pass PR CI, merge after checks and verify main CI for the deployment source.
+- [ ] 6.3 With synchronization disabled, recheck account Free/capacity, ownership/pending/lease and source; apply only 0005, verify all original state and reservations unchanged, deploy the compatible Worker and independently read back source/settings.
+- [ ] 6.4 Update only freshly proven capacity evidence under exact policy guards, restore the original Cron switch, and capture natural progress or a concrete stop reason without manual synchronization, promotion or quota refill; distinguish switch restoration from full corpus/human acceptance.
+
+- [x] 6.5 Repair PR83's reproduced withdrawal/restoration proof invalidation defect, including lost deletion acknowledgement and reader keyword fallback; preserve ownership, admission and lease guards, save real RED/GREEN and pass the full local gate before pushing the revised candidate.

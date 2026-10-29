@@ -5,10 +5,10 @@ import { approvedModel, type SearchPolicy } from '../../apps/search-worker/src/s
 import { sha256 } from '../../apps/search-worker/src/deployed';
 const c=buildPublicDiscovery([{source:'local',id:'automation',title:'流程自動化',href:'/gcake-dev/posts/automation/',canonicalUrl:'https://gcake119.github.io/gcake-dev/posts/automation/',status:'published',topics:[],html:'<p>減少重複操作與流程自動化。</p>'}],{now:new Date().toISOString(),baseUrl:'https://gcake119.github.io/gcake-dev',sourceTree:'fixture',snapshotDigest:'fixture'});
 const makeRequest=()=>new Request('https://search.invalid/v1/search',{method:'POST',headers:{Origin:'https://gcake119.github.io'},body:JSON.stringify({q:'如何減少每天重複操作',corpusId:c.corpusId})});
-const policy:SearchPolicy={enabled:true,activeCorpusId:c.corpusId,model:approvedModel,modelConfig:'cloud-fixture',dimensions:1024,format:'plain',inputLimit:4096,billing:{model:approvedModel,id:'fixture',validUntil:new Date(Date.now()+3600000).toISOString(),rate:1075/1e6,freeVerified:true,noChargeBoundary:true,account:'fixture',providerResetVerified:true,windowId:new Date().toISOString().slice(0,10),services:['embedding','vector-query','vector-storage','worker','admission']},limits:{requests:10,tokens:10000,units:100,vectorQueries:10,storage:5000000,worker:100,admission:100},paidOverage:0,throttleSecret:'',qualityVerified:true,providerInputVerified:true};
+const policy:SearchPolicy={enabled:true,activeCorpusId:c.corpusId,activeVectorNamespace:await sha256('cloud-fixture'),model:approvedModel,modelConfig:'cloud-fixture',dimensions:1024,format:'plain',inputLimit:4096,billing:{model:approvedModel,id:'fixture',validUntil:new Date(Date.now()+3600000).toISOString(),rate:1075/1e6,freeVerified:true,noChargeBoundary:true,account:'fixture',providerResetVerified:true,windowId:new Date().toISOString().slice(0,10),services:['embedding','vector-query','vector-storage','worker','admission']},limits:{requests:10,tokens:10000,units:100,vectorQueries:10,storage:5000000,worker:100,admission:100},paidOverage:0,throttleSecret:'',qualityVerified:true,providerInputVerified:true};
 async function fixture(){
  let embeddings=0,queries=0,stored:unknown;
- const env={SEMANTIC_ENABLED:'true',THROTTLE_SECRET:'fixture-only',DISCOVERY_DB:{prepare(sql:string){return {bind(){return this;},async first<T>(){return (sql.includes('discovery_policy')?{policy:JSON.stringify(stored)}:{id:'reserved'}) as T;},async run(){return {};}};}},AI:{async run(model:string,input:unknown){assert.equal(model,approvedModel);assert.deepEqual(input,{text:['如何減少每天重複操作']});embeddings++;return {data:[Array(1024).fill(1)]};}},VECTOR_INDEX:{async query(_v:number[],options:unknown){queries++;assert.deepEqual(options,{namespace:c.corpusId,topK:50,returnMetadata:'all'});return {matches:[{id:c.passages[0].passageId,metadata:{articleId:c.articles[0].articleId,revision:c.passages[0].revision}}]};}}};
+ const env={SEMANTIC_ENABLED:'true',THROTTLE_SECRET:'fixture-only',DISCOVERY_DB:{prepare(sql:string){return {bind(){return this;},async first<T>(){return (sql.includes('discovery_policy')?{policy:JSON.stringify(stored)}:{id:'reserved'}) as T;},async run(){return {};}};}},AI:{async run(model:string,input:unknown){assert.equal(model,approvedModel);assert.deepEqual(input,{text:['如何減少每天重複操作']});embeddings++;return {data:[Array(1024).fill(1)]};}},VECTOR_INDEX:{async query(_v:number[],options:unknown){queries++;assert.deepEqual(options,{namespace:await sha256(policy.modelConfig),topK:50,returnMetadata:'all'});return {matches:[{id:c.passages[0].passageId,metadata:{articleId:c.articles[0].articleId,revision:c.passages[0].revision}}]};}}};
  const bodies:Record<string,string>={index:JSON.stringify(c),passages:JSON.stringify(c.passages)};
  const assets=Object.fromEntries(await Promise.all(Object.entries(bodies).map(async([kind,body])=>[kind,{href:`/gcake-dev/discovery/${c.corpusId}/${kind}.json`,digest:await sha256(body)}])));
  const fetcher:typeof fetch=async(input)=>{const u=String(input);return new Response(u.endsWith('discovery-manifest.json')?JSON.stringify({schemaVersion:1,corpusId:c.corpusId,assets}):u.endsWith('index.json')?bodies.index:bodies.passages);};
@@ -131,4 +131,13 @@ test('Equal content identity does not bypass changed provenance asset descriptor
  const {createProductionWorker}=await import('../../apps/search-worker/src/runtime');
  const r=await createProductionWorker(changed).fetch(makeRequest(),h.env);
  assert.equal(r.status,409);assert.equal((await r.json()).fallback,'keyword');assert.equal(manifests,2);
+});
+
+test('A legacy active corpus without migrated physical proof never queries the new namespace',async()=>{
+ const h=await fixture();h.setPolicy({...policy,activeVectorNamespace:undefined});
+ const r=await h.worker.fetch(makeRequest(),h.env);assert.equal(r.status,503);assert.deepEqual(h.calls(),[0,0]);
+});
+test('A public release change blocks semantic provider calls during stable-namespace mutation',async()=>{
+ const h=await fixture();h.setPolicy({...policy,activeCorpusId:'previous-release'});
+ const r=await h.worker.fetch(makeRequest(),h.env);assert.equal(r.status,409);assert.deepEqual(h.calls(),[0,0]);
 });

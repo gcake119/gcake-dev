@@ -107,3 +107,14 @@ Pages 重建產生新 corpus，但３３篇／２６３３段修訂不變。自�
 本機候選以可選policy.syncCapacity保存validUntil與其他帳戶向量儲存otherDimensions的已核實上界；未提供、過期或數量未知時停止新上傳。此上界必須包含其他索引、準備、保留與pending資料，本索引再加describe總數及整批最壞複製維度（含重用），不假設相同ID換namespace零成本。正式policy尚未寫入此證據；未來部署候選前須另獲授權，以當期全帳戶及供應商ID／namespace證據核實，不可直接填０或沿用本機fixture。無D1 schema migration，不改免費硬上限、每日額度、開關或原證據期限。
 
 舊身分到新身分首次轉換仍須逐批相容性核對、完整讀回及最終公開來源重查，不得直接改activeCorpusId。回復保留當期關鍵字與公開文章，不恢復撤回文章、不補滿額度、不刪未知pending；可單獨撤回效率改動而保留身分修正。這些是本機候選契約，供應商、自然新文章全程同步及人工搜尋驗收仍分別待授權與證據；原change歷史１．１與１２．２不改狀態。
+
+
+## 差異同步與持久續作（２０２６－１０－２６，本機架構候選）
+
+使用者授權從第一性原理修補架構。公開集合版本不再兼任向量存放位置：物理 namespace 由已核准 modelConfig 的 SHA-256 決定，公開 corpus 仍是權威的資格／版本集合。D1 為已完整讀回的段落保存物理 namespace 與完整檢索 metadata 的 hash；文章、修訂、文字 hash、模型與 metadata 全相符的舊證據可跨公開版本重用。新版本只處理差異；真正修訂仍失效，撤回的 owned 向量確認不存在後才提升。現有 public/active 版本屏障保留，同步中提供當期關鍵字結果，不以混合索引或擴大 topK 掩蓋召回問題。
+
+上傳後保存 provider mutationId，先確認供應商報告已處理該操作，再完整核對值／namespace／metadata。可讀仍不完整時持久保存下一次檢查時間，間隔由一分鐘倍增至最多三十分鐘；單輪不 sleep、不忙等。quota 不足只保存次日 UTC 的續作時間，既有 Cron 自行續作；舊日扣額、未知推論與證據期限維持，不能自動續期或退款。此變更不調高 requests500／vectorQueries500，也不把應用操作計數稱為官方查詢維度或帳單。
+
+新增 0005_vector_proofs.sql 為 additive migration，舊 rows 與 receipts 保留。缺少新 proof 的舊向量必須一次完整轉換；舊 pending 不能直接換 namespace。activeVectorNamespace 只有完整同步 promotion 才設定，新讀者不接受只存在舊 activeCorpusId 的狀態。本機候選尚未部署；原 INDEX_SYNC=false／SEMANTIC=true 維持，正式 migration、對帳與恢復須另獲當次授權。回復須保持同步停用及當期關鍵字，不把舊 Worker 裝回已遷移的實體配置上。
+
+詳見 [架構修補與正式遷移界線](../../openspec/changes/fix-discovery-corpus-identity/architecture-repair-20261026.md)。本節取代舊「每個公開版本搬移全部向量」的未來執行契約，保留所有歷史證據。既有４．２全量 provider audit／自然收據及４．３真人相關性驗收均不由本機 proof 重用代替。

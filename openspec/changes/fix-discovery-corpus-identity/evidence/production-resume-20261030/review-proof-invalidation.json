@@ -1,0 +1,34 @@
+{
+  "reviewThread": "PRRT_kwDOUi3PxM6xqGnx",
+  "regressionCases": 4,
+  "reportedDefectReproduced": true,
+  "readerRevocationReproduced": true,
+  "originalRedPreserved": true,
+  "redGreenLogSha256": {
+    "review-proof-red.log": "249d6c3eaa56d98110b4e4f24d0c825ba647f382e63cad7918a845ff41c299a5",
+    "review-proof-green.log": "7d4dae60e90d403ac241403dc9905942bd04ea4e793d4583e236f26bf651025c",
+    "review-proof-suite-first.log": "99b5c781c0a78000d524f51db01d73d32ba722b15f592e7fe04c6412f5679b88",
+    "review-proof-suite-green.log": "6245ab48ac35aca759d7da185b7e165b71041194a5620dd7a8dd8bdf6d36cd9f",
+    "review-reader-revocation-red.log": "96c49fc1f50b545325d627275d215f0f20b725225d1d57bb089673cd67eac48b",
+    "review-reader-revocation-green.log": "3a77c5ffd4fb70a53bb5807f490fb5bbde0004076675451242574548b663ef04"
+  },
+  "candidateFiles": {
+    "apps/search-worker/src/sync.ts": "d35399d4e1f7a830a0a229c6bb04ab1b2a2afd9a992d22e1e031bf9cb17fa1fc",
+    "apps/search-worker/src/runtime.ts": "b0d7bec32275e390f42a6845821605da415f4b4a21d5f4e14be5b9e23bfcd655",
+    "apps/search-worker/src/service.ts": "d3f6b5dc8702208c2919ea852b1e947d2b7117145181531592b0f5a1f49f3c95",
+    "apps/search-worker/migrations/0005_vector_proofs.sql": "101af807141d662adaa4f1ed9f15e1db1066268fb55a3649bee3721c17e33f26",
+    "test/discovery/cloud-sync.acceptance.test.ts": "1d549581cf98cfd484aa98049cfac395335af4892a4a6f6fa38ce04bc550db3d",
+    "test/discovery/cloud-runtime.acceptance.test.ts": "f4ae8128d193ff8442b923a5c2132fb6f2892db10db03163399b52f5a23f0fe1"
+  },
+  "fullLocalGate": {
+    "test": 0,
+    "check": 0,
+    "build-all": 0,
+    "release-dry-run": 0,
+    "editorial-rehearse": 0
+  },
+  "requiredCI": "pending runner online; no bypass",
+  "productionWrites": false,
+  "existingNoChangeFixtures": "Completed synchronization state supplied; zero-provider and sustainable-budget assertions retained",
+  "rawLogs": "original task output/discovery/index-resume-20261030/review-final-gates/"
+}
