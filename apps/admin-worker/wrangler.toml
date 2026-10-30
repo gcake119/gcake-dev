@@ -9,10 +9,12 @@ not_found_handling = "single-page-application"
 run_worker_first = ["/api/*", "/health"]
 
 [vars]
+INDEX_ALERTS_ENABLED = "false"
 RELEASE_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
 [env.development.vars]
+INDEX_ALERTS_ENABLED = "false"
 RELEASE_WRITE_ENABLED = "false"
 SUBSTACK_WRITE_ENABLED = "false"
 
@@ -26,6 +28,7 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-development"
 
 [env.preview.vars]
+INDEX_ALERTS_ENABLED = "false"
 GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
 GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
@@ -43,6 +46,7 @@ binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-preview"
 
 [env.production.vars]
+INDEX_ALERTS_ENABLED = "false"
 GITHUB_OAUTH_CLIENT_ID = "Ov23li0QRIdkuBcotHov"
 GITHUB_OWNER_USER_IDS = "96661305"
 RELEASE_WRITE_ENABLED = "false"
@@ -62,3 +66,5 @@ bucket_name = "gcake-media-production"
 
 # Optional INDEX_STATUS_TOKEN is supplied only by explicitly authorized secret provisioning.
 # It grants read-only index observation; no Cloudflare management credential is needed.
+# Cloud alert seed, independent expiry, verified Telegram secrets and fifteen-minute
+# Admin Cron are installed only by a qualified release. No schedule is enabled here.

@@ -1,4 +1,5 @@
 import {createAdminIndexReader} from './index-status.js';
+import {readAlertHistory,runCloudIndexAlerts,type AlertEnv} from './index-alerts.js';
 import { readPagesStatus } from './pages-status.js';
 import { D1PublicationRepository, PublicationOperations } from './publication-operations.js';
 import type { D1DatabaseLike } from './media.js';
@@ -16,7 +17,7 @@ import { ReleaseDelivery } from './release-delivery.js';
 
 export const serviceName = 'gcake-admin-worker' as const;
 
-export interface WorkerEnv extends WorkerBindings {
+export interface WorkerEnv extends WorkerBindings, AlertEnv {
   readonly INDEX_STATUS_TOKEN?: string;
   readonly CMS_DB?: SessionDatabase;
   readonly GITHUB_OAUTH_CLIENT_ID?: string;
@@ -232,6 +233,7 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
       },
       sessions: new D1SessionStore(env.CMS_DB),
       indexStatus: createAdminIndexReader(env.INDEX_STATUS_TOKEN,fetcher),
+      indexAlerts: () => readAlertHistory(env),
       drafts: new D1DraftStatusStore(env.CMS_DB),
       // Expose persisted history only. Do not wire legacy operate(), which is not
       // the qualified scheduling/publication runtime.
@@ -264,6 +266,11 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
 }
 
 export default {
+  async scheduled(controller:{cron:string},env:WorkerEnv):Promise<void> {
+    if(controller.cron!=='*/15 * * * *')return;
+    const result=await runCloudIndexAlerts(env);
+    if(result.status==='unavailable')throw Error('INDEX_ALERT_MONITOR_UNAVAILABLE');
+  },
   fetch(request: Request, env: WorkerEnv, _context?: unknown): Promise<Response> {
     return handleRequest(request, env, globalThis.fetch.bind(globalThis));
   },

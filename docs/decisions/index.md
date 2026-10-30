@@ -62,3 +62,5 @@
 ２０２６－１０－３０ 唯讀監測正式整合：owner 後台摘要５０３、獨立入口２００，補齊 Cloudflare 同區域 Worker 公開呼叫所需的 global_fetch_strictly_public 平台相容旗標。[實作契約](../../openspec/changes/add-readonly-index-status/design.md)保留固定上游、獨立 token、原 compatibility date、業務開關、資產路由與全部既有 secret；無新權限、服務或 ADR，原失敗保留，正式結果另驗。
 
 ２０２６－１０－３０ 必要 CI 修復：main 41016327285 的既有草稿媒體期限驗收失敗，本機第１３次重現。fix-draft-round-timeout-classification 共用既有整輪取消訊號，保留原數值期限、零 provider dispatch 與未知意圖保護；Node２４完整五項 gate 及原失敗案例４０次檢查通過。僅修正取消來源的結果分類，不安裝／啟用正式 Substack runtime，無新政策或 ADR；通過 PR 與 exact main CI 後才接續已授權的後台部署。
+
+２０２６－１０－３０ `add-cloud-index-alerts`：使用者採用「雲端檢查＋Telegram告警＋後台通知紀錄」。本機候選沿用既有 Admin Worker、CMS 專用lease／checkpoint與寄送intent帳本，不增加Worker、queue或CI工作流程。新排程／secret配置及additive0008須按具體候選核對正式授權，原搜尋Cron／500限額／零付費超額與期限不變；通知未知不重送。現有heartbeat在正式送達與兩個自然雲端輪次驗收前保留。這是通知部署邊界與唯讀觀測延伸，沿用ADR-001，不新增搜尋政策；契約與回復見該change及docs/index-alerts-runbook.md。
