@@ -310,3 +310,9 @@ monitor只存安全摘要、增量收據、checkpoint及公開來源資產cache�
 正式接線須另授權Git／secret／部署，分別核對搜尋Worker、Admin Worker（實際設定為apps/admin-worker/wrangler.toml）與Admin前端產物。保留原flags／Cron／bindings／其他secret與0005狀態；無migration，不清pending。只有正式讀回與無人Keychain讀取核實後才更新既有追蹤automation，本輪未恢復automation-3。
 
 管理API的7403根因尚未修復，本方案只移除日常監測對它的依賴；完成候選後的獨立向量audit仍可能受既有存取權限影響。備援是Cloudflare後台D1 Console的唯讀SELECT，不使用手動同步入口。回復先移除監測資格／停監測；不關閉原Cron、不部署與stable namespace不相容的舊Worker。真實rows_read、provider audit、正式搜尋API／瀏覽器與真人相關性仍分別待授權／驗證。
+
+## 公開搜尋建置接線修補（２０２６－１０－３０）
+
+自動 Editorial Pages 建置曾漏傳既有 PUBLIC_SEARCH_ENDPOINT，造成正式 API 可用但公開搜尋頁只做關鍵字搜尋。修補讓手動與自動建置沿用同一個 repository variable；缺設定的預設仍是關鍵字，原 Cron、來源釘選、stale-main 與通知邊界保留。
+
+本輪已授權獨立 PR／檢查後合併與公開站部署；部署前逐篇比對文章 ID 與 sourceRevision，僅接受與目前公開集合完全相同的候選。建置完成不代表讀者已使用語意搜尋，仍須正式 HTML 有端點、原 Cron 自然對齊新 corpus、再以真實瀏覽器確認。不得為驗收手動觸發索引、補額、寄通知或自勾人工相關性。

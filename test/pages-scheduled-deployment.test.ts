@@ -98,3 +98,13 @@ test('existing editorial cron and no-op delivery guards remain intact; both buil
     assert.equal(w.jobs.build.steps[restore]['continue-on-error'], undefined);
   }
 });
+
+// Configuration contract: the real production omission bypassed reader behavior tests.
+// Reuse this workflow test to enforce the endpoint boundary; generated HTML is checked separately.
+test('both publication builds preserve the existing configured semantic search endpoint', () => {
+  for (const w of [workflow, editorial]) {
+    const builds = w.jobs.build.steps.filter((step: any) => step.run === 'pnpm build');
+    assert.equal(builds.length, 1);
+    assert.equal(builds[0].env?.PUBLIC_SEARCH_ENDPOINT, '${{ vars.PUBLIC_SEARCH_ENDPOINT }}');
+  }
+});
