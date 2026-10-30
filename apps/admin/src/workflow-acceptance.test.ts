@@ -40,6 +40,7 @@ async function render(file: string, overrides: Record<string, unknown> = {}) {
     const app = createSSRApp(component);
     app.component('ReleaseQueuePanel', { template: '<section aria-label="發布摘要">下一篇</section>' });
     app.component('SubstackStatusPanel', { props:['slug'], template:'<section class="substack-mount" :data-scope="slug || \'list\'"></section>' });
+    app.component('IndexStatusPanel', { template: '<section aria-label="搜尋索引"></section>' });
     app.config.warnHandler = () => {};
     return parseHTML('<html><body>' + await renderToString(app) + '</body></html>').document;
   } finally { await unlink(url); }
@@ -188,7 +189,8 @@ async function withActualWorkspace(run: (state: any) => Promise<void>) {
   const {descriptor}=parse(source);
   const compiled=compileScript(descriptor,{id:'workflow-runtime'}).content
     .replace("import ReleaseQueuePanel from './ReleaseQueuePanel.vue';",'const ReleaseQueuePanel = {};')
-    .replace("import SubstackStatusPanel from './SubstackStatusPanel.vue';",'const SubstackStatusPanel = {};');
+    .replace("import SubstackStatusPanel from './SubstackStatusPanel.vue';",'const SubstackStatusPanel = {};')
+    .replace("import IndexStatusPanel from './IndexStatusPanel.vue';",'const IndexStatusPanel = {};');
   const url=new URL(`.workflow-script-${process.pid}.mjs`,import.meta.url);
   await writeFile(url,ts.transpileModule(compiled,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText);
   const originalWindow=globalThis.window;

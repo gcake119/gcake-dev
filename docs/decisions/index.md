@@ -48,3 +48,9 @@
 
 
 ２０２６－１０－３０ `fix-discovery-corpus-identity` 正式恢復：PR83／main b3e2d50 CI成功，0005 additive migration核對原資料與扣額不變；正式Worker540fe715、逐位元bundle核對通過，原Cron及兩開關true，每日500與零付費超額保留。自然首批16段完成、下一批已上傳，完整corpus仍未提升，維持當期關鍵字。容量到台北10/31 01:21:49，初始CLI格式失敗與獨立對帳保留，4.2／4.3不結案。見[正式紀錄](../../openspec/changes/fix-discovery-corpus-identity/production-resume-20261030.md)。
+
+
+２０２６－１０－３０ 後台索引進度規劃：使用者指定圖形化進度條並遵循專案設計規範。沿用 DESIGN.md／docs/design-system.md 的既有後台字級、間距、基本控制與雙主題，新增同文件「後台圖形化進度條」設計契約；不重新制定品牌或公開站樣式。定量、未知、空集合、舊資料與滿條未驗收分列，沿用唯讀與owner授權邊界。Spectra `add-readonly-index-status` 已補Gherkin及規劃；尚未實作、提交或部署，不代表全量索引、語意搜尋或人工驗收完成。此為視覺共用契約的索引更新，不更動ADR-001模型、額度、期限與排程決策。
+
+
+２０２６－１０－３０ 唯讀觀測本機實作：add-readonly-index-status 以獨立監測token與owner後台代理實作圖形化進度條，沿用既有後台設計系統；本機驗證結果另記該change verification.md，不代表正式啟用。使用者明確排除提交、部署與正式secret配置；automation-3保持暫停，原Cron／模型／額度／有效期不變。ADR-001新增本機候選界線；完整provider與人工搜尋驗收仍待完成。
