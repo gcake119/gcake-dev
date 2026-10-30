@@ -1,0 +1,6 @@
+## 1. Build continuity
+- [x] 1.1 Deliver Publication preserves configured reader search using Reuse the existing Pages workflow contract: first reproduce the automatic-build omission in the existing workflow test, forward the same variable, then verify the real generated configured endpoint and existing missing-configuration/fallback coverage; preserve RED and GREEN evidence.
+- [x] 1.2 Deliver Wiring repair preserves publication boundaries by retaining schedules, restore-before-build, source pinning, failed-build and stale-source guards; verify the existing Pages contract tests plus complete pnpm test, check, build:all, release:dry-run, editorial:rehearse and Spectra validate/analyze.
+## 2. Authorized integration and acceptance
+- [ ] 2.1 Commit only the repair and supporting specifications, create a PR, merge after required checks, and verify exact main CI; preserve other dirty work and record PR/head/main evidence.
+- [ ] 2.2 Compare public article IDs/revisions before publication, deploy through the existing manual Pages workflow, verify published endpoint and unchanged article identities/revisions, then let original Cron naturally reconcile and verify bounded real reader search; retain the shared six-attempt budget, explicit untested failure cases and separate human acceptance.
