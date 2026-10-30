@@ -2,6 +2,7 @@
 import {computed,onMounted,onUnmounted,ref} from 'vue';
 import {createIndexStatusReader,progressPresentation,assessmentLabels,type IndexReadState} from './index-status';
 import {taipeiTime} from './substack-status';
+import IndexAlertHistory from './IndexAlertHistory.vue';
 const snapshot=ref<IndexReadState>({data:null,loading:false,error:null,loginRequired:false,lastReadAt:null,refreshAvailableAt:0});
 const reader=createIndexStatusReader(value=>{snapshot.value=value;});
 const data=computed(()=>snapshot.value.data);
@@ -27,5 +28,6 @@ onUnmounted(()=>{document.removeEventListener('visibilitychange',visibility);rea
    <dl class="index-status-details"><div><dt>待確認段數</dt><dd>{{ data.snapshot.pendingCount.toLocaleString() }} 段</dd></div><div v-if="data.snapshot.nextAttemptAt"><dt>下一次可續作</dt><dd>{{ time(data.snapshot.nextAttemptAt) }}</dd></div><div><dt>最後讀取</dt><dd id="index-last-observed">{{ time(data.snapshot.observedAt) }}{{ snapshot.error ? '（上次成功資料）' : '' }}</dd></div><div><dt>最後進度紀錄</dt><dd>{{ time(data.snapshot.lastProgressAt) }}</dd></div><div><dt>容量證據到期</dt><dd>{{ time(data.snapshot.capacityValidUntil) }}</dd></div><div><dt>使用資格到期</dt><dd>{{ time(data.snapshot.billingValidUntil) }}</dd></div></dl>
    <p class="index-acceptance">語意搜尋：尚無本輪驗收結果。索引進度不代表搜尋驗證通過。</p>
   </template>
+  <IndexAlertHistory />
  </section>
 </template>
