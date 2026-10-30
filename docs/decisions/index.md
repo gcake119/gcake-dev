@@ -54,3 +54,5 @@
 
 
 ２０２６－１０－３０ 唯讀觀測本機實作：add-readonly-index-status 以獨立監測token與owner後台代理實作圖形化進度條，沿用既有後台設計系統；本機驗證結果另記該change verification.md，不代表正式啟用。使用者明確排除提交、部署與正式secret配置；automation-3保持暫停，原Cron／模型／額度／有效期不變。ADR-001新增本機候選界線；完整provider與人工搜尋驗收仍待完成。
+
+２０２６－１０－３０ 已部署立即發布通知修補的來源整合：使用者授權另立相依 PR，只整合與正式版本 c5c0ba17 完全一致的摘要判定、必要型別及既有驗收測試，供唯讀索引監測部署保留現有功能。[整合紀錄](../../openspec/changes/repair-immediate-substack-notifications/integration-20261030.md)保存程式比對與範圍；不新增政策、正式寫入、排程或通知，不重播歷史驗收。沿用既有發布權限與通知契約，無新 ADR。

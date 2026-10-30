@@ -93,6 +93,27 @@ class SharedPrivateNotification(unittest.TestCase):
   self.assertEqual(shared.publication_key(publication()),'publication:b4f32ab3908436c48fdfa32b457dc8d2ba8d3ec0e3447bb050456f87a4f6bbd0')
 
 
+ def test_immediate_publication_contract_uses_original_sender_once_and_retains_uncertain_outcomes(self):
+  immediate=dict(publication(),slug='ithome-2026-template-hardening',id='221099415',
+      title='從「可以 fork」到「真的能接手」，模板還缺哪些東西？',
+      confirmedAt='2026-10-21T23:00:02.155Z',actualAt='2026-10-21T23:01:02.155Z',differenceSeconds=60)
+  def immediate_observation(now):
+   obs=observation(now);obs['summary']['substackPublications']['publications']=[immediate];return obs
+  calls=[]
+  first=self.round(lambda message:calls.append(message) or 341,obs=immediate_observation(NOW))
+  self.assertEqual(first['sent'],1)
+  self.assertEqual(calls,['Substack 同步發布驗證完成\n'+immediate['title']+'\nhttps://gcakedev.substack.com/p/'+immediate['slug']])
+  key=shared.publication_key(immediate)
+  for i,status in enumerate(['sent','intent','unknown'],1):
+   with self.subTest(status=status):
+    with closing(sqlite3.connect(self.path)) as db:
+     db.execute('UPDATE monitor_events SET status=? WHERE event_id=?',(status,key));db.commit()
+    at=NOW+i*3600
+    result=self.round(lambda text:calls.append(text) or 342,now=at,obs=immediate_observation(at),execution='immediate-'+status)
+    self.assertEqual(result['suppressed'],1);self.assertEqual(len(calls),1)
+    with closing(sqlite3.connect(self.path)) as db:
+     self.assertEqual(db.execute('SELECT count(*) FROM monitor_delivery_attempts WHERE event_id=?',(key,)).fetchone(),(1,))
+
  def test_production_entry_holds_original_runtime_lease_around_the_shared_flow(self):
   import os,types
   from contextlib import contextmanager

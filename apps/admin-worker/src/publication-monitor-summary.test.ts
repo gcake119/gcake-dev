@@ -77,3 +77,55 @@ test('Substack enumeration race is incomplete without invalidating original-site
  const body=await(await f.call()).json();assert.equal(body.complete,true);assert.deepEqual(body.substackPublications,{complete:false,publications:[]});assert.equal(f.mutation(),0);
  }finally{f.db.close()}
 });
+
+async function immediateSubstack(){
+ const record:any=await verifiedSubstack();
+ delete record.armedRevision;delete record.slot;
+ record.everPublished=true;
+ record.publicationAuthorization={kind:'immediate',operationId:'approved-immediate-221099415',authorizedAt:'2026-10-21T23:00:00Z',sourceRevision:record.sourceRevision};
+ record.publicationEvidence={title:'new',actualAt:'2026-10-21T23:01:02.155Z'};
+ return record;
+}
+test('explicitly approved immediate publication enters the unchanged Hermes contract without a saved schedule',async()=>{
+ const f=fixture();try{
+  const record=await immediateSubstack();schedules(f)(record);
+  const body=await(await f.call()).json();
+  assert.deepEqual(body.substackPublications,{complete:true,publications:[{slug:'new',id:record.remoteId,revision:record.publicationAuthorization.sourceRevision,title:'new',confirmedAt:'2026-10-21T23:00:00.000Z',actualAt:record.publicationEvidence.actualAt,differenceSeconds:62.155}]});
+  assert.equal(f.mutation(),0);
+ }finally{f.db.close()}
+});
+test('immediate publication needs explicit unmixed authority, fresh matching evidence and valid real timing',async()=>{
+ for(const patch of [
+  {publicationAuthorization:undefined},
+  {publicationAuthorization:null},
+  {publicationAuthorization:{kind:'other'}},
+  {publicationAuthorization:{kind:'immediate',operationId:'',authorizedAt:'2026-10-21T23:00:00Z',sourceRevision:'sha256:'+'a'.repeat(64)}},
+  {publicationAuthorization:{kind:'immediate',operationId:'approved',authorizedAt:'2026-10-21T23:02:00Z',sourceRevision:'sha256:'+'a'.repeat(64)}},
+  {publicationAuthorization:{kind:'immediate',operationId:'approved',authorizedAt:'invalid',sourceRevision:'sha256:'+'a'.repeat(64)}},
+  {publicationAuthorization:{kind:'immediate',operationId:'approved',authorizedAt:'2026-10-21T23:00:00Z',sourceRevision:'not-a-revision'}},
+  {armedRevision:'sha256:'+'a'.repeat(64)},
+  {slot:{confirmed:true,slug:'new',scheduledAt:'2026-10-21T23:00:00Z'}},
+  {publicationEvidence:{title:'new',confirmedAt:'2026-10-21T23:00:00Z',actualAt:'2026-10-21T23:01:02.155Z',differenceSeconds:62.155}},
+  {everPublished:false},
+  {verifiedAt:new Date(Date.now()-3601000).toISOString()},
+  {contentVerifiedRevision:'sha256:'+'0'.repeat(64)},
+  {remoteUrl:'https://gcakedev.substack.com/p/wrong'},
+  {intent:{action:'update-public'}},
+ ]){const f=fixture();try{
+  schedules(f)({...await immediateSubstack(),...patch});
+  const body=await(await f.call()).json();assert.deepEqual(body.substackPublications,{complete:true,publications:[]});assert.equal(f.mutation(),0);
+ }finally{f.db.close()}}
+});
+test('immediate notification identity remains the authorized revision after a later content verification',async()=>{
+ const f=fixture();try{
+  const record=await immediateSubstack();record.publicationAuthorization.sourceRevision='sha256:'+'c'.repeat(64);schedules(f)(record);
+  const body=await(await f.call()).json();assert.equal(body.substackPublications.publications[0]?.revision,record.publicationAuthorization.sourceRevision);
+ }finally{f.db.close()}
+});
+test('immediate authorization with submillisecond precision emits consistent cross-runtime timing',async()=>{
+ const f=fixture();try{
+  const record=await immediateSubstack();record.publicationAuthorization.authorizedAt='2026-10-21T23:00:00.127499+00:00';schedules(f)(record);
+  const body=await(await f.call()).json();const publication=body.substackPublications.publications[0];
+  assert.equal(publication.confirmedAt,'2026-10-21T23:00:00.127Z');assert.equal(publication.actualAt,'2026-10-21T23:01:02.155Z');assert.equal(publication.differenceSeconds,62.028);
+ }finally{f.db.close()}
+});

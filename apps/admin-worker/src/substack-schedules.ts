@@ -7,6 +7,7 @@ export interface DraftSyncEvidence {status:'pending'|'syncing'|'verified'|'exclu
 export interface ScheduleRecord {
  approvedPresentation?:{version:1;profile:'table-rows-labelled-lists-original-png-v1';remoteId:string;sourceRevision:string;approvedAt:string;imageDigests:string[]};
  draftSync?:DraftSyncEvidence;
+ publicationAuthorization?:{kind:'immediate';operationId:string;authorizedAt:string;sourceRevision:string};
  publicationEvidence?:{title:string;confirmedAt?:string;actualAt:string;differenceSeconds?:number};
  policyVersion:typeof SCHEDULE_POLICY;scheduleId:string;slug:string;previousSlugs?:string[];legacyNewsletterSentAt?:string;legacyPublished?:boolean;everPublished?:boolean;sourcePath?:string;sourceCommit?:string;sourceRevision?:string;version:number;remoteId?:string;
  editUrl?:string;expectedPublicUrl?:string;remoteUrl?:string;timeZone?:'Asia/Taipei';audience?:'everyone';
