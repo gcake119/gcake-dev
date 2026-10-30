@@ -137,3 +137,9 @@ HTTP200／application/json／Cache-Control:no-store／無CORS授權，最大64Ki
 滿條只表示已記錄驗證段數到達總數，不表示promotion／完整供應商audit／搜尋正常。若仍有pending或缺兩筆自然no_change，顯示「段落已處理，等待完整確認」；候選條件全滿時顯示「同步完成候選，語意搜尋待驗證」。更新不移動焦點，aria-live=polite只宣告有意義的狀態改變；禁止每次輪詢重讀整組metadata。不做填充過渡／循環動畫，因此prefers-reduced-motion下也無持續動態。
 
 驗證沿用現有狀態單元測試、acceptance與一次瀏覽器巡檢：0%、正常小數、未滿100、滿條但pending、未知total、0/0、錯誤數字、來源變更、讀取失敗舊值與401清除；檢查progress可及名稱與值、無顏色單一訊息。視覺量測桌面與390px各明暗兩種（既有4組），加本功能320px邊界與200%縮放；量測實際computed字級、元素邊界間距、按鈕高度與對比，不以CSS字串或變數名稱取代驗證。不新增UI套件、視覺回歸平台或CI；維護增量是共用規則與既有CSS的進度條樣式。
+
+
+## Production same-account Worker routing follow-up
+Owner browser GET returned503 while the external authenticated search status GET returned200. Both deployed code and secret installation were independently verified. Cloudflare requires global_fetch_strictly_public for global fetch to another Worker on the same zone; the deployed Admin compatibility settings did not include it. Preserve the original compatibility date and all existing business flags, routes, bindings and credentials; add only this public-front-door routing flag to Admin. The fixed upstream URL and independent monitor token remain unchanged. Do not add a service binding, alternate host, new Worker, logging or privileged fallback.
+
+The existing bindings test first fails on the missing explicit platform flag; it is a documented configuration-boundary check because Node fetch doubles do not reproduce Cloudflare routing. Existing owner/anonymous/non-owner and upstream contract tests remain. A successful build is insufficient: after required local and PR/main checks, verify the exact deployed compatibility metadata and repeat the real owner browser read. Keep the observed503 as failure evidence; do not assert a specific upstream error code that was not captured. This completes the existing owner-observation acceptance condition without changing its criteria.

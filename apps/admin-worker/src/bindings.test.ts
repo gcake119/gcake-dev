@@ -28,3 +28,14 @@ test('Wrangler local, preview, and production bindings use separate resources', 
   assert.match(config, /\[\[env\.production\.r2_buckets\]\][\s\S]*bucket_name = "gcake-media-production"/);
   assert.match(config, /\[env\.production\.vars\][\s\S]*SUBSTACK_WRITE_ENABLED = "false"/);
 });
+
+// Platform configuration contract: same-zone Worker fetch must reach the public front door.
+// Node fetch doubles do not exercise Cloudflare routing; production owner GET verifies the result.
+test('Admin index observation uses public Worker routing without changing provider write defaults', async () => {
+  const config = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  const root = config.split(/^\[/m)[0];
+  const flags = /^compatibility_flags\s*=\s*(\[[\s\S]*?\])/m.exec(root);
+  assert.ok(flags, 'same-account public Worker observation requires explicit routing compatibility');
+  assert.ok(JSON.parse(flags[1]).includes('global_fetch_strictly_public'));
+  assert.match(config, /\[env\.production\.vars\][\s\S]*SUBSTACK_WRITE_ENABLED = "false"/);
+});

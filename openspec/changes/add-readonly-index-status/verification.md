@@ -53,3 +53,9 @@ query-measure.json：單次本機Node SQLite記憶體查詢，2995 proof rows，
 
 
 修正版本機test與後續check、build:all、release:dry-run、editorial:rehearse均通過，見review-gates及review-gates-resumed；兩個審查thread的修正案例均GREEN。正式D1與狀態端點相同SELECT單次量測rows_read=3022、rows_written=0、D1 duration約16.65ms、原始snapshot約3917bytes，樣本數1，不宣稱官方帳單或節省費用。
+
+## 正式 owner 讀取未通過與平台相容修補
+
+搜尋唯讀入口２００、錯誤及無資格４０４，專用 Keychain 無互動讀取成功；後台程式與三份前端資產讀回吻合，匿名 API 為４０１。但 owner 實測仍回５０３，未將畫面或4.2標為通過。Cloudflare 官方要求同區域 Worker 的 global fetch 使用 global_fetch_strictly_public；正式 Admin 缺少此設定，因此補最小相容旗標，保留日期與所有業務開關、既有 secret 及路由。未捕捉到上游原始錯誤碼，不宣稱已觀察１０４２。既有 bindings 平台設定契約先失敗，再以完整本機與 PR／main CI 驗證，正式 owner 成功仍另驗。
+
+平台旗標修補的既有 bindings／owner proxy 針對性測試與完整 pnpm test、check、build:all、release:dry-run、editorial:rehearse 均通過，Spectra validate／analyze 無問題。這仍是本機與候選證據，待 PR／main CI 及正式 owner 讀取成功才完成4.2。

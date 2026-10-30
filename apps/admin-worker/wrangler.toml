@@ -1,6 +1,7 @@
 name = "gcake-admin-worker"
 main = "src/index.ts"
 compatibility_date = "2026-09-28"
+compatibility_flags = ["global_fetch_strictly_public"]
 
 [assets]
 directory = "../admin/dist"

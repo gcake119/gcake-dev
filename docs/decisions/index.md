@@ -58,3 +58,5 @@
 ２０２６－１０－３０ 已部署立即發布通知修補的來源整合：使用者授權另立相依 PR，只整合與正式版本 c5c0ba17 完全一致的摘要判定、必要型別及既有驗收測試，供唯讀索引監測部署保留現有功能。[整合紀錄](../../openspec/changes/repair-immediate-substack-notifications/integration-20261030.md)保存程式比對與範圍；不新增政策、正式寫入、排程或通知，不重播歷史驗收。沿用既有發布權限與通知契約，無新 ADR。
 
 ２０２６－１０－３０ 公開搜尋接線修補：使用者授權修復自動建置漏傳既有語意端點，獨立 PR／CI 後部署相同文章 ID 與修訂的網站。[規格](../../openspec/changes/fix-editorial-search-endpoint/design.md)沿用 ADR-001 的語意／關鍵字降級、原 Cron、免費上限與期限，不新增政策或 ADR；不發新文章、不寄通知。
+
+２０２６－１０－３０ 唯讀監測正式整合：owner 後台摘要５０３、獨立入口２００，補齊 Cloudflare 同區域 Worker 公開呼叫所需的 global_fetch_strictly_public 平台相容旗標。[實作契約](../../openspec/changes/add-readonly-index-status/design.md)保留固定上游、獨立 token、原 compatibility date、業務開關、資產路由與全部既有 secret；無新權限、服務或 ADR，原失敗保留，正式結果另驗。
