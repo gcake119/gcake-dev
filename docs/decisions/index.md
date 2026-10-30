@@ -60,3 +60,5 @@
 ２０２６－１０－３０ 公開搜尋接線修補：使用者授權修復自動建置漏傳既有語意端點，獨立 PR／CI 後部署相同文章 ID 與修訂的網站。[規格](../../openspec/changes/fix-editorial-search-endpoint/design.md)沿用 ADR-001 的語意／關鍵字降級、原 Cron、免費上限與期限，不新增政策或 ADR；不發新文章、不寄通知。
 
 ２０２６－１０－３０ 唯讀監測正式整合：owner 後台摘要５０３、獨立入口２００，補齊 Cloudflare 同區域 Worker 公開呼叫所需的 global_fetch_strictly_public 平台相容旗標。[實作契約](../../openspec/changes/add-readonly-index-status/design.md)保留固定上游、獨立 token、原 compatibility date、業務開關、資產路由與全部既有 secret；無新權限、服務或 ADR，原失敗保留，正式結果另驗。
+
+２０２６－１０－３０ 必要 CI 修復：main 41016327285 的既有草稿媒體期限驗收失敗，本機第１３次重現。fix-draft-round-timeout-classification 共用既有整輪取消訊號，保留原數值期限、零 provider dispatch 與未知意圖保護；Node２４完整五項 gate 及原失敗案例４０次檢查通過。僅修正取消來源的結果分類，不安裝／啟用正式 Substack runtime，無新政策或 ADR；通過 PR 與 exact main CI 後才接續已授權的後台部署。
