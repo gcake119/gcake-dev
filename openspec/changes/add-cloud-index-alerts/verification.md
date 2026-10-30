@@ -29,3 +29,11 @@ metrics與6份原始畫面在 output/discovery/cloud-index-alerts-20261030/brows
 原搜尋Cron／模型／500額度／零付費超額與容量UTC2026-10-30T17:21:49.667084Z保持，不續期、不再送正式語意查詢。全部正式驗收完成才暫停heartbeat；否則保留並如實記錄尚缺項，不archive本change。
 
 使用者已於本輪明確授權本change提交／PR／檢查後合併部署、通知資料表與Admin排程、既有Hermes bot與同一收件私訊、安全配置Cloudflare及一則啟用驗證訊息；兩輪自然雲端驗收後才暫停heartbeat。受保護憑證仍需系統管理員驗證，尚未讀值或配置。
+
+## PR90 審查修補
+
+遠端審查指出：Telegram finalized failure 已保存，但 pause save 失敗後，下一輪只檢查 sending，可能繼續觀測。以原 SQLite seam 新增三項驗收，真實重現 timeout／rejected／not_configured 在暫停保存失敗後返回 completion_candidate；finalized-delivery-red-r2.log 保留斷言。修正 recover 同時查核已完成但尚未處理的失敗帳本，在任何後續觀測前恢復暫停；不清除事件、不重送，並保留拒絕／未知／未配置的分類。finalized-delivery-green.log 通過。初次沙箱 IPC EPERM 紀錄另存，不能當行為 RED。
+
+這是落實原 Unknown delivery and crash recovery／Rejected or missing delivery configuration 情境，不變更驗收條件或新增工作流程。
+
+修補後完整full-gates-v4通過：test184.02秒、check19.52秒、build:all11.45秒、release:dry-run13.55秒、editorial:rehearse13.52秒，全部exit0；Spectra validate/analyze乾淨。前端來源／設計／依賴未變，重用原六組瀏覽器證據。

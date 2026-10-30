@@ -27,7 +27,13 @@ export class D1AlertStore {
  async acquire(owner:string,now:number):Promise<AlertState|null>{const r=await this.db.prepare("UPDATE index_alert_state SET owner=?,lease_until=? WHERE id=1 AND lease_until<=? AND json_extract(document,'$.paused')=0 RETURNING document").bind(owner,now+60000,now).first<{document:string}>();return r?JSON.parse(r.document):null;}
  async save(owner:string,s:AlertState){const r=await this.db.prepare('UPDATE index_alert_state SET document=? WHERE id=1 AND owner=? RETURNING id').bind(JSON.stringify(s),owner).first();if(!r)throw Error('LEASE_LOST');}
  async release(owner:string){await this.db.prepare('UPDATE index_alert_state SET owner=NULL,lease_until=0 WHERE id=1 AND owner=?').bind(owner).run();}
- async recover(owner:string){return !!await this.db.prepare("UPDATE index_alert_events SET delivery='unknown' WHERE delivery='sending' AND EXISTS(SELECT 1 FROM index_alert_state WHERE id=1 AND owner=?) RETURNING id").bind(owner).first();}
+ async recover(owner:string):Promise<Delivery|null>{
+  await this.db.prepare("UPDATE index_alert_events SET delivery='unknown' WHERE delivery='sending' AND EXISTS(SELECT 1 FROM index_alert_state WHERE id=1 AND owner=?)").bind(owner).run();
+  // A finalized failure is still unresolved if saving the pause failed. Keep it
+  // authoritative across restarts; neither a checkpoint nor dedup clears it.
+  const row=await this.db.prepare("SELECT delivery FROM index_alert_events WHERE delivery IN ('unknown','rejected','not_configured') AND EXISTS(SELECT 1 FROM index_alert_state WHERE id=1 AND owner=?) ORDER BY created_at DESC,id DESC LIMIT 1").bind(owner).first<{delivery:Delivery}>();
+  return row?.delivery??null;
+ }
  async intent(owner:string,e:EventRow){return !!await this.db.prepare('INSERT INTO index_alert_events(id,corpus_id,reason,created_at,delivery) SELECT ?,?,?,?,? WHERE EXISTS(SELECT 1 FROM index_alert_state WHERE id=1 AND owner=?) ON CONFLICT(id) DO NOTHING RETURNING id').bind(e.id,e.corpus_id,e.reason,e.created_at,e.delivery,owner).first();}
  async delivered(owner:string,id:string,delivery:Delivery,at:number|null,message:number|null){const r=await this.db.prepare('UPDATE index_alert_events SET delivery=?,delivered_at=?,message_id=? WHERE id=? AND EXISTS(SELECT 1 FROM index_alert_state WHERE id=1 AND owner=?) RETURNING id').bind(delivery,at,message,id,owner).first();if(!r)throw Error('LEASE_LOST');}
  async events(){return (await this.db.prepare('SELECT id,corpus_id,reason,created_at,delivery,delivered_at,message_id FROM index_alert_events ORDER BY created_at DESC,id DESC LIMIT 20').all<EventRow>()).results;}
@@ -66,7 +72,8 @@ export async function runCloudIndexAlerts(env:AlertEnv,deps:Dependencies={}){
    if(!ready)pause=true;
    current.phase=phase;current.paused=pause;await store.save(owner,current);
   }catch{throw new JournalStop('JOURNAL_UNAVAILABLE');}};
-  if(await store.recover(owner)){current.phase='unknown_delivery';current.paused=true;await store.save(owner,current);return {status:'paused'};}
+  const unresolved=await store.recover(owner);
+  if(unresolved){current.phase=unresolved==='rejected'?'delivery_rejected':unresolved==='not_configured'?'notification_not_configured':'unknown_delivery';current.paused=true;await store.save(owner,current);return {status:'paused'};}
   if(Date.parse(initial.validUntil)<=now()||Date.parse(current.validUntil)<=now()){await alert('evidence_expired',true);return {status:'paused'};}
   if(!telegramReady(env)){await alert('notification_not_configured',true);return {status:'paused'};}
   let source=deps.source??sources.get(fetcher);if(!source){source=createIndexSourceReader(fetcher);sources.set(fetcher,source);}
