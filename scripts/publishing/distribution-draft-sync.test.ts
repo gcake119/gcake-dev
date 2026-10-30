@@ -441,3 +441,27 @@ for(const action of ['draft-find','draft-create'] as const)test('direct executor
   const {executeDraftRequest}=await import('./substack-draft-executor');await assert.rejects(executeDraftRequest(request,{directory:root,executor:executable,timeoutMs:1000},root+'/observation.json'),/SUBSTACK_DRAFT_CREATION_DISABLED/);await assert.rejects(fs.access(root+'/spawned'),{code:'ENOENT'});
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
+
+
+for (const owner of ['round', 'caller'] as const) test('media abort classification retains '+owner+' deadline ownership with an early wall clock', async(t) => {
+ const f=await fixture();await f.core.sync('trial');const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-deadline-owner-'));let running:Promise<unknown>|undefined;
+ try {
+  await fs.mkdir(root+'/src/content/posts',{recursive:true});await fs.writeFile(root+'/src/content/posts/trial.md','---\nstatus: ready\n---\nBody');
+  const config=root+'/policy.json';await fs.writeFile(config,JSON.stringify({draftSync:{...f.policy,maxArticles:1,timeoutMs:100,maxRoundMs:120}}));
+  const round=new AbortController(),caller=new AbortController();const nativeTimeout=AbortSignal.timeout.bind(AbortSignal);let wall=Date.now();const start=wall;
+  t.mock.method(Date,'now',()=>wall);
+  t.mock.method(AbortSignal,'timeout',(milliseconds:number)=>milliseconds<=120?round.signal:milliseconds===30000?caller.signal:nativeTimeout(milliseconds));
+  let providerCalls=0,cancelled=false;const before=await f.repo.bySlug('trial');
+  const fetcher=(async(_input,options)=>new Promise<Response>((_resolve,reject)=>{
+   options?.signal?.addEventListener('abort',()=>{cancelled=true;reject(options.signal!.reason);},{once:true});
+   queueMicrotask(()=>{wall=start+(owner==='round'?119:1);(owner==='round'?round:caller).abort(new DOMException('controlled timeout','TimeoutError'));});
+  })) as typeof fetch;
+  const {runDraftSyncRound}=await import('./substack-draft-round');
+  running=runDraftSyncRound(root,new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},fetcher,
+   readSource:async(_root,_slug,readFetch)=>{await (readFetch??fetcher)('https://source.example/slow.png',{signal:AbortSignal.timeout(30000)});return source();},assertMain:async()=>{},
+   provider:()=>({find:async()=>{providerCalls++;throw Error('unexpected provider');},read:async()=>{providerCalls++;return f.post;},create:async()=>{providerCalls++;return '123';},update:async()=>{providerCalls++;}})});
+  const rows=await running as {code?:string;status:string}[];
+  assert.equal(rows[0].code,owner==='round'?'SUBSTACK_DRAFT_BUDGET_EXHAUSTED':'SUBSTACK_DRAFT_READ_INCONCLUSIVE');
+  assert.notEqual(rows[0].status,'observed');assert.equal(cancelled,true);assert.equal(providerCalls,0);assert.equal((await f.repo.bySlug('trial'))?.intent,before?.intent);
+ } finally {await running;f.db.close();await fs.rm(root,{recursive:true,force:true});}
+});

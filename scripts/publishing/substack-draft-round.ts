@@ -22,10 +22,11 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
  const now=deps.now??(()=>new Date().toISOString());assertDraftPolicy(initial,now());const verifyActivation=deps.verifyActivation??((policy:DraftSyncPolicy)=>validateDraftActivation(policy,deps.runtimePinFile,now()));await verifyActivation(initial);
  if(!Number.isSafeInteger(initial.maxArticles)||initial.maxArticles<1||initial.maxArticles>20||!Number.isSafeInteger(initial.timeoutMs)||initial.timeoutMs<100||initial.timeoutMs>600000)throw Error('SUBSTACK_DRAFT_BUDGET_INVALID');
  const budget=initial.maxRoundMs??60000;if(!Number.isSafeInteger(budget)||budget<initial.timeoutMs||budget>840000)throw Error('SUBSTACK_DRAFT_BUDGET_INVALID');
- const deadline=Date.now()+budget,repo=new ScheduleRepository(db),records=await repo.list();
+ const deadline=Date.now()+budget,roundSignal=AbortSignal.timeout(budget),roundExpired=()=>roundSignal.aborted||Date.now()>=deadline;
+ const repo=new ScheduleRepository(db),records=await repo.list();
  const fetchWithinRound=(async(input,options)=>{
-  const remaining=deadline-Date.now();if(remaining<=0)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
-  return (deps.fetcher??fetch)(input,{...options,signal:AbortSignal.any([AbortSignal.timeout(remaining),...(options?.signal?[options.signal]:[])])});
+  if(roundExpired())throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
+  return (deps.fetcher??fetch)(input,{...options,signal:AbortSignal.any([roundSignal,...(options?.signal?[options.signal]:[])])});
  }) as typeof fetch;
  const files=await listLocalPostFiles(path.join(root,'src/content/posts'));
  const slugs=new Set(records.map(s=>s.slug));
@@ -35,10 +36,10 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
  const ordered=[...slugs].sort((a,b)=>{const time=(slug:string)=>records.find(r=>r.slug===slug)?.draftSync?.checkedAt??'';return time(a).localeCompare(time(b))||a.localeCompare(b);});
  const results:{slug:string;sourceRevision?:string;target:string;operation:string;status:string;code?:string}[]=[];
  for(const slug of ordered.slice(0,initial.maxArticles)){
-  if(Date.now()>=deadline)break;
+  if(roundExpired())break;
   let exchange:FileAttendedExchange<DraftExchangeRequest>|undefined;
   const readSource=async()=>{
-   const remaining=deadline-Date.now();if(remaining<=0)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
+   const remaining=deadline-Date.now();if(roundExpired())throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');
    const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
    const expired=new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>{const error=Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');controller.abort(error);reject(error);},remaining);});
    const fetchSource=(async(input,options)=>{
@@ -46,22 +47,22 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
     return fetchWithinRound(input,{...options,signal:AbortSignal.any([controller.signal,...(options?.signal?[options.signal]:[])])});
    }) as typeof fetch;
    const work=async()=>{
-    const source=await (deps.readSource??buildDraftSource)(root,slug,fetchSource);controller.signal.throwIfAborted();
+    const source=await (deps.readSource??buildDraftSource)(root,slug,fetchSource);controller.signal.throwIfAborted();roundSignal.throwIfAborted();
     if(deps.assertMain)await deps.assertMain(root,source.sourceCommit,controller.signal);
     else {
      const result=await promisify(execFile)('git',['ls-remote','origin','refs/heads/main'],{cwd:root,encoding:'utf8',timeout:Math.max(1,Math.min(30000,deadline-Date.now())),signal:controller.signal,killSignal:'SIGKILL'});
      if(result.stdout.trim().split(/\s+/)[0]!==source.sourceCommit)throw Error('SUBSTACK_SOURCE_CHANGED');
     }
-    controller.signal.throwIfAborted();return source;
+    controller.signal.throwIfAborted();roundSignal.throwIfAborted();return source;
    };
    try{return await Promise.race([work(),expired]);}
-   catch(e){if(controller.signal.aborted||Date.now()>=deadline)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');if(e instanceof Error&&['SUBSTACK_SOURCE_NOT_FINALIZED','SUBSTACK_SOURCE_SERIES_INCOMPLETE'].includes(e.message))return undefined;throw e;}
+   catch(e){if(controller.signal.aborted||roundExpired())throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');if(e instanceof Error&&['SUBSTACK_SOURCE_NOT_FINALIZED','SUBSTACK_SOURCE_SERIES_INCOMPLETE'].includes(e.message))return undefined;throw e;}
    finally{clearTimeout(timer);controller.abort();}
   };
   try{
    if(missingTracked&&!records.some(r=>r.slug===slug))throw Error('SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED');
    const source=await readSource();
-   const authority=async()=>{if(Date.now()>=deadline)throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');const policy=(await config()).draftSync;assertDraftPolicy(policy,now());await verifyActivation(policy!);if(!isDeepStrictEqual(policy,initial))throw Error('SUBSTACK_DRAFT_SCOPE_CHANGED');};
+   const authority=async()=>{if(roundExpired())throw Error('SUBSTACK_DRAFT_BUDGET_EXHAUSTED');const policy=(await config()).draftSync;assertDraftPolicy(policy,now());await verifyActivation(policy!);if(!isDeepStrictEqual(policy,initial))throw Error('SUBSTACK_DRAFT_SCOPE_CHANGED');};
    const provider=source?(deps.provider?.(source)??new ComputerUseDraftPort(source,repo,async r=>{
     await authority();
     exchange??=await FileAttendedExchange.create<DraftExchangeRequest>(path.join(path.dirname(root),'draft-sessions'),root,Math.min(initial.timeoutMs,Math.max(1,deadline-Date.now())),250,async file=>{
@@ -76,8 +77,8 @@ export async function runDraftSyncRound(root:string,db:D1DatabaseLike,configFile
    if(exchange&&!state.intent)await fs.rm(exchange.directory,{recursive:true});
   }catch(e){
    // A nested media/readback error can win the race against the outer deadline timer.
-  // Preserve the round's exhausted-budget verdict once that deadline has elapsed.
-  const code=Date.now()>=deadline?'SUBSTACK_DRAFT_BUDGET_EXHAUSTED':e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
+   // A fired native round signal is expiry evidence even one wall-clock tick early.
+   const code=roundExpired()?'SUBSTACK_DRAFT_BUDGET_EXHAUSTED':e instanceof Error&&/^SUBSTACK_[A-Z_]+$/.test(e.message)?e.message:'SUBSTACK_DRAFT_READ_INCONCLUSIVE';
    const file=files.find(f=>f.slug===slug);
    // Record failed eligibility as metadata only, so one broken new original cannot monopolize every round.
    if(file&&(!missingTracked||code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED')&&!await repo.bySlug(slug))await repo.save({policyVersion:SCHEDULE_POLICY,scheduleId:'substack:'+slug,slug,sourcePath:path.relative(root,file.path),version:0,observedState:'draft_prepared',delivery:'not_armed',...(code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?{lastErrorCode:code}:{}),draftSync:{status:code==='SUBSTACK_SOURCE_RENAME_MAPPING_REQUIRED'?'foreground-required':'inconclusive',code,checkedAt:now(),transport:'computer-use'},updatedAt:now()},0);
