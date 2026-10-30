@@ -48,12 +48,31 @@ async function substackPublications(db: ReleaseDatabase, posts: ReleaseSnapshot[
       const proof = record.publicationEvidence;
       const url = 'https://gcakedev.substack.com/p/' + record.slug;
       if (!post || !['ready','published'].includes(post.status) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug) || !record.remoteId || !/^[0-9]{1,30}$/.test(record.remoteId) || record.remoteUrl !== url || record.expectedPublicUrl && record.expectedPublicUrl !== url) continue;
-      if (!revision(record.armedRevision) || !revision(record.contentDigest) || !revision(record.contentVerifiedRevision) || record.sourceRevision !== record.contentVerifiedRevision || !fresh(record.verifiedAt) || !fresh(record.verification.checkedAt)) continue;
+      if (!revision(record.contentDigest) || !revision(record.contentVerifiedRevision) || record.sourceRevision !== record.contentVerifiedRevision || !fresh(record.verifiedAt) || !fresh(record.verification.checkedAt)) continue;
       const current = 'sha256:' + Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(post.source))), byte => byte.toString(16).padStart(2,'0')).join('');
       if (record.contentVerifiedRevision !== current || !proof || proof.title !== post.title || typeof proof.title !== 'string' || !proof.title.length || proof.title.length > 300 || /[\x00-\x1f\x7f]/.test(proof.title)) continue;
-      if (typeof proof.confirmedAt !== 'string' || typeof proof.actualAt !== 'string' || !Number.isFinite(Date.parse(proof.confirmedAt)) || !Number.isFinite(Date.parse(proof.actualAt)) || Date.parse(proof.actualAt) > now + 5000 || typeof proof.differenceSeconds !== 'number' || !Number.isFinite(proof.differenceSeconds) || Math.abs((Date.parse(proof.actualAt)-Date.parse(proof.confirmedAt))/1000-proof.differenceSeconds)>0.000001) continue;
-      if (!record.slot?.confirmed || record.slot.slug !== record.slug || Date.parse(record.slot.scheduledAt) !== Date.parse(proof.confirmedAt)) continue;
-      publications.push({slug:record.slug,id:record.remoteId,revision:record.armedRevision!,title:proof.title,confirmedAt:proof.confirmedAt,actualAt:proof.actualAt,differenceSeconds:proof.differenceSeconds});
+      if (typeof proof.actualAt !== 'string' || !Number.isFinite(Date.parse(proof.actualAt)) || Date.parse(proof.actualAt) > now + 5000) continue;
+      let notificationRevision: string, confirmedAt: string, differenceSeconds: number;
+      let actualAt = proof.actualAt;
+      if (record.publicationAuthorization !== undefined) {
+        const authorization = record.publicationAuthorization;
+        // Immediate approval is separate authority, never an inferred scheduled slot.
+        if (!authorization || authorization.kind !== 'immediate' || record.everPublished !== true || record.armedRevision !== undefined || record.slot !== undefined || proof.confirmedAt !== undefined || proof.differenceSeconds !== undefined) continue;
+        if (typeof authorization.operationId !== 'string' || !/^[a-zA-Z0-9_-]{1,160}$/.test(authorization.operationId) || !revision(authorization.sourceRevision)) continue;
+        if (typeof authorization.authorizedAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(authorization.authorizedAt) || !Number.isFinite(Date.parse(authorization.authorizedAt)) || Date.parse(authorization.authorizedAt) > Date.parse(proof.actualAt)) continue;
+        notificationRevision = authorization.sourceRevision;
+        // Both runtimes must compute the interval from the same millisecond instants.
+        confirmedAt = new Date(authorization.authorizedAt).toISOString();
+        actualAt = new Date(proof.actualAt).toISOString();
+        differenceSeconds = (Date.parse(actualAt) - Date.parse(confirmedAt)) / 1000;
+      } else {
+        if (!revision(record.armedRevision) || typeof proof.confirmedAt !== 'string' || !Number.isFinite(Date.parse(proof.confirmedAt)) || typeof proof.differenceSeconds !== 'number' || !Number.isFinite(proof.differenceSeconds) || Math.abs((Date.parse(proof.actualAt)-Date.parse(proof.confirmedAt))/1000-proof.differenceSeconds)>0.000001) continue;
+        if (!record.slot?.confirmed || record.slot.slug !== record.slug || Date.parse(record.slot.scheduledAt) !== Date.parse(proof.confirmedAt)) continue;
+        notificationRevision = record.armedRevision!;
+        confirmedAt = proof.confirmedAt;
+        differenceSeconds = proof.differenceSeconds;
+      }
+      publications.push({slug:record.slug,id:record.remoteId,revision:notificationRevision,title:proof.title,confirmedAt,actualAt,differenceSeconds});
     }
     if (new Set(publications.map(p=>p.slug)).size !== publications.length || new Set(publications.map(p=>p.id)).size !== publications.length || await read() !== raw) throw new Error('Changed schedule authority');
     return {complete:true,publications};
