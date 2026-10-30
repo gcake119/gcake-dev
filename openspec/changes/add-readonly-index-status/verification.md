@@ -41,3 +41,15 @@ query-measure.json：單次本機Node SQLite記憶體查詢，2995 proof rows，
 ## 收尾
 
 本次暫時Vite／測試瀏覽器已由同支腳本關閉，六項借用依賴路徑已精準移除；沒有建立Docker。程式、規格與證據保留於本worktree，無commit／push／部署／正式secret／追蹤啟用。Spectra進度11／15：2.5的官方rows_read部分與4.1至4.3保留未完成；本機功能與完整gate已完成，preflight clean。
+
+
+## PR85 審查修正與部署準備
+
+本輪使用者已另授權提交、PR、檢查後合併、部署、監測憑證與正式驗收及恢復追蹤，取代前輪僅本機的執行範圍。c6edf47建立PR85；審查指出兩個P2，已各由實際驗收RED重現：後台不能以未追歷史的gap阻擋最新收據完成候選，及visibility切換不能繞過五分鐘自動讀取限制。修正保留monitor完整歷史檢查，只讓後台依原規格評估最新收據；自動讀取deadline跨隱藏持續保存。review-red.log及review-green.log保留兩項失敗與12項GREEN。
+
+新候選完整test通過；首次check因本次建立的基底比對快照位於output下、被Astro當來源而失敗。已先保存完整來源壓縮、比對輸出與原始失敗，再精準移除本次快照後接續check與其餘gate，未改tsconfig排除或弱化測試。
+
+正式Admin Worker c5c0ba17相對main多出既有即時發布通知修補；只替換publication-monitor-summary.ts的本機比對快照，排除來源路徑註解後與正式bundle完全一致。未直接部署會回退此行為的候選；是否將已部署修補另立相依PR整合，已交使用者決定。其他dirty來源保留。
+
+
+修正版本機test與後續check、build:all、release:dry-run、editorial:rehearse均通過，見review-gates及review-gates-resumed；兩個審查thread的修正案例均GREEN。正式D1與狀態端點相同SELECT單次量測rows_read=3022、rows_written=0、D1 duration約16.65ms、原始snapshot約3917bytes，樣本數1，不宣稱官方帳單或節省費用。

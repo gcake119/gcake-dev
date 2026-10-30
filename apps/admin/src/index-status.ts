@@ -12,12 +12,14 @@ export function createIndexStatusReader(changed:(value:IndexReadState)=>void,opt
  const fetcher=options.fetcher??fetch,now=options.now??Date.now;
  const setTimer=options.setTimer??((fn,ms)=>setTimeout(fn,ms)),clearTimer=options.clearTimer??(id=>clearTimeout(id as ReturnType<typeof setTimeout>));
  let state:IndexReadState={data:null,loading:false,error:null,loginRequired:false,lastReadAt:null,refreshAvailableAt:0};
+ let nextAutomaticAt=0;
  let active=false,disposed=false,generation=0,controller:AbortController|undefined,timer:unknown;
  const publish=(next:IndexReadState)=>{state=next;changed({...state});};
  const cancel=()=>{++generation;controller?.abort();clearTimer(timer);timer=undefined;};
- const schedule=()=>{clearTimer(timer);if(active&&!disposed)timer=setTimer(()=>{void load(false);},300000);};
+ const schedule=()=>{clearTimer(timer);if(active&&!disposed)timer=setTimer(()=>{void load(false);},Math.max(0,nextAutomaticAt-now()));};
  async function load(manual=true){
   if(!active||disposed||state.loading||manual&&now()<state.refreshAvailableAt)return;
+  nextAutomaticAt=now()+300000;
   const sequence=++generation;controller=new AbortController();const bounded=AbortSignal.any([controller.signal,AbortSignal.timeout(27000)]);
   publish({...state,loading:true,refreshAvailableAt:now()+10000});
   const current=()=>active&&!disposed&&generation===sequence;
@@ -32,5 +34,5 @@ export function createIndexStatusReader(changed:(value:IndexReadState)=>void,opt
   }catch{if(current())publish({...state,loading:false,error:state.data?'目前無法更新，以下保留上次記錄進度。':'目前無法讀取搜尋索引，請稍後重新讀取。'});}
   finally{if(current()){if(state.loading)publish({...state,loading:false});schedule();}}
  }
- return {get state(){return state;},load,activate(value:boolean){if(disposed||value===active)return;active=value;if(!value){cancel();publish({...state,loading:false});}else void load(false);},dispose(){disposed=true;active=false;cancel();}};
+ return {get state(){return state;},load,activate(value:boolean){if(disposed||value===active)return;active=value;if(!value){cancel();publish({...state,loading:false});}else if(now()>=nextAutomaticAt)void load(false);else schedule();},dispose(){disposed=true;active=false;cancel();}};
 }

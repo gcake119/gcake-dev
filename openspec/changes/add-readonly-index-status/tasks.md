@@ -10,7 +10,7 @@
 - [x] 2.2 實作 Coherent bounded status and receipts，以固定單一SELECT與安全欄位產生schemaVersion=1摘要、部署版本與1至50筆安全收據；以SQLite fixture integration驗證並行寫入快照、retention／高水位／分頁、原始敏感值不外洩及64KiB上限，並由acceptance驗證400／404／503、no-store、無D1寫入、無UTC window建立與零AI／Vectorize呼叫。
 - [x] 2.3 完成 Same Worker read-only route 接線與平台版本綁定、型別更新；以既有搜尋／自然同步回歸證明路由、原flags與Cron契約未變，監測失敗不阻止既有服務；不新增全域required secret造成未啟用環境部署失敗。
 - [x] 2.4 實作 Monitor evidence and completion candidate 的固定origin客戶端，使用Keychain讀取token且不落log／argv；依public digest取得總數、每頁原子保存checkpoint與0600證據，30秒／10頁／不重試限制；以acceptance與必要分類unit驗證等待、stale、gap、版本改變、來源改變及兩筆60秒no_change只產生候選。
-- [ ] 2.5 將新acceptance接入既有測試入口，記錄一次狀態查詢的query plan、rows_read、response bytes與耗時，核對96次摘要／日及backlog規劃上界；以現有完整gate驗證，不新增CI workflow或額外測試層，不據此聲稱官方費用節省。
+- [x] 2.5 將新acceptance接入既有測試入口，記錄一次狀態查詢的query plan、rows_read、response bytes與耗時，核對96次摘要／日及backlog規劃上界；以現有完整gate驗證，不新增CI workflow或額外測試層，不據此聲稱官方費用節省。
 
 - [x] 2.6 實作 Owner authenticated admin panel 的owner session唯讀代理，固定上游host與伺服器token，驗證schema與當期來源digest總數；以Admin Worker acceptance證明未授權／缺設定零上游、無秘密外洩／無發布與同步寫入、上游失敗及來源異動標unknown。
 - [x] 2.7 依 Graphical progress follows existing admin standards 在發布管理加入具可及標籤的原生進度條、段數與百分比，沿用 docs/design-system.md 字級／間距／按鈕與雙主題；具5分鐘可見刷新、10秒手動間隔、取消競態與帶時間的舊資料提示；以既有Vue狀態測試及瀏覽器量測桌面／390px雙主題4組、320px邊界／200%縮放／鍵盤／讀屏值及實際字級間距控制尺寸、缺驗收不顯示搜尋正常，無新E2E平台。
@@ -30,3 +30,5 @@
 ## 本機查詢量測限制
 
 2.5的測試接線、query plan／bytes／一次耗時與完整本機gate已執行；官方rows_read不由node:sqlite提供，記為null並保留未完成，待後續正式smoke。4.1至4.3均不在本輪授權內；不得為完成任務自行提交、部署或啟用。
+
+本輪追加授權已涵蓋4.1至4.3，依檢查與正式驗收逐項執行；2.5已取得正式D1單次rows_read=3022、rows_written=0，原本機null限制與歷史紀錄保留。

@@ -36,13 +36,13 @@ export function parseIndexSnapshot(v:unknown):IndexSnapshot {
  return {schemaVersion:1,observedAt:v.observedAt,workerVersionId:v.workerVersionId,semanticEnabled:v.semanticEnabled,indexSyncEnabled:v.indexSyncEnabled,targetCorpusId:v.targetCorpusId,activeCorpusId:v.activeCorpusId,namespaceMatchesModel:v.namespaceMatchesModel,reportedCompleted:v.reportedCompleted,storedProofCount:v.storedProofCount,pendingCount:v.pendingCount,pendingStages:v.pendingStages.slice(),leaseActive:v.leaseActive,nextAttemptAt:v.nextAttemptAt,lastProgressAt:v.lastProgressAt,capacityValidUntil:v.capacityValidUntil,billingValidUntil:v.billingValidUntil,status:v.status,recentReceipts:recent,receiptPage:{receipts:rows,firstRetainedReceiptId:p.firstRetainedReceiptId,latestReceiptId:p.latestReceiptId,hasMore:p.hasMore,historyGap:p.historyGap,historyReset:p.historyReset}};
 }
 export interface SourceTotal {corpusId:string;total:number;sourceIdentity:string;}
-export function indexAssessment(s:IndexSnapshot,source:SourceTotal|null,now=Date.now()):string {
+export function indexAssessment(s:IndexSnapshot,source:SourceTotal|null,now=Date.now(),requireCompleteHistory=true):string {
  if(!s.semanticEnabled||!s.indexSyncEnabled)return 'disabled';
  if(!s.billingValidUntil||Date.parse(s.billingValidUntil)<=now)return 'ineligible';
  if(!source)return 'source_unavailable';
  if(source.corpusId!==s.targetCorpusId)return 'source_changed';
  const r=s.recentReceipts;
- const candidate=s.activeCorpusId===source.corpusId&&s.namespaceMatchesModel&&s.reportedCompleted===source.total&&!s.pendingCount&&!s.leaseActive&&['promoted','no_change'].includes(s.status)&&!s.receiptPage.historyGap&&!s.receiptPage.historyReset&&r.length===2&&r.every(x=>x.status==='no_change'&&x.corpusId===source.corpusId)&&r[0].createdAt-r[1].createdAt>=60000;
+ const candidate=s.activeCorpusId===source.corpusId&&s.namespaceMatchesModel&&s.reportedCompleted===source.total&&!s.pendingCount&&!s.leaseActive&&['promoted','no_change'].includes(s.status)&&(!requireCompleteHistory||!s.receiptPage.historyGap&&!s.receiptPage.historyReset)&&r.length===2&&r.every(x=>x.status==='no_change'&&x.corpusId===source.corpusId)&&r[0].createdAt-r[1].createdAt>=60000;
  if(candidate)return 'completion_candidate';
  if(!s.capacityValidUntil||Date.parse(s.capacityValidUntil)<=now)return 'capacity_expired';
  if(s.pendingStages.includes('reserved')&&!s.leaseActive)return 'unknown_inference';
@@ -56,7 +56,7 @@ export function parseAdminIndexStatus(v:unknown):AdminIndexStatus{
  if(!object(v)||v.schemaVersion!==1||v.searchAcceptance!=='unverified')throw Error('INVALID_STATUS');
  const snapshot=parseIndexSnapshot(v.snapshot);let source:SourceTotal|null=null;
  if(v.source!==null){if(!object(v.source)||!corpus(v.source.corpusId)||!v.source.corpusId||!count(v.source.total)||typeof v.source.sourceIdentity!=='string'||v.source.sourceIdentity.length>2048)throw Error('INVALID_STATUS');source={corpusId:v.source.corpusId,total:v.source.total,sourceIdentity:v.source.sourceIdentity};}
- return {schemaVersion:1,snapshot,source,assessment:indexAssessment(snapshot,source,Date.parse(snapshot.observedAt)),searchAcceptance:'unverified'};
+ return {schemaVersion:1,snapshot,source,assessment:indexAssessment(snapshot,source,Date.parse(snapshot.observedAt),false),searchAcceptance:'unverified'};
 }
 export async function boundedText(response:Response,signal:AbortSignal,max=65536):Promise<string>{
  if(!response.ok||response.redirected||!response.body)throw Error('STATUS_UNAVAILABLE');

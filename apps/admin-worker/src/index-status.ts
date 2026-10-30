@@ -10,7 +10,7 @@ export function createAdminIndexReader(token:string|undefined,fetcher:typeof fet
   try{
    const snapshot=parseIndexSnapshot(await boundedJson(await fetcher(INDEX_STATUS_URL,{method:'GET',headers:{Authorization:'Bearer '+token},signal:statusSignal,redirect:'manual',cache:'no-store'}),statusSignal));
    let total:SourceTotal|null=null;try{total=await readSource(all);}catch{/* A failed public-source read cannot create a percentage. */}
-   return Response.json({schemaVersion:1,snapshot,source:total,assessment:indexAssessment(snapshot,total),searchAcceptance:'unverified'},{headers});
+   return Response.json({schemaVersion:1,snapshot,source:total,assessment:indexAssessment(snapshot,total,Date.now(),false),searchAcceptance:'unverified'},{headers});
   }catch{return Response.json({error:{code:'INDEX_STATUS_UNAVAILABLE'}},{status:503,headers});}
  };
 }
