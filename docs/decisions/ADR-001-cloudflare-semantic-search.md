@@ -125,3 +125,10 @@ Pages 重建產生新 corpus，但３３篇／２６３３段修訂不變。自�
 這是既有決策的部署結果回填。使用者已授權必要遷移、部署與恢復，並明確授權搜尋範圍提交／PR／檢查後合併。PR83及main b3e2d50的CI成功後，只套用0005並獨立核對舊資料／扣額不變，再部署相容Worker與限時容量證據，最後恢復原Cron；正式版本540fe715-0270-4560-b538-f5791e6e417b，兩開關true，逐位元程式與驗證bundle一致。每日500／paidOverage0、BGE-M3及原billing期限不變，沒有Pages／Admin／Hermes部署或發文寄送。
 
 原Cron已自然完成首批16段完整讀回並續傳下一批；這仍是舊向量轉換，尚未提升當期2995段集合，讀者維持關鍵字降級。容量有效至台北10/31 01:21:49，不自動延長。CLI格式失敗及獨立對帳、provider等待、完整與人工驗收的界線見[正式恢復紀錄](../../openspec/changes/fix-discovery-corpus-identity/production-resume-20261030.md)；4.2／4.3與原12.2未結案。
+
+
+## 唯讀觀測候選（２０２６－１０－３０，未部署）
+
+使用者要求實作 add-readonly-index-status 並完成本機驗證，明確不提交或部署。在既有搜尋Worker內以獨立、有期限的監測token讀D1安全快照，Admin Worker沿既有owner session代理，後台發布管理以既有字級／間距／雙主題顯示圖形化進度；監測token不進瀏覽器，不授予同步或Cloudflare管理API權限。此讀取不建立每日window、不變更預留、不推論或修改向量，不擴張發布與排程資格。
+
+單一SELECT、有限收據分頁與版本pin作日常觀測；公開來源digest與總數核實後才畫定量進度。完成候選、完整provider audit、正式API／瀏覽器與人工相關性仍分開；不勾選原4.2／4.3或歷史驗收。沒有新服務／資料表／雲端排程／付費方案，原500與paidOverage0、syncCapacity及billing期限不變。狀態資格到期只停止觀察，不延長索引資格。7403仍是舊管理API觀察路徑的未確立問題，不宣稱根因已修復。

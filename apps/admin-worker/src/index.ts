@@ -1,3 +1,4 @@
+import {createAdminIndexReader} from './index-status.js';
 import { readPagesStatus } from './pages-status.js';
 import { D1PublicationRepository, PublicationOperations } from './publication-operations.js';
 import type { D1DatabaseLike } from './media.js';
@@ -16,6 +17,7 @@ import { ReleaseDelivery } from './release-delivery.js';
 export const serviceName = 'gcake-admin-worker' as const;
 
 export interface WorkerEnv extends WorkerBindings {
+  readonly INDEX_STATUS_TOKEN?: string;
   readonly CMS_DB?: SessionDatabase;
   readonly GITHUB_OAUTH_CLIENT_ID?: string;
   readonly GITHUB_OAUTH_CLIENT_SECRET?: string;
@@ -229,6 +231,7 @@ export async function handleRequest(request: Request, env: WorkerEnv, fetcher: t
         },
       },
       sessions: new D1SessionStore(env.CMS_DB),
+      indexStatus: createAdminIndexReader(env.INDEX_STATUS_TOKEN,fetcher),
       drafts: new D1DraftStatusStore(env.CMS_DB),
       // Expose persisted history only. Do not wire legacy operate(), which is not
       // the qualified scheduling/publication runtime.

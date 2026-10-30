@@ -58,3 +58,6 @@ migrations_dir = "migrations"
 [[env.production.r2_buckets]]
 binding = "MEDIA_BUCKET"
 bucket_name = "gcake-media-production"
+
+# Optional INDEX_STATUS_TOKEN is supplied only by explicitly authorized secret provisioning.
+# It grants read-only index observation; no Cloudflare management credential is needed.

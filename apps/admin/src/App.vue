@@ -39,6 +39,7 @@ import { requestSlugSuggestion } from './slug-suggestion';
 
 import ReleaseQueuePanel from './ReleaseQueuePanel.vue';
 import SubstackStatusPanel from './SubstackStatusPanel.vue';
+import IndexStatusPanel from './IndexStatusPanel.vue';
 import { iconPaths } from '../../../src/components/icon-paths';
 import { reviewManualPublication } from './manual-release';
 import type { QueueView } from '@gcake/admin-contract';
@@ -1166,6 +1167,7 @@ onMounted(() => {
             <p v-else class="empty">目前沒有系列。新增系列後即可加入文章。</p>
           </article>
           <SubstackStatusPanel v-if="overviewSection === 'publishing'" :titles="Object.fromEntries(posts.map(post => [post.slug, post.title]))" @select="openPost" />
+          <IndexStatusPanel v-if="overviewSection === 'publishing'" />
           <details v-if="deploymentStatus && overviewSection === 'publishing'" class="workspace-settings">
             <summary>網站更新狀態</summary>
             <p>這是整個網站最近一次更新的狀態，不代表每篇文章都已公開。</p>

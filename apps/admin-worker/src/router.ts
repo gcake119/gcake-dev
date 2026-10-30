@@ -125,6 +125,7 @@ export interface OAuthClient {
 }
 
 export interface Phase1Dependencies {
+  readonly indexStatus?: () => Promise<Response>;
   readonly oauth: OAuthClient;
   readonly sessions: SessionStore;
   readonly allowedGitHubUserIds: ReadonlySet<string>;
@@ -170,6 +171,20 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 export function createPhase1Handler(dependencies: Phase1Dependencies) {
   return async function handlePhase1(request: Request): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/v1/discovery/index-status') {
+      const headers={'Cache-Control':'no-store'};
+      const fail=(status:number,code:string)=>Response.json({error:{code}},{status,headers});
+      let token:string|undefined;try{token=cookieValue(request,'gcake_session');}catch{return fail(401,'UNAUTHENTICATED');}
+      const session=token?await dependencies.sessions.findByRawToken(token):undefined;
+      if(!session||session.expiresAt<=(dependencies.now?.()??Date.now()))return fail(401,'UNAUTHENTICATED');
+      if(!dependencies.allowedGitHubUserIds.has(session.user.githubUserId))return fail(403,'FORBIDDEN');
+      if(request.method!=='GET')return fail(405,'METHOD_NOT_ALLOWED');
+      if(url.search||request.body)return fail(400,'INVALID_REQUEST');
+      if(!dependencies.indexStatus)return fail(503,'INDEX_STATUS_NOT_CONFIGURED');
+      try{const response=await dependencies.indexStatus();response.headers.set('Cache-Control','no-store');return response;}
+      catch{return fail(503,'INDEX_STATUS_UNAVAILABLE');}
+    }
 
     if (url.pathname === '/api/v1/substack/drafts' || url.pathname.startsWith('/api/v1/substack/drafts/')) {
       const headers = {'Cache-Control':'no-store'};

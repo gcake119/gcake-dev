@@ -293,3 +293,20 @@ BGE-M3、免費硬上限、原每日上限、兩個 true 開關、cron 與２０
 首次新身分的轉換只准在證明相容及歸屬後重用數值，完整讀回與最終公開來源／policy檢查後才提升。若容量、pending或provider語意無法確立，維持當期關鍵字，不刪未知向量、不升級、不改activeCorpusId假裝就緒。回復不得部署會復活撤回文章的舊站，也不得補滿已消耗額度。
 
 首次自然新文章驗收必須由既有cron從偵測到全部讀回／提升獨立完成；本機fixture、前景補段、最終自然no_change不能取代這條證據鏈。真實semantic與手機操作占共享額度且須另獲授權，人工相關性回報分開記錄。本輪沒有正式模型呼叫、寫入、排程調整或部署。
+
+
+## 唯讀索引進度（add-readonly-index-status，本機候選，未部署）
+
+後台「發布管理」的搜尋索引區塊以圖形化進度條、段數與百分比顯示已記錄驗證進度。僅已登入且未過期的owner可讀取GET /api/v1/discovery/index-status；Admin Worker用獨立監測資格代理至固定搜尋服務GET /internal/index-status，瀏覽器不接收監測token。不建立UTC額度、不同步、推論、操作向量或發布。首次進入讀一次，可見時每5分鐘刷新、手動至少間隔10秒；離開／隱藏即停止並取消，錯誤保留有時間標記的舊資料，401／403清除。
+
+搜尋端用單一SELECT讀一致快照，提供安全欄位與收據分頁；不呼叫一般搜尋路徑或同步函式。INDEX_STATUS_TOKEN必須為獨立32-byte random base64url（43字元），不能等於INDEX_SYNC_TOKEN；INDEX_STATUS_VALID_UNTIL必須為明確未過期UTC時間。缺設定／不合法／過期時入口404且不讀D1。配置有效期最長30天；它不延長syncCapacity或billing證據。版本以VERSION_METADATA綁定辨識。token不列required secrets，不迫使未啟用環境新增秘密。
+
+本機監測入口為 node --import tsx scripts/discovery/monitor-index.ts。實際執行會從macOS Keychain service gcake-index-status-production、目前登入帳號讀取token；此輪僅測試注入credential，未建立或讀取真實Keychain項目。初次安裝由安全Keychain UI或核准的安全工具處理，不把secret放命令列、shell歷史、Repo或automation prompt；Admin Worker副本由另獲授權的secret配置提供。輪替先準備本機新值、更新遠端、核對新值可讀／舊值拒絕，未知結果先對帳，不重播。不得將寫入token用作備援。
+
+monitor只存安全摘要、增量收據、checkpoint及公開來源資產cache於Git-ignore的output/discovery/index-status-monitor/，檔案0600；每輪30秒，單狀態請求5秒，至多一頁加10頁backlog，不自動重試、login或切管理API。checkpoint只在頁面驗證與證據落盤後原子更新。舊監測的安全checkpoint須經核對來源與新runtime pin後才接續，不能因7403把cursor歸零；無checkpoint的首次retention觀察明列initial_baseline，不宣稱缺失歷史完整。版本變動、gap/reset或不可讀時保留失敗，不自動修復。來源cache每次重讀三資產hash再重用，公開manifest仍前後核對。
+
+進度條只用當期hash核對的公開總數；未知總數、0/0、負值／超量或換版不虛構百分比。接近滿條向下保留一位小數；滿條仍與pending／自然no_change／獨立provider audit及語意搜尋驗收分開。後台目前沒有正式驗收收據的持久化來源，因此顯示「尚無本輪驗收結果」，不因對話測試而自行亮綠燈。
+
+正式接線須另授權Git／secret／部署，分別核對搜尋Worker、Admin Worker（實際設定為apps/admin-worker/wrangler.toml）與Admin前端產物。保留原flags／Cron／bindings／其他secret與0005狀態；無migration，不清pending。只有正式讀回與無人Keychain讀取核實後才更新既有追蹤automation，本輪未恢復automation-3。
+
+管理API的7403根因尚未修復，本方案只移除日常監測對它的依賴；完成候選後的獨立向量audit仍可能受既有存取權限影響。備援是Cloudflare後台D1 Console的唯讀SELECT，不使用手動同步入口。回復先移除監測資格／停監測；不關閉原Cron、不部署與stable namespace不相容的舊Worker。真實rows_read、provider audit、正式搜尋API／瀏覽器與真人相關性仍分別待授權／驗證。
