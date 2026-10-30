@@ -22,7 +22,7 @@
 
 ## 4. 另獲正式操作授權後的整合與啟用
 
-- [ ] 4.1 取得本變更Git操作授權後，僅提交必要來源／規格，PR必要檢查通過後按授權合併並核對exact main CI；用PR diff、head／base、checks與main證據驗證，原其他dirty保留。
+- [x] 4.1 取得本變更Git操作授權後，僅提交必要來源／規格，PR必要檢查通過後按授權合併並核對exact main CI；用PR diff、head／base、checks與main證據驗證，原其他dirty保留。
 - [ ] 4.2 取得secret／正式部署授權後，證明Keychain可在無人輪次讀取、30日內token到期與原origin／runtime pin正確；安全配置搜尋Worker與Admin Worker新secret，按Migration Plan分別部署搜尋Worker、Admin Worker與Admin前端並核對三者產物，讀回程式、flags／Cron／bindings及舊secret保留；實際GET確認安全摘要、舊token拒絕、provider資料無監測寫入及無推論，結果未知先對帳不重送。
 - [ ] 4.3 取得既有追蹤啟用授權後，將既有automation改接新client，每15分鐘安靜追蹤；以兩個自然監測輪次與一次受控錯誤憑證測試確認進度、checkpoint、告警去重及失敗不改雲端。全量候選後依原授權做獨立provider audit與最多6次搜尋／瀏覽器驗證，無管理權限時明示audit blocked；若未到候選則保留待驗收，不自勾人工相關性或新文章自然驗收。
 
