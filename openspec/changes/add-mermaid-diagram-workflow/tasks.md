@@ -7,3 +7,6 @@
 - [x] 2.1 Document the technical-diagram workflow and AGENTS reference without changing CMS media ownership; review against media-library specification.
 - [x] 2.2 Regenerate architecture candidate and review Chinese, groups, arrows, desktop/mobile and both themes; record layout differences and replacement decision without article prose changes.
 - [x] 2.3 Prepare the reviewed scoped commit and PR handoff with local gate evidence; verify Spectra validate/analyze and the staged source boundary. PR CI success remains a delivery condition recorded in the PR, without merging or publishing.
+
+## 3. Main CI follow-up
+- [x] 3.1 Correct the Post-executor media fixture so the existing media cancellation scenario reaches its intended stage without native startup overhead; verify slow-startup RED/GREEN, complete distribution and all local gates before PR. Exact main CI success remains a delivery condition recorded in the PR.
