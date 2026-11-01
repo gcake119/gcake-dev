@@ -324,12 +324,14 @@ test('rename holds rotate fairly to the missing original without allowing replac
 for(const stalledHandler of [false,true])test('executor ignoring SIGTERM is bounded and its owned process group is stopped; stalled handler '+stalledHandler,async(t)=>{
  const path=await import('node:path'),os=await import('node:os');const root=await fs.mkdtemp(path.join(os.tmpdir(),'draft-executor-timeout-'));let pid:number|undefined;let execution:Promise<unknown>|undefined;
  try{
-  // Exercise process-group signals without making interpreter startup part of the fixture.
-  // Keep both a returning handler and one that never finishes inside the grace period.
-  // All operations are shell builtins; TERM is recorded but deliberately does not exit.
+  // Prepare an idle wait before the deadline, rather than burning a CPU core.
+  // Runtime uses only shell builtins; both TERM handlers remain alive until KILL.
+  // A read inside the stalled handler deliberately never returns during the grace period.
+  const {execFileSync}=await import('node:child_process');execFileSync('mkfifo',['-m','600',root+'/idle']);
+  const idle='while :; do read -r line <&3; done';
   const executable=root+'/ignore-term.sh';await fs.writeFile(executable,[
-   '#!/bin/sh','fixture_dir=${0%/*}',`trap 'printf yes > "$fixture_dir/term-seen"; ${stalledHandler?"while :; do :; done":":"}' TERM`,
-   `printf '%s' "$$" > "$fixture_dir/pid"`,'while :; do :; done','',
+   '#!/bin/sh','fixture_dir=${0%/*}','exec 3<>"$fixture_dir/idle"',`trap 'printf yes > "$fixture_dir/term-seen"; ${stalledHandler?idle:":"}' TERM`,
+   `printf '%s' "$$" > "$fixture_dir/pid"`,idle,'',
   ].join('\n'),{mode:0o700});
   const {executeComputerUse}=await import('./substack-draft-qualification');
   execution=executeComputerUse('fixture only',{executor:executable,directory:root,timeoutMs:1500}).then(()=> 'resolved',e=>e.message);

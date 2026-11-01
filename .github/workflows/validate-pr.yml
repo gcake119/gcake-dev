@@ -14,6 +14,8 @@ concurrency:
 env:
   EDITORIAL_RELEASE_ENABLED: 'false'
   HERMES_RSS_NOTIFY_ENABLED: 'false'
+  # Diagram checks use hashes; no extra browser download or conversion in CI.
+  PUPPETEER_SKIP_DOWNLOAD: 'true'
   LANG: C.UTF-8
   LC_ALL: C.UTF-8
 

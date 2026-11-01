@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "diagrams": {
+    "docs/diagrams/blog-system-architecture.mmd": {
+      "source": "a97743e8f3169315fc119184834bdd56e5500d49cb03b5ca7552ecd788fdfb10",
+      "svg": "1cd1e77facdb4fdd79ccb4b9b32eb1fa1a231b47bd89695592a623699290f7e9",
+      "inputs": "60c75c5c775037e038bf4d5ab7ab32e3080b036e2cafe1109dc5e2c989b693da"
+    }
+  }
+}

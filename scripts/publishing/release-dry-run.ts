@@ -13,7 +13,7 @@ import { ReleaseDelivery } from '../../apps/admin-worker/src/release-delivery';
 const root = resolve('.');
 const dir = await mkdtemp(join(tmpdir(), 'gcake-release-simulation-'));
 try {
-for (const path of ['src', 'scripts', 'packages', 'astro.config.mjs', 'tsconfig.json', 'package.json'])
+for (const path of ['src', 'scripts', 'packages', 'public', 'docs/diagrams', 'pnpm-lock.yaml', 'astro.config.mjs', 'tsconfig.json', 'package.json'])
   await cp(join(root, path), join(dir, path), {
     recursive: true,
     filter: (p) => !relative(root, p).split(sep).some(segment => ['node_modules', 'dist', '__pycache__'].includes(segment)),
