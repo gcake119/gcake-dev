@@ -382,7 +382,14 @@ test('round deadline cancels post-executor media verification and retains the un
   const {runDraftSyncRound}=await import('./substack-draft-round');
   running=runDraftSyncRound(root+'/source',new SqliteD1Database(f.db),config,{now:()=>now,verifyActivation:async()=>{},assertMain:async()=>{},readSource:async()=>desired,fetcher,execute:async(file,q,evidence)=>{
    const r=JSON.parse(await fs.readFile(file,'utf8')).request;actions.push(r.action);let before;await fixtureLists(q.directory);
-   if(r.action==='draft-update'){before=structuredClone(f.post);await fixtureBeforeVerdict(file,q.directory,before);f.post.content=expectedContent(desired);f.post.images=[{src:image,alt:'required alt',loaded:true}];}
+   if(r.action==='draft-update'){
+    before=structuredClone(f.post);
+    // This case measures post-executor media cancellation, not native Node startup.
+    // Execute the real generated verifier; the parent still owns the before verdict.
+    await fs.writeFile(q.directory+'/before.json',JSON.stringify({sessionExclusive:true,reloaded:true,observation:before}));
+    const {pathToFileURL}=await import('node:url');await import(pathToFileURL(q.directory+'/verify-before.mts').href);
+    f.post.content=expectedContent(desired);f.post.images=[{src:image,alt:'required alt',loaded:true}];
+   }
    await fs.writeFile(evidence,JSON.stringify({sessionExclusive:true,reloaded:true,observation:f.post,...(before?{before,writeEvidence:{fullBodyPasted:true,savedBeforeReload:true,navigatedAway:true,reloaded:true}}:{})}));
    await fs.writeFile(q.directory+'/executor-events.jsonl',JSON.stringify({type:'item.completed',item:{type:'mcp_tool_call',result:{_meta:{'codex/toolSurface':{browserFamily:'chrome'}}}}})+'\n');
   }});

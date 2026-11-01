@@ -57,3 +57,14 @@ PR ＃９２首版 81f105b 的第一次 CI 在既有部署條件 VM 的１００
 因此僅將既有 signal fixture 改成 FIFO＋shell builtin read：mkfifo 在期限開始前準備，兩種 handler 仍等待 KILL；全部執行／grace／外層期限與 TERM、timeout、process-group 回收斷言保持原值。原 finally 清除本次 FIFO 與臨時目錄。沒有新增套件、測試層、job、重試機制或調寬限制。已知 CPU 競爭來源被移除；此前 Node２２ pid 缺失與 VM１００ms的完整根因仍未確立。
 
 修補候選在 Node２４．２２．１再次連續通過完整 pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse，全部 exit０；原有兩個 signal 斷言案例與 distribution３６４項皆通過。原始 CPU 樣本見 [fixture-cpu.json](evidence/fixture-cpu.json)。尚待新提交的 PR CI；不預先宣稱遠端通過。
+
+
+## PR92 合併後 main CI 修補
+
+PR92 review 未發現圖表流程阻擋問題，合併為 7576a04；其 [main CI](https://github.com/gcake119/gcake-dev/actions/runs/41281935303) 在既有 post-executor media cancellation 案例 mediaReads=0（預期1）失敗。相同內容樹的 PR CI 已通過，main 的這次失敗仍獨立保留，不能用 PR 證據冒充 main 通過。
+
+本機 Node24 以只作用於 verify-before.mts 子程序的3100ms啟動延遲 preload 重現相同0≠1，原測試約3752ms失敗。此案例的意圖是更新完成後媒體讀取受3000ms整輪期限取消；原 fixture 卻額外啟動 Node＋tsx，可能在尚未到媒體階段時耗盡預算。僅此案例改為 import 真實生成的 verify-before.mts，保留完整 ready／parent verdict 協定；其餘 subprocess、fragmented ready 與來源撤銷測試維持原路徑。沒有自行產生成功 verdict、略過父程序核對或改正式程式。
+
+相同診斷條件下 GREEN，保留2500／3000／4500／6000ms原值、mediaReads=1、cancelled=true、原remote ID／unknown intent／revision及全部action順序斷言。完整distribution364項通過。後續分支 codex/fix-media-deadline-fixture 走獨立 PR；不直接寫main，不觸發部署、公開發布或通知。
+
+修補候選 Node２４．２２．１的完整 pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse 全部 exit０。Astro檢查０錯誤、０警告、１既有hint；dry-run／rehearsal皆 productionWrites=false、telegramNetworkCalls=0。沿用既有決策與權限邊界，無新ADR。PR與main CI另行確認，不以本機證據替代。
