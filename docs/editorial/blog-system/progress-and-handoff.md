@@ -1,18 +1,18 @@
 # 《我的技術部落格，是怎麼慢慢變成一套系統的？》連載進度與銜接紀錄
 
-> 狀態：2026-10-29 更新至第 04 篇定稿。
+> 狀態：2026-11-01 更新至第 07 篇定稿。
 > 本文件保存跨篇寫作脈絡。篇目企劃見 [series-plan.md](series-plan.md)；可重用格式見 [通用模板](../_templates/progress-and-handoff.md)。
 > 定稿、發布資格與實際公開分開記錄，不以交接文件代替正文、manifest 或公開證據。
 
 ## 目前總覽
 
 - 規劃：四章、12 篇；原第二章三篇取消，後續章節與篇序順延。
-- 已討論並正式定稿：4 篇。
+- 已討論並正式定稿：7 篇。
 - 第 01 篇正式標題：〈以「系列連載」為核心的發表形式〉。
 - 正文：`src/content/posts/blog-system/blog-system-serial-publication.md`。
 - Series manifest：`src/content/series/blog-system.yaml`。
-- 發布狀態：第 01 篇正文與 manifest 均為 draft，第 02 篇正文與 manifest 亦為 draft，第 03、04 篇亦為 draft，其餘 8 篇 planned。定稿沒有自動轉 ready、沒有設定發布日期或啟用排程。
-- 下一篇：第 05 篇〈文章、圖片和發布紀錄，為什麼要分開保存？〉（候選標題）。
+- 發布狀態：第 01～07 篇正文與 manifest 均為 draft，其餘 5 篇 planned。定稿沒有自動轉 ready、沒有設定發布日期或啟用排程；本系列也沒有開始連載授權。
+- 下一篇：第 08 篇〈沒有發文 API，怎麼把文章同步到 Substack？〉（候選標題）。
 - 正式公開：本次只存稿與交接，沒有提供本系列的公開驗收證據。
 - 本次基底：`60bc5ebe65ffc678a145bc2464dc213610c77430`。
 - 提交分支：`editorial/blog-system-01-final-20261026`。
@@ -182,3 +182,19 @@
 ## 第 07 篇啟動
 
 讀最新系列企劃、本交接、第 06 篇定稿，以及發布排程、D1 佇列、GitHub Pages 與相關 Git／OpenSpec／驗收資料；先整理由固定發文需求形成發布佇列的真實問題和取捨。不重複第 06 篇的編輯資料安全，也不提前深入第 08 篇 Substack 或第 09 篇端到端發布驗證。先討論，不直接寫稿。
+
+## 第 07 篇｜把自己的發文規則，變成可以自動執行的流程
+
+- **狀態**：作者於 2026-11-01 完成多輪審稿與定稿前審稿，明確確認定稿並要求上傳 Repo；正文與 manifest 維持 draft，不設定發布日期，不開啟系列連載授權。
+- **正文**：`src/content/posts/blog-system/blog-system-release-queue.md`；沿用既有 planned slug。
+- **核心問題／論點**：獨立文章與系列連載共用發文時段、允許手動提前發布時，如何依既定規則選擇下一篇？排程決定何時檢查，發布佇列管理資格、排序與執行進度；Git 保存文章、系列安排與發布設定，D1 保存執行狀態。
+- **作者確認的需求**：全系列定稿後仍須作者另外下達「確認開始連載」才允許公開；週一／四臺灣時間 07:00 起每次最多一篇；獨立文章優先、系列依序；手動提前發布後下一個時段接續下一篇；沒有候選文章則不發布。原始發文規則由作者提出。
+- **真正發生的修正**：對照 Repo 發現舊發布資格會在全系列 ready 後自動成立，缺少獨立啟動授權。依本篇討論補上 `releaseAuthorized` 檢查（手動與自動皆受限制），既有已經 verified-public 的連載保留進度；PR [#96](https://github.com/gcake119/gcake-dev/pull/96) 在多輪測試修正後成功通過完整 CI 並合併，merge commit `72dfc365802f1a10da39e60d5aa7eb672efae11d`。
+- **實作與驗證證據**：`apps/admin-worker/src/release-queue.ts`、`github.ts`、`release-queue.test.ts`、`release-delivery.test.ts`、`scripts/publishing/release-dry-run.ts`、`docs/publishing-cms-release-queue-spec.md`；最終 PR CI 驗證包含 tests、check、build、隔離發布及通知演練。未宣稱新版授權經正式環境人工操作驗收。
+- **寫作取捨**：小白友善、提前說明核心問題、區分排程與佇列；以一個提前手動發布例子說明決策流程；Git／D1 分工濃縮成一段。不把假設例子寫成真實事故，也不把提交視為發布。
+- **前後篇界線**：第 06 篇談編輯資料安全；本篇談發文規則與佇列選文；第 08 篇聚焦 Substack 的 Computer Use 整合，並確認 Paragraph／Arweave 及外部平台現況；第 09 篇再談 Pages／RSS／Substack／Hermes 的公開證據、錯誤與恢復。
+- **篇目與進度**：正式標題取代候選；四章 12 篇與 slug 不變；currentPost 指向第 07 篇、nextPost 指向第 08 篇。尚未授權本系列開始發布。
+
+## 第 08 篇啟動
+
+先讀本系列最新企劃、交接與第 07 篇定稿；查 Substack／Paragraph 相關正式規格、操作手冊、Git/OpenSpec、Computer Use 操作及外部平台驗收證據。優先確認當時為何改用 Substack、哪些功能無 API、如何安排草稿與公開，以及來源連結與 canonical 的實際支援界線。不可把官方文件失連寫成 Paragraph 已停止服務，也不可把已建立草稿當成已發表。先討論核心與真實素材，不直接寫稿。
