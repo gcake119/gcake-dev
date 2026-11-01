@@ -17,7 +17,7 @@ const adminDeployWorkflow = await readFile(
 );
 
 test('Phase 0 exposes independent workspace build and test entry points', async () => {
-  assert.equal(rootPackage.scripts['build:astro'], 'pnpm content:validate && astro build');
+  assert.equal(rootPackage.scripts['build:astro'], 'pnpm content:validate && astro build && pnpm diagrams:check:built');
   assert.equal(rootPackage.scripts['build:admin'], 'pnpm --filter @gcake/admin build');
   assert.equal(rootPackage.scripts['build:worker'], 'pnpm --filter @gcake/admin-worker build');
   assert.equal(rootPackage.scripts['build:workspaces'], 'pnpm --filter "./apps/**" --filter "./packages/**" build');

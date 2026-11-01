@@ -7,21 +7,21 @@
   "scripts": {
     "test:subscriptions": "pnpm build && node --import tsx --test test/subscription.test.ts",
     "dev": "astro dev",
-    "build": "pnpm content:validate && astro build",
-    "build:astro": "pnpm content:validate && astro build",
+    "build": "pnpm content:validate && astro build && pnpm diagrams:check:built",
+    "build:astro": "pnpm content:validate && astro build && pnpm diagrams:check:built",
     "build:admin": "pnpm --filter @gcake/admin build",
     "build:worker": "pnpm --filter @gcake/admin-worker build",
     "build:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" build",
     "build:all": "pnpm build:astro && pnpm build:workspaces",
     "preview": "astro preview",
     "check": "astro check",
-    "content:validate": "node --import tsx scripts/content/validate-series.ts",
+    "content:validate": "node --import tsx scripts/content/validate-series.ts && pnpm diagrams:check",
     "content:sync:ithome": "node --import tsx scripts/external/sync-ithome-2026.ts",
     "preview:spike": "node --import tsx scripts/preview/feasibility-spike.ts",
     "slug:dev": "pnpm --filter @gcake/slug-generator dev",
     "test:public": "node --import tsx --test src/lib/content/series-membership.test.ts src/data/external/ithome-2026-topics.test.ts src/lib/content/publication.test.ts src/lib/content/local-posts.test.ts src/lib/seo/structured-data.test.ts src/lib/publishing/publication-transform.test.ts src/lib/publishing/adapters.test.ts scripts/publishing/release-orchestrate.test.ts scripts/external/ithome-sync.test.ts src/lib/publishing/release-eligibility.test.ts scripts/publishing/prepare-distribution.test.ts test/pages-scheduled-deployment.test.ts scripts/external/completed-restoration.test.ts test/discovery/corpus.acceptance.test.ts test/discovery/assets.acceptance.test.ts test/discovery/local-preview.acceptance.test.ts test/discovery/recovery.acceptance.test.ts test/article-sharing.acceptance.test.ts test/article-ending.acceptance.test.ts",
     "test:workspaces": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
-    "test": "pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution && pnpm test:observability",
+    "test": "pnpm test:diagrams && pnpm test:editorial && pnpm test:hermes && pnpm test:public && node --import tsx --test scripts/workspace/foundation.test.ts scripts/workspace/public-visibility.test.ts && pnpm test:workspaces && pnpm test:distribution && pnpm test:observability",
     "test:hermes": "python3 -m unittest discover -s scripts/hermes -p \"test_*.py\"",
     "release:dry-run": "node --import tsx scripts/publishing/release-dry-run.ts",
     "distribution:run": "node --import tsx scripts/publishing/run-distribution.ts",
@@ -41,7 +41,12 @@
     "distribution:native-preflight": "node --import tsx scripts/publishing/native-chrome-preflight.ts",
     "distribution:launchd": "node --import tsx scripts/publishing/distribution-launchd.ts",
     "discovery:inspect": "node --import tsx scripts/discovery/inspect.ts",
-    "discovery:browser": "node test/discovery/browser.mjs"
+    "discovery:browser": "node test/discovery/browser.mjs",
+    "diagrams:render": "node scripts/diagrams/workflow.mjs render",
+    "diagrams:render:all": "node scripts/diagrams/workflow.mjs render",
+    "diagrams:check": "node scripts/diagrams/workflow.mjs check",
+    "diagrams:check:built": "node scripts/diagrams/workflow.mjs check-built",
+    "test:diagrams": "node --test scripts/diagrams/workflow.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
@@ -56,10 +61,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@mermaid-js/mermaid-cli": "12.0.0",
     "@types/node": "^24.5.2",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
     "linkedom": "0.18.12",
-    "playwright": "1.58.2"
+    "playwright": "1.58.2",
+    "puppeteer": "25.16.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
   }
 }

@@ -64,3 +64,5 @@
 ２０２６－１０－３０ 必要 CI 修復：main 41016327285 的既有草稿媒體期限驗收失敗，本機第１３次重現。fix-draft-round-timeout-classification 共用既有整輪取消訊號，保留原數值期限、零 provider dispatch 與未知意圖保護；Node２４完整五項 gate 及原失敗案例４０次檢查通過。僅修正取消來源的結果分類，不安裝／啟用正式 Substack runtime，無新政策或 ADR；通過 PR 與 exact main CI 後才接續已授權的後台部署。
 
 ２０２６－１０－３０ `add-cloud-index-alerts`：使用者採用「雲端檢查＋Telegram告警＋後台通知紀錄」。本機候選沿用既有 Admin Worker、CMS 專用lease／checkpoint與寄送intent帳本，不增加Worker、queue或CI工作流程。新排程／secret配置及additive0008須按具體候選核對正式授權，原搜尋Cron／500限額／零付費超額與期限不變；通知未知不重送。現有heartbeat在正式送達與兩個自然雲端輪次驗收前保留。這是通知部署邊界與唯讀觀測延伸，沿用ADR-001，不新增搜尋政策；契約與回復見該change及docs/index-alerts-runbook.md。
+
+２０２６－１１－０１ 技術圖表採 `.mmd` 正式來源與提交 Git 的 SVG／manifest 產物，來源置於 docs/diagrams，輸出置於 public/diagrams；[操作文件](../mermaid-diagrams.md)與 [Spectra 契約](../../openspec/changes/add-mermaid-diagram-workflow/design.md)保存固定本機 CLI、轉換失敗保留舊圖及無瀏覽器 CI 驗證。此規則僅限技術圖表，不替代 CMS／R2 媒體庫，不加入常駐服務，不改文章正文、發布狀態或部署權限。只補本索引，不新增 ADR；本機、PR CI 與人工接受分別記錄。

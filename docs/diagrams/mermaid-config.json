@@ -1,0 +1,14 @@
+{
+  "theme": "neutral",
+  "securityLevel": "strict",
+  "fontFamily": "PingFang TC, Microsoft JhengHei, Noto Sans CJK TC, sans-serif",
+  "deterministicIds": true,
+  "deterministicIDSeed": "gcake-diagram",
+  "flowchart": {
+    "htmlLabels": false,
+    "curve": "linear",
+    "wrappingWidth": 180,
+    "nodeSpacing": 30,
+    "rankSpacing": 50
+  }
+}

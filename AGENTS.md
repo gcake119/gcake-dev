@@ -86,3 +86,9 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - **寫作定稿 ≠ ready／published ≠ 正式公開**。不要因「定稿」自動設成 `published`、擅自承諾發布時段、觸發 GitHub Pages／Substack／電子報／Hermes 或更動 D1 發布狀態。
 - 任何可能觸發發布的狀態／日期或 manifest 變更，先依現有發布規格確認具體副作用與授權；未授權則維持安全狀態，明確告知所需後續步驟。
 - 此節不覆蓋既有 Substack／Chrome、GitHub 保護、身份權限、正式發布與外部寫入規則。
+
+## 技術圖表（Mermaid）
+
+- 遵循 [技術圖表工作流程](docs/mermaid-diagrams.md)：正式來源放 `docs/diagrams/*.mmd`，對應 SVG 放 `public/diagrams/`；文章使用有意義 alt 的 SVG 圖片連結，不直接使用 Mermaid fence。
+- 修改來源後自動執行 `pnpm diagrams:render <來源路徑>`，一併更新 manifest，再執行 `pnpm diagrams:check`；設定、工具或 lockfile 改變時用 `pnpm diagrams:render:all`。不要手改 SVG 或 manifest 來繞過驗證。
+- 圖表變更須檢視中文、資料流、桌面／手機與明暗主題；不變更定稿正文。此流程僅限技術圖表，CMS／R2 媒體庫仍依既有規則管理。
