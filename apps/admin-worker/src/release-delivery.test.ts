@@ -8,7 +8,7 @@ import YAML from 'yaml';
 import { createHash } from 'node:crypto';
 import { RepositoryConflictError } from './git-writes.js';
 const source = '---\ntitle: 測試文章\nstatus: ready\n---\n\n正文不可改\n';
-const manifest = 'slug: s\npublication:\n  authorized: true\nsections:\n  - posts:\n      - slug: one\n        status: ready\n';
+const manifest = 'slug: s\nreleaseAuthorized: true\nsections:\n  - posts:\n      - slug: one\n        status: ready\n';
 const snapshot = (): ReleaseSnapshot => ({
   revision: 'sha1',
   posts: [
