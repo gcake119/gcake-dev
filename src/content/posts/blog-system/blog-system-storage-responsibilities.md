@@ -55,55 +55,7 @@ D1 用來保存登入資訊、後台操作狀態，以及文章發布過程的�
 
 把這些服務放在一起看，可以依照文章從編輯到被讀者找到的過程，理解整套系統如何運作。
 
-```mermaid
-flowchart TB
-    Author["作者"] --> AI["ChatGPT／Codex"]
-    Author --> Admin["編輯後台（Vue）"]
-
-    subgraph GitHub["GitHub｜內容與程式碼"]
-        Repo["Git Repository：文章、系列設定、程式碼"]
-        Actions["GitHub Actions：建置與發布"]
-        Repo --> Actions
-    end
-
-    AI -->|"修改與提交"| Repo
-
-    subgraph Cloudflare["Cloudflare｜後台與資料服務"]
-        Pages["Cloudflare Pages：後台介面"]
-        Worker["Cloudflare Workers：後台 API"]
-        R2[("R2：圖片檔案")]
-        D1[("D1：操作與發布紀錄")]
-        Search["搜尋 Worker"]
-        AIModel["Workers AI：BGE-M3"]
-        Vectorize[("Vectorize：語意搜尋索引")]
-
-        Pages --> Worker
-        Worker --> R2
-        Worker --> D1
-        Search --> AIModel
-        AIModel <--> Vectorize
-    end
-
-    Admin -.->|"操作部署後的介面"| Pages
-    Worker <-->|"讀取／提交文章"| Repo
-
-    subgraph Publishing["發布與閱讀"]
-        Astro["Astro：產生靜態網站"]
-        Website["GitHub Pages：公開文章網站"]
-        Substack["Substack：外部發布平台"]
-    end
-
-    Actions --> Astro
-    Astro --> Website
-    Actions -->|"外部發布流程"| Substack
-    Actions -.->|"發布狀態"| D1
-
-    Website -.->|"載入圖片"| R2
-    Website -->|"文章搜尋"| Search
-    Website -.->|"公開文章建立索引"| Search
-
-    Reader["讀者"] --> Website
-```
+![技術部落格系統架構圖：GitHub 保存文章與程式碼，Cloudflare 提供後台、圖片、操作資料與語意搜尋；GitHub Pages 提供公開網站，並有 Substack 外部發布流程。](/gcake-dev/diagrams/blog-system-architecture.svg)
 
 *圖中實線表示主要操作或資料傳遞關係，虛線表示輔助關係；為方便閱讀，省略發布排程、外部平台驗證及搜尋索引更新的內部細節。*
 
