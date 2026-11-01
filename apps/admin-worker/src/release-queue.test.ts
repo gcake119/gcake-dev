@@ -523,6 +523,27 @@ test('verified Monday manual publication occupies its date without claiming 07:0
   const stored=await s.store.read();assert.equal(stored.data.startedAt,'2026-10-12T03:00:00Z');assert.equal(stored.data.releases[0].slot,'2026-10-12T11:00:00+08:00');
 });
 
+test('Tuesday early manual chapter advances to Thursday next chapter without skipping slot', async () => {
+  const s=setup();
+  const snap=snapshot();
+  s.time('2026-10-12T03:00:00Z');
+  const firstPreview=await s.queue.previewManual(snap,'p0');
+  const first=await s.queue.acquireManual(snap,'p0',firstPreview.version,firstPreview.revision,'owner',true);
+  await s.queue.record(first.record.id,first.record.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[0].status='published';snap.posts[0].publishedAt=first.record.slot;
+  snap.series[0].sections[0].posts[0].status='published';snap.revision='head-2';
+  s.time('2026-10-13T03:00:00Z');
+  const secondPreview=await s.queue.previewManual(snap,'p1');
+  const second=await s.queue.acquireManual(snap,'p1',secondPreview.version,secondPreview.revision,'owner',true);
+  await s.queue.record(second.record.id,second.record.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[1].status='published';snap.posts[1].publishedAt=second.record.slot;
+  snap.series[0].sections[0].posts[1].status='published';snap.revision='head-3';
+  assert.equal((await s.queue.view(snap)).plan[0].slug,'p2');
+  assert.equal((await s.queue.view(snap)).plan[0].releaseAt,'2026-10-15T07:00:00+08:00');
+  s.time('2026-10-14T23:05:00Z');
+  assert.equal((await s.queue.acquire(snap,true))?.slug,'p2');
+});
+
 test('manual publication cannot treat a legacy published intent as a publicly verified predecessor',async()=>{
   const s=setup();const snap=snapshot();snap.posts[0].status='published';snap.posts[0].publishedAt='2026-10-10T07:00:00+08:00';snap.series[0].sections[0].posts[0].status='published';
   await assert.rejects(()=>s.queue.previewManual(snap,'p1'),/MANUAL_PREDECESSOR_NOT_PUBLIC/);
