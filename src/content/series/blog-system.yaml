@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-editor-admin
-  nextPost: blog-system-storage-responsibilities
+  currentPost: blog-system-storage-responsibilities
+  nextPost: blog-system-safe-git-editing
 source:
   type: local
 canonical:
@@ -32,8 +32,8 @@ sections:
         status: draft
         workingTitle: "用 ChatGPT 寫文章，也想保留自己編輯的空間"
       - slug: blog-system-storage-responsibilities
-        status: planned
-        workingTitle: "文章、圖片和發布紀錄，為什麼要分開保存？"
+        status: draft
+        workingTitle: "從文章網站到編輯後台，我怎麼安排整套系統？"
       - slug: blog-system-safe-git-editing
         status: planned
         workingTitle: "編輯後台也能直接改 Git，怎麼避免把文章改壞？"
