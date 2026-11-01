@@ -43,6 +43,7 @@ const snapshot = (n = 3): ReleaseSnapshot => ({
       path: 'src/content/series/s.yaml',
       sha: 'series',
       source: '',
+      releaseAuthorized: true,
       sections: [
         {
           posts: Array.from({ length: n }, (_, i) => ({
@@ -65,6 +66,32 @@ function setup() {
     },
   };
 }
+
+test('completed series remains blocked until separately authorized, including manual publication', async () => {
+  const { queue, store, time } = setup();
+  const s = snapshot();
+  s.series[0].releaseAuthorized = false;
+  let view = await queue.ingest(s);
+  assert.deepEqual(view.plan, []);
+  assert.ok(view.blockedSeries.some(x => x.seriesSlug === 's' && x.reasons.includes('SERIES_RELEASE_APPROVAL_REQUIRED')));
+  await assert.rejects(() => queue.previewManual(s, 'p0'), /MANUAL_INELIGIBLE/);
+  time('2026-10-11T23:05:00Z');
+  assert.equal(await queue.acquire(s, true), undefined);
+  assert.equal((await store.read()).data.releases.length, 0);
+  s.series[0].releaseAuthorized = true;
+  s.revision = 'head-approved';
+  view = await queue.ingest(s);
+  assert.deepEqual(view.plan.map(x => x.slug), ['p0', 'p1', 'p2']);
+  assert.equal((await queue.acquire(s, true))?.slug, 'p0');
+});
+test('an empty eligible queue produces no publication commitment', async () => {
+  const {queue,store,time} = setup();
+  const s = snapshot(0);
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  assert.equal(await queue.acquire(s,true),undefined);
+  assert.equal((await store.read()).data.releases.length,0);
+});
 
 test('complete snapshot ingestion preserves firstReadyAt across repeated snapshots and partial series', async () => {
   const { queue, time } = setup();
