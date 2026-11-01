@@ -23,6 +23,9 @@ await symlink(join(root, 'node_modules'), join(dir, 'node_modules'), 'dir');
 const seriesFile=join(dir,'src/content/series/ithome-2026-extensions.yaml');
 const seriesDocument=YAML.parseDocument(await readFile(seriesFile,'utf8'));
 const fixtureSeries=seriesDocument.toJS();
+// The disposable scenario explicitly authorizes its completed fixture series.
+// Never modify the source repository's actual series authorization.
+seriesDocument.setIn(['publication', 'authorized'], true);
 const order:string[]=fixtureSeries.sections.flatMap((s:any)=>s.posts.map((p:any)=>p.slug));
 assert.equal(order.length,6);
 const files=async(directory:string):Promise<string[]>=>{
@@ -88,6 +91,7 @@ const snapshot = async (): Promise<ReleaseSnapshot> => {
         source,
         slug: doc.slug,
         sections: doc.sections,
+        releaseAuthorized: doc.publication?.authorized === true,
       });
     }
   }
