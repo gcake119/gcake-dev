@@ -207,6 +207,7 @@ test('active series resumes third post after standalone, ahead of an older waiti
   s.posts.push(post('other'));
   s.series.push({
     slug: 'other-series',
+    releaseAuthorized: true,
     sha: 's2',
     path: 'src/content/series/other.yaml',
     source: '',
@@ -528,11 +529,12 @@ test('verified Monday manual publication occupies its date without claiming 07:0
 test('Tuesday early manual chapter advances to Thursday next chapter without skipping slot', async () => {
   const s=setup();
   const snap=snapshot();
-  s.time('2026-10-12T03:00:00Z');
-  const firstPreview=await s.queue.previewManual(snap,'p0');
-  const first=await s.queue.acquireManual(snap,'p0',firstPreview.version,firstPreview.revision,'owner',true);
-  await s.queue.record(first.record.id,first.record.lease,{state:'verified-public'},'public-confirmed');
-  snap.posts[0].status='published';snap.posts[0].publishedAt=first.record.slot;
+  await s.queue.ingest(snap);
+  s.time('2026-10-11T23:05:00Z');
+  const first=await s.queue.acquire(snap,true);
+  assert.equal(first?.slug,'p0');
+  await s.queue.record(first!.id,first!.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[0].status='published';snap.posts[0].publishedAt=first!.slot;
   snap.series[0].sections[0].posts[0].status='published';snap.revision='head-2';
   s.time('2026-10-13T03:00:00Z');
   const secondPreview=await s.queue.previewManual(snap,'p1');
