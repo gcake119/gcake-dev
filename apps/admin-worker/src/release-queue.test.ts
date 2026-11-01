@@ -79,6 +79,7 @@ test('completed series remains blocked until separately authorized, including ma
   assert.equal(await queue.acquire(s, true), undefined);
   assert.equal((await store.read()).data.releases.length, 0);
   s.series[0].releaseAuthorized = true;
+  time('2026-10-11T22:59:00Z');
   s.revision = 'head-approved';
   view = await queue.ingest(s);
   assert.deepEqual(view.plan.map(x => x.slug), ['p0', 'p1', 'p2']);
@@ -486,7 +487,7 @@ test('D1 finishing active series still rejects two newly discovered started seri
  s.posts[1].status='published';s.series[0].sections[0].posts[1].status='published';
  for(const slug of ['x','y']) {
   s.posts.push(post(slug+'-old','published'),post(slug+'-new'));
-  s.series.push({...s.series[0],slug,sections:[{posts:[{slug:slug+'-old',status:'published'},{slug:slug+'-new',status:'ready'}]}]});
+  s.series.push({...s.series[0],releaseAuthorized:true,slug,sections:[{posts:[{slug:slug+'-old',status:'published'},{slug:slug+'-new',status:'ready'}]}]});
  }
  await assert.rejects(()=>queue.ingest(s),/MULTIPLE_ACTIVE_SERIES/);
 });
