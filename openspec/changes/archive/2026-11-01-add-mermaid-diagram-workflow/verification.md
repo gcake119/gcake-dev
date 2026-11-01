@@ -68,3 +68,22 @@ PR92 review 未發現圖表流程阻擋問題，合併為 7576a04；其 [main CI
 相同診斷條件下 GREEN，保留2500／3000／4500／6000ms原值、mediaReads=1、cancelled=true、原remote ID／unknown intent／revision及全部action順序斷言。完整distribution364項通過。後續分支 codex/fix-media-deadline-fixture 走獨立 PR；不直接寫main，不觸發部署、公開發布或通知。
 
 修補候選 Node２４．２２．１的完整 pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse 全部 exit０。Astro檢查０錯誤、０警告、１既有hint；dry-run／rehearsal皆 productionWrites=false、telegramNetworkCalls=0。沿用既有決策與權限邊界，無新ADR。PR與main CI另行確認，不以本機證據替代。
+
+## 最終交付與封存核對
+
+２０２６－１１－０１重新透過 GitHub API 核對以下結果，早期「尚待 CI」段落保留其當時狀態，不覆寫失敗歷史。
+
+| 階段 | 確切版本 | 結果與證據 |
+| --- | --- | --- |
+| PR ＃９２ | head `826554d9975d43a7d959cbfe5276bb4bfa1b9a99` | [PR CI 41279290007](https://github.com/gcake119/gcake-dev/actions/runs/41279290007) success；[PR](https://github.com/gcake119/gcake-dev/pull/92) 於 2026-11-01T06:42:57Z 合併為 `7576a040a6b317f482f2f38b90ef31d7653fcba3`。 |
+| PR ＃９２合併後 main | `7576a040a6b317f482f2f38b90ef31d7653fcba3` | [41281935303](https://github.com/gcake119/gcake-dev/actions/runs/41281935303) failure；媒體取消測試尚未進入媒體讀取即到期，保留原失敗，修正見前節。 |
+| 修補 PR ＃９３ | head `23ea5caf97e7e7c2cedfc3e06df0752fe513c704` | [PR CI 41283075181](https://github.com/gcake119/gcake-dev/actions/runs/41283075181) success；[PR](https://github.com/gcake119/gcake-dev/pull/93) 於 2026-11-01T07:17:41Z 合併為 `09d7c1146d2e9681502492d6cbd48b0dbb53a7e4`。 |
+| 修補合併後 main | `09d7c1146d2e9681502492d6cbd48b0dbb53a7e4` | [main CI 41284207645](https://github.com/gcake119/gcake-dev/actions/runs/41284207645) push／completed／success，完成時間 2026-11-01T07:30:44Z。 |
+
+main 與 PR ＃９３候選的 Git tree 均為 `73ec08628d0b74cb0b4503f7801a72f67dcb8bad`。PR review 與修補完成，７／７任務完成；本機、PR CI、main CI 分別有證據。視覺檢查仍只代表先前本機桌面／手機與明暗主題檢視，不升格為真實手機或使用者人工接受。
+
+本次封存只同步 technical-diagrams 正式規格、移動 change 與修復決策索引連結，不修改工具、依賴、圖表位元、文章或 workflow。沿用既有決策，無新 ADR。來源與輸出未變，不重跑 Chromium 或重複完整 gate；執行 Spectra validate／analyze／archive 檢查、文件連結與變更範圍核對及無瀏覽器 diagrams:check。封存 PR CI 與本段實作 main CI 是不同提交的證據。
+
+本次沒有手動觸發部署、公開發布或寄送通知；既有排程不因封存而修改或停用，也不把排程執行當成本次交付驗收。
+
+封存結果：Spectra schema為spec-driven，全部artifact完成、７／７任務完成；archive無警告，新增technical-diagrams的３項正式需求。`spectra validate --specs --json` 的２２份正式規格全部valid、０錯誤／警告；`pnpm diagrams:check` 與 `git diff --check` 通過。已逐位元核對移動後的design／proposal／tasks與全部evidence，修正決策索引的封存連結並核對本地引用。直接以規格名稱執行validate曾被CLI當成change而回報not found，改用支援的--specs後通過，未跳過驗證。
