@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-storage-responsibilities
-  nextPost: blog-system-safe-git-editing
+  currentPost: blog-system-safe-git-editing
+  nextPost: blog-system-release-queue
 source:
   type: local
 canonical:
@@ -35,8 +35,8 @@ sections:
         status: draft
         workingTitle: "從文章網站到編輯後台，我怎麼安排整套系統？"
       - slug: blog-system-safe-git-editing
-        status: planned
-        workingTitle: "編輯後台也能直接改 Git，怎麼避免把文章改壞？"
+        status: draft
+        workingTitle: "我怎麼替編輯後台設計防呆機制？"
   - id: chapter-3
     title: "當連載發布真正交給系統"
     status: planned
