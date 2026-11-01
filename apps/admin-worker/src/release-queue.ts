@@ -13,7 +13,7 @@ export interface SnapshotPost extends SnapshotFile {
   status: string;
   publishedAt?: string;
 }
-export interface SnapshotSeries extends SnapshotFile, ReleaseSeriesSnapshot { paused?: boolean; external?: boolean; }
+export interface SnapshotSeries extends SnapshotFile, ReleaseSeriesSnapshot { paused?: boolean; external?: boolean; releaseAuthorized?: boolean; }
 export interface ReleaseSnapshot {
   revision: string;
   posts: SnapshotPost[];
@@ -97,6 +97,13 @@ export class ReleaseQueue {
     const heldSeries = new Set(result.blockedSeries.map((b) => b.seriesSlug));
     for (const series of snapshot.series) {
       const refs = series.sections.flatMap((x) => x.posts);
+      // A complete ready series is not authorization to publish. Keep already
+      // verified live series running without retroactively requiring approval.
+      const previouslyPublic = s.data.releases.some((r) => r.seriesSlug === series.slug && !r.unlockedAt && r.state === 'verified-public');
+      if (series.releaseAuthorized !== true && !previouslyPublic) {
+        heldSeries.add(series.slug);
+        result.blockedSeries.push({ seriesSlug: series.slug, reasons: ['SERIES_RELEASE_APPROVAL_REQUIRED'] });
+      }
       const started = refs.some((x) => x.status === 'published') || s.data.releases.some((r) => r.seriesSlug === series.slug);
       const order = JSON.stringify(refs.map((x) => x.slug));
       if (started && s.data.seriesOrder[series.slug] && order !== s.data.seriesOrder[series.slug]) {

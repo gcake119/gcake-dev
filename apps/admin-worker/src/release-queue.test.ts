@@ -43,6 +43,7 @@ const snapshot = (n = 3): ReleaseSnapshot => ({
       path: 'src/content/series/s.yaml',
       sha: 'series',
       source: '',
+      releaseAuthorized: true,
       sections: [
         {
           posts: Array.from({ length: n }, (_, i) => ({
@@ -65,6 +66,34 @@ function setup() {
     },
   };
 }
+
+test('completed series remains blocked until separately authorized, including manual publication', async () => {
+  const { queue, store, time } = setup();
+  const s = snapshot();
+  s.series[0].releaseAuthorized = false;
+  let view = await queue.ingest(s);
+  assert.deepEqual(view.plan, []);
+  assert.ok(view.blockedSeries.some(x => x.seriesSlug === 's' && x.reasons.includes('SERIES_RELEASE_APPROVAL_REQUIRED')));
+  await assert.rejects(() => queue.previewManual(s, 'p0'), /MANUAL_INELIGIBLE/);
+  time('2026-10-11T23:05:00Z');
+  assert.equal(await queue.acquire(s, true), undefined);
+  assert.equal((await store.read()).data.releases.length, 0);
+  s.series[0].releaseAuthorized = true;
+  time('2026-10-11T22:59:00Z');
+  s.revision = 'head-approved';
+  view = await queue.ingest(s);
+  assert.deepEqual(view.plan.map(x => x.slug), ['p0', 'p1', 'p2']);
+  time('2026-10-11T23:05:00Z');
+  assert.equal((await queue.acquire(s, true))?.slug, 'p0');
+});
+test('an empty eligible queue produces no publication commitment', async () => {
+  const {queue,store,time} = setup();
+  const s = snapshot(0);
+  await queue.ingest(s);
+  time('2026-10-11T23:05:00Z');
+  assert.equal(await queue.acquire(s,true),undefined);
+  assert.equal((await store.read()).data.releases.length,0);
+});
 
 test('complete snapshot ingestion preserves firstReadyAt across repeated snapshots and partial series', async () => {
   const { queue, time } = setup();
@@ -178,6 +207,7 @@ test('active series resumes third post after standalone, ahead of an older waiti
   s.posts.push(post('other'));
   s.series.push({
     slug: 'other-series',
+    releaseAuthorized: true,
     sha: 's2',
     path: 'src/content/series/other.yaml',
     source: '',
@@ -459,7 +489,7 @@ test('D1 finishing active series still rejects two newly discovered started seri
  s.posts[1].status='published';s.series[0].sections[0].posts[1].status='published';
  for(const slug of ['x','y']) {
   s.posts.push(post(slug+'-old','published'),post(slug+'-new'));
-  s.series.push({...s.series[0],slug,sections:[{posts:[{slug:slug+'-old',status:'published'},{slug:slug+'-new',status:'ready'}]}]});
+  s.series.push({...s.series[0],releaseAuthorized:true,slug,sections:[{posts:[{slug:slug+'-old',status:'published'},{slug:slug+'-new',status:'ready'}]}]});
  }
  await assert.rejects(()=>queue.ingest(s),/MULTIPLE_ACTIVE_SERIES/);
 });
@@ -494,6 +524,28 @@ test('verified Monday manual publication occupies its date without claiming 07:0
   s.time('2026-10-14T23:05:00Z');const next=await s.queue.acquire(snap,true);
   assert.equal(next?.slug,'p1');assert.equal(next?.slot,'2026-10-15T07:00:00+08:00');
   const stored=await s.store.read();assert.equal(stored.data.startedAt,'2026-10-12T03:00:00Z');assert.equal(stored.data.releases[0].slot,'2026-10-12T11:00:00+08:00');
+});
+
+test('Tuesday early manual chapter advances to Thursday next chapter without skipping slot', async () => {
+  const s=setup();
+  const snap=snapshot();
+  await s.queue.ingest(snap);
+  s.time('2026-10-11T23:05:00Z');
+  const first=await s.queue.acquire(snap,true);
+  assert.equal(first?.slug,'p0');
+  await s.queue.record(first!.id,first!.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[0].status='published';snap.posts[0].publishedAt=first!.slot;
+  snap.series[0].sections[0].posts[0].status='published';snap.revision='head-2';
+  s.time('2026-10-13T03:00:00Z');
+  const secondPreview=await s.queue.previewManual(snap,'p1');
+  const second=await s.queue.acquireManual(snap,'p1',secondPreview.version,secondPreview.revision,'owner',true);
+  await s.queue.record(second.record.id,second.record.lease,{state:'verified-public'},'public-confirmed');
+  snap.posts[1].status='published';snap.posts[1].publishedAt=second.record.slot;
+  snap.series[0].sections[0].posts[1].status='published';snap.revision='head-3';
+  assert.equal((await s.queue.view(snap)).plan[0].slug,'p2');
+  assert.equal((await s.queue.view(snap)).plan[0].releaseAt,'2026-10-15T07:00:00+08:00');
+  s.time('2026-10-14T23:05:00Z');
+  assert.equal((await s.queue.acquire(snap,true))?.slug,'p2');
 });
 
 test('manual publication cannot treat a legacy published intent as a publicly verified predecessor',async()=>{
