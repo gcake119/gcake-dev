@@ -456,6 +456,7 @@ export class GitHubAppReadClient {
           sections: manifest.sections,
           paused: manifest.publication?.status === 'paused' || manifest.status === 'paused',
           external: manifest.source?.type === 'external',
+          releaseAuthorized: manifest.publication?.authorized === true,
         });
       }
     }
