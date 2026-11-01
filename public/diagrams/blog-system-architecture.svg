@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 850" role="img" aria-labelledby="title desc">
+<title id="title">技術部落格系統架構與資料流</title>
+<desc id="desc">作者透過 ChatGPT 或 Codex 修改 GitHub Repo，或透過 Cloudflare Pages 編輯後台與 Workers 讀寫 Repo。GitHub Actions 將 Astro 網站部署到 GitHub Pages，另有 Substack 發布流程。Cloudflare R2 保存圖片，D1 保存操作與發布紀錄；搜尋 Worker 使用 Workers AI BGE-M3 與 Vectorize 支援語意搜尋。讀者透過公開網站閱讀和搜尋。</desc>
+<style>
+text{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;fill:#1d2939}
+.head{font-size:20px;font-weight:700}.label{font-size:17px;font-weight:600}.small{font-size:13px}.group{fill:#f6f8fb;stroke:#c4d0df;stroke-width:2}.node{fill:#fff;stroke:#7190b6;stroke-width:2}.data{fill:#f2faf7;stroke:#5c9883;stroke-width:2}.line{fill:none;stroke:#52657c;stroke-width:2.5;marker-end:url(#arrow)}.dash{stroke-dasharray:7 6}.edge{font-size:12px;fill:#40536a}
+</style>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#52657c"/></marker></defs>
+<rect width="1160" height="850" rx="18" fill="#fff"/>
+<text x="28" y="40" class="head">內容、後台、發布與搜尋</text>
+<rect x="28" y="67" width="334" height="475" rx="13" class="group"/><text x="44" y="93" class="label">內容來源與建置（GitHub）</text>
+<rect x="412" y="67" width="350" height="705" rx="13" class="group"/><text x="428" y="93" class="label">後台與資料服務（Cloudflare）</text>
+<rect x="807" y="67" width="325" height="475" rx="13" class="group"/><text x="823" y="93" class="label">文章發布與閱讀</text>
+<rect x="48" y="117" width="293" height="78" rx="9" class="node"/><text x="194" y="146" text-anchor="middle" class="label">Git Repository</text><text x="194" y="174" text-anchor="middle" class="small">文章、系列設定、網站／後台程式碼</text>
+<rect x="48" y="263" width="293" height="66" rx="9" class="node"/><text x="194" y="290" text-anchor="middle" class="label">GitHub Actions</text><text x="194" y="310" text-anchor="middle" class="small">建置與發布流程</text>
+<path d="M194 195 V263" class="line"/><text x="206" y="233" class="edge">內容更新</text>
+<rect x="48" y="401" width="293" height="65" rx="9" class="node"/><text x="194" y="430" text-anchor="middle" class="label">作者／ChatGPT／Codex</text><text x="194" y="450" text-anchor="middle" class="small">協作文章與修改 Repo</text>
+<path d="M75 401 V354 H75 V195" class="line dash"/><text x="88" y="379" class="edge">編輯與提交</text>
+<rect x="434" y="117" width="306" height="70" rx="9" class="node"/><text x="587" y="145" class="label" text-anchor="middle">Cloudflare Pages</text><text x="587" y="166" class="small" text-anchor="middle">Vue 編輯後台介面</text>
+<rect x="434" y="235" width="306" height="68" rx="9" class="node"/><text x="587" y="262" class="label" text-anchor="middle">Cloudflare Workers</text><text x="587" y="282" class="small" text-anchor="middle">後台 API，讀取／提交 Git</text>
+<path d="M587 187 V235" class="line"/>
+<path d="M434 272 H383 V156 H341" class="line"/><text x="369" y="207" class="edge">GitHub API</text>
+<rect x="434" y="353" width="142" height="78" rx="9" class="data"/><text x="505" y="383" text-anchor="middle" class="label">R2</text><text x="505" y="404" text-anchor="middle" class="small">圖片檔案</text>
+<rect x="598" y="353" width="142" height="78" rx="9" class="data"/><text x="669" y="383" text-anchor="middle" class="label">D1</text><text x="669" y="404" text-anchor="middle" class="small">操作／發布紀錄</text>
+<path d="M540 303 V325 H505 V353" class="line"/><path d="M634 303 V325 H669 V353" class="line"/>
+<rect x="434" y="486" width="306" height="60" rx="9" class="node"/><text x="587" y="511" class="label" text-anchor="middle">搜尋 Worker</text><text x="587" y="531" class="small" text-anchor="middle">公開文章檢索</text>
+<rect x="434" y="598" width="142" height="78" rx="9" class="node"/><text x="505" y="625" class="label" text-anchor="middle">Workers AI</text><text x="505" y="650" class="small" text-anchor="middle">BGE-M3</text>
+<rect x="598" y="598" width="142" height="78" rx="9" class="data"/><text x="669" y="625" class="label" text-anchor="middle">Vectorize</text><text x="669" y="650" class="small" text-anchor="middle">向量索引</text>
+<path d="M550 546 V598" class="line"/><path d="M576 637 H598" class="line"/>
+<rect x="827" y="117" width="284" height="66" rx="9" class="node"/><text x="969" y="143" class="label" text-anchor="middle">Astro</text><text x="969" y="164" class="small" text-anchor="middle">產生靜態文章網頁</text>
+<rect x="827" y="249" width="284" height="68" rx="9" class="node"/><text x="969" y="275" class="label" text-anchor="middle">GitHub Pages</text><text x="969" y="296" class="small" text-anchor="middle">正式公開文章網站</text>
+<rect x="827" y="402" width="284" height="67" rx="9" class="node"/><text x="969" y="430" class="label" text-anchor="middle">Substack</text><text x="969" y="450" class="small" text-anchor="middle">外部發布平台</text>
+<path d="M341 290 H784 V150 H827" class="line"/><text x="783" y="278" class="edge">建置</text>
+<path d="M969 183 V249" class="line"/><path d="M341 309 H790 V435 H827" class="line dash"/><text x="785" y="374" class="edge">外部同步</text>
+<path d="M969 317 V351 H779 V516 H740" class="line dash"/><text x="786" y="493" class="edge">搜尋</text>
+<path d="M827 299 H774 V392 H740" class="line dash"/><text x="775" y="390" class="edge">圖片</text>
+<rect x="827" y="606" width="284" height="67" rx="9" class="node"/><text x="969" y="634" text-anchor="middle" class="label">讀者</text><text x="969" y="654" text-anchor="middle" class="small">閱讀文章、查詢搜尋</text>
+<path d="M1111 640 H1130 V281 H1111" class="line"/>
+<path d="M827 639 H787 V283 H740" class="line dash"/>
+<text x="36" y="815" class="small">實線：主要流程　虛線：輔助關係。此圖簡化了排程、驗證與索引同步細節。</text>
+</svg>
