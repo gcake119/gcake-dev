@@ -91,7 +91,7 @@ const snapshot = async (): Promise<ReleaseSnapshot> => {
         source,
         slug: doc.slug,
         sections: doc.sections,
-        releaseAuthorized: doc.publication?.authorized === true,
+        releaseAuthorized: doc.releaseAuthorized === true,
       });
     }
   }
