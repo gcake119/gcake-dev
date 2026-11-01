@@ -13,6 +13,6 @@ The fifth article has an editable Mermaid source but a hand-maintained SVG. Futu
 None.
 
 ## Impact
-- Modified: package.json, pnpm-lock.yaml, AGENTS.md, public/diagrams/blog-system-architecture.svg, docs/diagrams/blog-system-architecture.mmd, docs/decisions/index.md, scripts/publishing/release-dry-run.ts, scripts/workspace/foundation.test.ts, .github/workflows/validate-pr.yml, .github/workflows/validate-editorial.yml.
+- Modified: package.json, pnpm-lock.yaml, AGENTS.md, public/diagrams/blog-system-architecture.svg, docs/diagrams/blog-system-architecture.mmd, docs/decisions/index.md, scripts/publishing/release-dry-run.ts, scripts/workspace/foundation.test.ts, scripts/publishing/distribution-draft-sync.test.ts, .github/workflows/validate-pr.yml, .github/workflows/validate-editorial.yml.
 - New: scripts/diagrams/, docs/mermaid-diagrams.md, docs/diagrams/mermaid-config.json, public/diagrams/manifest.json.
 - Existing media-library requirements remain unchanged; no publication, deployment or provider writes.

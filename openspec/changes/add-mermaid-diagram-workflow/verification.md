@@ -46,3 +46,14 @@ npm registry 查核 CLI 最新版１２．０．０要求 Node ≥２２．１�
 pnpm audit 最終全專案為１４ high／２０ moderate／７ low／０ critical；其中新增工具鏈路徑只有 CLI → KaTeX 的１筆 low（GHSA-238p-pmpm-9mq7，已存在 prototype pollution 時可繞過 trust）。舊 Puppeteer２５．１０的 Chromium BiDi → Zod３高風險路徑，已藉相容範圍內更新至２５．１６移除。其餘公告是既有依賴路徑，不在本次任意升級；不宣稱 audit 全綠。KaTeX 修補需跨０．１６到０．１８，未做未驗證 override；來源限 Git 審查的本機圖表、strict 模式，沒有公開輸入的渲染服務。
 
 CI 使用既有 validate job，新增 Node 檔案／文章檢查與４組輕量測試，不啟動 Chromium 轉圖，明確略過 Puppeteer 下載；不新增 runner、服務或安全掃描 pipeline。hash manifest 防止意外漏轉／改圖，不能證明視覺正確或抵抗同時偽造來源與 manifest。lockfile／工具／package.json／設定更新會保守要求全部重產；實際轉檔與視覺檢視只在作者更新圖表或工具時執行。未估算官方計費或宣稱節省金額。
+
+
+## PR CI 後續修補
+
+PR ＃９２首版 81f105b 的第一次 CI 在既有部署條件 VM 的１００ms期限失敗；同版 Node２４本機單項與２０次樣本（５６０次原有條件斷言）通過，未改該期限或測試。相同 SHA 的一次重跑通過此案例，卻在 executor stalled handler true 缺少 term-seen。原始兩次失敗保留於 Actions run４１２７７６８１１６７的 attempts１／２，不將重跑當成根因修復。
+
+本機現有 shell 空轉 fixture 與 FIFO 閒置 fixture 各３樣本，macOS／Node２４、同１５００ms執行＋１０００ms grace，以子程序 ps %CPU 觀察：空轉９１．３／９２．９／９２．１％；FIFO０．１／０／０．１％。６次都留下 TERM 紀錄，回傳相同 timeout，約２５０３～２５０５ms結束。這只量測該 fixture 的單程序 CPU，不是 CI 整體負載、官方計費或金額節省，也不證明所有遠端逾時都來自同一原因。
+
+因此僅將既有 signal fixture 改成 FIFO＋shell builtin read：mkfifo 在期限開始前準備，兩種 handler 仍等待 KILL；全部執行／grace／外層期限與 TERM、timeout、process-group 回收斷言保持原值。原 finally 清除本次 FIFO 與臨時目錄。沒有新增套件、測試層、job、重試機制或調寬限制。已知 CPU 競爭來源被移除；此前 Node２２ pid 缺失與 VM１００ms的完整根因仍未確立。
+
+修補候選在 Node２４．２２．１再次連續通過完整 pnpm test、pnpm check、pnpm build:all、pnpm release:dry-run、pnpm editorial:rehearse，全部 exit０；原有兩個 signal 斷言案例與 distribution３６４項皆通過。原始 CPU 樣本見 [fixture-cpu.json](evidence/fixture-cpu.json)。尚待新提交的 PR CI；不預先宣稱遠端通過。

@@ -1,0 +1,50 @@
+[
+  {
+    "mode": "spin",
+    "sample": 1,
+    "cpuPercent": 91.3,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2505
+  },
+  {
+    "mode": "spin",
+    "sample": 2,
+    "cpuPercent": 92.9,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2503
+  },
+  {
+    "mode": "spin",
+    "sample": 3,
+    "cpuPercent": 92.1,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2503
+  },
+  {
+    "mode": "fifo",
+    "sample": 1,
+    "cpuPercent": 0.1,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2505
+  },
+  {
+    "mode": "fifo",
+    "sample": 2,
+    "cpuPercent": 0,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2505
+  },
+  {
+    "mode": "fifo",
+    "sample": 3,
+    "cpuPercent": 0.1,
+    "result": "SUBSTACK_EXECUTOR_TIMEOUT",
+    "term": "yes",
+    "elapsedMs": 2505
+  }
+]
