@@ -83,6 +83,7 @@ test('completed series remains blocked until separately authorized, including ma
   s.revision = 'head-approved';
   view = await queue.ingest(s);
   assert.deepEqual(view.plan.map(x => x.slug), ['p0', 'p1', 'p2']);
+  time('2026-10-11T23:05:00Z');
   assert.equal((await queue.acquire(s, true))?.slug, 'p0');
 });
 test('an empty eligible queue produces no publication commitment', async () => {
