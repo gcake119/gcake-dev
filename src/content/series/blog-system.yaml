@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-release-queue
-  nextPost: blog-system-substack-integration
+  currentPost: blog-system-substack-integration
+  nextPost: blog-system-publication-evidence
 source:
   type: local
 canonical:
@@ -45,8 +45,8 @@ sections:
         status: draft
         workingTitle: "把自己的發文規則，變成可以自動執行的流程"
       - slug: blog-system-substack-integration
-        status: planned
-        workingTitle: "沒有發文 API，怎麼把文章同步到 Substack？"
+        status: draft
+        workingTitle: "想讓文章被更多人看見，我怎麼處理跨平台發文？"
       - slug: blog-system-publication-evidence
         status: planned
         workingTitle: "發文成功不能只看系統說了什麼"
