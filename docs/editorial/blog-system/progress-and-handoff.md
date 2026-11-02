@@ -198,3 +198,18 @@
 ## 第 08 篇啟動
 
 先讀本系列最新企劃、交接與第 07 篇定稿；查 Substack／Paragraph 相關正式規格、操作手冊、Git/OpenSpec、Computer Use 操作及外部平台驗收證據。優先確認當時為何改用 Substack、哪些功能無 API、如何安排草稿與公開，以及來源連結與 canonical 的實際支援界線。不可把官方文件失連寫成 Paragraph 已停止服務，也不可把已建立草稿當成已發表。先討論核心與真實素材，不直接寫稿。
+
+## 第 08 篇｜想讓文章被更多人看見，我怎麼處理跨平台發文？
+
+- **狀態**：作者於 2026-11-03 經多輪審稿與定稿前審查後確認定稿，要求上傳 Repo。正文與 manifest 維持 draft，不設定日期、不啟用系列發布或外部同步。
+- **正文**：`src/content/posts/blog-system/blog-system-substack-integration.md`；沿用 planned slug。
+- **核心**：為了增加曝光與提供電子報而利用外部平台；從 Paragraph／Substack 並行方案，取捨到保留 Substack；接受全文鏡像和 canonical 限制，再利用鐵人賽經驗以 Computer Use 操作 Chrome 發文介面。
+- **作者確認**：原站讓讀者直接閱讀或訂閱 RSS；Substack 希望利用首頁推薦與電子報，減少自架郵件服務負擔。Paragraph 的主要價值是 Arweave，相關官方文件失連使關鍵理由消失。鐵人賽沒有使用 Substack；當時 Playwright 曾遇到 Too Many Requests，故本專案選擇 Computer Use 優先。Substack API 範圍是 Codex 在規劃時調查的。
+- **來源與實作紀錄**：`docs/multi-platform-publishing.md`、`docs/substack-capability-verification.md`、`docs/distribution-scripted-runbook.md`；PR #69 記錄優先重用 Chrome 分頁的規則修正。此修正不證明曾發生嚴重分頁事故；正式外部操作、電子報寄送及排程資格依各自驗收證據判斷。
+- **取捨與未知**：摘要與全文皆考慮過，選擇全文以保留平台直接閱讀體驗；可見來源連結不等於 HTML canonical 指回原站。Computer Use 不保證避開平台限制；目前尚無充分資料量測推薦曝光和訂閱提升，不宣稱自動化已全面穩定。
+- **寫作取捨**：小白友善，集中平台選擇、同步內容與沒有發文 API 時的技術選擇；保留 Chrome 分頁管理案例。第 07 篇談本站發文資格及佇列，本篇談外部平台與同步方式；第 09 篇才展開公開證據、逾時、失敗恢復及通知。
+- **進度**：四章 12 篇不變；currentPost 指向第 08 篇，nextPost 指向第 09 篇。定稿不等於 ready、published 或正式公開。
+
+## 第 09 篇啟動
+
+讀最新系列企劃、交接、第 08 篇定稿，以及必要的 Git／OpenSpec／正式驗收與故障修正紀錄。聚焦跨 Git、Actions、Pages／RSS、Substack、Hermes 的發布證據與未知狀態恢復；釐清實際逾時、重試、誤報、去重與人工介入，不能將排程、草稿保存或 CI 通過直接當成公開或通知送達。先討論真實素材與篇界，不直接寫初稿。
