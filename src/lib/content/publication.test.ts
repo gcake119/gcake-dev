@@ -54,3 +54,28 @@ test('inactivity never completes an open series and paused series remain paused'
   assert.equal(publicationStatus('active', undefined, new Date('2030-01-01')), 'active');
   assert.equal(publicationStatus('archived', { status: 'paused', endsAt: '2026-10-08' }, new Date('2030-01-01')), 'paused');
 });
+
+// Acceptance cases from series-public-completion, using the existing fast test layer.
+test('local series completion requires a finished manuscript and every original reference public', async () => {
+  const { localSeriesPublicationStatus: resolve } = await import('./publication');
+  const refs = Array.from({ length: 6 }, (_, i) => ({ slug: `part-${i + 1}`, status: 'published' }));
+  const visible = new Set(refs.map(x => x.slug));
+  for (const editorial of ['completed', 'archived']) assert.equal(resolve(editorial, undefined, refs, visible), 'completed');
+  assert.equal(resolve('active', { status: 'completed' }, refs, visible), 'active');
+  assert.equal(resolve('completed', undefined, [], visible), 'active');
+  assert.equal(resolve('completed', undefined, refs, new Set([...visible].slice(0, 5))), 'active');
+  for (const status of ['draft', 'ready']) assert.equal(resolve('completed', undefined, [...refs.slice(0, 5), { ...refs[5], status }], visible), 'active');
+  assert.equal(resolve('completed', { status: 'paused' }, refs, visible), 'paused');
+  assert.equal(resolve('completed', { status: 'active', endsAt: '2030-01-01' }, refs, visible, new Date('2026-11-03')), 'active');
+  assert.equal(resolve('completed', { status: 'completed', endsAt: '2020-01-01' }, refs, new Set()), 'active');
+});
+
+test('final installment eligibility switches at the exact Taipei publication instant', async () => {
+  const { localSeriesPublicationStatus: resolve } = await import('./publication');
+  const refs = [{ slug: 'last', status: 'published' }];
+  const last = { status: 'published', publishedAt: parsePublicationTime('2026-11-03T07:00:00+08:00').instant };
+  for (const [instant, expected] of [['2026-11-02T22:59:59Z', 'active'], ['2026-11-02T23:00:00Z', 'completed']]) {
+    const now = new Date(instant);
+    assert.equal(resolve('completed', undefined, refs, new Set(isPublicPost(last, now) ? ['last'] : []), now), expected);
+  }
+});

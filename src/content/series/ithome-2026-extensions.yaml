@@ -1,7 +1,7 @@
 slug: ithome-2026-extensions
 title: 2026 鐵人賽幕後
 description: 回頭整理 30 篇文章怎麼被寫出來、文章網站與自動發布工具怎麼形成，以及正式使用後如何繼續調整。
-status: active
+status: completed
 featured: true
 editorial:
   currentPost: ithome-2026-tech-blog-boundary
@@ -14,7 +14,7 @@ sections:
   - id: extensions
     title: 鐵人賽之後，我怎麼把寫作與發布流程繼續做下去
     description: 從 30 篇文章的協作寫作、發布工具、技術選型、正式運行、模板化到長期技術部落格。
-    status: active
+    status: completed
     posts:
       - slug: ithome-2026-chatgpt-writing-workflow
         status: published
