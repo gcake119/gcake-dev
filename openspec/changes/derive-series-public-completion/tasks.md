@@ -18,3 +18,7 @@
 - [x] 4.1 Reconcile only the two stale publication headers and manifest references against saved origin/main, preserving identical article bodies and unrelated dirty files; verify exact source matching and content validation.
 - [x] 4.2 Repair isolated workspace dependency installation using its frozen lockfile instead of a root-only node_modules link; verify the original 253 diagnostics disappear without source or check weakening.
 - [x] 4.3 Execute existing full local gates and record both environments, remaining limitations and dirty-file preservation; verify tests, check, build:all, release:dry-run, editorial:rehearse and completed rendered journey.
+
+## 5. CI bootstrap repair
+
+- [ ] 5.1 Prefer the existing pinned cached Node/npm before pnpm installation on the self-hosted runner; verify local missing-cli reproduction, shell syntax, complete local gates and a successful PR CI run without changing required checks.

@@ -79,3 +79,11 @@ release:dry-run 重現失敗：複製真實已完稿系列後，只把文章重�
 
 
 最新 ec0fe30 候選已完成完整 pnpm test（整體 exit 0，含 Python309項）、pnpm check（０錯誤／０警告／１提示）、pnpm build:all、pnpm release:dry-run（共用 editorial:rehearse 腳本）及預設完結 HTML 測試，全部通過。Spectra validate 通過，analyze 無 Critical。逐檔檢查 staged allowlist 為１５檔，apps／packages／工作流程與文章正文均無差異。原工作目錄１，１０８個變更檔案在 PR 準備前後雜湊一致。原始新驗證 logs 位於本機 /tmp/gcake-pr-*.log，其雜湊補入 manifest，未上傳原始內容。
+
+## CI 啟動修復
+
+PR99的首次CI41627156440在pnpm/action-setup階段失敗，尚未安裝專案依賴或執行測試。runner內建externals.2.338.2/node24/bin/npm尋找../lib/cli.js失敗。既有prepare-validation腳本只設定Node toolcache變數，沒有將已釘選Node24.22.1的bin加入PATH；pnpm安裝器執行在setup-node之前，因而先取得不完整的runner npm。
+
+本機以臨時broken/bin/npm重現完全相同的MODULE_NOT_FOUND，改為優先完整Node/npm的bin後npm --version成功；臨時目錄已清理。最小修正只在既有self-hosted準備分支寫入GITHUB_PATH，使後續步驟使用既有快取。未改runner服務、套件、權限、required checks、檢查頻率或部署流程。bash -n通過。Mac重現只能證明PATH與相對模組路徑機制，不能證明Mint快取的實際完整性；後者以修正後同一PR CI的真實結果驗證。
+
+CI修復推送前：完整pnpm test整體exit0；未變更的程式／依賴／設定沿用本候選先前check、build:all與演練通過證據。新測試紀錄本機/tmp/gcake-pr-ci-fix-test.log，SHA-256：f2063bd8d2be0c33b8e216747d6c7432a3663e0af33bfb866767b50138c493df。bash -n與git diff --check通過。

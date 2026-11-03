@@ -32,6 +32,8 @@ case $mode in
         echo "TMPDIR=$job_tmp"
         echo "RUNNER_TOOL_CACHE=$cache"
         echo "AGENT_TOOLSDIRECTORY=$cache"
+        # pnpm/action-setup runs before setup-node; avoid the runner's incomplete npm.
+        echo "$cache/node/24.22.1/x64/bin" >> "${GITHUB_PATH:?}"
       fi
       echo "npm_config_store_dir=$RUNNER_TEMP/gcake-store-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}"
     } >> "${GITHUB_ENV:?}"
