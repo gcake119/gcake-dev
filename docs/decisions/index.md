@@ -66,3 +66,5 @@
 ２０２６－１０－３０ `add-cloud-index-alerts`：使用者採用「雲端檢查＋Telegram告警＋後台通知紀錄」。本機候選沿用既有 Admin Worker、CMS 專用lease／checkpoint與寄送intent帳本，不增加Worker、queue或CI工作流程。新排程／secret配置及additive0008須按具體候選核對正式授權，原搜尋Cron／500限額／零付費超額與期限不變；通知未知不重送。現有heartbeat在正式送達與兩個自然雲端輪次驗收前保留。這是通知部署邊界與唯讀觀測延伸，沿用ADR-001，不新增搜尋政策；契約與回復見該change及docs/index-alerts-runbook.md。
 
 ２０２６－１１－０１ 技術圖表採 `.mmd` 正式來源與提交 Git 的 SVG／manifest 產物，來源置於 docs/diagrams，輸出置於 public/diagrams；[操作文件](../mermaid-diagrams.md)與 [Spectra 契約](../../openspec/changes/archive/2026-11-01-add-mermaid-diagram-workflow/design.md)保存固定本機 CLI、轉換失敗保留舊圖及無瀏覽器 CI 驗證。此規則僅限技術圖表，不替代 CMS／R2 媒體庫，不加入常駐服務，不改文章正文、發布狀態或部署權限。只補本索引，不新增 ADR；本機、PR CI 與人工接受分別記錄。
+
+２０２６－１１－０３ 使用者選定本地系列通用完結條件：編輯狀態明確完稿或封存，原始非空篇目清單全部標記發布且於建置時可公開閱讀，並符合既有連載排程，才顯示已完結；暫停優先，仍開放更新的系列不因目前篇目全公開而完結。所有公開閱讀介面共用判斷，外部鐵人賽來源政策不變。[規格與本機證據](../../openspec/changes/derive-series-public-completion/verification.md)。沿用原架構，無新 ADR；本機驗證與提交／PR進度分開記錄，未合併或部署。

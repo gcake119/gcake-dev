@@ -60,3 +60,17 @@ export function publicationStatus(
   }
   return editorial === 'active' ? 'active' : 'completed';
 }
+
+/** Local completion needs explicit editorial intent and the unfiltered public membership. */
+export function localSeriesPublicationStatus(
+  editorial: string,
+  publication: Parameters<typeof publicationStatus>[1],
+  planned: readonly { readonly slug: string; readonly status: string }[],
+  publicSlugs: ReadonlySet<string>,
+  now = publicationInstant(),
+): ReturnType<typeof publicationStatus> {
+  if (publication?.status === 'paused') return 'paused';
+  if (editorial !== 'completed' && editorial !== 'archived') return 'active';
+  if (!planned.length || !planned.every(post => post.status === 'published' && publicSlugs.has(post.slug))) return 'active';
+  return publicationStatus(editorial, publication, now);
+}

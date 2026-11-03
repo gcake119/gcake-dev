@@ -22,6 +22,9 @@ await symlink(join(root, 'node_modules'), join(dir, 'node_modules'), 'dir');
 // Fixture lifecycle belongs only to this copy. Preserve Markdown suffix byte-for-byte.
 const seriesFile=join(dir,'src/content/series/ithome-2026-extensions.yaml');
 const seriesDocument=YAML.parseDocument(await readFile(seriesFile,'utf8'));
+// Restart the disposable fixture's whole lifecycle, including editorial intent.
+seriesDocument.set('status','active');
+seriesDocument.delete('publication');
 const fixtureSeries=seriesDocument.toJS();
 // The disposable scenario explicitly authorizes its completed fixture series.
 // Never modify the source repository's actual series authorization.
@@ -47,8 +50,10 @@ for(const file of await files(join(dir,'src/content/posts'))) {
  }
 }
 const sections=seriesDocument.get('sections',true) as YAML.YAMLSeq;
-for(const section of sections.items as YAML.YAMLMap[])
+for(const section of sections.items as YAML.YAMLMap[]) {
+ section.set('status','active');
  for(const post of (section.get('posts',true) as unknown as YAML.YAMLSeq).items as YAML.YAMLMap[])post.set('status','ready');
+}
 await writeFile(seriesFile,seriesDocument.toString());
 const git = (...args: string[]) => execFileSync('git', args, { cwd: dir, encoding: 'utf8' }).trim();
 git('init', '--quiet');

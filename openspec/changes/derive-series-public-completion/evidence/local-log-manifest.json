@@ -1,0 +1,116 @@
+{
+  "note": "Raw historical logs retained in the original workspace; only hashes included in this PR.",
+  "files": {
+    "gcake-series-local-dryrun.log": {
+      "sha256": "b9e6bf58304bcbf56c6a7094f7478abf8414d3b3048b3d872377dee58624dbff",
+      "bytes": 2043
+    },
+    "gcake-series-final-main-check.log": {
+      "sha256": "8ff152ded1d8ad97961f7fc69232335d2be0d83d94d1aa42f3b88a2edb487ae6",
+      "bytes": 959
+    },
+    "gcake-series-fixed-main-check.log": {
+      "sha256": "b54dfffa79159d4ca3ec3ae848c9164176c09120222fd60756a8a90379eea938",
+      "bytes": 802
+    },
+    "gcake-series-main-check.log": {
+      "sha256": "a7d34ded0b6cf6aedb251ca65c512a254f7a15c1b7c08e07bf093be312cccc64",
+      "bytes": 92135
+    },
+    "gcake-series-main-dryrun-fixed.log": {
+      "sha256": "61ec3faaeeee4d214523b4d29d0efe20445b0968ad8d94434b4b66877cd2ca4e",
+      "bytes": 840
+    },
+    "gcake-series-full-main-test.log": {
+      "sha256": "ef1c8db534120f6853ef89f2e693232b105839f0735c5fda0540815021bc39ce",
+      "bytes": 308286
+    },
+    "gcake-series-main-build.log": {
+      "sha256": "13d42f5de37f78688a00f64c34dd54377dfcc1697a19171ad2df028cbc3dc638",
+      "bytes": 4787
+    },
+    "gcake-series-full-local-build.log": {
+      "sha256": "9f7676e8a288e09116676bbe1cebf1b1bd006a39fdd3e340954d77e85d8b8441",
+      "bytes": 6354
+    },
+    "gcake-series-main-baseline-check.log": {
+      "sha256": "0f78c1701def345844de9c42d1ae3d66b7ac173acf322b81eb04c5d2415c2f0a",
+      "bytes": 92135
+    },
+    "gcake-series-final-main-build.log": {
+      "sha256": "cfca0451b124f960cefa1699f310300a6eedd3bb0aae280ed667df6051d0984f",
+      "bytes": 7003
+    },
+    "preservation.json": {
+      "sha256": "110f19272d95be14e5e056718587aec6ff23703da809ae6058d5224eebae0fcf",
+      "bytes": 134
+    },
+    "gcake-series-main-public-tests.log": {
+      "sha256": "87fe86ebd3f6cc4fa0e1eb9345d72fd3db09087062cf7097f964138833695012",
+      "bytes": 25148
+    },
+    "gcake-series-public-tests.log": {
+      "sha256": "587f915b59f516191df825bed489d285fd7a8cf0f90f7a0d0e655a6546e6659a",
+      "bytes": 24859
+    },
+    "gcake-series-main-distribution-fixed.log": {
+      "sha256": "d039b0dddcf8c9d7f1c4fa1474809f3167ecc351c46a13bf809419fba338d359",
+      "bytes": 96061
+    },
+    "gcake-series-full-local-test.log": {
+      "sha256": "7518b8302dcd25bfac0b3ee69a86105b62d6f2e7179af2c4a2e93dda448bb5ed",
+      "bytes": 271906
+    },
+    "gcake-series-local-rehearse.log": {
+      "sha256": "f5bf4f161eab26f67d3a70bed5727c792026538dc87a49562e8390d014b25764",
+      "bytes": 2049
+    },
+    "gcake-series-main-observability.log": {
+      "sha256": "7409aea0861e3cce292bfa21aad5a5a170334227849ca2b7c4f9cc1b99484ada",
+      "bytes": 549
+    },
+    "gcake-series-green-build.log": {
+      "sha256": "fff45ae3bc3848ec860236c66ee19db8d5398d9b5a35addfac826cd17eb4ab8c",
+      "bytes": 4579
+    },
+    "gcake-series-full-main-build.log": {
+      "sha256": "2c9c6111b4baef9260748fd68ed2e0db732935261aeba4e9200fcf35ee0c82fc",
+      "bytes": 7003
+    },
+    "gcake-series-check.log": {
+      "sha256": "f043558856509d0346b69d8c99625a5670dc3a8841560f2cc668a92114e0bf69",
+      "bytes": 2064627
+    },
+    "gcake-series-final-local-check.log": {
+      "sha256": "9d7333517c07fd30a8633e3e6ee63804c84eff355553b33ddebe8ed652e4fd0c",
+      "bytes": 2064858
+    },
+    "gcake-series-local-dryrun-fixed.log": {
+      "sha256": "50ca48f69fb820eb65c56391e99032274f6f59976eae96f0af64c635eb1bfef1",
+      "bytes": 784
+    }
+  },
+  "pr_candidate_base": "ec0fe30fd59e941e9a21e194d6f7e87dd6304509",
+  "pr_candidate_logs": {
+    "gcake-pr-test.log": {
+      "sha256": "d1132a7c53202c879c90752aca0adb776531e4068c3abad7d0d21f7968601cc5",
+      "bytes": 308772
+    },
+    "gcake-pr-check.log": {
+      "sha256": "a9b9d7782ee52bda3bc26313d240433fba6a38ffee53d685598aa07ee6f14c0c",
+      "bytes": 698
+    },
+    "gcake-pr-build.log": {
+      "sha256": "feb23bb936f55fb28105f04ef0d0ca73acab3409e8dafb875235df33ed08ac25",
+      "bytes": 6639
+    },
+    "gcake-pr-dryrun.log": {
+      "sha256": "d219bcf4690252eb59712d0f45714af351254fbf6bab54f6b24c1cfc500fa02d",
+      "bytes": 787
+    },
+    "gcake-pr-install.log": {
+      "sha256": "a1170a24277d7de59d37ca393a477b0ee0cd439d96e0914498ffee41a561b0ec",
+      "bytes": 1760
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content';
 import { loadSeriesManifests } from './series';
-import { loadIthomeArticles, ithomePublicationState } from './external';
-import { isPublicPost, publicationStatus } from './publication';
+import { loadIthomeArticles } from './external';
+import { isPublicPost } from './publication';
 import { site } from '../../data/site';
 import { seriesMembership } from './series-membership';
 
@@ -29,7 +29,7 @@ export async function loadReadingCatalog() {
     const sections = manifest.sections.map(section => ({ ...section, articles: section.posts.filter(p => p.status === 'published').map(p => map.get(p.slug)).filter((p): p is ReadingPost => !!p) }));
     const articles = sections.flatMap(s => s.articles);
     const dates = articles.flatMap(p => p.date ? [p.date] : []).sort((a,b) => a.getTime() - b.getTime());
-    const status = manifest.slug === 'ithome-2026' ? ithomePublicationState() : publicationStatus(manifest.status, manifest.publication);
+    const status = manifest.publicationState;
     return { ...manifest, sections, articles, publicationState: status, firstDate: dates[0], latestDate: dates.at(-1) };
   }).filter(s => s.articles.length > 0).sort((a,b) => Number(b.publicationState === 'active') - Number(a.publicationState === 'active') || (b.latestDate?.getTime() ?? 0) - (a.latestDate?.getTime() ?? 0) || a.slug.localeCompare(b.slug));
   return { series, posts: posts.sort((a,b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0)) };
