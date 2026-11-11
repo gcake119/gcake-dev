@@ -174,3 +174,28 @@ test('Mint preparation rejects wrong account and socket before environment publi
   assert.equal(await fs.readFile(out,'utf8'),'');
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
+
+
+test('manual Admin Worker uses isolated Mint tools without weakening production gates', async () => {
+ const workflow=YAML.parse(await fs.readFile('.github/workflows/deploy-admin-worker.yml','utf8'));
+ assert.deepEqual(Object.keys(workflow.on),['workflow_dispatch']);
+ assert.deepEqual(workflow.permissions,{contents:'read'});
+ assert.deepEqual(workflow.concurrency,{group:'admin-worker-production','cancel-in-progress':false});
+ const job=workflow.jobs.deploy;
+ assert.equal(job.if,"github.ref == 'refs/heads/main'");
+ assert.equal(job.environment,'production');
+ assert.deepEqual(job['runs-on'],['self-hosted','Linux','X64','repo-gcake-dev']);
+ const steps=job.steps;
+ const checkout=steps.findIndex((s:any)=>s.uses?.startsWith('actions/checkout@'));
+ const prepare=steps.findIndex((s:any)=>s.run==='bash scripts/ci/prepare-validation.sh prepare');
+ const pnpm=steps.findIndex((s:any)=>s.uses?.startsWith('pnpm/action-setup@'));
+ assert.equal(steps[checkout].with['persist-credentials'],false);
+ assert.ok(checkout<prepare && prepare<pnpm);
+ assert.equal(steps[pnpm].with.dest,'${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}');
+ const gates=steps.findIndex((s:any)=>s.name==='Test and build affected workspaces');
+ assert.equal(steps[gates].run.trim(),'pnpm --filter @gcake/admin test\npnpm --filter @gcake/admin-worker test\npnpm build:admin\npnpm build:worker');
+ const remote=steps.map((s:any,i:number)=>({s,i})).filter(({s}:any)=>s.uses?.startsWith('cloudflare/wrangler-action@'));
+ assert.deepEqual(remote.map(({s}:any)=>s.with.command),['d1 migrations apply CMS_DB --env production --remote','deploy --env production']);
+ assert.ok(remote.every(({s,i}:any)=>i>gates && !s['continue-on-error']));
+ assert.equal(job['continue-on-error'],undefined);
+});
