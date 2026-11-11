@@ -12,7 +12,7 @@ concurrency:
 jobs:
   release:
     if: github.ref == 'refs/heads/main' && vars.RELEASE_AUTOMATION_ENABLED == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     environment: editorial-release
     outputs:
       release_sha: ${{ steps.release.outputs.release_sha }}
@@ -21,9 +21,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Prepare isolated Mint tools
+        run: bash scripts/ci/prepare-validation.sh prepare
       - uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -38,15 +41,18 @@ jobs:
     name: Build publication ${{ needs.release.outputs.release_sha }}
     needs: release
     if: needs.release.outputs.release_sha != ''
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     steps:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.release.outputs.release_sha }}
           persist-credentials: false
+      - name: Prepare isolated Mint tools
+        run: bash scripts/ci/prepare-validation.sh prepare
       - uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -66,7 +72,7 @@ jobs:
     name: Deploy publication ${{ needs.release.outputs.release_sha }}
     needs: [release, build]
     if: needs.release.outputs.release_sha != ''
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     permissions:
       contents: read
       pages: write

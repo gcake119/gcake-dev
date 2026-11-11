@@ -27,7 +27,7 @@ jobs:
       contents: read
       pages: read
     if: github.event_name == 'workflow_dispatch' && inputs.mode != 'secret-check' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     outputs:
       revision: ${{ steps.source.outputs.revision }}
     steps:
@@ -38,10 +38,13 @@ jobs:
           persist-credentials: false
       - id: source
         run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Prepare isolated Mint tools
+        run: bash scripts/ci/prepare-validation.sh prepare
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
@@ -76,7 +79,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     needs: build
     steps:
       - name: Reject stale artifact after concurrent CMS edit
@@ -93,7 +96,7 @@ jobs:
 
   secret-check-preflight:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'secret-check' && github.ref == 'refs/heads/feat/editorial-release-queue'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     permissions:
       contents: read
     steps:
@@ -113,7 +116,7 @@ jobs:
     needs: secret-check-preflight
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'secret-check' && github.ref == 'refs/heads/feat/editorial-release-queue'
     environment: editorial-release
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     permissions:
       contents: read
     steps:
