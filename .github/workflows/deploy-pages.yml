@@ -79,7 +79,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
+    runs-on: ubuntu-24.04
     needs: build
     steps:
       - name: Reject stale artifact after concurrent CMS edit

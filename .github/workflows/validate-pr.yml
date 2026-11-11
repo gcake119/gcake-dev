@@ -22,37 +22,54 @@ env:
 jobs:
   validate:
     name: validate
-    runs-on: ${{ github.repository == 'gcake119/gcake-dev' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","repo-gcake-dev"]') || 'ubuntu-24.04' }}
+    runs-on: ["self-hosted", "Linux", "X64", "repo-gcake-dev"]
     timeout-minutes: 20
     steps:
+      - name: Require trusted source before self-hosted execution
+        id: ci_source_admission
+        shell: bash --noprofile --norc -e -o pipefail {0}
+        env:
+          CI_SOURCE_TRUSTED: ${{ github.repository == 'gcake119/gcake-dev' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        run: |
+          [[ "${CI_SOURCE_TRUSTED:-}" == true ]] || {
+            echo 'CI_SOURCE_REQUIRES_ISOLATED_SELF_HOSTED_RUNNER' >&2
+            exit 1
+          }
       - name: Checkout PR merge candidate
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Prepare isolated validation tools
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: bash scripts/ci/prepare-validation.sh
 
       - name: Setup pnpm
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
           dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
 
       - name: Setup Node
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
 
       - name: Install locked dependencies
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: pnpm install --frozen-lockfile
 
       - name: Install Chrome and Linux dependencies for distribution fixtures
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: bash scripts/ci/prepare-validation.sh browser
 
       - name: Full tests including Hermes
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         # The isolated update harness deliberately accepts only this namespace.
         # Creating it on the disposable Linux runner preserves that restriction.
         run: |
@@ -60,13 +77,17 @@ jobs:
           pnpm test
 
       - name: Astro and TypeScript checks
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: pnpm check
 
       - name: Public site and all workspace builds
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: pnpm build:all
 
       - name: Local release simulation without provider writes
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: pnpm release:dry-run
 
       - name: Rehearse disposable static deployment and notification deduplication
+        if: ${{ steps.ci_source_admission.outcome == 'success' }}
         run: pnpm editorial:rehearse
