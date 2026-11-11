@@ -13,7 +13,7 @@ concurrency:
 jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
     environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -26,11 +26,17 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Prepare isolated Mint tools
+        run: bash scripts/ci/prepare-validation.sh prepare
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10.17.1
+          dest: ${{ runner.temp }}/gcake-pnpm-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
 
       - name: Setup Node
         uses: actions/setup-node@v7
