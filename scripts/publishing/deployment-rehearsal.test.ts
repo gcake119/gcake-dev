@@ -114,9 +114,14 @@ test('PR run scripts stop on shared, dry-run or rehearsal failure without provid
  assert.equal(workflow.on.pull_request['paths-ignore'],undefined);
  const steps=job.steps.filter((step:any)=>step.run);
  for(const step of steps) {
-  assert.equal(step.if,undefined,'necessary checks must not be conditionally skipped');
+  if(step.id==='ci_source_admission') {
+   assert.equal(step.if,undefined);
+   assert.equal(step.shell,'bash --noprofile --norc -e -o pipefail {0}');
+  } else {
+   assert.equal(step.if,"${{ steps.ci_source_admission.outcome == 'success' }}",'trusted checks may only depend on source admission');
+   assert.equal(step.shell,undefined,'use runner default Bash fail-fast semantics');
+  }
   assert.equal(step['continue-on-error'],undefined);
-  assert.equal(step.shell,undefined,'use runner default Bash fail-fast semantics');
  }
  const commands=['install --frozen-lockfile','exec playwright install --with-deps chrome',
   'test','check','build:all','release:dry-run','editorial:rehearse'];
@@ -139,7 +144,7 @@ printf '%s\\n' "$*" >> "$TRACE"
   for(const failure of ['',...commands]) {
    const trace=join(dir,'trace');await fs.writeFile(trace,'');
    const result=spawnSync('/bin/bash',['--noprofile','--norc','-e','-o','pipefail','-c',script],{
-    cwd:dir,encoding:'utf8',env:{PATH:dir,TRACE:trace,FAIL_COMMAND:failure,RUNNER_ENVIRONMENT:'github-hosted',GITHUB_RUN_ID:'123',GITHUB_RUN_ATTEMPT:'1',GITHUB_JOB:'validate',GITHUB_ENV:githubEnv,RUNNER_TEMP:dir,...workflow.env},
+    cwd:dir,encoding:'utf8',env:{PATH:dir,TRACE:trace,FAIL_COMMAND:failure,CI_SOURCE_TRUSTED:'true',RUNNER_ENVIRONMENT:'github-hosted',GITHUB_RUN_ID:'123',GITHUB_RUN_ATTEMPT:'1',GITHUB_JOB:'validate',GITHUB_ENV:githubEnv,RUNNER_TEMP:dir,...workflow.env},
    });
    assert.equal(result.error,undefined);
    assert.equal(result.status,failure?73:0,`${failure || 'success'}: ${result.stderr}`);
@@ -149,12 +154,14 @@ printf '%s\\n' "$*" >> "$TRACE"
  } finally {await fs.rm(dir,{recursive:true,force:true});}
 });
 
-test('Mint validation admits only the dedicated repo runner and keeps fork fallback',async()=>{
+test('Mint validation fixes the dedicated runner and rejects untrusted source before checkout',async()=>{
  for(const name of ['validate-pr','validate-editorial']) {
   const w=YAML.parse(await fs.readFile(`.github/workflows/${name}.yml`,'utf8'));
-  assert.match(w.jobs.validate['runs-on'],/repo-gcake-dev/);
-  assert.match(w.jobs.validate['runs-on'],/head\.repo\.full_name == github\.repository/);
-  assert.match(w.jobs.validate['runs-on'],/ubuntu-24\.04/);
+  assert.deepEqual(w.jobs.validate['runs-on'],['self-hosted','Linux','X64','repo-gcake-dev']);
+  const gate=w.jobs.validate.steps[0];
+  assert.equal(gate.id,'ci_source_admission');
+  assert.match(gate.env.CI_SOURCE_TRUSTED,/head\.repo\.full_name == github\.repository/);
+  assert.match(gate.run,/CI_SOURCE_REQUIRES_ISOLATED_SELF_HOSTED_RUNNER/);
   assert.deepEqual(w.permissions,{contents:'read'});
   assert.equal(w.jobs.validate.environment,undefined);
   assert.equal(w.env.EDITORIAL_RELEASE_ENABLED,'false');assert.equal(w.env.HERMES_RSS_NOTIFY_ENABLED,'false');

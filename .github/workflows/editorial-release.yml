@@ -72,7 +72,7 @@ jobs:
     name: Deploy publication ${{ needs.release.outputs.release_sha }}
     needs: [release, build]
     if: needs.release.outputs.release_sha != ''
-    runs-on: [self-hosted, Linux, X64, repo-gcake-dev]
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pages: write
