@@ -4,8 +4,8 @@ description: 從系列寫作的需求出發，整理內容、編輯、發布與�
 status: planned
 featured: false
 editorial:
-  currentPost: blog-system-substack-integration
-  nextPost: blog-system-publication-evidence
+  currentPost: blog-system-publication-evidence
+  nextPost: blog-system-article-discovery
 source:
   type: local
 canonical:
@@ -48,8 +48,8 @@ sections:
         status: draft
         workingTitle: "想讓文章被更多人看見，我怎麼處理跨平台發文？"
       - slug: blog-system-publication-evidence
-        status: planned
-        workingTitle: "發文成功不能只看系統說了什麼"
+        status: draft
+        workingTitle: "讓自動發文不只會執行，也能正確回報結果"
   - id: chapter-4
     title: "網站開始長出新的能力，我還需要理解什麼？"
     status: planned
