@@ -1,18 +1,18 @@
 # 《我的技術部落格，是怎麼慢慢變成一套系統的？》連載進度與銜接紀錄
 
-> 狀態：2026-11-01 更新至第 07 篇定稿。
+> 狀態：2026-11-12 更新至第 09 篇定稿。
 > 本文件保存跨篇寫作脈絡。篇目企劃見 [series-plan.md](series-plan.md)；可重用格式見 [通用模板](../_templates/progress-and-handoff.md)。
 > 定稿、發布資格與實際公開分開記錄，不以交接文件代替正文、manifest 或公開證據。
 
 ## 目前總覽
 
 - 規劃：四章、12 篇；原第二章三篇取消，後續章節與篇序順延。
-- 已討論並正式定稿：7 篇。
+- 已討論並正式定稿：9 篇。
 - 第 01 篇正式標題：〈以「系列連載」為核心的發表形式〉。
 - 正文：`src/content/posts/blog-system/blog-system-serial-publication.md`。
 - Series manifest：`src/content/series/blog-system.yaml`。
-- 發布狀態：第 01～07 篇正文與 manifest 均為 draft，其餘 5 篇 planned。定稿沒有自動轉 ready、沒有設定發布日期或啟用排程；本系列也沒有開始連載授權。
-- 下一篇：第 08 篇〈沒有發文 API，怎麼把文章同步到 Substack？〉（候選標題）。
+- 發布狀態：第 01～09 篇正文與 manifest 均為 draft，其餘 3 篇 planned。定稿沒有自動轉 ready、沒有設定發布日期或啟用排程；本系列也沒有開始連載授權。
+- 下一篇：第 10 篇〈文章多了之後，我開始思考怎麼讓讀者找到內容〉（候選標題）。
 - 正式公開：本次只存稿與交接，沒有提供本系列的公開驗收證據。
 - 本次基底：`60bc5ebe65ffc678a145bc2464dc213610c77430`。
 - 提交分支：`editorial/blog-system-01-final-20261026`。
@@ -213,3 +213,20 @@
 ## 第 09 篇啟動
 
 讀最新系列企劃、交接、第 08 篇定稿，以及必要的 Git／OpenSpec／正式驗收與故障修正紀錄。聚焦跨 Git、Actions、Pages／RSS、Substack、Hermes 的發布證據與未知狀態恢復；釐清實際逾時、重試、誤報、去重與人工介入，不能將排程、草稿保存或 CI 通過直接當成公開或通知送達。先討論真實素材與篇界，不直接寫初稿。
+
+## 第 09 篇｜讓自動發文不只會執行，也能正確回報結果
+
+- **狀態**：作者於 2026-11-12 完成多輪審稿及定稿前審查，明確確認「不改，定稿，上傳到 repo」；以最後作者確認的文字原樣入稿，不採納最後一輪提出的兩處文字修改。正文與 manifest 均維持 draft，不設定發布日期、改為 ready、啟用連載或對外同步。
+- **正文**：`src/content/posts/blog-system/blog-system-publication-evidence.md`；沿用原 planned slug。
+- **核心問題／論點**：自動發文完成後，回報必須足以理解結果、確認異常範圍與判斷下一步。重點是通知的可理解性、各時間欄位代表的證據，以及未知結果先查證再決定是否重試。
+- **作者確認的真實經驗**：Hermes 的 Telegram 異常通知無法看出哪個環節有問題，因此將訊息交給 Codex 查閱紀錄、核對實際執行情況；文章延後補發成功後，通知仍顯示原定發布時間，經 Codex 查核並修正通知欄位／顯示方式。
+- **主要實作證據**：`openspec/specs/hermes-publication-monitoring/spec.md`、`docs/hermes-production-rollout.md`、`openspec/changes/archive/2026-10-26-clarify-original-site-publication-times/verification.md`、`openspec/changes/schedule-substack-drafts-ahead/notification-false-positives-deployment.md`、`docs/distribution-scripted-runbook.md`。實作與正式環境是否完整符合所有故障情境仍應依個別驗收判定。
+- **當時／後來／未知**：先從 Telegram 通知發現資訊不足及補發時間誤導，請 Codex 核對後釐清預定時間、公開確認時間與通知發送時間；目前公開確認只能證明該次觀察已可閱讀，不能推知精確首次公開瞬間。對部分異常仍需 Codex 協助追查。
+- **假設與事實界線**：Substack 瀏覽器逾時後可能重複建立文章或寄信，是用以說明風險的假設情境，不寫成作者已遇到的特定事故；防重複機制的需求提出者不作無證據歸因。通知不宣稱已能完整定位所有異常。
+- **審稿取捨**：小白友善；監控範圍只在開頭交代一次；三節分別處理異常定位、補發時間與未知結果；保留 Codex 實際查核及修正工作，刪減監控責任與抽象結語的重複描述。作者明確選擇保留最後版本中「有些 Telegram 異常通知只能知道」及「接下來該評估是否重試」兩處措辭。
+- **前後篇界線**：第 07 篇處理發文資格與佇列，第 08 篇處理跨平台同步選擇與 Computer Use；本篇聚焦發文結果及通知資訊。第 10 篇開始處理公開文章搜尋、索引更新與資源不足時的降級，不重述這篇的發布監控。
+- **篇目與進度**：四章 12 篇不變；currentPost 指向第 09 篇、nextPost 指向第 10 篇。提交分支 `editorial/blog-system-09-final-20261112`；PR、CI、合併與公開狀態另以 GitHub 及正式驗收證據為準。
+
+## 第 10 篇啟動
+
+先讀最新系列企劃、本交接與第 09 篇定稿，必要時回查第 05 篇的資料責任總覽；按需查 `docs/article-discovery-runbook.md`、`docs/decisions/ADR-001-cloudflare-semantic-search.md`、搜尋相關 OpenSpec、Git 與實際驗收紀錄。先整理文章數量增加後的搜尋需求、關鍵字與語意搜尋的真實選擇、公開索引同步及額度不足時的降級；區分已部署、已測試與仍未知的效果。現有功能是檢索，不能寫成已完成 RAG 生成式問答。先討論，不直接寫稿。
